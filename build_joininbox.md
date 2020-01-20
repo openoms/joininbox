@@ -65,7 +65,7 @@ reboot
 ```
 
 ### Hardening
-https://stadicus.github.io/RaspiBolt/raspibolt_21_security.html  
+
 Log back in with the user set up previously.
 
 ```bash
@@ -79,6 +79,11 @@ systemctl enable ufw
 ufw status
 exit
 ```
+
+
+Setting up the keys and removing the password option is described in the [RaspiBolt Guide](https://stadicus.github.io/RaspiBolt/raspibolt_21_security.html#login-with-ssh-keys)
+
+Can consider storing the ssh keys for login on a [Trezor hardware wallet](https://wiki.trezor.io/Apps:SSH_agent)
 
 ### Install JoinMarket
 ```bash
