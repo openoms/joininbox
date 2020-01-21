@@ -168,11 +168,11 @@ git reset --hard v0.6.1
 cd
 git clone https://github.com/openoms/joininbox.git
 chmod -R +x ./joininbox/
-cp ./joininbox/scripts/* .joinmarket-clientserver/scripts/
+cp ./joininbox/scripts/* ./joinmarket-clientserver/scripts/
 ```
 * Activate JoinMarket
 ```bash
-$ cd joinmarket-clientserver && source jmvenv/binactivate && cd scripts 
+$ cd joinmarket-clientserver && source jmvenv/bin/activate && cd scripts 
 ```
 * Try the JoininBox menu 
 ```bash

@@ -34,12 +34,12 @@ OPTIONS+=(INSTALL "Install JoinMarket" \
   CONF_YG "Configure the Yield Generator" \
   YG "Run the Yield Generator" \
   STOP "Stop the Yield Generator" \
-  REPORT "Show report"
-  OBWATCH "Show the offer book"
+  REPORT "Show report" \
+  OBWATCH "Show the offer book" \
   "" ""
   RESTORE "Restore a wallet" \
   UP_JM "Update JoinMarket" \
-  UP_JIB "Update JoininBox"
+  UP_JIB "Update JoininBox" 
 )
 
 CHOICE=$(dialog --clear \
@@ -53,7 +53,7 @@ CHOICE=$(dialog --clear \
 
 case $CHOICE in
         INSTALL)
-            
+
             ;;
         GEN)
             ;;
