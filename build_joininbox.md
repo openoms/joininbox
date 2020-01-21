@@ -1,4 +1,4 @@
-# Build a dedicated JoinMarket Box remotely connected to a full node
+## Build a dedicated JoinMarket Box remotely connected to a full node
 
 
 Tested on:
@@ -170,17 +170,13 @@ git clone https://github.com/openoms/joininbox.git
 chmod -R +x ./joininbox/
 cp ./joininbox/scripts/* ./joinmarket-clientserver/scripts/
 ```
-* Activate JoinMarket
-```bash
-$ cd joinmarket-clientserver && source jmvenv/bin/activate && cd scripts 
-```
+
 * Try the JoininBox menu 
 ```bash
-(jmvenv) $ ./mainmenu.sh
+$ cd joinmarket-clientserver/scripts
+$ ./mainmenu.sh
 ```
 * Scriptstarter usage example
 ```bash
-(jmvenv) $ python scriptstarter.py wallet-tool.py WALLET.jmdat
+(jmvenv) $ python scriptstarter.py wallet-tool WALLET
 ```
-
-To Be Continued...
