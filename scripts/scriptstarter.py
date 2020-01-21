@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/home/joinin/joinmarket-clientserver/jmvenv/bin/python
 
 import subprocess
 import sys
@@ -12,7 +12,7 @@ PW = f.read().strip()
 f.close()
 os.system('rm -f pw')
 
-process = subprocess.Popen(['python', '%s' %SCRIPT,'%s' %WALLET, '--wallet-password-stdin'],
+process = subprocess.Popen(['python', '%s.py' %SCRIPT,'%s.jmdat' %WALLET, '--wallet-password-stdin'],
                                                                 stdin=subprocess.PIPE,
                                                                 stdout=subprocess.PIPE,
                                                                 universal_newlines=True)

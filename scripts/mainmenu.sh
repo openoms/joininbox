@@ -21,28 +21,28 @@ OPTIONS=()
 BACKTITLE="JoininBox GUI"
 
 # Basic Options
-OPTIONS+=(INSTALL "Install JoinMarket" \
-  "" ""
-  GEN "Generate a wallet" \
-  INFO "Wallet information" \
-  CONF "Configure Joinmarket" \
-  "" ""
+OPTIONS+=(\
+  INFO "Show the balance and addresses" \
   PAY "Pay with a coinjoin" \
   TUMBLER "Run the Tumbler" \
+  YG "Run the Yield Generator" \
+  "" ""
+  HISTORY "Show the past transactions" \
+  OBWATCH "Show the offer book" \
   EMPTY "Empty a mixdepth" \
   "" ""
+  CONF "Configure Joinmarket" \
   CONF_YG "Configure the Yield Generator" \
-  YG "Run the Yield Generator" \
   STOP "Stop the Yield Generator" \
-  REPORT "Show report" \
-  OBWATCH "Show the offer book" \
   "" ""
+  GEN "Generate a wallet" \
   RESTORE "Restore a wallet" \
+  INSTALL "Install JoinMarket" \
   UP_JM "Update JoinMarket" \
-  UP_JIB "Update JoininBox" 
+  UP_JIB "Update JoininBox" \
 )
 
-CHOICE=$(dialog --clear \
+CHOICE=$(DIALOGRC=.dialogrc.black-cyan dialog --clear \
                 --backtitle "$BACKTITLE" \
                 --title "$TITLE" \
                 --menu "$MENU" \
@@ -52,44 +52,45 @@ CHOICE=$(dialog --clear \
 
 
 case $CHOICE in
-        INSTALL)
 
-            ;;
-        GEN)
-            ;;
         INFO)
             ./getpw.sh
             source joinin.conf
             clear
-            echo "Decrypting the wallet $wallet . . ."
-            python scriptstarter.py wallet-tool.py $wallet
-            ;;
-        CONF)
-
+            echo "Decrypting the wallet $wallet.jmdat . . ."
+            echo ""
+            echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
+            . /home/joinin/joinmarket-clientserver/jmvenv/bin/activate
+            python scriptstarter.py wallet-tool $wallet
             ;;
         PAY)
-
-            ;;
+            ;;            
         TUMBLER)
-
-            ;;
-        EMPTY)
-            ;;
-        CONF_YG)
-
             ;;
         YG)
             ./getpw.sh
             source joinin.conf
-            python scriptstarter.py yg-privacyenhanced.py $wallet
+            ./servicemaker.sh yg-privacyenhanced $wallet
+            # sudo systemctl status yg-privacyenhanced
+            ./mainmenu.sh
             ;;
-        STOP)
-            ;;
-        REPORT)
+        HISTORY)
             ;;
         OBWATCH)
             ;;
+        EMPTY)
+            ;;
+        CONF)
+            ;;
+        CONF_YG)
+            ;;
+        STOP)
+            ;;
+        GEN)
+            ;;
         RESTORE)
+            ;;
+        INSTALL)
             ;;
         UP_JM)
             ;;

@@ -7,7 +7,7 @@ fi
 
 # choose wallet
 dialog --backtitle "Choosing a wallet" \
-       --inputbox "Type the filename of the wallet to be used.\nExample: wallet.jmdat" 10 60 2>_temp
+       --inputbox "Type the name of the wallet to be used.\nExample: wallet1 for wallet1.jmdat" 10 60 2>_temp
 sed -i "s/^wallet=.*/wallet=$(cat _temp)/g" joinin.conf
 
 # get password
