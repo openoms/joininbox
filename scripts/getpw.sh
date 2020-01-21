@@ -5,15 +5,10 @@ if ! grep -Eq "^wallet=" joinin.conf; then
   echo "wallet=nil" >> joinin.conf
 fi
 
-source joinin.conf
-echo $wallet
 # choose wallet
-wallet=$(tempfile 2>/dev/null)
 dialog --backtitle "Choosing a wallet" \
---inputbox "Type the filename of the wallet to be used.\nExample: wallet.jmdat " 10 60 2> $wallet
- echo $wallet
-# update conf
-sed -i "s/^wallet=.*/wallet='${wallet}'/g" joinin.conf
+       --inputbox "Type the filename of the wallet to be used.\nExample: wallet.jmdat" 10 60 2>_temp
+sed -i "s/^wallet=.*/wallet=$(cat _temp)/g" joinin.conf
 
 # get password
 data=$(tempfile 2>/dev/null)
@@ -22,12 +17,11 @@ data=$(tempfile 2>/dev/null)
 trap "rm -f $data" 0 1 2 5 15
 
 dialog --backtitle "Decrypting Wallet" \
---insecure \
---passwordbox "Type or paste the wallet decryption password" 8 52 2> $data
-
-pressed=$?
+       --insecure \
+       --passwordbox "Type or paste the wallet decryption password" 8 52 2> $data
 
 # make decison
+pressed=$?
 case $pressed in
   0)
     touch pw

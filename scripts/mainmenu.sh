@@ -60,6 +60,8 @@ case $CHOICE in
         INFO)
             ./getpw.sh
             source joinin.conf
+            clear
+            echo "Decrypting the wallet $wallet . . ."
             python scriptstarter.py wallet-tool.py $wallet
             ;;
         CONF)

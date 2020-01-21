@@ -7,7 +7,7 @@ JoinMarket terminal GUI with dialog
 
 ## Build a dedicated box for development: [build_joininbox.md](build_joininbox.md)
 
-Implemented functions:
+## Implemented functions
 
 - [ ] INSTALL "Install JoinMarket" 
 
