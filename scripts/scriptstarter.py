@@ -2,13 +2,15 @@
 
 import subprocess
 import sys
+import os
 
 SCRIPT = sys.argv[1]
 WALLET = sys.argv[2]
 
 f = open('pw','r')
-PW = f.read().replace('\n','')
+PW = f.read().strip()
 f.close()
+os.system('rm -f pw')
 
 process = subprocess.Popen(['python', '%s' %SCRIPT,'%s' %WALLET, '--wallet-password-stdin'],
                                                                 stdin=subprocess.PIPE,

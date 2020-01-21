@@ -1,6 +1,14 @@
 #!/bin/bash
 
-# sudo apt install dialog
+if [ $(dialog | grep -c "ComeOn Dialog!") -eq 0 ]; then
+  sudo apt install dialog
+fi
+if [ -f joinin.conf ]; then
+  touch joinin.conf
+fi
+source joinin.conf
+
+# cd ~/bin/joinmarket-clientserver && source jmvenv/bin/activate && cd scripts
 
 # BASIC MENU INFO
 HEIGHT=26
@@ -50,7 +58,9 @@ case $CHOICE in
         GEN)
             ;;
         INFO)
-
+            ./getpw.sh
+            source joinin.conf
+            python scriptstarter.py wallet-tool.py $wallet
             ;;
         CONF)
 
@@ -67,6 +77,9 @@ case $CHOICE in
 
             ;;
         YG)
+            ./getpw.sh
+            source joinin.conf
+            python scriptstarter.py yg-privacyenhanced.py $wallet
             ;;
         STOP)
             ;;
@@ -78,6 +91,6 @@ case $CHOICE in
             ;;
         UP_JM)
             ;;
-        UP_JIB
+        UP_JIB)
             ;;
 esac

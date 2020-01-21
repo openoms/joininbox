@@ -8,9 +8,9 @@ echo "
 Description=$SCRIPT
 
 [Service]
-ExecStart=python /home/jm/joinmarket-clientserver/scripts/t2.py $SCRIPT.py $WALLET.jmdat
-User=jm
-Group=jm
+ExecStart=python /home/joinin/joininbox/scripts/scriptstarter.py $SCRIPT.py $WALLET.jmdat
+User=joinin
+Group=joinin
 Type=simple
 KillMode=process
 TimeoutSec=60
