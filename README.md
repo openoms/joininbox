@@ -10,6 +10,17 @@ JoinMarket terminal GUI with dialog
 
 ### Build a dedicated, secure box for development: [build_joininbox.md](build_joininbox.md)
 
+Tested on:
+* Hardkernel Odroid XU4 with Armbian
+* Connected to a RaspiBlitz 1.4RCx
+
+
+### Installation
+```bash
+git clone https://github.com/openoms/joininbox.git
+cd joininbox
+sudo build_jouninbox.sh --with-tor
+```
 ### Implemented functions
 
 
@@ -20,10 +31,9 @@ JoinMarket terminal GUI with dialog
 - [ ] HISTORY "Show report" 
 - [ ] OBWATCH "Show the offer book" 
 - [ ] EMPTY "Empty a mixdepth" 
-- [ ] CONF_YG "Configure the Yield Generator" 
-- [ ] STOP "Stop the Yield Generator" 
+- [x] CONF_YG "Configure the Yield Generator" 
+- [x] STOP "Stop the Yield Generator" 
 - [ ] GEN "Generate a wallet" 
 - [ ] RESTORE "Restore a wallet" 
-- [ ] INSTALL "Install JoinMarket" 
-- [ ] UP_JM "Update JoinMarket" 
-- [ ] UP_JIB "Update JoininBox"
+- [x] INSTALL "Install an configure JoinMarket" 
+- [x] UP_JIB "Update JoininBox"
