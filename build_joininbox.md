@@ -168,7 +168,7 @@ git reset --hard v0.6.1
 cd
 git clone https://github.com/openoms/joininbox.git
 chmod -R +x ./joininbox/
-cp ./joininbox/scripts/* ./joinmarket-clientserver/scripts/
+cp ./joininbox/scripts/* ~/
 ```
 
 * Try the JoininBox menu 
@@ -176,7 +176,7 @@ cp ./joininbox/scripts/* ./joinmarket-clientserver/scripts/
 $ cd joinmarket-clientserver/scripts
 $ ./mainmenu.sh
 ```
-* Scriptstarter usage example
+* scriptstarter usage example
 ```bash
 (jmvenv) $ python scriptstarter.py wallet-tool WALLET
 ```

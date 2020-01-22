@@ -6,6 +6,16 @@ if ! grep -Eq "^wallet=" joinin.conf; then
 fi
 
 # choose wallet
+
+## exprimental
+#dialog --backtitle "Choose a wallet" \
+#       --title "Choose a wallet by starting to type " \
+#       --fselect "/home/joinin/joinmarket-clientserver/scripts/wallets/" 10 60 2>_temp
+#
+#dialog --backtitle "Choose a wallet" \
+#       --title "Choose a wallet" \
+#       --inputbox "\nProceeding with $(cat _temp) unless edited below" 10 60 $(cat _temp) 2>_temp
+
 dialog --backtitle "Choosing a wallet" \
        --inputbox "Type the name of the wallet to be used.\nExample: wallet1 for wallet1.jmdat" 10 60 2>_temp
 sed -i "s/^wallet=.*/wallet=$(cat _temp)/g" joinin.conf
@@ -24,12 +34,16 @@ dialog --backtitle "Decrypting Wallet" \
 pressed=$?
 case $pressed in
   0)
-    touch pw
-    chmod 600 pw
-    cat $data | tee pw 1>/dev/null
+    touch /home/joinin/.pw
+    chmod 600 /home/joinin/.pw
+    cat $data | tee /home/joinin/.pw 1>/dev/null
     shred $data;;
   1)
-    echo "Cancelled";;
+    shred $data
+    echo "Cancelled"
+    exit 1;;
   255)
-    [ -s $data ] &&  cat $data || echo "ESC pressed.";;
+    shred $data
+    [ -s $data ] &&  cat $data || echo "ESC pressed."
+    exit 1;;
 esac
