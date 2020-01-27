@@ -8,11 +8,11 @@ JoinMarket terminal GUI with dialog
   <img width="400" src="/images/darkmenu.png">
 </p>
 
-### Build a dedicated, secure box for development: [build_joininbox.md](build_joininbox.md)
+### Build a dedicated, secure box for coinjoinin with Joinmarket and JoininBox development: [build_joininbox.md](build_joininbox.md)
 
 Tested on:
 * Hardkernel Odroid XU4 with Armbian
-* Connected to a RaspiBlitz 1.4RCx
+* Connected to a RaspiBlitz 1.4RCx (any Bitcoin Core node can work, including previous RaspiBlitz versions)
 
 
 ### Installation

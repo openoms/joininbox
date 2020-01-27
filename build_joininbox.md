@@ -10,17 +10,18 @@ Tested on:
 https://dl.armbian.com/odroidxu4/Buster_legacy
 
 https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authenticity
-```
-$ gpg --verify Armbian_20.02.0-rc0_Odroidxu4_buster_legacy_4.14.165.img.asc
-gpg: assuming signed data in 'Armbian_20.02.0-rc0_Odroidxu4_buster_legacy_4.14.165.img'
-gpg: Signature made Mon 20 Jan 2020 05:23:20 GMT
-gpg:                using RSA key DF00FAF1C577104B50BF1D0093D6889F9F0E78D5
-gpg: Good signature from "Igor Pecovnik <igor@armbian.com>" [unknown]
-gpg:                 aka "Igor Pecovnik (Ljubljana, Slovenia) <igor.pecovnik@gmail.com>" [unknown]
-gpg: WARNING: This key is not certified with a trusted signature!
-gpg:          There is no indication that the signature belongs to the owner.
-Primary key fingerprint: DF00 FAF1 C577 104B 50BF  1D00 93D6 889F 9F0E 78D5
-```
+
+    ```
+    $ gpg --verify Armbian_20.02.0-rc0_Odroidxu4_buster_legacy_4.14.165.img.asc
+    gpg: assuming signed data in 'Armbian_20.02.0-rc0_Odroidxu4_buster_legacy_4.14.165.img'
+    gpg: Signature made Mon 20 Jan 2020 05:23:20 GMT
+    gpg:                using RSA key DF00FAF1C577104B50BF1D0093D6889F9F0E78D5
+    gpg: Good signature from "Igor Pecovnik <igor@armbian.com>" [unknown]
+    gpg:                 aka "Igor Pecovnik (Ljubljana, Slovenia) <igor.pecovnik@gmail.com>" [unknown]
+    gpg: WARNING: This key is not certified with a trusted signature!
+    gpg:          There is no indication that the signature belongs to the owner.
+    Primary key fingerprint: DF00 FAF1 C577 104B 50BF  1D00 93D6 889F 9F0E 78D5
+    ```
 Preparation
 
 Make sure you have a good & reliable SD card and a proper power supply. Archives can be uncompressed with 7-Zip on Windows, Keka on OS X and 7z on Linux (apt-get install p7zip-full). RAW images can be written with Etcher (all OS).
@@ -180,3 +181,7 @@ $ ./mainmenu.sh
 ```bash
 (jmvenv) $ python scriptstarter.py wallet-tool WALLET
 ```
+
+## Resources:
+
+* [Prepare a remote node to accept the JoinMarket connection](prepare_remote_node.md)
