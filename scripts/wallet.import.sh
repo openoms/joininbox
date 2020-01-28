@@ -22,11 +22,12 @@ if [ ! -f "/home/joinin/joinmarket-clientserver/jmvenv/bin/activate" ]; then
   response=$?
   echo "response(${response})"
   if [ "${response}" = "1" ]; then
-    echo "OK - startin JoinMarket installation"
-    sudo ./install.joinmarket.sh            errorOnInstall=$?
+    echo "OK - starting JoinMarket installation"
+    ./install.joinmarket.sh
+    errorOnInstall=$?
     if [ ${errorOnInstall} -eq 0 ]; then
       dialog --title "Installed JoinMarket" \
-        --msgbox "\nContinue from the menu or the command line " 7 56
+        --msgbox "\nContinue from the menu or use the command line " 7 56
     else 
       DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
         --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56

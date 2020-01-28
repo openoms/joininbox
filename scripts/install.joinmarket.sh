@@ -3,11 +3,11 @@
 # install joinmarket
 if [ ! -f "/home/joinin/joinmarket-clientserver/jmvenv/bin/activate" ] ; then
     cd /home/joinin
-    git clone https://github.com/JoinMarket-Org/joinmarket-clientserver.git
+    sudo -u joinin git clone https://github.com/JoinMarket-Org/joinmarket-clientserver.git
     cd joinmarket-clientserver
     # latest release: https://github.com/JoinMarket-Orgjoinmarket-clientserver/releases
     git reset --hard v0.6.1
-    joinin ./install.sh --without-qt
+    sudo -u joinin ./install.sh --without-qt
 else
     echo "JoinMarket is already installed"
     echo ""

@@ -45,9 +45,10 @@ adduser --disabled-password --gecos "" joinin
 
 echo "*** Clone the joininbox repo and copy the scripts ***"
 cd /home/joinin
-git clone https://github.com/openoms/joininbox.git
-cp ./joininbox/scripts/* /home/joinin/
-cp ./joininbox/scripts/.dialogrc /home/joinin/
+sudo -u joinin git clone https://github.com/openoms/joininbox.git
+sudo -u joinin cp ./joininbox/scripts/* /home/joinin/
+sudo -u joinin cp ./joininbox/scripts/.* /home/joinin/ 2>/dev/null
+
 chmod +x /home/joinin/*.sh
 chmod +x /home/joinin/*.py
 
