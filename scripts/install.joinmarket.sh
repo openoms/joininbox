@@ -7,7 +7,7 @@ if [ ! -f "/home/joinin/joinmarket-clientserver/jmvenv/bin/activate" ] ; then
     cd joinmarket-clientserver
     # latest release: https://github.com/JoinMarket-Orgjoinmarket-clientserver/releases
     git reset --hard v0.6.1
-    ./install.sh --without-qt
+    joinin ./install.sh --without-qt
 else
     echo "JoinMarket is already installed"
     echo ""
@@ -24,33 +24,33 @@ else
     echo ""
 fi
 
-chmod 600 /home/joinin/joinmarket-clientserver/scripts/joinmarket.cfg || exit 1
+sudo -u joinin chmod 600 /home/joinin/joinmarket-clientserver/scripts/joinmarket.cfg || exit 1
 
 # TODO edit joinmarket.cfg if Tor is on
 
-# temp data
-data=$(tempfile 2>/dev/null)
+# temp conf
+conf=$(tempfile 2>/dev/null)
 # trap it
-trap "rm -f $data" 0 1 2 5 15
+trap "rm -f $conf" 0 1 2 5 15
 # Configure joinmarket
 dialog \
     --title "Edit joinmarket.cfg" \
-    --exit-label " Continue to edit the joinmarket.conf" \
-    --textbox "info.conf.txt" 20 102 \
-    --editbox "/home/joinin/joinmarket-clientserver/scripts/joinmarket.cfg" 200 200 2> $data
+#    --exit-label " Continue to edit the joinmarket.conf" \
+#    --textbox "info.conf.txt" 20 102 \
+    --editbox "/home/joinin/joinmarket-clientserver/scripts/joinmarket.cfg" 200 200 2> $conf
 
 # make decison
 pressed=$?
 case $pressed in
   0)
-    cat $data | tee /home/joinin/joinmarket-clientserver/scripts/joinmarket.cfg 1>/dev/null
-    shred $data;;
+    cat $conf | sudo -u joinin tee /home/joinin/joinmarket-clientserver/scripts/joinmarket.cfg 1>/dev/null
+    shred $conf;;
   1)
-    shred $data
+    shred $conf
     echo "Cancelled"
     exit 1;;
   255)
-    shred $data
-    [ -s $data ] &&  cat $data || echo "ESC pressed."
+    shred $conf
+    [ -s $conf ] &&  cat $conf || echo "ESC pressed."
     exit 1;;
 esac

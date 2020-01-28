@@ -51,10 +51,10 @@ echo "deb-src https://deb.torproject.org/torproject.org buster main" | tee -a /e
 
 # update and upgrade packages
 apt update
-apt upgrade
+apt upgrade -y
 
 # install packages
-apt install -y git virtualenv tor fail2ban ufw
+apt install -y git virtualenv tor fail2ban ufw torsocks
 
 ```
 

@@ -23,20 +23,20 @@ BACKTITLE="JoininBox GUI"
 # Basic Options
 OPTIONS+=(\
   INFO "Show the address list and balance" \
-  PAY "Pay to an address using coinjoin" \
-  TUMBLER "Run the Tumbler to mix quickly" \
+  #PAY "Pay to an address using coinjoin" \
+  #TUMBLER "Run the Tumbler to mix quickly" \
   YG "Run the Yield Generator" \
   "" ""
-  HISTORY "Show the past transactions" \
-  OBWATCH "Show the offer book" \
-  EMPTY "Empty a mixdepth" \
+  #HISTORY "Show the past transactions" \
+  #OBWATCH "Show the offer book" \
+  #EMPTY "Empty a mixdepth" \
   "" ""
   YG_CONF "Configure the Yield Generator" \
   STOP "Stop the Yield Generator" \
   "" ""
-  GEN "Generate a new wallet" \
-  IMPORT "Copy a wallet from a remote node"
-  RESTORE "Restore a wallet from the seed" \
+  #GEN "Generate a new wallet" \
+  IMPORT "Copy wallet(s) from a remote node"
+  #RESTORE "Restore a wallet from the seed" \
   "" ""
   INSTALL "Install and configure JoinMarket" \
   UPDATE "Update the JoininBox scripts and menu" \
@@ -50,7 +50,6 @@ CHOICE=$(dialog --clear \
                 $HEIGHT $WIDTH $CHOICE_HEIGHT \
                 "${OPTIONS[@]}" \
                 2>&1 >/dev/tty)
-
 
 case $CHOICE in
 
@@ -93,6 +92,7 @@ case $CHOICE in
             --title "Edit joinmarket.cfg" \
             --editbox  /home/joinin/joinmarket-clientserver/scripts/yg-privacyenhanced.py 200 200 2>_temp
             cat _temp > /home/joinin/joinmarket-clientserver/scripts/yg-privacyenhanced.py
+            ./menu.sh            
             ;;
         STOP)
             sudo systemctl stop yg-privacyenhanced
@@ -100,7 +100,9 @@ case $CHOICE in
             ;;
         GEN)
             ;;
-        IMPORT)
+        IMPORT) 
+            ./wallet.import.sh
+            ./menu.sh
             ;;
         RESTORE)
             ;;

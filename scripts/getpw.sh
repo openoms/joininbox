@@ -16,9 +16,11 @@ fi
 #       --title "Choose a wallet" \
 #       --inputbox "\nProceeding with $(cat _temp) unless edited below" 10 60 $(cat _temp) 2>_temp
 
+# get password
+wallet=$(tempfile 2>/dev/null)
+
 dialog --backtitle "Choosing a wallet" \
-       --inputbox "Type the name of the wallet to be used.\nExample: wallet1 for wallet1.jmdat" 10 60 2>_temp
-sed -i "s/^wallet=.*/wallet=$(cat _temp)/g" joinin.conf
+       --inputbox "Type the name of the wallet to be used.\nExample: wallet1 for wallet1.jmdat" 10 60 2> $wallet
 
 # get password
 data=$(tempfile 2>/dev/null)
@@ -37,13 +39,18 @@ case $pressed in
     touch /home/joinin/.pw
     chmod 600 /home/joinin/.pw
     cat $data | tee /home/joinin/.pw 1>/dev/null
+    sed -i "s/^wallet=.*/wallet=$(cat $wallet)/g" joinin.conf
     shred $data;;
   1)
     shred $data
+    shred $wallet
+    rm -f .pw
     echo "Cancelled"
     exit 1;;
   255)
     shred $data
+    shred $wallet
+    rm -f .pw
     [ -s $data ] &&  cat $data || echo "ESC pressed."
     exit 1;;
 esac

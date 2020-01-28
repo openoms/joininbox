@@ -3,8 +3,14 @@
 # command info
 if [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
  echo "JoininBox setup with optional Tor install"
- echo "buil_joininbox.sh [--with-tor]"
+ echo "sudo build_joininbox.sh [--with-tor]"
  exit 1
+fi
+
+# check if sudo
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root (with sudo)"
+  exit
 fi
 
 echo "Detect Base Image ..." 
@@ -40,8 +46,9 @@ adduser --disabled-password --gecos "" joinin
 echo "*** Clone the joininbox repo and copy the scripts ***"
 cd /home/joinin
 git clone https://github.com/openoms/joininbox.git
-chmod -R +x ./joininbox/
 cp ./joininbox/scripts/* /home/joinin/
+chmod +x /home/joinin/*.sh
+chmod +x /home/joinin/*.py
 
 echo "*** Setting the password for the users 'joinin' and 'root' ***"
 apt install dialog
@@ -90,7 +97,7 @@ if [ "$1" = "--with-tor" ] || [ "$1" = "tor" ]; then
   echo ""
   echo "*** INSTALL TOR ***"
   apt update
-  apt install tor
+  apt install tor torsocks
 fi
 
 # update and upgrade packages
@@ -98,7 +105,7 @@ apt update
 
 echo "*** HARDENING ***"
 # install packages
-apt install -y git virtualenv fail2ban ufw
+apt install -y git virtualenv fail2ban ufw torsocks
 
 ### Hardening
 

@@ -14,7 +14,7 @@ This can be skipped if you connect through Tor (see [below](#tor-connection))
     Change the values (edit to your local subnet): 
     ```
     #rpcallowip=127.0.0.1
-    #rpcbind=127.0.01:8332
+    #rpcbind=127.0.0.1:8332
     rpcallowip=192.168.1.0/24
     rpcbind=0.0.0.0
     ```
