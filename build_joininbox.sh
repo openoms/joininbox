@@ -47,6 +47,7 @@ echo "*** Clone the joininbox repo and copy the scripts ***"
 cd /home/joinin
 git clone https://github.com/openoms/joininbox.git
 cp ./joininbox/scripts/* /home/joinin/
+cp ./joininbox/scripts/.dialogrc /home/joinin/
 chmod +x /home/joinin/*.sh
 chmod +x /home/joinin/*.py
 

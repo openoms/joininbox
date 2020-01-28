@@ -1,14 +1,13 @@
 ## Build a dedicated JoinMarket Box remotely connected to a full node
 
-
 Tested on:
 * Hardkernel Odroid XU4 with Armbian
 * Connected to a RaspiBlitz 1.4RCx
 
 ### Set up Armbian
-
-https://dl.armbian.com/odroidxu4/Buster_legacy
-
+* Download the SDcard image:  
+https://dl.armbian.com/odroidxu4/Buster_legacy  
+* Verify  
 https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authenticity
 
     ```
@@ -22,21 +21,23 @@ https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authe
     gpg:          There is no indication that the signature belongs to the owner.
     Primary key fingerprint: DF00 FAF1 C577 104B 50BF  1D00 93D6 889F 9F0E 78D5
     ```
-Preparation
 
-Make sure you have a good & reliable SD card and a proper power supply. Archives can be uncompressed with 7-Zip on Windows, Keka on OS X and 7z on Linux (apt-get install p7zip-full). RAW images can be written with Etcher (all OS).
+* Preparation  
 
-Boot
+    Make sure you have a good & reliable SD card and a proper power supply. Archives can be uncompressed with 7-Zip on Windows, Keka on OS X and 7z on Linux (apt-get install p7zip-full). RAW images can be written with Etcher (all OS).
 
-Insert the SD card into the slot, connect a cable to your network if possible or a display and power your board. (First) boot (with DHCP) takes up to 35 seconds with a class 10 SD Card.
+* Boot
 
-Login
+    Insert the SD card into the slot, connect a cable to your network if possible or a display and power your board. (First) boot (with DHCP) takes up to 35 seconds with a class 10 SD Card.
 
-Log in as: root  Password: 1234. Then you are prompted to change this password (US-Keyboard setting). When done, you are asked to create a normal user-account for your everyday tasks.
+* Login
 
-Change the password.
-Create a new user called `joinin` and password.
+    Log in as: root  Password: 1234. Then you are prompted to change this password (US-Keyboard setting). When done, you are asked to create a normal user-account for your everyday tasks.
 
+* Change the password.
+* Create a new user called `joinin` and set the password.  
+ Keep pressing [ENTER] to use the default user information.
+ 
 ### Preparations
 
 ```bash

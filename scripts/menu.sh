@@ -78,12 +78,16 @@ case $CHOICE in
             echo ""
             echo "Exit to the command line by pressing CTRL+C"
             echo "" 
-            dialog --prgbox "column $HOME/joinmarket-clientserver/scripts/logs/yigen-statement.csv -t -s ","" 20 140
+            dialog \
+            --title "timestamp            cj amount/satoshi  my input count  my input value/satoshi  cjfee/satoshi  earned/satoshi  confirm time/min  notes"  \
+            --prgbox "column $HOME/joinmarket-clientserver/scripts/logs/yigen-statement.csv -t -s ","" 20 140
             ./menu.sh
             ;;
         MONITOR)
             # TODO check if active with ?systemctl
-            dialog --prgbox "column $HOME/joinmarket-clientserver/scripts/logs/yigen-statement.csv -t -s ","" 20 140
+            dialog \
+            --title "timestamp            cj amount/satoshi  my input count  my input value/satoshi  cjfee/satoshi  earned/satoshi  confirm time/min  notes"  \
+            --prgbox "column $HOME/joinmarket-clientserver/scripts/logs/yigen-statement.csv -t -s ","" 20 140
             ./menu.sh
             ;;            
         HISTORY)
