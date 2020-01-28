@@ -16,29 +16,30 @@ fi
 # generate joinmarket.cfg
 if [ ! -f "/home/joinin/joinmarket-clientserver/scripts/joinmarket.cfg" ] ; then
     echo "Generating the joinmarket.cfg"
-    . /home/joinin/joinmarket-clientserver/jmvenv/bin/activate &&\
+    udo -u joinin . /home/joinin/joinmarket-clientserver/jmvenv/bin/activate &&\
     cd /home/joinin/joinmarket-clientserver/scripts/
-    python wallet-tool.py generate
+    sudo -u joinin python wallet-tool.py generate
 else
     echo "the joinmarket.cfg is already present"
     echo ""
 fi
 
-sudo -u joinin chmod 600 /home/joinin/joinmarket-clientserver/scripts/joinmarket.cfg || exit 1
+sudo chmod 600 /home/joinin/joinmarket-clientserver/scripts/joinmarket.cfg || exit 1
 
 # TODO edit joinmarket.cfg if Tor is on
+
+# Configure joinmarket
+dialog \
+--exit-label "Continue to edit the joinmarket.conf" \
+--textbox "info.conf.txt" 20 102
 
 # temp conf
 conf=$(tempfile 2>/dev/null)
 # trap it
 trap "rm -f $conf" 0 1 2 5 15
-# Configure joinmarket
 dialog \
-    --title "Edit joinmarket.cfg" \
-#    --exit-label " Continue to edit the joinmarket.conf" \
-#    --textbox "info.conf.txt" 20 102 \
-    --editbox "/home/joinin/joinmarket-clientserver/scripts/joinmarket.cfg" 200 200 2> $conf
-
+--title "Edit joinmarket.cfg" \
+--editbox "/home/joinin/joinmarket-clientserver/scripts/joinmarket.cfg" 200 200 2> $conf
 # make decison
 pressed=$?
 case $pressed in

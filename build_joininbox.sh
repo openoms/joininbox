@@ -105,12 +105,11 @@ fi
 # update and upgrade packages
 apt update
 
+### Hardening
 echo "*** HARDENING ***"
 # install packages
 apt install -y git virtualenv fail2ban ufw torsocks
-
-### Hardening
-
+# autostart fail2ban
 systemctl enable fail2ban
 
 # set up the firewall
@@ -126,16 +125,20 @@ if [ $old_kernel -gt 0 ]; then
   update-alternatives --set iptables /usr/sbin/iptables-legacy
   update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
 fi
-echo "enable firewall"
+echo "enabling firewall"
 sudo ufw --force enable
 systemctl enable ufw
 ufw status
 
-mkdir -p ~/.ssh
+# make folder for authorized keys 
+sudo -u joinin mkdir -p ~/.ssh
 
 # install a command-line fuzzy finder (https://github.com/junegunn/fzf)
-sudo apt-get -y install fzf
+sudo apt -y install fzf
 sudo bash -c "echo 'source /usr/share/doc/fzf/examples/key-bindings.bash' >> /home/joinin/.bashrc"
+
+# install tmux
+sudo apt -y install tmux
 
 # bash autostart for joinin
 sudo bash -c "echo '# shortcut commands' >> /home/joinin/.bashrc"
@@ -150,4 +153,5 @@ echo "*** READY ***"
 echo ""
 echo "Look through the output and press ENTER to proceed to the menu"
 echo "Press CTRL + C to abort"
+read key
 su - joinin

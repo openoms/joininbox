@@ -85,5 +85,6 @@ Windows client for Trezor and Keepkey:
 
 ## More info:
 
-* Manual instructions on how to [build a JoininBox](build_joininbox.md)
+* How to [prepare a remote node to accept the JoinMarket connection](prepare_remote_node.md)
+* Manual instructions on how to [build the JoininBox](build_joininbox.md)
 * [Frequently Asked Questions](FAQ.md)
