@@ -27,6 +27,7 @@ OPTIONS+=(\
   #TUMBLER "Run the Tumbler to mix quickly" \
   YG "Run the Yield Generator" \
   MONITOR "Monitor the Yield Generator" \
+  YG_LIST "List the past YG activity"
   "" ""
   #HISTORY "Show the past transactions" \
   #OBWATCH "Show the offer book" \
@@ -79,17 +80,23 @@ case $CHOICE in
             echo "Exit to the command line by pressing CTRL+C"
             echo "" 
             dialog \
-            --title "timestamp            cj amount/satoshi  my input count  my input value/satoshi  cjfee/satoshi  earned/satoshi  confirm time/min  notes"  \
-            --prgbox "column $HOME/joinmarket-clientserver/scripts/logs/yigen-statement.csv -t -s ","" 20 140
+            --title "Monitoring the Yield Generator"  \
+            --prgbox "tail -f yg-privacyenhanced.log" 20 140
             ./menu.sh
             ;;
         MONITOR)
             # TODO check if active with ?systemctl
             dialog \
+            --title "Monitoring the Yield Generator"  \
+            --prgbox "tail -f yg-privacyenhanced.log" 20 140
+            ./menu.sh
+            ;;            
+        YG_LIST)
+            dialog \
             --title "timestamp            cj amount/satoshi  my input count  my input value/satoshi  cjfee/satoshi  earned/satoshi  confirm time/min  notes"  \
             --prgbox "column $HOME/joinmarket-clientserver/scripts/logs/yigen-statement.csv -t -s ","" 20 140
             ./menu.sh
-            ;;            
+            ;;
         HISTORY)
             ;;
         OBWATCH)
@@ -98,8 +105,8 @@ case $CHOICE in
             ;;
         YG_CONF)
             dialog \
-            --title "Edit joinmarket.cfg" \
-            --editbox  /home/joinin/joinmarket-clientserver/scripts/yg-privacyenhanced.py 200 200 2>_temp
+            --title "Editing the yg-privacyenhanced.py" \
+            --editbox  "/home/joinin/joinmarket-clientserver/scripts/yg-privacyenhanced.py" 200 200 2>_temp
             cat _temp > /home/joinin/joinmarket-clientserver/scripts/yg-privacyenhanced.py
             ./menu.sh            
             ;;

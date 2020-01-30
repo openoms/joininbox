@@ -65,26 +65,13 @@ https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authe
 * Continue work as the `root` user.
 * Download and run the build script:  
 ```bash 
-$ wget https://raw.githubusercontent.com/openoms/joininbox/master/build_joininbox.sh && sudo bash build_joininbox.sh
+$ wget https://raw.githubusercontent.com/openoms/joininbox/master/build_joininbox.sh && sudo bash build_joininbox.sh --with-tor
 ```
 
----
-
-### Log in through SSH using a hardware wallet
-
-See the official pages for:
-* [Trezor](https://wiki.trezor.io/Apps:SSH_agent)
-* [Ledger](https://support.ledger.com/hc/en-us/articles/115005200649)
-
-Linux client for [TREZOR One](https://trezor.io/), [TREZOR Model T](https://trezor.io/), [Keepkey](https://www.keepkey.com/), and [Ledger Nano S](https://www.ledgerwallet.com/products/ledger-nano-s):
-* [github.com/romanz/trezor-agent](https://github.com/romanz/trezor-agent/blob/master/doc/README-SSH.md)
-
-Windows client for Trezor and Keepkey:
-* <https://github.com/martin-lizner/trezor-ssh-agent>
 ---
 
 ## More info:
 
 * How to [prepare a remote node to accept the JoinMarket connection](prepare_remote_node.md)
 * Manual instructions on how to [build the JoininBox](build_joininbox.md)
-* [Frequently Asked Questions](FAQ.md)
+* [Frequently Asked Questions and notes](FAQ.md)

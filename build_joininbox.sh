@@ -108,7 +108,7 @@ apt update
 ### Hardening
 echo "*** HARDENING ***"
 # install packages
-apt install -y git virtualenv fail2ban ufw torsocks
+apt install -y git virtualenv fail2ban ufw
 # autostart fail2ban
 systemctl enable fail2ban
 
@@ -132,6 +132,7 @@ ufw status
 
 # make folder for authorized keys 
 sudo -u joinin mkdir -p ~/.ssh
+sudo chmod -R 700 /home/joinin/.ssh
 
 # install a command-line fuzzy finder (https://github.com/junegunn/fzf)
 sudo apt -y install fzf

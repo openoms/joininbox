@@ -38,7 +38,7 @@ conf=$(tempfile 2>/dev/null)
 # trap it
 trap "rm -f $conf" 0 1 2 5 15
 dialog \
---title "Edit joinmarket.cfg" \
+--title "Editing the joinmarket.cfg" \
 --editbox "/home/joinin/joinmarket-clientserver/scripts/joinmarket.cfg" 200 200 2> $conf
 # make decison
 pressed=$?
@@ -49,9 +49,9 @@ case $pressed in
   1)
     shred $conf
     echo "Cancelled"
-    exit 1;;
+    exit 0;;
   255)
     shred $conf
     [ -s $conf ] &&  cat $conf || echo "ESC pressed."
-    exit 1;;
+    exit 0;;
 esac
