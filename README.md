@@ -75,3 +75,13 @@ $ wget https://raw.githubusercontent.com/openoms/joininbox/master/build_joininbo
 * How to [prepare a remote node to accept the JoinMarket connection](prepare_remote_node.md)
 * Manual instructions on how to [build the JoininBox](build_joininbox.md)
 * [Frequently Asked Questions and notes](FAQ.md)
+* [JoinMarket on the RaspiBlitz guide](https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/README.md)
+* [Connect JoinMarket running on a Linux desktop to a remote node](https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/joinmarket_desktop_to_blitz.md)
+
+## Forums:
+
+Keybase: https://keybase.io/team/raspiblitz#joinmarket  
+Telegram: https://t.me/joinmarketorg  
+IRC: #joinmarket on Freenode  
+Reddit: https://www.reddit.com/r/joinmarket/  
+

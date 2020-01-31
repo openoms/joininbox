@@ -141,14 +141,15 @@ sudo bash -c "echo 'source /usr/share/doc/fzf/examples/key-bindings.bash' >> /ho
 # install tmux
 sudo apt -y install tmux
 
+# hold off autostart for now
 # bash autostart for joinin
-sudo bash -c "echo '# shortcut commands' >> /home/joinin/.bashrc"
-sudo bash -c "echo 'source /home/joinin/_commands.sh' >> /home/joinin/.bashrc"
-sudo bash -c "echo '# automatically start main menu for joinin unless' >> /home/joinin/.bashrc"
-sudo bash -c "echo '# when running in a tmux session' >> /home/joinin/.bashrc"
-sudo bash -c "echo 'if [ -z \"\$TMUX\" ]; then' >> /home/joinin/.bashrc"
-sudo bash -c "echo '  ./menu.sh' >> /home/joinin/.bashrc"
-sudo bash -c "echo 'fi' >> /home/joinin/.bashrc"
+#sudo bash -c "echo '# shortcut commands' >> /home/joinin/.bashrc"
+#sudo bash -c "echo 'source /home/joinin/_commands.sh' >> /home/joinin/.bashrc"
+#sudo bash -c "echo '# automatically start main menu for joinin unless' >> /home/joinin/.bashrc"
+#sudo bash -c "echo '# when running in a tmux session' >> /home/joinin/.bashrc"
+#sudo bash -c "echo 'if [ -z \"\$TMUX\" ]; then' >> /home/joinin/.bashrc"
+#sudo bash -c "echo '  ./menu.sh' >> /home/joinin/.bashrc"
+#sudo bash -c "echo 'fi' >> /home/joinin/.bashrc"
 
 echo "*** READY ***"
 echo ""
