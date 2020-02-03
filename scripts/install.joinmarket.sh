@@ -16,9 +16,9 @@ fi
 # generate joinmarket.cfg
 if [ ! -f "/home/joinin/joinmarket-clientserver/scripts/joinmarket.cfg" ] ; then
     echo "Generating the joinmarket.cfg"
-    udo -u joinin . /home/joinin/joinmarket-clientserver/jmvenv/bin/activate &&\
+    . /home/joinin/joinmarket-clientserver/jmvenv/bin/activate &&\
     cd /home/joinin/joinmarket-clientserver/scripts/
-    sudo -u joinin python wallet-tool.py generate
+    python wallet-tool.py generate
 else
     echo "the joinmarket.cfg is already present"
     echo ""
