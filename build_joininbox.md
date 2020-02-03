@@ -39,81 +39,88 @@ https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authe
  Keep pressing [ENTER] to use the default user information.
  
 ### Preparations
+* Configure sudo without password for the joinin user
+    ```bash
+    adduser joinin sudo
+    # https://www.tecmint.com/run-sudo-command-without-password-linux/
+    echo 'joinin ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
+    ```
+* Install the dependencies and Tor
+    ```bash
+    # continue to work as root
+    sudo su
 
-```bash
-# continue to work as root
-sudo su
+    # add Tor signing key and repo
+    curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import
+    gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -
+    echo "deb https://deb.torproject.org/torproject.org buster main" |tee -a /etc/apt/sources.list
+    echo "deb-src https://deb.torproject.org/torproject.org buster main" | tee -a /etc/apt/sources.list
 
-# add Tor signing key and repo
-curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import
-gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -
-echo "deb https://deb.torproject.org/torproject.org buster main" |tee -a /etc/apt/sources.list
-echo "deb-src https://deb.torproject.org/torproject.org buster main" | tee -a /etc/apt/sources.list
+    # update and upgrade packages
+    apt update
+    apt upgrade -y
 
-# update and upgrade packages
-apt update
-apt upgrade -y
+    # install packages
+    apt install -y git virtualenv fail2ban ufw tor torsocks
 
-# install packages
-apt install -y git virtualenv tor fail2ban ufw torsocks
-
-```
+    ```
 
 ### Hardening
+* Set up fail2ban and the firewall (UFW)
+    ```bash
+    systemctl enable fail2ban
 
-```bash
-systemctl enable fail2ban
+    # set up the firewall
+    ufw default deny incoming
+    ufw default allow outgoing
+    ufw allow 22    comment 'allow SSH'
 
-# set up the firewall
-ufw default deny incoming
-ufw default allow outgoing
-ufw allow 22    comment 'allow SSH'
+    # due to the old kernel iptables needs to be configured and restart to set up
+    # https://superuser.com/questions/1480986/iptables-1-8-2-failed-to-initialize-nft-protocol-not-supported
+    update-alternatives --set iptables /usr/sbin/iptables-legacy
+    update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
 
-# due to the old kernel iptables needs to be configured and restart to set up
-# https://superuser.com/questions/1480986/iptables-1-8-2-failed-to-initialize-nft-protocol-not-supported
-update-alternatives --set iptables /usr/sbin/iptables-legacy
-update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+    ufw enable
+    systemctl enable ufw
+    ufw status
+    ```
 
-ufw enable
-systemctl enable ufw
-ufw status
-```
+* Correct output:
+    ```
+    Status: active
 
-Correct output:
-```
-Status: active
-
-To                         Action      From
---                         ------      ----
-22                         ALLOW       Anywhere                   # allow SSH
-22 (v6)                    ALLOW       Anywhere (v6)              # allow SSH
-```
+    To                         Action      From
+    --                         ------      ----
+    22                         ALLOW       Anywhere                   # allow SSH
+    22 (v6)                    ALLOW       Anywhere (v6)              # allow SSH
+    ```
 
 
-Setting up the ssh keys and removing the password option is described in the [RaspiBolt Guide](https://stadicus.github.io/RaspiBolt/raspibolt_21_security.html#login-with-ssh-keys)
-```bash
-# make ssh keystore fro the "joinin" user
-sudo -u joinin mkdir -p ~/.ssh
-```
-Open a separate terminal on the desktop to copy the local ssh pubkey (fill in the JOININBOX_IP):
-```bash
-cat ~/.ssh/id_rsa.pub | ssh joinin@JOININBOX_IP 'cat >> ~/.ssh/authorized_keys && chmod -R 700 ~/.ssh/'
-```
+* Setting up the ssh keys and removing the password login option is described in the [RaspiBolt Guide](https://stadicus.github.io/RaspiBolt/raspibolt_21_security.html#login-with-ssh-keys)
+    ```bash
+    # make ssh keystore fro the "joinin" user
+    sudo -u joinin mkdir -p ~/.ssh
+    ```
+* Open a separate terminal on the desktop to copy the local ssh pubkey (fill in the JOININBOX_IP):
+    ```bash
+    cat ~/.ssh/id_rsa.pub | ssh joinin@JOININBOX_IP 'cat >> ~/.ssh/authorized_keys && chmod -R 700 ~/.ssh/'
+    ```
 
-Can consider storing the ssh keys for login on a [Trezor](https://wiki.trezor.io/Apps:SSH_agent) or a [Ledger (experimental)](https://support.ledger.com/hc/en-us/articles/115005200649) hardware wallet.
+* Can consider storing the ssh keys for login on a [Trezor/Ledger or Keepkey hardware wallet](FAQ.md#log-in-through-ssh-using-a-hardware-wallet).
 
 ### Install JoinMarket
-```bash
-# leave root and switch to the "joinin" user
-su - joinin
+* install with the `joinin` user
+    ```bash
+    # leave root and switch to the "joinin" user
+    su - joinin
 
-# install JoinMarket from the source code
-git clone https://github.com/JoinMarket-Org/joinmarket-clientserver.git
-cd joinmarket-clientserver
-# latest release: https://github.com/JoinMarket-Orgjoinmarket-clientserver/releases
-git reset --hard v0.6.1
-./install.sh --without-qt
-```
+    # install JoinMarket from the source code
+    git clone https://github.com/JoinMarket-Org/joinmarket-clientserver.git
+    cd joinmarket-clientserver
+    # latest release: https://github.com/JoinMarket-Orgjoinmarket-clientserver/releases
+    git reset --hard v0.6.1
+    ./install.sh --without-qt
+    ```
 ### Set up JoinMarket
 * activate and start to generate config
     ```bash
@@ -166,6 +173,7 @@ git reset --hard v0.6.1
     ```
 
 ### Clone this repo and copy the scripts
+ For testing or contributing only for now
 ```
 cd
 git clone https://github.com/openoms/joininbox.git
@@ -175,12 +183,7 @@ cp ./joininbox/scripts/* ~/
 
 * Try the JoininBox menu 
 ```bash
-$ cd joinmarket-clientserver/scripts
-$ ./mainmenu.sh
-```
-* scriptstarter usage example
-```bash
-(jmvenv) $ python scriptstarter.py wallet-tool WALLET
+$ ./menu.sh
 ```
 
 ## Resources:

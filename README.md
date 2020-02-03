@@ -1,30 +1,4 @@
-## JoininBox
-JoinMarket terminal GUI with dialog
-
-**Work In Progress** - suggestions and contributions are welcome
-
-<p align="left">
-  <img width="400" src="/images/mainmenu.png">
-  <img width="400" src="/images/darkmenu.png">
-</p>
-
-### Rough plan
-
-- [x] INFO "Wallet information" 
-- [ ] PAY "Pay with a coinjoin" 
-- [ ] TUMBLER "Run the Tumbler" 
-- [x] YG "Run the Yield Generator" 
-- [x] HISTORY "Show report" 
-- [ ] OBWATCH "Show the offer book" 
-- [ ] EMPTY "Empty a mixdepth" 
-- [x] CONF_YG "Configure the Yield Generator" 
-- [x] STOP "Stop the Yield Generator" 
-- [ ] GEN "Generate a wallet" 
-- [ ] RESTORE "Restore a wallet" 
-- [x] INSTALL "Install an configure JoinMarket" 
-- [x] UP_JIB "Update JoininBox"
-
-## Installation - Build a dedicated JoinMarket Box remotely connected to a full node
+## JoininBox - Build a dedicated JoinMarket Box remotely connected to a full node
 
 * Tested on
   * Hardkernel Odroid XU4 with Armbian (more boards to come - pending testing)
@@ -63,7 +37,9 @@ https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authe
  
 ### Set up JoininBox
 * Continue work as the `root` user.
-* Download and run the build script:  
+* Continue with the [manual building steps](build_joininbox.md)  
+or
+* download and run the build script:  
 ```bash 
 $ wget https://raw.githubusercontent.com/openoms/joininbox/master/build_joininbox.sh && sudo bash build_joininbox.sh --with-tor
 ```
@@ -85,3 +61,29 @@ $ wget https://raw.githubusercontent.com/openoms/joininbox/master/build_joininbo
 * IRC: #joinmarket on Freenode  
 * Reddit: https://www.reddit.com/r/joinmarket/  
 
+--- 
+
+There is a terminal based GUI in the works.
+
+**Work In Progress** - suggestions and contributions are welcome
+
+<p align="left">
+  <img width="400" src="/images/mainmenu.png">
+  <img width="400" src="/images/darkmenu.png">
+</p>
+
+### Rough plan
+
+- [x] INFO "Wallet information" 
+- [ ] PAY "Pay with a coinjoin" 
+- [ ] TUMBLER "Run the Tumbler" 
+- [x] YG "Run the Yield Generator" 
+- [x] HISTORY "Show report" 
+- [ ] OBWATCH "Show the offer book" 
+- [ ] EMPTY "Empty a mixdepth" 
+- [x] CONF_YG "Configure the Yield Generator" 
+- [x] STOP "Stop the Yield Generator" 
+- [ ] GEN "Generate a wallet" 
+- [ ] RESTORE "Restore a wallet" 
+- [x] INSTALL "Install an configure JoinMarket" 
+- [x] UP_JIB "Update JoininBox"
