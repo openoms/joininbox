@@ -1,6 +1,6 @@
 # Prepare a remote node to accept the JoinMarket connection
 JoinMarket (running in JoininBox) needs to connect to Bitcoin Core.  
-A pruned node with the wallet enabled will do and txindex is not required.  
+A pruned node with the **wallet enabled** will do and txindex is not required.  
 In this guide shows how to prepare a RaspiBlitz to accept this connection.
 
 ## LAN connection
@@ -49,6 +49,9 @@ Make sure that Tor is ative in the SERVICES menu.
 
 4) #### Take note of the Tor Hidden Service address:  
     `$ sudo cat /mnt/hdd/tor/bitcoinrpc/hostname`
+
+5) #### Remember to use `torify` with the python scripts when connecting remotely through Tor. Example:
+    `torify wallet-tool.py wallet.jmdat`
 
 ## Resources:
 

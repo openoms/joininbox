@@ -48,5 +48,24 @@ https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2019-09-30/
 * Windows client for Trezor and Keepkey:
     * <https://github.com/martin-lizner/trezor-ssh-agent>
 
-* paste the generated SHH pubkey to:  
+* paste the generated SSH pubkey to:  
 `nano /home/joinin/.ssh/authorized_keys`
+
+### Activate the bitcoind wallet on a RaspiBlitz
+* Edit the bitcoin.conf:  
+`$ sudo nano /mnt/hdd/bitcoin/bitcoin.conf`
+    
+* Change the disablewallet option to 0:
+    ```
+    disablewallet=0
+    ```
+* Restart bitcoind:  
+`$ sudo systemctl restart bitcoind`
+
+### Error when connecting to a full node remotely through Tor
+* Getting the error:
+    ```
+    socket.gaierror: [Errno -2] Name or service not known
+    ```
+* Remember to use `torify` with the python scripts when connecting remotely through Tor. Example:  
+    `torify wallet-tool.py wallet.jmdat`

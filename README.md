@@ -80,8 +80,8 @@ $ wget https://raw.githubusercontent.com/openoms/joininbox/master/build_joininbo
 
 ## Forums:
 
-Keybase: https://keybase.io/team/raspiblitz#joinmarket  
-Telegram: https://t.me/joinmarketorg  
-IRC: #joinmarket on Freenode  
-Reddit: https://www.reddit.com/r/joinmarket/  
+* Keybase: https://keybase.io/team/raspiblitz#joinmarket  
+* Telegram: https://t.me/joinmarketorg  
+* IRC: #joinmarket on Freenode  
+* Reddit: https://www.reddit.com/r/joinmarket/  
 
