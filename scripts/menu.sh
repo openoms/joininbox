@@ -26,7 +26,7 @@ OPTIONS+=(\
   #PAY "Pay to an address using coinjoin" \
   #TUMBLER "Run the Tumbler to mix quickly" \
   YG "Run the Yield Generator" \
-  MONITOR "Monitor the Yield Generator" \
+  #MONITOR "Monitor the Yield Generator" \
   YG_LIST "List the past YG activity"
   "" ""
   #HISTORY "Show the past transactions" \
@@ -79,9 +79,9 @@ case $CHOICE in
             echo ""
             echo "Exit to the command line by pressing CTRL+C"
             echo "" 
-            dialog \
-            --title "Monitoring the Yield Generator"  \
-            --prgbox "tail -f yg-privacyenhanced.log" 20 140
+#            dialog \
+#            --title "Monitoring the Yield Generator"  \
+#            --prgbox "tail -f yg-privacyenhanced.log" 20 140
             ./menu.sh
             ;;
         MONITOR)
