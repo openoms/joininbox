@@ -43,27 +43,28 @@ if [ ${#newPassword} -eq 0 ]; then
   
   # check if passwords match
   if [ "${password1}" != "${password2}" ]; then
-    dialog --backtitle "JoinInBox - Password Change" --msgbox "FAIL -> Passwords don't match\nPlease try again ..." 6 56
+    DIALOGRC=.dialogrc.onerror dialog --backtitle "JoinInBox - Password Change" --msgbox "FAIL -> Passwords don't match\nPlease try again ..." 6 56
     sudo /home/joinin/setpassword.sh
     exit 1
   fi
   
   # password zero
   if [ ${#password1} -eq 0 ]; then
-    dialog --backtitle "JoinInBox - Password Change" --msgbox "FAIL -> Password cannot be empty\nPlease try again ..." 6 56
+    DIALOGRC=.dialogrc.onerror dialog --backtitle "JoinInBox - Password Change" --msgbox "FAIL -> Password cannot be empty\nPlease try again ..." 6 56
     sudo /home/joinin/setpassword.sh
     exit 1
   fi
   
   # password longer than 8
   if [ ${#password1} -lt 8 ]; then
-    dialog --backtitle "JoinInBox - Password Change" --msgbox "FAIL -> Password length under 8\nPlease try again ..." 6 56
+    DIALOGRC=.dialogrc.onerror dialog --backtitle "JoinInBox - Password Change" --msgbox "FAIL -> Password length under 8\nPlease try again ..." 6 56
     sudo /home/joinin/setpassword.sh
     exit 1
   fi
   
   # use entered password now as parameter
-  newPassword="${password1}"
+  newPassword=$password1
+
 fi
 
 # change user passwords

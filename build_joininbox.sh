@@ -50,12 +50,10 @@ sudo -u joinin cp ./joininbox/scripts/* /home/joinin/
 sudo -u joinin cp ./joininbox/scripts/.* /home/joinin/ 2>/dev/null
 
 chmod +x /home/joinin/*.sh
-chmod +x /home/joinin/*.py
 
 echo "*** Setting the password for the users 'joinin' and 'root' ***"
 apt install dialog
 /home/joinin/setpassword.sh
-echo "joinin:$PASSWORD" | sudo chpasswd
 adduser joinin sudo
 # chsh joinin -s /bin/bash
 # configure sudo for usage without password entry for the joinin user
@@ -143,17 +141,17 @@ sudo apt -y install tmux
 
 # hold off autostart for now
 # bash autostart for joinin
-#sudo bash -c "echo '# shortcut commands' >> /home/joinin/.bashrc"
-#sudo bash -c "echo 'source /home/joinin/_commands.sh' >> /home/joinin/.bashrc"
-#sudo bash -c "echo '# automatically start main menu for joinin unless' >> /home/joinin/.bashrc"
-#sudo bash -c "echo '# when running in a tmux session' >> /home/joinin/.bashrc"
-#sudo bash -c "echo 'if [ -z \"\$TMUX\" ]; then' >> /home/joinin/.bashrc"
-#sudo bash -c "echo '  ./menu.sh' >> /home/joinin/.bashrc"
-#sudo bash -c "echo 'fi' >> /home/joinin/.bashrc"
+sudo bash -c "echo '# shortcut commands' >> /home/joinin/.bashrc"
+sudo bash -c "echo 'source /home/joinin/_commands.sh' >> /home/joinin/.bashrc"
+sudo bash -c "echo '# automatically start main menu for joinin unless' >> /home/joinin/.bashrc"
+sudo bash -c "echo '# when running in a tmux session' >> /home/joinin/.bashrc"
+sudo bash -c "echo 'if [ -z \"\$TMUX\" ]; then' >> /home/joinin/.bashrc"
+sudo bash -c "echo '  ./menu.sh' >> /home/joinin/.bashrc"
+sudo bash -c "echo 'fi' >> /home/joinin/.bashrc"
 
 echo "*** READY ***"
 echo ""
 echo "Look through the output and press ENTER to proceed to the menu"
 echo "Press CTRL + C to abort"
 read key
-su - joinin
+sudo su - joinin
