@@ -79,7 +79,7 @@ There is a terminal based GUI in the works.
 - [ ] TUMBLER "Run the Tumbler" 
 - [x] YG "Run the Yield Generator" 
 - [x] HISTORY "Show report" 
-- [ ] OBWATCH "Show the offer book" 
+- [x] OBWATCH "Show the offer book" 
 - [ ] EMPTY "Empty a mixdepth" 
 - [x] CONF_YG "Configure the Yield Generator" 
 - [x] STOP "Stop the Yield Generator" 

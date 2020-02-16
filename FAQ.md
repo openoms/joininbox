@@ -69,3 +69,6 @@ https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2019-09-30/
     ```
 * Remember to use `torify` with the python scripts when connecting remotely through Tor. Example:  
     `torify wallet-tool.py wallet.jmdat`
+
+### Nuke the joinin user and the /home/joinin folder
+`sudo userdel -r joinin`

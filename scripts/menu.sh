@@ -30,7 +30,7 @@ OPTIONS+=(\
   YG_LIST "List the past YG activity"
   "" ""
   #HISTORY "Show the past transactions" \
-  #OBWATCH "Show the offer book" \
+  OBWATCH "Watch the offer book locally" \
   #EMPTY "Empty a mixdepth" \
   "" ""
   YG_CONF "Configure the Yield Generator" \
@@ -63,7 +63,7 @@ case $CHOICE in
             echo ""
             echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
             . /home/joinin/joinmarket-clientserver/jmvenv/bin/activate
-            python $HOME/scriptstarter.py wallet-tool $wallet
+            python /home/joinin/scriptstarter.py wallet-tool $wallet
             ./menu.sh
             ;;
         PAY)
@@ -100,6 +100,18 @@ case $CHOICE in
         HISTORY)
             ;;
         OBWATCH)
+            #TODO show hidden service only if already running
+            ./start.ob-watcher.sh
+            errorOnInstall=$?
+            if [ ${errorOnInstall} -eq 0 ]; then
+              TOR_ADDRESS=$(sudo cat /mnt/hdd/tor/ob-watcher/hostname)
+              dialog --title "Started the ob-watcher service" \
+                --msgbox "\nVisit the address in the Tor Browser:\n$TOR_ADDRESS" 8 56
+            else 
+              DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
+                --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
+            fi
+            ./menu.sh
             ;;
         EMPTY)
             ;;
