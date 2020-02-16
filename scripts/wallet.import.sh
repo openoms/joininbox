@@ -1,19 +1,16 @@
 #!/bin/bash
 
-# get local ip
-localip=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1 -d'/')
-echo $localip
 # Basic Options
-OPTIONS=(UNIX "MacOS or Linux" \
-        WINDOWS "Windows"
+OPTIONS=(LAN "Computers on the same network" \
+        TOR "Copy from a Tor enabled remote node"
         )
 
-CHOICE=$(dialog --clear --title "Which System is running on the other computer?" --menu "" 11 60 6 "${OPTIONS[@]}" 2>&1 >/dev/tty)
+CHOICE=$(dialog --clear --title "Would you like to copy over LAN or Tor?" --menu "" 11 60 6 "${OPTIONS[@]}" 2>&1 >/dev/tty)
 
 clear
 case $CHOICE in
-        UNIX) echo "Linus";;
-        WINDOWS) echo "Bill";;
+        LAN) echo "Copying over LAN";;
+        TOR) echo "Copying over Tor";;
         *) exit 1;;
 esac
 
@@ -36,6 +33,15 @@ if [ ! -f "/home/joinin/joinmarket-clientserver/jmvenv/bin/activate" ]; then
   fi
 fi
 
+if [ "${CHOICE}" = "LAN" ]; then
+  # get local ip
+  localip=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1 -d'/')
+elif [ "${CHOICE}" = "TOR" ]; then
+  # set up a Hidden Service for ssh
+  ./install.hiddenservice.sh ssh 22 22
+  TOR_ADDRESS=$(sudo cat /var/lib/tor/$service/hostname)
+fi
+
 echo 
 clear
 echo "************************************************************************************"
@@ -51,14 +57,14 @@ echo "Open a terminal on the source computer and change into the directory that 
 echo "wallets. You should see files called .jmdat'".
 echo ""
 echo "COPY, PASTE & EXECUTE the following command on the wallet source computer:"
-if [ "${CHOICE}" = "WINDOWS" ]; then
+if [ "${CHOICE}" = "LAN" ]; then
   echo "scp ./*.jmdat joinin@${localip}:/home/joinin/joinmarket-clientserver/scripts/wallets"
-else
-  echo "scp ./*.jmdat joinin@${localip}:/home/joinin/joinmarket-clientserver/scripts/wallets"
+elif [ "${CHOICE}" = "TOR" ]; then
+  echo "scp ./*.jmdat joinin@${TOR_ADDRESS}:/home/joinin/joinmarket-clientserver/scripts/wallets"
 fi
 echo "" 
 echo "This command will ask for your SSH PASSWORD of your JoininBox."
 echo "************************************************************************************"
-echo "PRESS ENTER if transfers is done OR if you want to choose another option."
+echo "PRESS ENTER if the transfer is done OR if you want to choose another option."
 sleep 2
 read key

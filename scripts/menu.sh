@@ -104,9 +104,9 @@ case $CHOICE in
             ./start.ob-watcher.sh
             errorOnInstall=$?
             if [ ${errorOnInstall} -eq 0 ]; then
-              TOR_ADDRESS=$(sudo cat /mnt/hdd/tor/ob-watcher/hostname)
+              TOR_ADDRESS=$(sudo cat /var/lib/tor/ob-watcher/hostname)
               dialog --title "Started the ob-watcher service" \
-                --msgbox "\nVisit the address in the Tor Browser:\n$TOR_ADDRESS" 8 56
+                --msgbox "\nVisit the address in the Tor Browser:\nhttps://$TOR_ADDRESS" 8 74
             else 
               DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
                 --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56

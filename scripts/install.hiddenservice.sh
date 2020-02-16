@@ -40,26 +40,28 @@ if [ ${#toPort2} -gt 0 ]; then
   fi
 fi
 
-if [ "${runBehindTor}" = "on" ]; then
+#if [ "${runBehindTor}" = "on" ]; then
   #check if the service is already present
   isHiddenService=$(sudo cat /etc/tor/torrc 2>/dev/null | grep -c $service)
   if [ ${isHiddenService} -eq 0 ]; then
     #check if the port is already forwarded
     alreadyThere=$(sudo cat /etc/tor/torrc 2>/dev/null | grep -c 127.0.0.1:$fromPort)
-    if [ ${alreadyThere} -gt 0 ]; then
+    line=$(sudo cat /etc/tor/torrc 2>/dev/null | grep 127.0.0.1:$fromPort)
+    if [ ${alreadyThere} -gt 0 ] && [[ $line != "#"* ]]; then
       echo "The port $fromPort is already forwarded. Check /etc/tor/torrc for the details."
       exit 1
     fi
     echo "
 # Hidden Service for $service
-HiddenServiceDir /mnt/hdd/tor/$service
+HiddenServiceDir /var/lib/tor/$service
 HiddenServiceVersion 3
 HiddenServicePort $toPort 127.0.0.1:$fromPort" | sudo tee -a /etc/tor/torrc
 
     # check and insert second port pair
     if [ ${#toPort2} -gt 0 ]; then
       alreadyThere=$(sudo cat /etc/tor/torrc 2>/dev/null | grep -c 127.0.0.1:$fromPort2)
-      if [ ${alreadyThere} -gt 0 ]; then
+      line=$(sudo cat /etc/tor/torrc 2>/dev/null | grep 127.0.0.1:$fromPort2)
+      if [ ${alreadyThere} -gt 0 ] && [[ $line != "#"* ]]; then
         echo "The port $fromPort2 is already forwarded. Check the /etc/tor/torrc for the details."
       else
         echo "HiddenServicePort $toPort2 127.0.0.1:$fromPort2" | sudo tee -a /etc/tor/torrc
@@ -74,11 +76,11 @@ HiddenServicePort $toPort 127.0.0.1:$fromPort" | sudo tee -a /etc/tor/torrc
     echo "The Hidden Service for $service is already installed."
   fi
   # show the Hidden Service address
-  TOR_ADDRESS=$(sudo cat /mnt/hdd/tor/$service/hostname)
+  TOR_ADDRESS=$(sudo cat /var/lib/tor/$service/hostname)
   if [ -z "$TOR_ADDRESS" ]; then
     echo "Waiting for the Hidden Service"
     sleep 10
-    TOR_ADDRESS=$(sudo cat /mnt/hdd/tor/$service/hostname)
+    TOR_ADDRESS=$(sudo cat /var/lib/tor/$service/hostname)
     if [ -z "$TOR_ADDRESS" ]; then
       echo " FAIL - The Hidden Service address could not be found - Tor error?"
       exit 1
@@ -97,7 +99,7 @@ HiddenServicePort $toPort 127.0.0.1:$fromPort" | sudo tee -a /etc/tor/torrc
       echo "The port $fromPort2 is forwarded for another Hidden Service. Check the /etc/tor/torrc for the details."
     fi
   fi
-else
-  echo "Tor is not active"
-  exit 1
-fi
+#else
+#  echo "Tor is not active"
+#  exit 1
+#fi

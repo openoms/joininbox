@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #install dependency
+. /home/joinin/joinmarket-clientserver/jmvenv/bin/activate
 pip install matplotlib
 
 SCRIPT="ob-watcher"

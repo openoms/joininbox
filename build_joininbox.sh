@@ -98,6 +98,13 @@ if [ "$1" = "--with-tor" ] || [ "$1" = "tor" ]; then
   echo "*** INSTALL TOR ***"
   apt update
   apt install tor torsocks
+  echo "
+DataDirectory /var/lib/tor
+ControlPort 9051
+CookieAuthentication 1" | sudo tee -a /etc/tor/torrc
+  echo "
+AllowOutboundLocalhost 1" | sudo tee -a /etc/tor/torsocks.conf
+
 fi
 
 # update and upgrade packages

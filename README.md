@@ -1,7 +1,9 @@
 ## JoininBox - Build a dedicated JoinMarket Box remotely connected to a full node
 
-* Tested on
+* Testing on
   * Hardkernel Odroid XU4 with Armbian (more boards to come - pending testing)
+  * Ubuntu 18.04 desktop
+
   * Connected to a RaspiBlitz 1.4RC3 (any Bitcoin Core node can work, including previous RaspiBlitz versions)
 
 ### Set up Armbian on the Hardkernel Odroid XU4
