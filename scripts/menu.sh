@@ -56,14 +56,17 @@ CHOICE=$(dialog --clear \
 case $CHOICE in
 
         INFO)
-            ./getpw.sh
-            source joinin.conf
+            ./get.password.sh
+            #source joinin.conf
             clear
             echo "Decrypting the wallet $wallet.jmdat . . ."
             echo ""
             echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
             . /home/joinin/joinmarket-clientserver/jmvenv/bin/activate
-            python /home/joinin/scriptstarter.py wallet-tool $wallet
+            python /home/joinin/start.script.py wallet-tool $wallet
+            dialog \
+            --title "Output of wallet-tool.py"  \
+            --prgbox "tail -f wallet-tool.log" 20 140
             ./menu.sh
             ;;
         PAY)
@@ -71,9 +74,9 @@ case $CHOICE in
         TUMBLER)
             ;;
         YG)
-            ./getpw.sh
+            ./get.password.sh
             source joinin.conf
-            ./servicemaker.sh yg-privacyenhanced $wallet
+            ./start.service.sh yg-privacyenhanced $wallet
             echo "Starting the Yield Generator in the background.."
             sleep 5
             echo ""
@@ -129,7 +132,7 @@ case $CHOICE in
         GEN)
             ;;
         IMPORT) 
-            ./wallet.import.sh
+            ./import.wallet.sh
             ./menu.sh
             ;;
         RESTORE)

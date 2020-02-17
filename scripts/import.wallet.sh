@@ -39,7 +39,7 @@ if [ "${CHOICE}" = "LAN" ]; then
 elif [ "${CHOICE}" = "TOR" ]; then
   # set up a Hidden Service for ssh
   ./install.hiddenservice.sh ssh 22 22
-  TOR_ADDRESS=$(sudo cat /var/lib/tor/$service/hostname)
+  TOR_ADDRESS=$(sudo cat /var/lib/tor/ssh/hostname)
 fi
 
 echo 
@@ -50,17 +50,22 @@ echo "**************************************************************************
 echo ""
 echo "You can use the wallets from another JoinMarket instance"
 echo ""
-echo "Both computers (your JoininBox and the other computer with the wallets) need"
-echo "to be connected to the same local network."
+if [ "${CHOICE}" = "LAN" ]; then
+  echo "Both computers (your JoininBox and the other computer with the wallets) need"
+  echo "to be connected to the same local network."
+elif [ "${CHOICE}" = "TOR" ]; then
+  echo "The remote node needs to have Tor activated to be able to use torify"
+fi 
 echo ""
 echo "Open a terminal on the source computer and change into the directory that contains the"
-echo "wallets. You should see files called .jmdat'".
+echo "wallets. Usually: ~/joinmarket-clientserver/scripts/wallets."
+echo "You should see files called '.jmdat'"
 echo ""
-echo "COPY, PASTE & EXECUTE the following command on the wallet source computer:"
+echo "COPY, PASTE & EXECUTE the following command in the terminal of the source computer:"
 if [ "${CHOICE}" = "LAN" ]; then
   echo "scp ./*.jmdat joinin@${localip}:/home/joinin/joinmarket-clientserver/scripts/wallets"
 elif [ "${CHOICE}" = "TOR" ]; then
-  echo "scp ./*.jmdat joinin@${TOR_ADDRESS}:/home/joinin/joinmarket-clientserver/scripts/wallets"
+  echo "torify scp ./*.jmdat joinin@${TOR_ADDRESS}:/home/joinin/joinmarket-clientserver/scripts/wallets"
 fi
 echo "" 
 echo "This command will ask for your SSH PASSWORD of your JoininBox."

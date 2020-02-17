@@ -1,10 +1,10 @@
 #!/bin/bash
-# based on https://github.com/rootzoll/raspiblitz/blob/master/home.admin/config.scripts/blitz.setpassword.sh
+# based on https://github.com/rootzoll/raspiblitz/blob/master/home.admin/config.scripts/blitz.set.password.sh
 
 # command info
 if [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
  echo "script to set a passwords for the users 'joinin' and 'root'"
- echo "setpassword.sh [?newpassword] "
+ echo "set.password.sh [?newpassword] "
  echo "or just as a password enter dialog (result as file)"
  exit 1
 fi
@@ -44,21 +44,21 @@ if [ ${#newPassword} -eq 0 ]; then
   # check if passwords match
   if [ "${password1}" != "${password2}" ]; then
     DIALOGRC=.dialogrc.onerror dialog --backtitle "JoinInBox - Password Change" --msgbox "FAIL -> Passwords don't match\nPlease try again ..." 6 56
-    sudo /home/joinin/setpassword.sh
+    sudo /home/joinin/set.password.sh
     exit 1
   fi
   
   # password zero
   if [ ${#password1} -eq 0 ]; then
     DIALOGRC=.dialogrc.onerror dialog --backtitle "JoinInBox - Password Change" --msgbox "FAIL -> Password cannot be empty\nPlease try again ..." 6 56
-    sudo /home/joinin/setpassword.sh
+    sudo /home/joinin/set.password.sh
     exit 1
   fi
   
   # password longer than 8
   if [ ${#password1} -lt 8 ]; then
     DIALOGRC=.dialogrc.onerror dialog --backtitle "JoinInBox - Password Change" --msgbox "FAIL -> Password length under 8\nPlease try again ..." 6 56
-    sudo /home/joinin/setpassword.sh
+    sudo /home/joinin/set.password.sh
     exit 1
   fi
   

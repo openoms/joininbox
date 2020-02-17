@@ -53,7 +53,7 @@ chmod +x /home/joinin/*.sh
 
 echo "*** Setting the password for the users 'joinin' and 'root' ***"
 apt install dialog
-/home/joinin/setpassword.sh
+/home/joinin/set.password.sh
 adduser joinin sudo
 # chsh joinin -s /bin/bash
 # configure sudo for usage without password entry for the joinin user

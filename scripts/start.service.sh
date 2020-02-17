@@ -17,7 +17,7 @@ Description=$SCRIPT
 [Service]
 WorkingDirectory=/home/joinin/joinmarket-clientserver/scripts/
 ExecStart=/bin/sh -c '. /home/joinin/joinmarket-clientserver/jmvenv/bin/activate &&\
- python $HOME/scriptstarter.py $SCRIPT $WALLET'
+ python $HOME/start.script.py $SCRIPT $WALLET'
 User=joinin
 Group=joinin
 Type=simple
