@@ -118,7 +118,7 @@ https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authe
     git clone https://github.com/JoinMarket-Org/joinmarket-clientserver.git
     cd joinmarket-clientserver
     # latest release: https://github.com/JoinMarket-Orgjoinmarket-clientserver/releases
-    git reset --hard v0.6.1
+    git reset --hard v0.6.2
     ./install.sh --without-qt
     ```
 ### Set up JoinMarket
@@ -134,7 +134,7 @@ https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authe
     ```
 
 * Edit the joinmarket.cfg  
-    `$ nano ./scripts/joinmarket.cfg` 
+    `$ nano ~/.joinmarket/joinmarket.cfg` 
 
     Fill in the values in CAPITALs
 

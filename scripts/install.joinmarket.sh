@@ -14,7 +14,7 @@ else
 fi    
 
 # generate joinmarket.cfg
-if [ ! -f "/home/joinmarket/joinmarket-clientserver/scripts/joinmarket.cfg" ] ; then
+if [ ! -f "/home/joinmarket/.joinmarket/joinmarket.cfg" ] ; then
     echo "Generating the joinmarket.cfg"
     . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
     cd /home/joinmarket/joinmarket-clientserver/scripts/
@@ -24,7 +24,7 @@ else
     echo ""
 fi
 
-sudo chmod 600 /home/joinmarket/joinmarket-clientserver/scripts/joinmarket.cfg || exit 1
+sudo chmod 600 /home/joinmarket/.joinmarket/joinmarket.cfg || exit 1
 
 # TODO edit joinmarket.cfg if Tor is on
 
@@ -39,12 +39,12 @@ conf=$(tempfile 2>/dev/null)
 trap "rm -f $conf" 0 1 2 5 15
 dialog \
 --title "Editing the joinmarket.cfg" \
---editbox "/home/joinmarket/joinmarket-clientserver/scripts/joinmarket.cfg" 200 200 2> $conf
+--editbox "/home/joinmarket/.joinmarket/joinmarket.cfg" 200 200 2> $conf
 # make decison
 pressed=$?
 case $pressed in
   0)
-    cat $conf | sudo -u joinmarket tee /home/joinmarket/joinmarket-clientserver/scripts/joinmarket.cfg 1>/dev/null
+    cat $conf | sudo -u joinmarket tee /home/joinmarket/.joinmarket/joinmarket.cfg 1>/dev/null
     shred $conf;;
   1)
     shred $conf

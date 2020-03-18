@@ -10,7 +10,7 @@ fi
 ## exprimental
 #dialog --backtitle "Choose a wallet" \
 #       --title "Choose a wallet by starting to type " \
-#       --fselect "/home/joinmarket/joinmarket-clientserver/scripts/wallets/" 10 60 2>_temp
+#       --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2>_temp
 #
 #dialog --backtitle "Choose a wallet" \
 #       --title "Choose a wallet" \

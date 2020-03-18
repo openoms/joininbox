@@ -7,7 +7,7 @@ sudo systemctl stop $SCRIPT
 sudo systemctl disable $SCRIPT 2>/dev/null
 
 if [ $SCRIPT == "yg-privacyenhanced" ]; then 
-  rm -f ~/joinmarket-clientserver/scripts/wallets/$WALLET.jmdat.lock
+  rm -f ~/.joinmarket/wallets/$WALLET.jmdat.lock
 fi
 
 echo "

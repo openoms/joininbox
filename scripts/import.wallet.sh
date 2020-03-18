@@ -58,14 +58,14 @@ elif [ "${CHOICE}" = "TOR" ]; then
 fi 
 echo ""
 echo "Open a terminal on the source computer and change into the directory that contains the"
-echo "wallets. Usually: ~/joinmarket-clientserver/scripts/wallets."
+echo "wallets. Usually: ~/.joinmarket/wallets."
 echo "You should see files called '.jmdat'"
 echo ""
 echo "COPY, PASTE & EXECUTE the following command in the terminal of the source computer:"
 if [ "${CHOICE}" = "LAN" ]; then
-  echo "scp ./*.jmdat joinmarket@${localip}:/home/joinmarket/joinmarket-clientserver/scripts/wallets"
+  echo "scp ./*.jmdat joinmarket@${localip}:/home/joinmarket/.joinmarket/wallets"
 elif [ "${CHOICE}" = "TOR" ]; then
-  echo "torify scp ./*.jmdat joinmarket@${TOR_ADDRESS}:/home/joinmarket/joinmarket-clientserver/scripts/wallets"
+  echo "torify scp ./*.jmdat joinmarket@${TOR_ADDRESS}:/home/joinmarket/.joinmarket/wallets"
 fi
 echo "" 
 echo "This command will ask for your SSH PASSWORD of your JoinInBox."
