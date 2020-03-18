@@ -10,7 +10,7 @@ fi
 ## exprimental
 #dialog --backtitle "Choose a wallet" \
 #       --title "Choose a wallet by starting to type " \
-#       --fselect "/home/joinin/joinmarket-clientserver/scripts/wallets/" 10 60 2>_temp
+#       --fselect "/home/joinmarket/joinmarket-clientserver/scripts/wallets/" 10 60 2>_temp
 #
 #dialog --backtitle "Choose a wallet" \
 #       --title "Choose a wallet" \
@@ -36,9 +36,9 @@ dialog --backtitle "Decrypting Wallet" \
 pressed=$?
 case $pressed in
   0)
-    touch /home/joinin/.pw
-    chmod 600 /home/joinin/.pw
-    cat $data | tee /home/joinin/.pw 1>/dev/null
+    touch /home/joinmarket/.pw
+    chmod 600 /home/joinmarket/.pw
+    cat $data | tee /home/joinmarket/.pw 1>/dev/null
     sed -i "s/^wallet=.*/wallet=$(cat $wallet)/g" joinin.conf
     shred $data;;
   1)

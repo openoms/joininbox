@@ -14,7 +14,7 @@ case $CHOICE in
         *) exit 1;;
 esac
 
-if [ ! -f "/home/joinin/joinmarket-clientserver/jmvenv/bin/activate" ]; then
+if [ ! -f "/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate" ]; then
   dialog --title "JoinMarket is not installed" --yesno "Do you want to install Joinmarket now?" 8 60
   response=$?
   echo "response(${response})"
@@ -63,12 +63,12 @@ echo "You should see files called '.jmdat'"
 echo ""
 echo "COPY, PASTE & EXECUTE the following command in the terminal of the source computer:"
 if [ "${CHOICE}" = "LAN" ]; then
-  echo "scp ./*.jmdat joinin@${localip}:/home/joinin/joinmarket-clientserver/scripts/wallets"
+  echo "scp ./*.jmdat joinmarket@${localip}:/home/joinmarket/joinmarket-clientserver/scripts/wallets"
 elif [ "${CHOICE}" = "TOR" ]; then
-  echo "torify scp ./*.jmdat joinin@${TOR_ADDRESS}:/home/joinin/joinmarket-clientserver/scripts/wallets"
+  echo "torify scp ./*.jmdat joinmarket@${TOR_ADDRESS}:/home/joinmarket/joinmarket-clientserver/scripts/wallets"
 fi
 echo "" 
-echo "This command will ask for your SSH PASSWORD of your JoininBox."
+echo "This command will ask for your SSH PASSWORD of your JoinInBox."
 echo "************************************************************************************"
 echo "PRESS ENTER if the transfer is done OR if you want to choose another option."
 sleep 2

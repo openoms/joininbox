@@ -40,25 +40,25 @@ else
   echo "OK running ${baseImage}"
 fi
 
-echo "*** Add the 'joinin' user ***"
-adduser --disabled-password --gecos "" joinin
+echo "*** Add the 'joinmarket' user ***"
+adduser --disabled-password --gecos "" joinmarket
 
 echo "*** Clone the joininbox repo and copy the scripts ***"
-cd /home/joinin
-sudo -u joinin git clone https://github.com/openoms/joininbox.git
-sudo -u joinin cp ./joininbox/scripts/* /home/joinin/
-sudo -u joinin cp ./joininbox/scripts/.* /home/joinin/ 2>/dev/null
+cd /home/joinmarket
+sudo -u joinmarket git clone https://github.com/openoms/joininbox.git
+sudo -u joinmarket cp ./joininbox/scripts/* /home/joinmarket/
+sudo -u joinmarket cp ./joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
 
-chmod +x /home/joinin/*.sh
+chmod +x /home/joinmarket/*.sh
 
-echo "*** Setting the password for the users 'joinin' and 'root' ***"
+echo "*** Setting the password for the users 'joinmarket' and 'root' ***"
 apt install dialog
-/home/joinin/set.password.sh
-adduser joinin sudo
-# chsh joinin -s /bin/bash
-# configure sudo for usage without password entry for the joinin user
+/home/joinmarket/set.password.sh
+adduser joinmarket sudo
+# chsh joinmarket -s /bin/bash
+# configure sudo for usage without password entry for the joinmarket user
 # https://www.tecmint.com/run-sudo-command-without-password-linux/
-echo 'joinin ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
+echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
 
 
 if [ "$1" = "--with-tor" ] || [ "$1" = "tor" ]; then
@@ -136,29 +136,29 @@ systemctl enable ufw
 ufw status
 
 # make folder for authorized keys 
-sudo -u joinin mkdir -p ~/.ssh
-sudo chmod -R 700 /home/joinin/.ssh
+sudo -u joinmarket mkdir -p ~/.ssh
+sudo chmod -R 700 /home/joinmarket/.ssh
 
 # install a command-line fuzzy finder (https://github.com/junegunn/fzf)
 sudo apt -y install fzf
-sudo bash -c "echo 'source /usr/share/doc/fzf/examples/key-bindings.bash' >> /home/joinin/.bashrc"
+sudo bash -c "echo 'source /usr/share/doc/fzf/examples/key-bindings.bash' >> /home/joinmarket/.bashrc"
 
 # install tmux
 sudo apt -y install tmux
 
 # hold off autostart for now
-# bash autostart for joinin
-sudo bash -c "echo '# shortcut commands' >> /home/joinin/.bashrc"
-sudo bash -c "echo 'source /home/joinin/_commands.sh' >> /home/joinin/.bashrc"
-sudo bash -c "echo '# automatically start main menu for joinin unless' >> /home/joinin/.bashrc"
-sudo bash -c "echo '# when running in a tmux session' >> /home/joinin/.bashrc"
-sudo bash -c "echo 'if [ -z \"\$TMUX\" ]; then' >> /home/joinin/.bashrc"
-sudo bash -c "echo '  ./menu.sh' >> /home/joinin/.bashrc"
-sudo bash -c "echo 'fi' >> /home/joinin/.bashrc"
+# bash autostart for joininbox menu
+sudo bash -c "echo '# shortcut commands' >> /home/joinmarket/.bashrc"
+sudo bash -c "echo 'source /home/joinmarket/_commands.sh' >> /home/joinmarket/.bashrc"
+sudo bash -c "echo '# automatically start main menu for joinmarket unless' >> /home/joinmarket/.bashrc"
+sudo bash -c "echo '# when running in a tmux session' >> /home/joinmarket/.bashrc"
+sudo bash -c "echo 'if [ -z \"\$TMUX\" ]; then' >> /home/joinmarket/.bashrc"
+sudo bash -c "echo '  ./menu.sh' >> /home/joinmarket/.bashrc"
+sudo bash -c "echo 'fi' >> /home/joinmarket/.bashrc"
 
 echo "*** READY ***"
 echo ""
 echo "Look through the output and press ENTER to proceed to the menu"
 echo "Press CTRL + C to abort"
 read key
-sudo su - joinin
+sudo su - joinmarket

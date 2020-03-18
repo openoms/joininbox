@@ -35,15 +35,15 @@ https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authe
     Log in as: root  Password: 1234. Then you are prompted to change this password (US-Keyboard setting). When done, you are asked to create a normal user-account for your everyday tasks.
 
 * Change the password.
-* Create a new user called `joinin` and set the password.  
+* Create a new user called `joinmarket` and set the password.  
  Keep pressing [ENTER] to use the default user information.
  
 ### Preparations
-* Configure sudo without password for the joinin user
+* Configure sudo without password for the joinmarket user
     ```bash
-    adduser joinin sudo
+    adduser joinmarket sudo
     # https://www.tecmint.com/run-sudo-command-without-password-linux/
-    echo 'joinin ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
+    echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
     ```
 * Install the dependencies and Tor
     ```bash
@@ -98,21 +98,21 @@ https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authe
 
 * Setting up the ssh keys and removing the password login option is described in the [RaspiBolt Guide](https://stadicus.github.io/RaspiBolt/raspibolt_21_security.html#login-with-ssh-keys)
     ```bash
-    # make ssh keystore fro the "joinin" user
-    sudo -u joinin mkdir -p ~/.ssh
+    # make ssh keystore for the "joinmarket" user
+    sudo -u joinmarket mkdir -p ~/.ssh
     ```
-* Open a separate terminal on the desktop to copy the local ssh pubkey (fill in the JOININBOX_IP):
+* Open a separate terminal on the desktop to copy the local ssh pubkey (fill in the JoinInBox_IP):
     ```bash
-    cat ~/.ssh/id_rsa.pub | ssh joinin@JOININBOX_IP 'cat >> ~/.ssh/authorized_keys && chmod -R 700 ~/.ssh/'
+    cat ~/.ssh/id_rsa.pub | ssh joinmarket@JoinInBox_IP 'cat >> ~/.ssh/authorized_keys && chmod -R 700 ~/.ssh/'
     ```
 
 * Can consider storing the ssh keys for login on a [Trezor/Ledger or Keepkey hardware wallet](FAQ.md#log-in-through-ssh-using-a-hardware-wallet).
 
 ### Install JoinMarket
-* install with the `joinin` user
+* install with the `joinmarket` user
     ```bash
-    # leave root and switch to the "joinin" user
-    su - joinin
+    # leave root and switch to the "joinmarket" user
+    su - joinmarket
 
     # install JoinMarket from the source code
     git clone https://github.com/JoinMarket-Org/joinmarket-clientserver.git

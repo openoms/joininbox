@@ -1,5 +1,5 @@
 # Prepare a remote node to accept the JoinMarket connection
-JoinMarket (running in JoininBox) needs to connect to Bitcoin Core.  
+JoinMarket (running in JoinInBox) needs to connect to Bitcoin Core.  
 A pruned node with the [**wallet enabled**](FAQ.md#activate-the-bitcoind-wallet-on-a-raspiblitz) will do and txindex is not required.  
 This guide shows how to prepare a RaspiBlitz to accept this connection.
 

@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# SHORTCUT COMMANDS for the user 'joinin' from terminal
+# SHORTCUT COMMANDS for the user 'joinmarket' from terminal
 
 # command: menu
 # calls directly the main menu
 function menu() {
-  cd /home/joinin
+  cd /home/joinmarket
   ./menu.sh
 }

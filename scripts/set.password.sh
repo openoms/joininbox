@@ -3,7 +3,7 @@
 
 # command info
 if [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
- echo "script to set a passwords for the users 'joinin' and 'root'"
+ echo "script to set a passwords for the users 'joinmarket' and 'root'"
  echo "set.password.sh [?newpassword] "
  echo "or just as a password enter dialog (result as file)"
  exit 1
@@ -27,7 +27,7 @@ newPassword=$1
 if [ ${#newPassword} -eq 0 ]; then
   # ask user for new password A (first time)
   dialog --backtitle "JoinInBox - Password Change"\
-     --insecure --passwordbox "Set a new password for the users 'joinin' and 'root'\n(use at least 8 characters)" 9 56 2>$_temp
+     --insecure --passwordbox "Set a new password for the users 'joinmarket' and 'root'\n(use at least 8 characters)" 9 56 2>$_temp
   
   # get user input
   password1=$( cat $_temp )
@@ -44,21 +44,21 @@ if [ ${#newPassword} -eq 0 ]; then
   # check if passwords match
   if [ "${password1}" != "${password2}" ]; then
     DIALOGRC=.dialogrc.onerror dialog --backtitle "JoinInBox - Password Change" --msgbox "FAIL -> Passwords don't match\nPlease try again ..." 6 56
-    sudo /home/joinin/set.password.sh
+    sudo /home/joinmarket/set.password.sh
     exit 1
   fi
   
   # password zero
   if [ ${#password1} -eq 0 ]; then
     DIALOGRC=.dialogrc.onerror dialog --backtitle "JoinInBox - Password Change" --msgbox "FAIL -> Password cannot be empty\nPlease try again ..." 6 56
-    sudo /home/joinin/set.password.sh
+    sudo /home/joinmarket/set.password.sh
     exit 1
   fi
   
   # password longer than 8
   if [ ${#password1} -lt 8 ]; then
     DIALOGRC=.dialogrc.onerror dialog --backtitle "JoinInBox - Password Change" --msgbox "FAIL -> Password length under 8\nPlease try again ..." 6 56
-    sudo /home/joinin/set.password.sh
+    sudo /home/joinmarket/set.password.sh
     exit 1
   fi
   
@@ -68,8 +68,8 @@ if [ ${#newPassword} -eq 0 ]; then
 fi
 
 # change user passwords
-echo "joinin:$newPassword" | sudo chpasswd
+echo "joinmarket:$newPassword" | sudo chpasswd
 echo "root:$newPassword" | sudo chpasswd
 sleep 1
-dialog --backtitle "JoinInBox - Password Change" --msgbox "OK - changed the password for the users 'joinin' and 'root'" 6 63
+dialog --backtitle "JoinInBox - Password Change" --msgbox "OK - changed the password for the users 'joinmarket' and 'root'" 6 63
 exit 0

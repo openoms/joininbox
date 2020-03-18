@@ -62,12 +62,12 @@ case $CHOICE in
             echo "Decrypting the wallet $wallet.jmdat . . ."
             echo ""
             echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
-            . /home/joinin/joinmarket-clientserver/jmvenv/bin/activate
-            python /home/joinin/start.script.py wallet-tool $wallet
-            dialog \
-            --title "Output of wallet-tool.py"  \
-            --prgbox "tail -f wallet-tool.log" 20 140
-            ./menu.sh
+            . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
+            python /home/joinmarket/start.script.tor.py wallet-tool $wallet
+            #dialog \
+            #--title "Output of wallet-tool.py"  \
+            #--prgbox "tail -f wallet-tool.log" 20 140
+            #./menu.sh
             ;;
         PAY)
             ;;            
@@ -97,7 +97,7 @@ case $CHOICE in
         YG_LIST)
             dialog \
             --title "timestamp            cj amount/satoshi  my input count  my input value/satoshi  cjfee/satoshi  earned/satoshi  confirm time/min  notes"  \
-            --prgbox "column $HOME/joinmarket-clientserver/scripts/logs/yigen-statement.csv -t -s ","" 20 140
+            --prgbox "column $HOME/joinmarket-clientserver/scripts/logs/yigen-statement.csv -t -s ","" 100 140
             ./menu.sh
             ;;
         HISTORY)
@@ -121,8 +121,8 @@ case $CHOICE in
         YG_CONF)
             dialog \
             --title "Editing the yg-privacyenhanced.py" \
-            --editbox  "/home/joinin/joinmarket-clientserver/scripts/yg-privacyenhanced.py" 200 200 2>_temp
-            cat _temp > /home/joinin/joinmarket-clientserver/scripts/yg-privacyenhanced.py
+            --editbox  "/home/joinmarket/joinmarket-clientserver/scripts/yg-privacyenhanced.py" 200 200 2>_temp
+            cat _temp > /home/joinmarket/joinmarket-clientserver/scripts/yg-privacyenhanced.py
             ./menu.sh            
             ;;
         STOP)

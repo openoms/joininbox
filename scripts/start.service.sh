@@ -15,11 +15,11 @@ echo "
 Description=$SCRIPT
 
 [Service]
-WorkingDirectory=/home/joinin/joinmarket-clientserver/scripts/
-ExecStart=/bin/sh -c '. /home/joinin/joinmarket-clientserver/jmvenv/bin/activate &&\
+WorkingDirectory=/home/joinmarket/joinmarket-clientserver/scripts/
+ExecStart=/bin/sh -c '. /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
  python $HOME/start.script.py $SCRIPT $WALLET'
-User=joinin
-Group=joinin
+User=joinmarket
+Group=joinmarket
 Type=simple
 KillMode=process
 TimeoutSec=600

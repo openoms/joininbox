@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #install dependency
-. /home/joinin/joinmarket-clientserver/jmvenv/bin/activate
+. /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
 pip install matplotlib
 
 SCRIPT="ob-watcher"
@@ -14,11 +14,11 @@ echo "
 Description=$SCRIPT
 
 [Service]
-WorkingDirectory=/home/joinin/joinmarket-clientserver/scripts/
-ExecStart=/bin/sh -c '. /home/joinin/joinmarket-clientserver/jmvenv/bin/activate &&\
-python /home/joinin/joinmarket-clientserver/scripts/obwatch/ob-watcher.py'
-User=joinin
-Group=joinin
+WorkingDirectory=/home/joinmarket/joinmarket-clientserver/scripts/
+ExecStart=/bin/sh -c '. /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
+python /home/joinmarket/joinmarket-clientserver/scripts/obwatch/ob-watcher.py'
+User=joinmarket
+Group=joinmarket
 Type=simple
 KillMode=process
 TimeoutSec=600

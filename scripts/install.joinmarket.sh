@@ -1,30 +1,30 @@
 #!/bin/bash
 
 # install joinmarket
-if [ ! -f "/home/joinin/joinmarket-clientserver/jmvenv/bin/activate" ] ; then
-    cd /home/joinin
-    sudo -u joinin git clone https://github.com/JoinMarket-Org/joinmarket-clientserver.git
+if [ ! -f "/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate" ] ; then
+    cd /home/joinmarket
+    sudo -u joinmarket git clone https://github.com/JoinMarket-Org/joinmarket-clientserver.git
     cd joinmarket-clientserver
     # latest release: https://github.com/JoinMarket-Orgjoinmarket-clientserver/releases
-    git reset --hard v0.6.1
-    sudo -u joinin ./install.sh --without-qt
+    git reset --hard v0.6.2
+    sudo -u joinmarket ./install.sh --without-qt
 else
     echo "JoinMarket is already installed"
     echo ""
 fi    
 
 # generate joinmarket.cfg
-if [ ! -f "/home/joinin/joinmarket-clientserver/scripts/joinmarket.cfg" ] ; then
+if [ ! -f "/home/joinmarket/joinmarket-clientserver/scripts/joinmarket.cfg" ] ; then
     echo "Generating the joinmarket.cfg"
-    . /home/joinin/joinmarket-clientserver/jmvenv/bin/activate &&\
-    cd /home/joinin/joinmarket-clientserver/scripts/
+    . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
+    cd /home/joinmarket/joinmarket-clientserver/scripts/
     python wallet-tool.py generate
 else
     echo "the joinmarket.cfg is already present"
     echo ""
 fi
 
-sudo chmod 600 /home/joinin/joinmarket-clientserver/scripts/joinmarket.cfg || exit 1
+sudo chmod 600 /home/joinmarket/joinmarket-clientserver/scripts/joinmarket.cfg || exit 1
 
 # TODO edit joinmarket.cfg if Tor is on
 
@@ -39,12 +39,12 @@ conf=$(tempfile 2>/dev/null)
 trap "rm -f $conf" 0 1 2 5 15
 dialog \
 --title "Editing the joinmarket.cfg" \
---editbox "/home/joinin/joinmarket-clientserver/scripts/joinmarket.cfg" 200 200 2> $conf
+--editbox "/home/joinmarket/joinmarket-clientserver/scripts/joinmarket.cfg" 200 200 2> $conf
 # make decison
 pressed=$?
 case $pressed in
   0)
-    cat $conf | sudo -u joinin tee /home/joinin/joinmarket-clientserver/scripts/joinmarket.cfg 1>/dev/null
+    cat $conf | sudo -u joinmarket tee /home/joinmarket/joinmarket-clientserver/scripts/joinmarket.cfg 1>/dev/null
     shred $conf;;
   1)
     shred $conf

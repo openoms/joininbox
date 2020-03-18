@@ -1,4 +1,4 @@
-#!/home/joinin/joinmarket-clientserver/jmvenv/bin/python
+#!/home/joinmarket/joinmarket-clientserver/jmvenv/bin/python
 
 import subprocess
 import sys
@@ -7,14 +7,14 @@ import os
 SCRIPT = sys.argv[1]
 WALLET = sys.argv[2]
 
-f = open('/home/joinin/.pw','r')
+f = open('/home/joinmarket/.pw','r')
 PW = f.read().strip()
 f.close()
-os.system('rm -f /home/joinin/.pw')
+os.system('rm -f /home/joinmarket/.pw')
 
 logfile = open('%s.log' %SCRIPT, 'w')
 
-process = subprocess.Popen(['python', '/home/joinin/joinmarket-clientserver/scripts/%s.py' %SCRIPT,'%s.jmdat' %WALLET, '--wallet-password-stdin'],
+process = subprocess.Popen(['python', '/home/joinmarket/joinmarket-clientserver/scripts/%s.py' %SCRIPT,'%s.jmdat' %WALLET, '--wallet-password-stdin'],
                                                                 stdin=subprocess.PIPE,
                                                                 universal_newlines=True,
                                                                 stderr=subprocess.STDOUT,
