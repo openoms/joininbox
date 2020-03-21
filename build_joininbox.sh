@@ -136,7 +136,7 @@ systemctl enable ufw
 ufw status
 
 # make folder for authorized keys 
-sudo -u joinmarket mkdir -p ~/.ssh
+sudo -u joinmarket mkdir -p /home/joinmarket/.ssh
 sudo chmod -R 700 /home/joinmarket/.ssh
 
 # install a command-line fuzzy finder (https://github.com/junegunn/fzf)
