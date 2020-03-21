@@ -6,6 +6,20 @@ fi
 if [ -f joinin.conf ]; then
   touch joinin.conf
 fi
+
+# add default value to joinin config if needed
+if ! grep -Eq "^RPCoverTor=" joinin.conf; then
+  echo "RPCoverTor=off" >> joinin.conf
+fi
+
+if grep -Eq "^rpc_host = .*.onion" /home/joinmarket/.joinmarket/joinmarket.cfg; then 
+  echo "RPC over Tor is on"
+  sudo sed -i "s/^RPCoverTor=.*/RPCoverTor=on/g" joinin.conf
+else
+  echo "RPC over Tor is off"
+  sudo sed -i "s/^RPCoverTor=.*/RPCoverTor=off/g" joinin.conf
+fi
+
 source joinin.conf
 
 # cd ~/bin/joinmarket-clientserver && source jmvenv/bin/activate && cd scripts
@@ -57,17 +71,18 @@ case $CHOICE in
 
         INFO)
             ./get.password.sh
-            #source joinin.conf
             clear
             echo "Decrypting the wallet $wallet.jmdat . . ."
             echo ""
-            echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
             . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
-            python /home/joinmarket/start.script.tor.py wallet-tool $wallet
-            #dialog \
-            #--title "Output of wallet-tool.py"  \
-            #--prgbox "tail -f wallet-tool.log" 20 140
-            #./menu.sh
+            if [ ${RPCoverTor} = on ];then 
+              python /home/joinmarket/start.script.tor.py wallet-tool $wallet
+            else
+              python /home/joinmarket/start.script.py wallet-tool $wallet
+            fi
+            cat wallet-tool.log
+            echo ""
+            echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
             ;;
         PAY)
             ;;            
