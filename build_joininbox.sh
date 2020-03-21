@@ -60,6 +60,8 @@ adduser joinmarket sudo
 # https://www.tecmint.com/run-sudo-command-without-password-linux/
 echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
 
+# create config file
+touch /home/joinmarket/joinin.conf
 
 if [ "$1" = "--with-tor" ] || [ "$1" = "tor" ]; then
   echo "*** INSTALL TOR REPO ***"
@@ -98,10 +100,13 @@ if [ "$1" = "--with-tor" ] || [ "$1" = "tor" ]; then
   echo "*** INSTALL TOR ***"
   apt update
   apt install tor torsocks
-  echo "
+
+  if ! grep -Eq "^DataDirectory" /etc/tor/torrc; then
+    echo "
 DataDirectory /var/lib/tor
 ControlPort 9051
 CookieAuthentication 1" | sudo tee -a /etc/tor/torrc
+  fi
   echo "
 AllowOutboundLocalhost 1" | sudo tee -a /etc/tor/torsocks.conf
 

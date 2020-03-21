@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source /home/joinmarket/joinin.conf
+
 # Basic Options
 OPTIONS=(LAN "Computers on the same network" \
         TOR "Copy from a Tor enabled remote node"
@@ -39,11 +41,10 @@ if [ "${CHOICE}" = "LAN" ]; then
 elif [ "${CHOICE}" = "TOR" ]; then
   # set up a Hidden Service for ssh
   ./install.hiddenservice.sh ssh 22 22
-  TOR_ADDRESS=$(sudo cat /var/lib/tor/ssh/hostname)
+  TOR_ADDRESS=$(sudo cat $HiddenServiceRoot/ssh/hostname)
 fi
 
-echo 
-clear
+echo ""
 echo "************************************************************************************"
 echo "Instructions to COPY wallets from another computer"
 echo "************************************************************************************"
@@ -58,7 +59,7 @@ elif [ "${CHOICE}" = "TOR" ]; then
 fi 
 echo ""
 echo "Open a terminal on the source computer and change into the directory that contains the"
-echo "wallets. Usually: ~/.joinmarket/wallets."
+echo "wallets. Usually: ~/.joinmarket/wallets or ~/joinmarket-clientserver/scripts/wallets"
 echo "You should see files called '.jmdat'"
 echo ""
 echo "COPY, PASTE & EXECUTE the following command in the terminal of the source computer:"
