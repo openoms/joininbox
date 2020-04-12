@@ -64,6 +64,13 @@ echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
 touch /home/joinmarket/joinin.conf
 
 if [ "$1" = "--with-tor" ] || [ "$1" = "tor" ]; then
+
+  # add default value to joinin config if needed
+  checkTorEntry=$(sudo cat /home/joinmarket/joinin.conf | grep -c "runBehindTor")
+  if [ ${checkTorEntry} -eq 0 ]; then
+    echo "runBehindTor=off" >> /home/joinmarket/joinin.conf
+  fi
+
   echo "*** INSTALL TOR REPO ***"
   echo ""
   echo "*** Install dirmngr ***"
@@ -110,6 +117,9 @@ CookieAuthentication 1" | sudo tee -a /etc/tor/torrc
   echo "
 AllowOutboundLocalhost 1" | sudo tee -a /etc/tor/torsocks.conf
 
+
+  # setting value in joinin config
+  sudo sed -i "s/^runBehindTor=.*/runBehindTor=on/g" /home/joinmarket/joinin.conf
 fi
 
 # update and upgrade packages
@@ -151,14 +161,13 @@ sudo bash -c "echo 'source /usr/share/doc/fzf/examples/key-bindings.bash' >> /ho
 # install tmux
 sudo apt -y install tmux
 
-# hold off autostart for now
 # bash autostart for joininbox menu
 sudo bash -c "echo '# shortcut commands' >> /home/joinmarket/.bashrc"
 sudo bash -c "echo 'source /home/joinmarket/_commands.sh' >> /home/joinmarket/.bashrc"
 sudo bash -c "echo '# automatically start main menu for joinmarket unless' >> /home/joinmarket/.bashrc"
 sudo bash -c "echo '# when running in a tmux session' >> /home/joinmarket/.bashrc"
 sudo bash -c "echo 'if [ -z \"\$TMUX\" ]; then' >> /home/joinmarket/.bashrc"
-sudo bash -c "echo '  ./menu.sh' >> /home/joinmarket/.bashrc"
+sudo bash -c "echo '  /home/joinmarket/menu.sh' >> /home/joinmarket/.bashrc"
 sudo bash -c "echo 'fi' >> /home/joinmarket/.bashrc"
 
 echo "*** READY ***"
