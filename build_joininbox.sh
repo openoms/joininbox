@@ -61,12 +61,12 @@ adduser joinmarket sudo
 echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
 
 # create config file
-touch /home/joinmarket/joinin.conf
+sudo -u joinmarket touch /home/joinmarket/joinin.conf
 
 if [ "$1" = "--with-tor" ] || [ "$1" = "tor" ]; then
 
   # add default value to joinin config if needed
-  checkTorEntry=$(sudo cat /home/joinmarket/joinin.conf | grep -c "runBehindTor")
+  checkTorEntry=$(cat /home/joinmarket/joinin.conf | grep -c "runBehindTor")
   if [ ${checkTorEntry} -eq 0 ]; then
     echo "runBehindTor=off" >> /home/joinmarket/joinin.conf
   fi
@@ -106,7 +106,7 @@ if [ "$1" = "--with-tor" ] || [ "$1" = "tor" ]; then
   echo ""
   echo "*** INSTALL TOR ***"
   apt update
-  apt install tor torsocks
+  apt install -y tor torsocks
 
   if ! grep -Eq "^DataDirectory" /etc/tor/torrc; then
     echo "
@@ -117,9 +117,8 @@ CookieAuthentication 1" | sudo tee -a /etc/tor/torrc
   echo "
 AllowOutboundLocalhost 1" | sudo tee -a /etc/tor/torsocks.conf
 
-
   # setting value in joinin config
-  sudo sed -i "s/^runBehindTor=.*/runBehindTor=on/g" /home/joinmarket/joinin.conf
+  sed -i "s/^runBehindTor=.*/runBehindTor=on/g" /home/joinmarket/joinin.conf
 fi
 
 # update and upgrade packages
@@ -161,18 +160,24 @@ sudo bash -c "echo 'source /usr/share/doc/fzf/examples/key-bindings.bash' >> /ho
 # install tmux
 sudo apt -y install tmux
 
-# bash autostart for joininbox menu
-sudo bash -c "echo '# shortcut commands' >> /home/joinmarket/.bashrc"
-sudo bash -c "echo 'source /home/joinmarket/_commands.sh' >> /home/joinmarket/.bashrc"
-sudo bash -c "echo '# automatically start main menu for joinmarket unless' >> /home/joinmarket/.bashrc"
-sudo bash -c "echo '# when running in a tmux session' >> /home/joinmarket/.bashrc"
-sudo bash -c "echo 'if [ -z \"\$TMUX\" ]; then' >> /home/joinmarket/.bashrc"
-sudo bash -c "echo '  /home/joinmarket/menu.sh' >> /home/joinmarket/.bashrc"
-sudo bash -c "echo 'fi' >> /home/joinmarket/.bashrc"
+# bash autostart for joinmarket
+echo "
+# shortcut commands
+source /home/joinmarket/_commands.sh
+# automatically start main menu for joinmarket unless
+# when running in a tmux session
+if [ -f "/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate" ] ; then
+ . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
+  cd /home/joinmarket/joinmarket-clientserver/scripts/
+fi
+if [ -z \"\$TMUX\" ]; then
+  /home/joinmarket/menu.sh
+fi
+" | tee -a /home/joinmarket/.bashrc
 
 echo "*** READY ***"
 echo ""
 echo "Look through the output and press ENTER to proceed to the menu"
 echo "Press CTRL + C to abort"
 read key
-sudo su - joinmarket
+sudo su joinmarket

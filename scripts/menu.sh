@@ -100,20 +100,20 @@ case $CHOICE in
 #            dialog \
 #            --title "Monitoring the Yield Generator"  \
 #            --prgbox "tail -f yg-privacyenhanced.log" 20 140
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;
         MONITOR)
             # TODO check if active with ?systemctl
             dialog \
             --title "Monitoring the Yield Generator"  \
             --prgbox "tail -f yg-privacyenhanced.log" 20 140
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;            
         YG_LIST)
             dialog \
             --title "timestamp            cj amount/satoshi  my input count  my input value/satoshi  cjfee/satoshi  earned/satoshi  confirm time/min  notes"  \
             --prgbox "column $HOME/joinmarket-clientserver/scripts/logs/yigen-statement.csv -t -s ","" 100 140
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;
         HISTORY)
             ;;
@@ -129,7 +129,7 @@ case $CHOICE in
               DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
                 --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
             fi
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;
         EMPTY)
             ;;
@@ -138,17 +138,17 @@ case $CHOICE in
             --title "Editing the yg-privacyenhanced.py" \
             --editbox  "/home/joinmarket/joinmarket-clientserver/scripts/yg-privacyenhanced.py" 200 200 2>_temp
             cat _temp > /home/joinmarket/joinmarket-clientserver/scripts/yg-privacyenhanced.py
-            ./menu.sh            
+            /home/joinmarket/menu.sh            
             ;;
         STOP)
             sudo systemctl stop yg-privacyenhanced
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;
         GEN)
             ;;
         IMPORT) 
             ./import.wallet.sh
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;
         RESTORE)
             ;;
@@ -162,11 +162,11 @@ case $CHOICE in
               DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
                 --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
             fi
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;
         UPDATE)
             ./update.joininbox.sh
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;
         X)
             clear

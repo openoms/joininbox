@@ -183,7 +183,7 @@ cp ./joininbox/scripts/* ~/
 
 * Try the JoininBox menu 
 ```bash
-$ ./menu.sh
+$ /home/joinmarket/menu.sh
 ```
 
 ## Resources:

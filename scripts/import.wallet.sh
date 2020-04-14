@@ -17,10 +17,11 @@ case $CHOICE in
 esac
 
 if [ ! -f "/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate" ]; then
-  dialog --title "JoinMarket is not installed" --yesno "Do you want to install Joinmarket now?" 8 60
+  dialog --title "JoinMarket is not installed" --yesno "
+Do you want to install Joinmarket now?" 7 42
   response=$?
   echo "response(${response})"
-  if [ "${response}" = "1" ]; then
+  if [ "${response}" = "0" ]; then
     echo "OK - starting JoinMarket installation"
     ./install.joinmarket.sh
     errorOnInstall=$?

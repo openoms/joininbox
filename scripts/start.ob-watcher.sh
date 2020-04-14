@@ -27,8 +27,8 @@ Restart=no
 [Install]
 WantedBy=multi-user.target
 " | sudo tee /etc/systemd/system/$SCRIPT.service 1>/dev/null
-    sudo systemctl enable $SCRIPT 2>/dev/null
-    sudo systemctl start $SCRIPT
+sudo systemctl enable $SCRIPT 2>/dev/null
+sudo systemctl start $SCRIPT
 
 #create Hidden Service
 ./install.hiddenservice.sh ob-watcher 80 62601
