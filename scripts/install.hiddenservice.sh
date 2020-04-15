@@ -42,16 +42,20 @@ fi
 
 source /home/joinmarket/joinin.conf
 
-if [ ${#HiddenServiceRoot} -eq 0 ]; then
-  HiddenServiceRoot="/var/lib/tor"
-  echo "HiddenServiceRoot=/var/lib/tor" | tee -a /home/joinmarket/joinin.conf
-else
-  currentHiddenServiceRoot=$(sudo cat /etc/tor/torrc | grep DataDirectory | cut -c 18-)"
-  # sudo sed -i "s/dtoverlay=tft35a/dtoverlay=tft35a:rotate=270/" /DietPi/config.txt
-  sudo sed -i  "s/HiddenServiceRoot=.*/HiddenServiceRoot=$currentHiddenServiceRoot/" /home/joinmarket/joinin.conf
+checkDirEntry=$(cat /home/joinmarket/joinin.conf | grep -c "HiddenServiceDir")
+if [ ${checkDirEntry} -eq 0 ]; then
+    echo "HiddenServiceDir=" >> /home/joinmarket/joinin.conf
 fi
 
-#if [ "${runBehindTor}" = "on" ]; then
+if [ -d "/mnt/hdd/tor" ] ; then
+  HiddenServiceDir="/mnt/hdd/tor"
+ 
+else
+  HiddenServiceDir="/var/lib/tor"
+fi  
+ sudo sed -i  "s#HiddenServiceDir=.*#HiddenServiceDir=$HiddenServiceDir#g" /home/joinmarket/joinin.conf 
+
+if [ "${runBehindTor}" = "on" ]; then
   #check if the service is already present
   isHiddenService=$(sudo cat /etc/tor/torrc 2>/dev/null | grep -c $service)
   if [ ${isHiddenService} -eq 0 ]; then
@@ -110,7 +114,7 @@ HiddenServicePort $toPort 127.0.0.1:$fromPort" | sudo tee -a /etc/tor/torrc
       echo "The port $fromPort2 is forwarded for another Hidden Service. Check the /etc/tor/torrc for the details."
     fi
   fi
-#else
-#  echo "Tor is not active"
-#  exit 1
-#fi
+else
+  echo "Tor is not active"
+  exit 1
+fi
