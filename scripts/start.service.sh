@@ -10,6 +10,14 @@ if [ $SCRIPT == "yg-privacyenhanced" ]; then
   rm -f ~/.joinmarket/wallets/$WALLET.jmdat.lock
 fi
 
+source joinin.conf
+
+if [ ${RPCoverTor} = on ];then 
+  startScript="start.script.tor.py"
+else
+  startScript="start.script.py"
+fi
+
 echo "
 [Unit]
 Description=$SCRIPT
@@ -17,7 +25,7 @@ Description=$SCRIPT
 [Service]
 WorkingDirectory=/home/joinmarket/joinmarket-clientserver/scripts/
 ExecStart=/bin/sh -c '. /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
- python $HOME/start.script.py $SCRIPT $WALLET'
+ python $HOME/$startScript $SCRIPT $WALLET'
 User=joinmarket
 Group=joinmarket
 Type=simple
