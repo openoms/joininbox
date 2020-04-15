@@ -39,7 +39,7 @@ OPTIONS+=(\
   INFO "Show the address list and balance" \
   #PAY "Pay to an address using coinjoin" \
   #TUMBLER "Run the Tumbler to mix quickly" \
-  YG "Run the Yield Generator" \
+  MAKER "Run the Yield Generator" \
   #MONITOR "Monitor the Yield Generator" \
   YG_LIST "List the past YG activity"
   "" ""
@@ -88,7 +88,7 @@ case $CHOICE in
             ;;            
         TUMBLER)
             ;;
-        YG)
+        MAKER)
             ./get.password.sh
             source joinin.conf
             ./start.service.sh yg-privacyenhanced $wallet
@@ -112,7 +112,7 @@ case $CHOICE in
         YG_LIST)
             dialog \
             --title "timestamp            cj amount/satoshi  my input count  my input value/satoshi  cjfee/satoshi  earned/satoshi  confirm time/min  notes"  \
-            --prgbox "column $HOME/joinmarket-clientserver/scripts/logs/yigen-statement.csv -t -s ","" 100 140
+            --prgbox "column $HOME/.joinmarket/logs/yigen-statement.csv -t -s ","" 100 140
             /home/joinmarket/menu.sh
             ;;
         HISTORY)
