@@ -90,11 +90,11 @@ HiddenServicePort $toPort 127.0.0.1:$fromPort" | sudo tee -a /etc/tor/torrc
     echo "The Hidden Service for $service is already installed."
   fi
   # show the Hidden Service address
-  TOR_ADDRESS=$(sudo cat /var/lib/tor/$service/hostname)
+  TOR_ADDRESS=$(sudo cat $HiddenServiceDir/$service/hostname)
   if [ -z "$TOR_ADDRESS" ]; then
     echo "Waiting for the Hidden Service"
     sleep 10
-    TOR_ADDRESS=$(sudo cat /var/lib/tor/$service/hostname)
+    TOR_ADDRESS=$(sudo cat $HiddenServiceDir/$service/hostname)
     if [ -z "$TOR_ADDRESS" ]; then
       echo " FAIL - The Hidden Service address could not be found - Tor error?"
       exit 1

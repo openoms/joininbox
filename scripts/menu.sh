@@ -70,7 +70,7 @@ CHOICE=$(dialog --clear \
 case $CHOICE in
 
         INFO)
-            ./get.password.sh
+            /home/joinmarket/get.password.sh
             clear
             echo "Decrypting the wallet $wallet.jmdat . . ."
             echo ""
@@ -89,9 +89,9 @@ case $CHOICE in
         TUMBLER)
             ;;
         MAKER)
-            ./get.password.sh
-            source joinin.conf
-            ./start.service.sh yg-privacyenhanced $wallet
+            /home/joinmarket/get.password.sh
+            source /home/joinmarket/joinin.conf
+            /home/joinmarket/start.service.sh yg-privacyenhanced $wallet
             echo "Starting the Yield Generator in the background.."
             sleep 5
             echo ""
@@ -119,7 +119,7 @@ case $CHOICE in
             ;;
         OBWATCH)
             #TODO show hidden service only if already running
-            ./start.ob-watcher.sh
+            /home/joinmarket/start.ob-watcher.sh
             errorOnInstall=$?
             if [ ${errorOnInstall} -eq 0 ]; then
               TOR_ADDRESS=$(sudo cat /var/lib/tor/ob-watcher/hostname)
@@ -147,13 +147,13 @@ case $CHOICE in
         GEN)
             ;;
         IMPORT) 
-            ./import.wallet.sh
+            /home/joinmarket/import.wallet.sh
             /home/joinmarket/menu.sh
             ;;
         RESTORE)
             ;;
         INSTALL)
-            ./install.joinmarket.sh
+            /home/joinmarket/install.joinmarket.sh
             errorOnInstall=$?
             if [ ${errorOnInstall} -eq 0 ]; then
               dialog --title "Installed JoinMarket" \
