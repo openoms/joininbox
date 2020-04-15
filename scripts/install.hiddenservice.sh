@@ -64,7 +64,6 @@ if [ "${runBehindTor}" = "on" ]; then
     line=$(sudo cat /etc/tor/torrc 2>/dev/null | grep 127.0.0.1:$fromPort)
     if [ ${alreadyThere} -gt 0 ] && [[ $line != "#"* ]]; then
       echo "The port $fromPort is already forwarded. Check /etc/tor/torrc for the details."
-      exit 1
     fi
     echo "
 # Hidden Service for $service
