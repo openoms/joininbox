@@ -15,22 +15,21 @@
 * Continue with the [manual building steps](build_joininbox.md)  
 or
 * Run the build script:  
- ```bash 
- # download
- wget https://raw.githubusercontent.com/openoms/joininbox/master/build_joininbox.sh
- # run (install Tor also)
- sudo bash build_joininbox.sh --with-tor
- ```
+  ```bash 
+  # download
+  wget https://raw.githubusercontent.com/openoms/joininbox/master/build_joininbox.sh
+  # run (install Tor also)
+  sudo bash build_joininbox.sh --with-tor
+  ```
 
-### Installing the menu on a RaspiBlitz with the JoinMarket CLI set up already
-* Start here: https://github.com/openoms/bitcoin-tutorials/tree/master/joinmarket#installation
-* Run the script:
- ```bash 
- # download
- wget https://raw.githubusercontent.com/openoms/joininbox/master/build_menu_on_raspiblitz.sh
- # run (install Tor also)
- bash build_menu_on_raspiblitz.sh
- ```
+### Installing the menu on a RaspiBlitz v1.5 
+* Run the script in the RaspiBlitz terminal:
+  ```bash 
+  # download
+  wget https://raw.githubusercontent.com/openoms/joininbox/master/build_menu_on_raspiblitz.sh
+  # run (install Tor also)
+  bash build_menu_on_raspiblitz.sh
+  ```
 
 * start in the RaspiBlitz terminal:
  `sudo su joinmarket`
