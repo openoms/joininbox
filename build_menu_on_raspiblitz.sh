@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# make sure joinmarket is installed
+if [ -f /home/admin/config.scripts/bonus.joinmarket.sh ]; then 
+  sudo /home/admin/config.scripts/bonus.joinmarket.sh on
+else
+  echo "The JoinMarket install script was not found"
+  echo "Update RaspiBlitz to v1.5 first"
+  exit 1
+fi
+
 sudo rm -rf /home/joinmarket/joininbox
 sudo -u joinmarket git clone https://github.com/openoms/joininbox.git
 
