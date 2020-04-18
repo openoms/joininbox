@@ -22,6 +22,7 @@ if [ -z \"\$TMUX\" ]; then
 fi
 " | tee -a /home/joinmarket/.bashrc
 
+touch /home/joinmarket/joinin.conf
 # tor config
 # add default value to joinin config if needed
 checkTorEntry=$(cat /home/joinmarket/joinin.conf | grep -c "runBehindTor")
@@ -31,4 +32,7 @@ fi
 echo "
 AllowOutboundLocalhost 1" | sudo tee -a /etc/tor/torsocks.conf
 # setting value in joinin config
-sed -i "s/^runBehindTor=.*/runBehindTor=on/g" /home/joinmarket/joinin.conf
+checkBlitzTorEntry=$(cat /mnt/hdd/raspiblitz.conf | grep -c "runBehindTor=on")
+if [ ${checkBlitzTorEntry} -gt 0 ]; then
+  sed -i "s/^runBehindTor=.*/runBehindTor=on/g" /home/joinmarket/joinin.conf
+fi
