@@ -22,13 +22,17 @@ or
   sudo bash build_joininbox.sh --with-tor
   ```
 
-### Installing the menu on a RaspiBlitz v1.5 
+### Installing the menu on a RaspiBlitz v1.5+ 
 * Run the script in the RaspiBlitz terminal:
-  ```bash 
+  ```bash
+  # switch to the joinamrket user (installed from the menu)
+  sudo su joinmarket 
   # download
   wget https://raw.githubusercontent.com/openoms/joininbox/master/build_menu_on_raspiblitz.sh
-  # run (install Tor also)
+  # run
   bash build_menu_on_raspiblitz.sh
+  exit
+  
   ```
 
 * start in the RaspiBlitz terminal:
