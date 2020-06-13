@@ -39,3 +39,5 @@ WantedBy=multi-user.target
 sudo systemctl enable $script
 sudo systemctl start $script
 
+# delete password once used
+shred -uvz /home/joinmarket/.pw
