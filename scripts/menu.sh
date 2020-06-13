@@ -40,10 +40,10 @@ OPTIONS+=(\
   #PAY "Pay to an address using coinjoin" \
   #TUMBLER "Run the Tumbler to mix quickly" \
   MAKER "Run the Yield Generator" \
-  #MONITOR "Monitor the Yield Generator" \
+  MONITOR "Monitor the Yield Generator" \
   YG_LIST "List the past YG activity"
   "" ""
-  #HISTORY "Show the past transactions" \
+  HISTORY "Show the past transactions" \
   OBWATCH "Watch the offer book locally" \
   #EMPTY "Empty a mixdepth" \
   "" ""
@@ -70,18 +70,7 @@ CHOICE=$(dialog --clear \
 case $CHOICE in
 
         INFO)
-            /home/joinmarket/get.password.sh
-            clear
-            source /home/joinmarket/joinin.conf
-            echo "Decrypting the wallet $wallet.jmdat . . ."
-            echo ""
-            . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
-            if [ ${RPCoverTor} = on ];then 
-              torify python /home/joinmarket/start.script.tor.py wallet-tool $wallet
-            else
-              python /home/joinmarket/start.script.py wallet-tool $wallet
-            fi
-            cat wallet-tool.log
+            /home/joinmarket/start.script.sh wallet-tool
             echo ""
             echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
             ;;
@@ -94,20 +83,16 @@ case $CHOICE in
             source /home/joinmarket/joinin.conf
             /home/joinmarket/start.service.sh yg-privacyenhanced $wallet
             echo "Starting the Yield Generator in the background.."
-            sleep 5
-            echo ""
-            echo "Exit to the command line by pressing CTRL+C"
-            echo "" 
-#            dialog \
-#            --title "Monitoring the Yield Generator"  \
-#            --prgbox "tail -f yg-privacyenhanced.log" 20 140
+            dialog \
+            --title "Monitoring the Yield Generator - press CTRL+C to exit"  \
+            --prgbox "sudo journalctl -fn20 -u yg-privacyenhanced" 20 140
             /home/joinmarket/menu.sh
             ;;
         MONITOR)
-            # TODO check if active with ?systemctl
             dialog \
-            --title "Monitoring the Yield Generator"  \
-            --prgbox "tail -f yg-privacyenhanced.log" 20 140
+            --title "Monitoring the Yield Generator - press CTRL+C to exit"  \
+            --prgbox "sudo journalctl -fn40 -u yg-privacyenhanced" 40 140
+            /home/joinmarket/menu.sh
             /home/joinmarket/menu.sh
             ;;            
         YG_LIST)
@@ -117,21 +102,7 @@ case $CHOICE in
             /home/joinmarket/menu.sh
             ;;
         HISTORY)
-            /home/joinmarket/get.password.sh
-            clear
-            source /home/joinmarket/joinin.conf
-            echo "Decrypting the history of the wallet $wallet.jmdat . . ."
-            echo ""
-            . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
-            if [ ${RPCoverTor} = on ];then 
-              torify python /home/joinmarket/start.script.tor.py wallet-tool $wallet history
-            else
-              python /home/joinmarket/start.script.py wallet-tool $wallet history
-            fi
-            cat wallet-tool.log
-            echo ""
-            echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
-        python wallet-tool.py wallet.jmdat history
+            /home/joinmarket/start.script.sh wallet-tool history
             ;;
         OBWATCH)
             #TODO show hidden service only if already running

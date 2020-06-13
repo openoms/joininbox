@@ -1,31 +1,30 @@
 #!/bin/bash
 
-SCRIPT="$1"
-WALLET="$2"
-
-sudo systemctl stop $SCRIPT
-sudo systemctl disable $SCRIPT 2>/dev/null
-
-if [ $SCRIPT == "yg-privacyenhanced" ]; then 
-  rm -f ~/.joinmarket/wallets/$WALLET.jmdat.lock
-fi
-
 source joinin.conf
 
+script="$1"
+wallet="$2"
+
+sudo systemctl stop $script
+sudo systemctl disable $script
+
+if [ $script == "yg-privacyenhanced" ]; then 
+  rm -f ~/.joinmarket/wallets/$wallet.jmdat.lock
+fi
+
 if [ ${RPCoverTor} = on ];then 
-  startScript="start.script.tor.py"
+  startScript="cat /home/joinmarket/.pw | torify python $script.py $wallet.jmdat --wallet-password-stdin"
 else
-  startScript="start.script.py"
+  startScript="cat /home/joinmarket/.pw | python $script.py $wallet.jmdat --wallet-password-stdin"
 fi
 
 echo "
 [Unit]
-Description=$SCRIPT
+Description=$script
 
 [Service]
 WorkingDirectory=/home/joinmarket/joinmarket-clientserver/scripts/
-ExecStart=/bin/sh -c '. /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
- python $HOME/$startScript $SCRIPT $WALLET'
+ExecStart=/bin/sh -c '. /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate && $startScript'
 User=joinmarket
 Group=joinmarket
 Type=simple
@@ -35,7 +34,8 @@ Restart=no
 
 [Install]
 WantedBy=multi-user.target
-" | sudo tee /etc/systemd/system/$SCRIPT.service 1>/dev/null
+" | sudo tee /etc/systemd/system/$script.service 1>/dev/null
 
-sudo systemctl enable $SCRIPT 2>/dev/null
-sudo systemctl start $SCRIPT
+sudo systemctl enable $script
+sudo systemctl start $script
+
