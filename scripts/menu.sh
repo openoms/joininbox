@@ -20,7 +20,7 @@ else
   sudo sed -i "s/^RPCoverTor=.*/RPCoverTor=off/g" joinin.conf
 fi
 
-source joinin.conf
+source /home/joinmarket/joinin.conf
 
 # cd ~/bin/joinmarket-clientserver && source jmvenv/bin/activate && cd scripts
 
@@ -50,7 +50,7 @@ OPTIONS+=(\
   YG_CONF "Configure the Yield Generator" \
   STOP "Stop the Yield Generator" \
   "" ""
-  #GEN "Generate a new wallet" \
+  GEN "Generate a new wallet" \
   IMPORT "Copy wallet(s) from a remote node"
   #RESTORE "Restore a wallet from the seed" \
   "" ""
@@ -72,11 +72,12 @@ case $CHOICE in
         INFO)
             /home/joinmarket/get.password.sh
             clear
+            source /home/joinmarket/joinin.conf
             echo "Decrypting the wallet $wallet.jmdat . . ."
             echo ""
             . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
             if [ ${RPCoverTor} = on ];then 
-              python /home/joinmarket/start.script.tor.py wallet-tool $wallet
+              torify python /home/joinmarket/start.script.tor.py wallet-tool $wallet
             else
               python /home/joinmarket/start.script.py wallet-tool $wallet
             fi
@@ -116,6 +117,21 @@ case $CHOICE in
             /home/joinmarket/menu.sh
             ;;
         HISTORY)
+            /home/joinmarket/get.password.sh
+            clear
+            source /home/joinmarket/joinin.conf
+            echo "Decrypting the history of the wallet $wallet.jmdat . . ."
+            echo ""
+            . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
+            if [ ${RPCoverTor} = on ];then 
+              torify python /home/joinmarket/start.script.tor.py wallet-tool $wallet history
+            else
+              python /home/joinmarket/start.script.py wallet-tool $wallet history
+            fi
+            cat wallet-tool.log
+            echo ""
+            echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
+        python wallet-tool.py wallet.jmdat history
             ;;
         OBWATCH)
             #TODO show hidden service only if already running
@@ -142,6 +158,14 @@ case $CHOICE in
             /home/joinmarket/menu.sh
             ;;
         GEN)
+            clear
+            echo ""
+            . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
+            if [ ${RPCoverTor} = on ];then 
+              torify python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
+            else
+              python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
+            fi
             ;;
         IMPORT) 
             /home/joinmarket/import.wallet.sh
