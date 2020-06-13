@@ -5,6 +5,9 @@ source joinin.conf
 script="$1"
 wallet="$2"
 
+echo ""
+echo "Making sure $script not running"
+echo ""
 sudo systemctl stop $script
 sudo systemctl disable $script
 
@@ -36,8 +39,15 @@ Restart=no
 WantedBy=multi-user.target
 " | sudo tee /etc/systemd/system/$script.service 1>/dev/null
 
+echo ""
+echo "Starting the systemd service: $script"
+echo ""
+
 sudo systemctl enable $script
 sudo systemctl start $script
 
+echo ""
+echo "Shredding the password ..."
+echo ""
 # delete password once used
 shred -uvz /home/joinmarket/.pw

@@ -81,10 +81,14 @@ case $CHOICE in
             /home/joinmarket/get.password.sh
             source /home/joinmarket/joinin.conf
             /home/joinmarket/start.service.sh yg-privacyenhanced $wallet
-            echo "Starting the Yield Generator in the background.."
+            echo ""
+            echo "Started the Yield Generator in the background"
+            echo ""
+            echo "Showing the systemd status ..."
+            sleep 3
             dialog \
             --title "Monitoring the Yield Generator - press CTRL+C to exit"  \
-            --prgbox "sudo journalctl -fn20 -u yg-privacyenhanced" 20 140
+            --prgbox "sudo journalctl -fn10 -u yg-privacyenhanced" 30 140
             /home/joinmarket/menu.sh
             ;;
         MONITOR)
