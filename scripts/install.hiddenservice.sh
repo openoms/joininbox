@@ -49,11 +49,10 @@ fi
 
 if [ -d "/mnt/hdd/tor" ] ; then
   HiddenServiceDir="/mnt/hdd/tor"
- 
 else
   HiddenServiceDir="/var/lib/tor"
 fi  
- sudo sed -i  "s#HiddenServiceDir=.*#HiddenServiceDir=$HiddenServiceDir#g" /home/joinmarket/joinin.conf 
+sudo sed -i  "s#HiddenServiceDir=.*#HiddenServiceDir=$HiddenServiceDir#g" /home/joinmarket/joinin.conf 
 
 if [ "${runBehindTor}" = "on" ]; then
   #check if the service is already present
