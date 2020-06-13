@@ -65,21 +65,19 @@ There is a terminal based GUI in the works.
 ### Rough plan
 
 - [x] INFO "Wallet information" 
-- [ ] PAY "Pay with a coinjoin" 
-- [ ] TUMBLER "Run the Tumbler" 
+- [ ] QT "Open the JoinMarket-QT GUI" 
 - [x] MAKER "Run the Yield Generator" 
 - [x] YG-LIST "List the past YG activity" 
 - [x] OBWATCH "Run the offer book locally" 
 - [ ] EMPTY "Empty a mixdepth" 
 - [x] YG_CONF "Configure the Yield Generator" 
 - [x] STOP "Stop the Yield Generator" 
-- [ ] GEN "Generate a wallet" 
+- [x] GEN "Generate a wallet" 
 - [x] IMPORT "Copy wallet(s) from a remote node" 
-- [ ] RESTORE "Restore a wallet" 
+- [x] RECOVER "Restore a wallet" 
 - [x] INSTALL "Install and configure JoinMarket" 
 - [x] UPDATE "Update JoininBox"
 
-- [ ] List and display the logs 
-- [ ] Connect to a remote node 
+- [ ] Guide connection to a remote node
 
 
