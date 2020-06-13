@@ -47,7 +47,9 @@ sudo systemctl enable $script
 sudo systemctl start $script
 
 echo ""
-echo "Shredding the password ..."
+echo "Shredding the password once used..."
 echo ""
+
+sleep 5
 # delete password once used
 shred -uvz /home/joinmarket/.pw

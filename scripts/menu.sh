@@ -88,7 +88,7 @@ case $CHOICE in
             sleep 3
             dialog \
             --title "Monitoring the Yield Generator - press CTRL+C to exit"  \
-            --prgbox "sudo journalctl -fn10 -u yg-privacyenhanced" 30 140
+            --prgbox "sudo journalctl -fn20 -u yg-privacyenhanced" 30 140
             /home/joinmarket/menu.sh
             ;;
         MONITOR)
