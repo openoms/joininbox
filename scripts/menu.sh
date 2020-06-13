@@ -134,10 +134,7 @@ case $CHOICE in
         EMPTY)
             ;;
         YG_CONF)
-            dialog \
-            --title "Editing the yg-privacyenhanced.py" \
-            --editbox  "/home/joinmarket/joinmarket-clientserver/scripts/yg-privacyenhanced.py" 200 200 2>_temp
-            cat _temp > /home/joinmarket/joinmarket-clientserver/scripts/yg-privacyenhanced.py
+            /home/joinmarket/set.conf.sh /home/joinmarket/joinmarket-clientserver/scripts/yg-privacyenhanced.py
             /home/joinmarket/menu.sh            
             ;;
         STOP)

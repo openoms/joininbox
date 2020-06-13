@@ -57,30 +57,11 @@ if [ ${runBehindTor} = on ]; then
   echo "Edited the joinmarket.cfg to communicate over Tor only."
 fi
 
+
+
 # Configure joinmarket
 dialog \
 --exit-label "Continue to edit the joinmarket.cfg" \
 --textbox "info.conf.txt" 20 102
 
-# temp conf
-conf=$(tempfile 2>/dev/null)
-# trap it
-trap "rm -f $conf" 0 1 2 5 15
-dialog \
---title "Editing the joinmarket.cfg" \
---editbox "/home/joinmarket/.joinmarket/joinmarket.cfg" 200 200 2> $conf
-# make decison
-pressed=$?
-case $pressed in
-  0)
-    cat $conf | sudo -u joinmarket tee /home/joinmarket/.joinmarket/joinmarket.cfg 1>/dev/null
-    shred $conf;;
-  1)
-    shred $conf
-    echo "Cancelled"
-    exit 0;;
-  255)
-    shred $conf
-    [ -s $conf ] &&  cat $conf || echo "ESC pressed."
-    exit 0;;
-esac
+/home/joinmarket/set.conf.sh /home/joinmarket/.joinmarket/joinmarket.cfg
