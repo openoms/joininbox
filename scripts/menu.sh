@@ -37,26 +37,25 @@ BACKTITLE="JoininBox GUI"
 # Basic Options
 OPTIONS+=(\
   INFO "Show the address list and balance" \
-  #PAY "Pay to an address using coinjoin" \
-  #TUMBLER "Run the Tumbler to mix quickly" \
-  MAKER "Run the Yield Generator" \
-  MONITOR "Monitor the Yield Generator" \
-  YG_LIST "List the past YG activity"
+  GEN "Generate a new wallet" \
+  IMPORT "Copy wallet(s) from a remote node"\
+  RECOVER "Restore a wallet from the seed" \
   "" ""
-  HISTORY "Show the past transactions" \
+  MAKER "Run the Yield Generator" \
+  YG_CONF "Configure the Yield Generator" \
+  MONITOR "Monitor the YG service" \
+  YG_LIST "List the past YG activity"\
+  STOP "Stop the YG service" \
+  "" ""
+  HISTORY "Show all past transactions" \
   OBWATCH "Watch the offer book locally" \
   #EMPTY "Empty a mixdepth" \
   "" ""
-  YG_CONF "Configure the Yield Generator" \
-  STOP "Stop the Yield Generator" \
-  "" ""
-  GEN "Generate a new wallet" \
-  IMPORT "Copy wallet(s) from a remote node"
-  RECOVER "Restore a wallet from the seed" \
-  "" ""
-  INSTALL "Install and configure JoinMarket" \
+  CONFIG "Edit the joinmarket.cfg" \
   UPDATE "Update the JoininBox scripts and menu" \
   X "Exit to the Command Line" \
+  #PAY "Pay to an address using coinjoin" \
+  #TUMBLER "Run the Tumbler to mix quickly" \
 )
 
 CHOICE=$(dialog --clear \
@@ -151,7 +150,7 @@ case $CHOICE in
               python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py recover
             fi
             ;;
-        INSTALL)
+        CONFIG)
             /home/joinmarket/install.joinmarket.sh
             errorOnInstall=$?
             if [ ${errorOnInstall} -eq 0 ]; then
