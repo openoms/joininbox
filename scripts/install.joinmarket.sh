@@ -57,11 +57,10 @@ if [ ${runBehindTor} = on ]; then
   echo "Edited the joinmarket.cfg to communicate over Tor only."
 fi
 
-
-
-# Configure joinmarket
+# show info
 dialog \
 --exit-label "Continue to edit the joinmarket.cfg" \
 --textbox "info.conf.txt" 20 102
 
+# edit joinmarket.cfg
 /home/joinmarket/set.conf.sh /home/joinmarket/.joinmarket/joinmarket.cfg
