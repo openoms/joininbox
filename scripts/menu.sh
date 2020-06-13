@@ -52,7 +52,7 @@ OPTIONS+=(\
   "" ""
   GEN "Generate a new wallet" \
   IMPORT "Copy wallet(s) from a remote node"
-  #RESTORE "Restore a wallet from the seed" \
+  RECOVER "Restore a wallet from the seed" \
   "" ""
   INSTALL "Install and configure JoinMarket" \
   UPDATE "Update the JoininBox scripts and menu" \
@@ -142,7 +142,14 @@ case $CHOICE in
             /home/joinmarket/import.wallet.sh
             /home/joinmarket/menu.sh
             ;;
-        RESTORE)
+        RECOVER)
+            echo ""
+            . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
+            if [ ${RPCoverTor} = on ];then 
+              torify python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py recover
+            else
+              python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py recover
+            fi
             ;;
         INSTALL)
             /home/joinmarket/install.joinmarket.sh
