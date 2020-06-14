@@ -64,13 +64,15 @@ echo "wallets. Usually: ~/.joinmarket/wallets or ~/joinmarket-clientserver/scrip
 echo "You should see files called '.jmdat'"
 echo ""
 echo "COPY, PASTE & EXECUTE the following command in the terminal of the source computer:"
+echo ""
 if [ "${CHOICE}" = "LAN" ]; then
-  echo "scp ./*.jmdat joinmarket@${localip}:/home/joinmarket/.joinmarket/wallets"
+  echo "scp ./*.jmdat joinmarket@${localip}:~/.joinmarket/wallets"
 elif [ "${CHOICE}" = "TOR" ]; then
-  echo "torify scp ./*.jmdat joinmarket@${TOR_ADDRESS}:/home/joinmarket/.joinmarket/wallets"
+  echo "torify scp ./*.jmdat joinmarket@${TOR_ADDRESS}:~/.joinmarket/wallets"
 fi
 echo "" 
-echo "This command will ask for your SSH PASSWORD of your JoinInBox."
+echo "This command will ask for your SSH PASSWORD of your JoininBox."
+echo "Use the PASSWORD_B on a RaspiBlitz (same as the rpcpassword in the bitcoin.conf)."
 echo "************************************************************************************"
 echo "PRESS ENTER if the transfer is done OR if you want to choose another option."
 sleep 2

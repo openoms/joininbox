@@ -53,7 +53,7 @@ Use the line in the desktop terminal to connect:
 
 ssh -X joinmarket@$localip joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
 
-Use the PASSWORD_B (rpc_password in the bitcoin.conf) to open the JoinMarket-QT GUI"
+Use the PASSWORD_B (rpcpassword in the bitcoin.conf) to open the JoinMarket-QT GUI"
 
 elif [ "${CHOICE}" = "MAC" ]; then
   echo "
@@ -63,7 +63,7 @@ Use the line in the desktop terminal to connect:
 
 ssh -X joinmarket@$localip joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
 
-Use the PASSWORD_B (rpc_password in the bitcoin.conf) to open the JoinMarket-QT GUI"
+Use the PASSWORD_B (rpcpassword in the bitcoin.conf) to open the JoinMarket-QT GUI"
 
 elif [ "${CHOICE}" = "WINDOWS" ]; then
   echo "
