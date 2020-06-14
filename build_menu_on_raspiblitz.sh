@@ -48,5 +48,5 @@ fi
 # setting value in joinin config
 checkBlitzTorEntry=$(cat /mnt/hdd/raspiblitz.conf | grep -c "runBehindTor=on")
 if [ ${checkBlitzTorEntry} -gt 0 ]; then
-  sudo -u joinmarket sudo sed -i "s/^runBehindTor=.*/runBehindTor=on/g" /home/joinmarket/joinin.conf
+  sudo -u joinmarket sed -i "s/^runBehindTor=.*/runBehindTor=on/g" /home/joinmarket/joinin.conf
 fi
