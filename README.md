@@ -59,7 +59,6 @@ There is a terminal based GUI in the works.
 
 <p align="left">
   <img width="400" src="/images/mainmenu.png">
-  <img width="400" src="/images/darkmenu.png">
 </p>
 
 ### Rough plan
