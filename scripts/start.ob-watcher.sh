@@ -12,14 +12,6 @@ sudo systemctl stop $SCRIPT
 sudo systemctl disable $SCRIPT 2>/dev/null
 sleep 5
 
-source joinin.conf
-
-if [ ${RPCoverTor} = on ];then 
-  tor="torify"
-else
-  tor=""
-fi
-
 echo "
 [Unit]
 Description=$SCRIPT
@@ -27,7 +19,7 @@ Description=$SCRIPT
 [Service]
 WorkingDirectory=/home/joinmarket/joinmarket-clientserver/scripts/
 ExecStart=/bin/sh -c '. /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
- $tor python /home/joinmarket/joinmarket-clientserver/scripts/obwatch/ob-watcher.py'
+python /home/joinmarket/joinmarket-clientserver/scripts/obwatch/ob-watcher.py'
 User=joinmarket
 Group=joinmarket
 Type=simple
