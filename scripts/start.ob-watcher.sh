@@ -17,9 +17,10 @@ echo "
 Description=$SCRIPT
 
 [Service]
-WorkingDirectory=/home/joinmarket/joinmarket-clientserver/scripts/
-ExecStart=/bin/sh -c '. /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
-python /home/joinmarket/joinmarket-clientserver/scripts/obwatch/ob-watcher.py'
+WorkingDirectory=/home/joinmarket/joinmarket-clientserver/scripts/obwatch
+ExecStart=/bin/sh -c \
+'. /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate && \
+python ob-watcher.py'
 User=joinmarket
 Group=joinmarket
 Type=simple
