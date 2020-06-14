@@ -36,24 +36,26 @@ BACKTITLE="JoininBox GUI"
 
 # Basic Options
 OPTIONS+=(\
-  INFO "Show the address list and balance" \
+  INFO "Show the address list and balances" \
   GEN "Generate a new wallet" \
-  IMPORT "Copy wallet(s) from a remote node"\
-  RECOVER "Restore a wallet from the seed" \
+  QTGUI "Show how to open the JoinMarketQT GUI" \
   "" ""
   MAKER "Run the Yield Generator" \
-  YG_CONF "Configure the Yield Generator" \
+  YGCONF "Configure the Yield Generator" \
   MONITOR "Monitor the YG service" \
-  YG_LIST "List the past YG activity"\
+  YGLIST "List the past YG activity"\
   STOP "Stop the YG service" \
   "" ""
   HISTORY "Show all past transactions" \
   OBWATCH "Watch the offer book locally" \
-  #EMPTY "Empty a mixdepth" \
   "" ""
   CONFIG "Edit the joinmarket.cfg" \
+  #CONNECT "Connect to a remote bitcoind"
+  IMPORT "Copy wallet(s) from a remote node"\
+  RECOVER "Restore a wallet from the seed" \
   UPDATE "Update the JoininBox scripts and menu" \
   X "Exit to the Command Line" \
+  #EMPTY "Empty a mixdepth" \
   #PAY "Pay to an address using coinjoin" \
   #TUMBLER "Run the Tumbler to mix quickly" \
 )
@@ -72,10 +74,24 @@ case $CHOICE in
             /home/joinmarket/start.script.sh wallet-tool
             echo ""
             echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
+            echo "Type: 'menu' and press ENTER to return to the menu"
             ;;
-        PAY)
-            ;;            
-        TUMBLER)
+        GEN)
+            clear
+            echo ""
+            . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
+            if [ ${RPCoverTor} = on ];then 
+              torify python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
+            else
+              python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
+            fi
+            echo "Type: 'menu' and press ENTER to return to the menu"
+            ;;
+        QTGUI)
+            /home/joinmarket/info.qtgui.sh
+            echo "Returning to the menu..."
+            sleep 2
+            /home/joinmarket/menu.sh
             ;;
         MAKER)
             /home/joinmarket/get.password.sh
@@ -89,19 +105,39 @@ case $CHOICE in
             dialog \
             --title "Monitoring the Yield Generator - press CTRL+C to exit"  \
             --prgbox "sudo journalctl -fn20 -u yg-privacyenhanced" 30 140
+            echo "Returning to the menu..."
+            sleep 2
             /home/joinmarket/menu.sh
+            ;;
+        YGCONF)
+            /home/joinmarket/set.conf.sh /home/joinmarket/joinmarket-clientserver/scripts/yg-privacyenhanced.py
+            echo "Returning to the menu..."
+            sleep 2
+            /home/joinmarket/menu.sh        
             ;;
         MONITOR)
             dialog \
             --title "Monitoring the Yield Generator - press CTRL+C to exit"  \
             --prgbox "sudo journalctl -fn40 -u yg-privacyenhanced" 40 140
-            /home/joinmarket/menu.sh
+            echo "Returning to the menu..."
+            sleep 2
             /home/joinmarket/menu.sh
             ;;            
-        YG_LIST)
+        YGLIST)
             dialog \
             --title "timestamp            cj amount/satoshi  my input count  my input value/satoshi  cjfee/satoshi  earned/satoshi  confirm time/min  notes"  \
             --prgbox "column $HOME/.joinmarket/logs/yigen-statement.csv -t -s ","" 100 140
+            echo "Returning to the menu..."
+            sleep 2
+            /home/joinmarket/menu.sh
+            ;;
+        STOP)
+            sudo systemctl stop yg-privacyenhanced
+            sudo systemctl disable yg-privacyenhanced
+            sudo systemctl reset-failed
+            echo "Stopped the Yield Generator background service"
+            echo "Returning to the menu..."
+            sleep 2
             /home/joinmarket/menu.sh
             ;;
         HISTORY)
@@ -119,30 +155,30 @@ case $CHOICE in
               DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
                 --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
             fi
+            echo "Returning to the menu..."
+            sleep 2
             /home/joinmarket/menu.sh
             ;;
-        EMPTY)
-            ;;
-        YG_CONF)
-            /home/joinmarket/set.conf.sh /home/joinmarket/joinmarket-clientserver/scripts/yg-privacyenhanced.py
-            /home/joinmarket/menu.sh            
-            ;;
-        STOP)
-            sudo systemctl stop yg-privacyenhanced
-            /home/joinmarket/menu.sh
-            ;;
-        GEN)
-            clear
-            echo ""
-            . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
-            if [ ${RPCoverTor} = on ];then 
-              torify python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
-            else
-              python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
+        CONFIG)
+            /home/joinmarket/install.joinmarket.sh
+            errorOnInstall=$?
+            if [ ${errorOnInstall} -eq 0 ]; then
+              dialog --title "Installed JoinMarket" \
+                --msgbox "\n Saved the joinmarket.conf" 7 56
+            else 
+              DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
+                --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
             fi
+            echo "Returning to the menu..."
+            sleep 2
+            /home/joinmarket/menu.sh
+            ;;
+        CONNECT) 
             ;;
         IMPORT) 
-            /home/joinmarket/import.wallet.sh
+            /home/joinmarket/info.importwallet.sh
+            echo "Returning to the menu..."
+            sleep 2
             /home/joinmarket/menu.sh
             ;;
         RECOVER)
@@ -153,30 +189,27 @@ case $CHOICE in
             else
               python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py recover
             fi
-            ;;
-        CONFIG)
-            /home/joinmarket/install.joinmarket.sh
-            errorOnInstall=$?
-            if [ ${errorOnInstall} -eq 0 ]; then
-              dialog --title "Installed JoinMarket" \
-                --msgbox "\nContinue from the menu or the command line " 7 56
-            else 
-              DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
-                --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
-            fi
-            /home/joinmarket/menu.sh
+            echo "Type: 'menu' and press ENTER to return to the menu"
             ;;
         UPDATE)
             ./update.joininbox.sh
+            echo "Returning to the menu..."
+            sleep 2
             /home/joinmarket/menu.sh
+            ;;
+        EMPTY)
+            ;;
+        PAY)
+            ;;            
+        TUMBLER)
             ;;
         X)
             clear
             echo "***********************************"
-            echo "* JoinBox Commandline"
+            echo "* JoininBox Commandline"
             echo "***********************************"
             echo "Refer to the documentation about how to get started and much more:"
-            echo "https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/README.md"
+            echo "https://github.com/openoms/bitcoin-tutorials/tree/master/joinmarket"
             echo ""
             echo "To return to main menu use the command: menu"
             echo ""
