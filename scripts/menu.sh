@@ -47,7 +47,7 @@ OPTIONS+=(\
   STOP "Stop the YG service" \
   "" ""
   HISTORY "Show all past transactions" \
-  OBWATCH "Watch the offer book locally" \
+  OFFERS "Watch the offer book locally" \
   "" ""
   CONFIG "Edit the joinmarket.cfg" \
   #CONNECT "Connect to a remote bitcoind"
@@ -134,6 +134,8 @@ case $CHOICE in
         STOP)
             sudo systemctl stop yg-privacyenhanced
             sudo systemctl disable yg-privacyenhanced
+            # check for failed services
+            # sudo systemctl list-units --type=service
             sudo systemctl reset-failed
             echo "Stopped the Yield Generator background service"
             echo "Returning to the menu..."
@@ -143,18 +145,26 @@ case $CHOICE in
         HISTORY)
             /home/joinmarket/start.script.sh wallet-tool history
             ;;
-        OBWATCH)
+        OFFERS)
             #TODO show hidden service only if already running
             /home/joinmarket/start.ob-watcher.sh
             errorOnInstall=$?
             if [ ${errorOnInstall} -eq 0 ]; then
-              TOR_ADDRESS=$(sudo cat $HiddenServiceDir/$service/hostname)
-              dialog --title "Started the ob-watcher service" \
-                --msgbox "\nVisit the address in the Tor Browser:\nhttps://$TOR_ADDRESS" 8 74
+              TOR_ADDRESS=$(sudo cat $HiddenServiceDir/ob-watcher/hostname)
+              whiptail --title "Started the ob-watcher service" \
+                --msgbox "\nVisit the address in the Tor Browser:\n$TOR_ADDRESS" 9 66
             else 
               DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
                 --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
             fi
+            echo ""
+            echo "Started watching the Offer Book in the background"
+            echo ""
+            echo "Showing the systemd status ..."
+            sleep 3
+            dialog \
+            --title "Monitoring the ob-watcher - press CTRL+C to exit"  \
+            --prgbox "sudo journalctl -fn20 -u ob-watcher" 30 140
             echo "Returning to the menu..."
             sleep 2
             /home/joinmarket/menu.sh

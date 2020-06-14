@@ -10,6 +10,7 @@ SCRIPT="ob-watcher"
 
 sudo systemctl stop $SCRIPT
 sudo systemctl disable $SCRIPT 2>/dev/null
+sleep 5
 
 source joinin.conf
 

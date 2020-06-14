@@ -32,14 +32,19 @@ fi
 " | sudo -u joinmarket tee -a /home/joinmarket/.bashrc
 
 sudo -u joinmarket touch /home/joinmarket/joinin.conf
+
 # tor config
 # add default value to joinin config if needed
 checkTorEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | grep -c "runBehindTor")
 if [ ${checkTorEntry} -eq 0 ]; then
   echo "runBehindTor=off" | sudo -u joinmarket tee -a /home/joinmarket/joinin.conf
 fi
-echo "
-AllowOutboundLocalhost 1" | sudo tee -a /etc/tor/torsocks.conf
+checkAllowOutboundLocalhost=$(sudo cat /etc/tor/torsocks.conf | grep -c "AllowOutboundLocalhost 1")
+if [ ${checkAllowOutboundLocalhost} -eq 0 ]; then
+  echo "AllowOutboundLocalhost 1" | sudo tee -a /etc/tor/torsocks.conf
+  sudo systemctl restart tor
+fi
+
 # setting value in joinin config
 checkBlitzTorEntry=$(cat /mnt/hdd/raspiblitz.conf | grep -c "runBehindTor=on")
 if [ ${checkBlitzTorEntry} -gt 0 ]; then
