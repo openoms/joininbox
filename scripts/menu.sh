@@ -148,7 +148,7 @@ case $CHOICE in
             /home/joinmarket/start.ob-watcher.sh
             errorOnInstall=$?
             if [ ${errorOnInstall} -eq 0 ]; then
-              TOR_ADDRESS=$(sudo cat /var/lib/tor/ob-watcher/hostname)
+              TOR_ADDRESS=$(sudo cat $HiddenServiceDir/$service/hostname)
               dialog --title "Started the ob-watcher service" \
                 --msgbox "\nVisit the address in the Tor Browser:\nhttps://$TOR_ADDRESS" 8 74
             else 

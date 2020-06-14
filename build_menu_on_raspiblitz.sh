@@ -12,8 +12,8 @@ fi
 sudo rm -rf /home/joinmarket/joininbox
 sudo -u joinmarket git clone https://github.com/openoms/joininbox.git /home/joinmarket/joininbox
 
-sudo -u joinmarket cp ./joininbox/scripts/* /home/joinmarket/
-sudo -u joinmarket cp ./joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
+sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/
+sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
 sudo chmod +x /home/joinmarket/*.sh
 
 # bash autostart for joinmarket
@@ -29,14 +29,14 @@ fi
 if [ -z \"\$TMUX\" ]; then
   /home/joinmarket/menu.sh
 fi
-" | tee -a /home/joinmarket/.bashrc
+" | sudo -u joinmarket tee -a /home/joinmarket/.bashrc
 
 sudo -u joinmarket touch /home/joinmarket/joinin.conf
 # tor config
 # add default value to joinin config if needed
-checkTorEntry=$(cat /home/joinmarket/joinin.conf | grep -c "runBehindTor")
+checkTorEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | grep -c "runBehindTor")
 if [ ${checkTorEntry} -eq 0 ]; then
-  echo "runBehindTor=off" >> /home/joinmarket/joinin.conf
+  echo "runBehindTor=off" | sudo -u joinmarket tee -a /home/joinmarket/joinin.conf
 fi
 echo "
 AllowOutboundLocalhost 1" | sudo tee -a /etc/tor/torsocks.conf
