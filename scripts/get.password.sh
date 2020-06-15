@@ -6,21 +6,11 @@ if ! grep -Eq "^wallet=" joinin.conf; then
 fi
 
 # choose wallet
-
-## exprimental
-#dialog --backtitle "Choose a wallet" \
-#       --title "Choose a wallet by starting to type " \
-#       --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2>_temp
-#
-#dialog --backtitle "Choose a wallet" \
-#       --title "Choose a wallet" \
-#       --inputbox "\nProceeding with $(cat _temp) unless edited below" 10 60 $(cat _temp) 2>_temp
-
-# get password
 wallet=$(tempfile 2>/dev/null)
 
-dialog --backtitle "Choosing a wallet" \
-       --inputbox "Type the name of the wallet to be used.\nExample: wallet1 for wallet1.jmdat" 10 60 2> $wallet
+dialog --backtitle "Choose a wallet" \
+       --title "Choose a wallet by typing the full name of the file" \
+       --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2> $wallet
 
 # get password
 data=$(tempfile 2>/dev/null)
