@@ -58,10 +58,17 @@ case $CHOICE in
             ;;
         MONITOR)
             dialog \
-            --title "Monitoring the Yield Generator - press CTRL+C to exit"  \
-            --prgbox "sudo journalctl -fn40 -u yg-privacyenhanced" 40 140
+            --title "Monitoring the Yield Generator"  \
+            --msgbox "
+Will show the logs using:
+
+sudo journalctl -fn40 -u yg-privacyenhanced
+
+Press CTRL+C to exit and return to the menu." 10 50
+
+            sudo journalctl -fn40 -u yg-privacyenhanced
             echo "Returning to the menu..."
-            sleep 2
+            sleep 1
             ./menu.sh
             ;;            
         YGLIST)
