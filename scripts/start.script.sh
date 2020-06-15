@@ -9,29 +9,48 @@ fi
 
 script="$1"
 if [ ${#script} -eq 0 ]; then
-  echo "please specify a script to run"
+  echo "must specify a script to run"
 fi
 
-option="$2"
-if [ ${#option} -eq 0 ]; then
+wallet="$2"
+if [ ${#wallet} -eq 0 ]; then
+  echo "must specify a wallet to use"
+fi
+
+option="$3"
+if [ ${#option} -eq 0 ] || [ ${option} == nooption ]; then
   option=""
 fi
 
-# choose wallet
-## exprimental
-#dialog --backtitle "Choose a wallet" \
-#       --title "Choose a wallet by starting to type " \
-#       --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2>_temp
-#
-#dialog --backtitle "Choose a wallet" \
-#       --title "Choose a wallet" \
-#       --inputbox "\nProceeding with $(cat _temp) unless edited below" 10 60 $(cat _temp) 2>_temp
+mixdepth="$4"
+if [ ${#mixdepth} -eq 0 ]; then
+  mixdepth=""
+else
+  mixdepth="-m$4"
+fi
 
-# get password
-wallet=$(tempfile 2>/dev/null)
+makercount="$5"
+if [ ${#makercount} -eq 0 ]; then
+  makercount=""
+else
+  makercount="-N$5"
+fi
 
-dialog --backtitle "Choosing a wallet" \
-       --inputbox "Type the name of the wallet to be used.\nExample: wallet1 for wallet1.jmdat" 10 60 2> $wallet
+amount="$6"
+if [ ${#amount} -eq 0 ]; then
+  amount=""
+fi
+
+address="$7"
+if [ ${#address} -eq 0 ]; then
+  address=""
+fi
+
+if [ ${RPCoverTor} = on ];then 
+  tor="torify"
+else
+  tor=""
+fi
 
 # get password
 data=$(tempfile 2>/dev/null)
@@ -48,34 +67,25 @@ pressed=$?
 case $pressed in
   0)
     . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
-    if [ ${RPCoverTor} = on ];then
-      echo "running the command:
-'torify python ~/joinmarket-clientserver/scripts/$script.py \
-$(cat $wallet).jmdat $option'"
-      echo ""
-      cat $data | torify \
-      python ~/joinmarket-clientserver/scripts/$script.py \
-      $(cat $wallet).jmdat $option --wallet-password-stdin
-    else
-      echo "running:
-'python ~/joinmarket-clientserver/scripts/$script.py \
-$(cat $wallet).jmdat $option'"
-      echo ""
-      cat $data | \
-      python ~/joinmarket-clientserver/scripts/$script.py \
-      $(cat $wallet).jmdat $option --wallet-password-stdin
-    fi
-    shred $data;;
+    echo "running the command:
+$tor python ~/joinmarket-clientserver/scripts/$script.py \
+$makercount $mixdepth $wallet $option $amount $address"
+    echo ""
+    cat $data | $tor \
+    python ~/joinmarket-clientserver/scripts/$script.py \
+    $makercount $mixdepth $wallet $option $amount $address --wallet-password-stdin
+    shred $data
+    ;;
   1)
     shred $data
-    shred $wallet
     rm -f .pw
     echo "Cancelled"
-    exit 1;;
+    exit 1
+    ;;
   255)
     shred $data
-    shred $wallet
     rm -f .pw
     [ -s $data ] &&  cat $data || echo "ESC pressed."
-    exit 1;;
+    exit 1
+    ;;
 esac
