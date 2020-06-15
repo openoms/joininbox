@@ -26,37 +26,31 @@ source /home/joinmarket/joinin.conf
 
 # BASIC MENU INFO
 HEIGHT=26
-WIDTH=52
+WIDTH=56
 CHOICE_HEIGHT=20
-BACKTITLE=""
+BACKTITLE="JoininBox GUI"
 TITLE="JoininBox"
 MENU="Choose from the options:"
 OPTIONS=()
-BACKTITLE="JoininBox GUI"
 
 # Basic Options
 OPTIONS+=(\
   INFO "Show the address list and balances" \
-  GEN "Generate a new wallet" \
   QTGUI "Show how to open the JoinMarketQT GUI" \
   "" ""
-  MAKER "Run the Yield Generator" \
-  YGCONF "Configure the Yield Generator" \
-  MONITOR "Monitor the YG service" \
-  YGLIST "List the past YG activity"\
-  STOP "Stop the YG service" \
+  WALLET "Wallet management options" \
+  MAKER "Yield Generator options" \
   "" ""
-  HISTORY "Show all past transactions" \
+  PAY "Pay to an address with/without a coinjoin" \
+  CONTROL "Freeze/unfreeze UTXO-s in a mixdepth" \
+  "" ""
   OFFERS "Watch the offer book locally" \
-  "" ""
+  "" "" 
   CONFIG "Edit the joinmarket.cfg" \
-  #CONNECT "Connect to a remote bitcoind"
-  IMPORT "Copy wallet(s) from a remote node"\
-  RECOVER "Restore a wallet from the seed" \
   UPDATE "Update the JoininBox scripts and menu" \
+  "" "" 
   X "Exit to the Command Line" \
-  #EMPTY "Empty a mixdepth" \
-  #PAY "Pay to an address using coinjoin" \
+  #CONNECT "Connect to a remote bitcoind"
   #TUMBLER "Run the Tumbler to mix quickly" \
 )
 
@@ -76,74 +70,42 @@ case $CHOICE in
             echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
             echo "Type: 'menu' and press ENTER to return to the menu"
             ;;
-        GEN)
-            clear
-            echo ""
-            . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
-            if [ ${RPCoverTor} = on ];then 
-              torify python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
-            else
-              python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
-            fi
-            echo "Type: 'menu' and press ENTER to return to the menu"
+        WALLET)
+            ./menu.wallet.sh
+            ./menu.sh          
             ;;
         QTGUI)
             /home/joinmarket/info.qtgui.sh
             echo "Returning to the menu..."
             sleep 2
-            /home/joinmarket/menu.sh
+            ./menu.sh
             ;;
         MAKER)
-            /home/joinmarket/get.password.sh
-            source /home/joinmarket/joinin.conf
-            /home/joinmarket/start.service.sh yg-privacyenhanced $wallet
+            ./menu.yg.sh
+            ./menu.sh           
+            ;;
+        PAY)
+            ./menu.pay.sh
             echo ""
-            echo "Started the Yield Generator in the background"
-            echo ""
-            echo "Showing the systemd status ..."
-            sleep 3
-            dialog \
-            --title "Monitoring the Yield Generator - press CTRL+C to exit"  \
-            --prgbox "sudo journalctl -fn20 -u yg-privacyenhanced" 30 140
-            echo "Returning to the menu..."
-            sleep 2
-            /home/joinmarket/menu.sh
+            echo "Type: 'menu' and press ENTER to return to the menu"
             ;;
-        YGCONF)
-            /home/joinmarket/set.conf.sh /home/joinmarket/joinmarket-clientserver/scripts/yg-privacyenhanced.py
-            echo "Returning to the menu..."
-            sleep 2
-            /home/joinmarket/menu.sh        
-            ;;
-        MONITOR)
-            dialog \
-            --title "Monitoring the Yield Generator - press CTRL+C to exit"  \
-            --prgbox "sudo journalctl -fn40 -u yg-privacyenhanced" 40 140
-            echo "Returning to the menu..."
-            sleep 2
-            /home/joinmarket/menu.sh
-            ;;            
-        YGLIST)
-            dialog \
-            --title "timestamp            cj amount/satoshi  my input count  my input value/satoshi  cjfee/satoshi  earned/satoshi  confirm time/min  notes"  \
-            --prgbox "column $HOME/.joinmarket/logs/yigen-statement.csv -t -s ","" 100 140
-            echo "Returning to the menu..."
-            sleep 2
-            /home/joinmarket/menu.sh
-            ;;
-        STOP)
-            sudo systemctl stop yg-privacyenhanced
-            sudo systemctl disable yg-privacyenhanced
-            # check for failed services
-            # sudo systemctl list-units --type=service
-            sudo systemctl reset-failed
-            echo "Stopped the Yield Generator background service"
-            echo "Returning to the menu..."
-            sleep 2
-            /home/joinmarket/menu.sh
-            ;;
-        HISTORY)
-            /home/joinmarket/start.script.sh wallet-tool history
+        CONTROL)
+            wallet=$(tempfile 2>/dev/null)
+            dialog --backtitle "Choose a wallet" \
+            --title "Choose a wallet by typing the full name of the file" \
+            --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2> $wallet
+            mixdepth=$(tempfile 2>/dev/null)
+            dialog --backtitle "Choose a mixdepth" \
+            --inputbox "Type a number between 0 to 4 to choose the mixdepth" 8 60 2> $mixdepth
+            echo "Run the following command manually to use the freeze method:
+
+python ~/joinmarket-clientserver/scripts/wallet-tool.py -m$(cat $mixdepth) $(cat $wallet) freeze
+
+type 'menu' and press ENTER to return to the menu
+"     
+            # unlocking through stdin does not work with the freeze method:
+            # https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/598
+            # /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) freeze $(cat $mixdepth)
             ;;
         OFFERS)
             #TODO show hidden service only if already running
@@ -167,7 +129,7 @@ case $CHOICE in
             --prgbox "sudo journalctl -fn20 -u ob-watcher" 30 140
             echo "Returning to the menu..."
             sleep 2
-            /home/joinmarket/menu.sh
+            ./menu.sh
             ;;
         CONFIG)
             /home/joinmarket/install.joinmarket.sh
@@ -181,37 +143,15 @@ case $CHOICE in
             fi
             echo "Returning to the menu..."
             sleep 2
-            /home/joinmarket/menu.sh
+            ./menu.sh
             ;;
         CONNECT) 
-            ;;
-        IMPORT) 
-            /home/joinmarket/info.importwallet.sh
-            echo "Returning to the menu..."
-            sleep 2
-            /home/joinmarket/menu.sh
-            ;;
-        RECOVER)
-            echo ""
-            . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
-            if [ ${RPCoverTor} = on ];then 
-              torify python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py recover
-            else
-              python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py recover
-            fi
-            echo "Type: 'menu' and press ENTER to return to the menu"
             ;;
         UPDATE)
             ./update.joininbox.sh
             echo "Returning to the menu..."
             sleep 2
-            /home/joinmarket/menu.sh
-            ;;
-        EMPTY)
-            ;;
-        PAY)
-            ;;            
-        TUMBLER)
+            ./menu.sh
             ;;
         X)
             clear
