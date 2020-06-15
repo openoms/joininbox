@@ -58,7 +58,13 @@ There is a terminal based GUI in the works.
 **Work In Progress** - suggestions and contributions are welcome
 
 <p align="left">
-  <img width="400" src="/images/mainmenu.png">
+  <img width="400" src="/images/menu.png">
+</p>
+<p align="left">
+  <img width="400" src="/images/menu.yg.png">
+</p>
+<p align="left">
+  <img width="400" src="/images/menu.wallet.png">
 </p>
 
 ### Rough plan
