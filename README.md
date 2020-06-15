@@ -1,4 +1,31 @@
-## JoininBox - Build a dedicated JoinMarket Box remotely connected to a full node
+# JoininBox
+
+A terminal based menu and helper UI for JoinMarket. 
+
+<p align="left">
+  <img width="400" src="/images/menu.png">
+</p>
+<p align="left">
+  <img width="400" src="/images/menu.yg.png">
+</p>
+<p align="left">
+  <img width="400" src="/images/menu.wallet.png">
+</p>
+
+## Install the JoininBox menu on a RaspiBlitz v1.5+ 
+* Run the script in the RaspiBlitz terminal (will install JoinMarket if not active already):
+  ```bash
+  # download
+  wget https://raw.githubusercontent.com/openoms/joininbox/master/build_menu_on_raspiblitz.sh
+  # run
+  bash build_menu_on_raspiblitz.sh
+  ```
+
+## Build a dedicated JoinMarket Box remotely connected to a full node
+
+<p align="left">
+  <img width="400" src="/images/joininbox.jpeg">
+</p>
 
 * Test environments:
   * Hardkernel Odroid XU4 running Armbian
@@ -22,15 +49,6 @@ or
   sudo bash build_joininbox.sh --with-tor
   ```
 
-### Installing the Joininbox menu on a RaspiBlitz v1.5+ 
-* Run the script in the RaspiBlitz terminal (will install JoinMarket if not active already):
-  ```bash
-  # download
-  wget https://raw.githubusercontent.com/openoms/joininbox/master/build_menu_on_raspiblitz.sh
-  # run
-  bash build_menu_on_raspiblitz.sh
-  ```
-
 * start in the RaspiBlitz terminal:
  `sudo su joinmarket`
 
@@ -50,39 +68,3 @@ or
 * Telegram: https://t.me/joinmarketorg  
 * IRC: #joinmarket on Freenode  
 * Reddit: https://www.reddit.com/r/joinmarket/  
-
---- 
-
-There is a terminal based GUI in the works.
-
-**Work In Progress** - suggestions and contributions are welcome
-
-<p align="left">
-  <img width="400" src="/images/menu.png">
-</p>
-<p align="left">
-  <img width="400" src="/images/menu.yg.png">
-</p>
-<p align="left">
-  <img width="400" src="/images/menu.wallet.png">
-</p>
-
-### Rough plan
-
-- [x] INFO "Wallet information" 
-- [ ] QT "Open the JoinMarket-QT GUI" 
-- [x] MAKER "Run the Yield Generator" 
-- [x] YG-LIST "List the past YG activity" 
-- [x] OBWATCH "Run the offer book locally" 
-- [ ] EMPTY "Empty a mixdepth" 
-- [x] YG_CONF "Configure the Yield Generator" 
-- [x] STOP "Stop the Yield Generator" 
-- [x] GEN "Generate a wallet" 
-- [x] IMPORT "Copy wallet(s) from a remote node" 
-- [x] RECOVER "Restore a wallet" 
-- [x] INSTALL "Install and configure JoinMarket" 
-- [x] UPDATE "Update JoininBox"
-
-- [ ] Guide connection to a remote node
-
-

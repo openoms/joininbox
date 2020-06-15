@@ -11,7 +11,7 @@ HEIGHT=12
 WIDTH=52
 CHOICE_HEIGHT=20
 TITLE="JoininBox"
-MENU="Choose from the options:"
+MENU="Yield Generator options:"
 OPTIONS=()
 BACKTITLE="JoininBox GUI"
 

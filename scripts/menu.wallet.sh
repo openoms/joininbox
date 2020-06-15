@@ -11,10 +11,9 @@ HEIGHT=12
 WIDTH=52
 CHOICE_HEIGHT=20
 TITLE="JoininBox"
-BACKTITLE="JoininBox GUI"
-MENU="Choose from the options:"
+BACKTITLE="JoininBox - Wallet management options"
+MENU="Wallet management options:"
 OPTIONS=()
-
 
 # Basic Options
 OPTIONS+=(\
