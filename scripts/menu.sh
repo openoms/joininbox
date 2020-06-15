@@ -25,7 +25,7 @@ source /home/joinmarket/joinin.conf
 # cd ~/bin/joinmarket-clientserver && source jmvenv/bin/activate && cd scripts
 
 # BASIC MENU INFO
-HEIGHT=26
+HEIGHT=22
 WIDTH=56
 CHOICE_HEIGHT=20
 BACKTITLE="JoininBox GUI"
