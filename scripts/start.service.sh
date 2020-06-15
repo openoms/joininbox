@@ -16,10 +16,12 @@ if [ $script == "yg-privacyenhanced" ]; then
 fi
 
 if [ ${RPCoverTor} = on ];then 
-  startScript="cat /home/joinmarket/.pw | torify python $script.py $wallet.jmdat --wallet-password-stdin"
+  tor="torify"
 else
-  startScript="cat /home/joinmarket/.pw | python $script.py $wallet.jmdat --wallet-password-stdin"
+  tor=""
 fi
+
+startScript="cat /home/joinmarket/.pw | $tor python $script.py $wallet.jmdat --wallet-password-stdin"
 
 echo "
 [Unit]
