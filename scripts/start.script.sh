@@ -1,20 +1,18 @@
 #!/bin/bash
 
-source /home/joinmarket/joinin.conf
-
-# add option if not in conf
-if ! grep -Eq "^wallet=" joinin.conf; then
-  echo "wallet=nil" >> joinin.conf
-fi
-
 script="$1"
 if [ ${#script} -eq 0 ]; then
   echo "must specify a script to run"
+  exit 1
 fi
 
-wallet="$2"
-if [ ${#wallet} -eq 0 ]; then
-  echo "must specify a wallet to use"
+if [ ${#wallet} -eq 0 ] || [ ${wallet} == "" ]; then
+  # wallet
+  tempwallet=$(tempfile 2>/dev/null)
+  dialog --backtitle "Choose a wallet" \
+       --title "Choose a wallet by typing the full name of the file" \
+       --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2> $tempwallet
+  wallet=$(cat $tempwallet)
 fi
 
 option="$3"
@@ -46,7 +44,7 @@ if [ ${#address} -eq 0 ]; then
   address=""
 fi
 
-if [ ${RPCoverTor} = on ];then 
+if [ ${RPCoverTor} == on ];then 
   tor="torify"
 else
   tor=""
