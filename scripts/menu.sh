@@ -134,10 +134,7 @@ type 'menu' and press ENTER to return to the menu
         CONFIG)
             /home/joinmarket/install.joinmarket.sh
             errorOnInstall=$?
-            if [ ${errorOnInstall} -eq 0 ]; then
-              dialog --title "Installed JoinMarket" \
-                --msgbox "\n Saved the joinmarket.conf" 7 56
-            else 
+            if [ ${errorOnInstall} -gt 0 ]; then
               DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
                 --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
             fi

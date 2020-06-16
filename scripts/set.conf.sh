@@ -15,10 +15,18 @@ dialog \
 pressed=$?
 case $pressed in
   0)
+    dialog --title "Finished editing" \
+    --msgbox "
+Saving to:
+$editScript" 7 56
     cat $conf | sudo -u joinmarket tee $editScript 1>/dev/null
     shred $conf;;
   1)
     shred $conf
+    DIALOGRC=.dialogrc.onerror dialog --title "Finished editing" \
+    --msgbox "
+Cancelled editing:
+$editScript" 7 56
     echo "Cancelled"
     exit 0;;
   255)
