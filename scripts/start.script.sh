@@ -6,6 +6,7 @@ if [ ${#script} -eq 0 ]; then
   exit 1
 fi
 
+wallet="$2"
 if [ ${#wallet} -eq 0 ] || [ ${wallet} == "" ]; then
   # wallet
   tempwallet=$(tempfile 2>/dev/null)

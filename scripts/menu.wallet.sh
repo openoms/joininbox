@@ -45,7 +45,11 @@ case $CHOICE in
             echo "Type: 'menu' and press ENTER to return to the menu"
             ;;
         HISTORY)
-            /home/joinmarket/start.script.sh wallet-tool history
+            wallet=$(tempfile 2>/dev/null)
+            dialog --backtitle "Choose a wallet" \
+            --title "Choose a wallet by typing the full name of the file" \
+            --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2> $wallet
+            /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) history
             ;;
         IMPORT) 
             /home/joinmarket/info.importwallet.sh
