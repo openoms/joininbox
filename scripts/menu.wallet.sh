@@ -50,6 +50,9 @@ case $CHOICE in
             --title "Choose a wallet by typing the full name of the file" \
             --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2> $wallet
             /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) history
+            echo ""
+            echo "Press ENTER to return to the menu"
+            read key
             ;;
         IMPORT) 
             /home/joinmarket/info.importwallet.sh
