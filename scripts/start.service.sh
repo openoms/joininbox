@@ -34,7 +34,7 @@ User=joinmarket
 Group=joinmarket
 Type=simple
 KillMode=process
-TimeoutSec=600
+TimeoutSec=infinity
 Restart=no
 
 [Install]
