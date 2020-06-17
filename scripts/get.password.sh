@@ -1,16 +1,17 @@
 #!/bin/bash
 
 # add option if not in conf
-if ! grep -Eq "^wallet=" joinin.conf; then
-  echo "wallet=nil" >> joinin.conf
+if ! grep -Eq "^wallet=" /home/joinmarket/joinin.conf; then
+  echo "wallet=" >> /home/joinmarket/joinin.conf
 fi
 
 # choose wallet
-wallet=$(tempfile 2>/dev/null)
+tempwallet=$(tempfile 2>/dev/null)
 
 dialog --backtitle "Choose a wallet" \
        --title "Choose a wallet by typing the full name of the file" \
-       --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2> $wallet
+       --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2> $tempwallet
+wallet=$(cat $tempwallet)
 
 # get password
 data=$(tempfile 2>/dev/null)
@@ -29,7 +30,7 @@ case $pressed in
     touch /home/joinmarket/.pw
     chmod 600 /home/joinmarket/.pw
     cat $data | tee /home/joinmarket/.pw 1>/dev/null
-    sed -i "s/^wallet=.*/wallet=$(cat $wallet)/g" joinin.conf
+    sed -i "s#^wallet=.*#wallet=$wallet#g" /home/joinmarket/joinin.conf
     shred $data;;
   1)
     shred $data

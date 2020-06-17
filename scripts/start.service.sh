@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source joinin.conf
+source /home/joinmarket/joinin.conf
 
 script="$1"
 wallet="$2"
@@ -12,7 +12,7 @@ sudo systemctl stop $script
 sudo systemctl disable $script
 
 if [ $script == "yg-privacyenhanced" ]; then 
-  rm -f ~/.joinmarket/wallets/$wallet.jmdat.lock
+  rm -f ~/.joinmarket/wallets/$wallet.lock
 fi
 
 if [ ${RPCoverTor} = on ];then 
@@ -21,7 +21,7 @@ else
   tor=""
 fi
 
-startScript="cat /home/joinmarket/.pw | $tor python $script.py $wallet.jmdat --wallet-password-stdin"
+startScript="cat /home/joinmarket/.pw | $tor python $script.py $wallet --wallet-password-stdin"
 
 echo "
 [Unit]

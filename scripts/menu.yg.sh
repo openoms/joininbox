@@ -37,6 +37,7 @@ case $CHOICE in
         MAKER)
             /home/joinmarket/get.password.sh
             source /home/joinmarket/joinin.conf
+            echo "Using wallet: $wallet"
             /home/joinmarket/start.service.sh yg-privacyenhanced $wallet
             echo ""
             echo "Started the Yield Generator in the background"

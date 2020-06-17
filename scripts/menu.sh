@@ -4,7 +4,7 @@ if [ $(dialog | grep -c "ComeOn Dialog!") -eq 0 ]; then
   sudo apt install dialog
 fi
 if [ -f joinin.conf ]; then
-  touch joinin.conf
+  touch /home/joinmarket/joinin.conf
 fi
 
 # add default value to joinin config if needed
