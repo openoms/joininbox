@@ -50,13 +50,13 @@ case $CHOICE in
             --prgbox "sudo journalctl -fn20 -u yg-privacyenhanced" 30 140
             echo "Returning to the menu..."
             sleep 1
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;
         YGCONF)
             /home/joinmarket/set.conf.sh /home/joinmarket/joinmarket-clientserver/scripts/yg-privacyenhanced.py
             echo "Returning to the menu..."
             
-            ./menu.sh        
+            /home/joinmarket/menu.sh        
             ;;
         MONITOR)
             dialog \
@@ -71,7 +71,7 @@ Press CTRL+C to exit and return to the menu." 10 50
             sudo journalctl -fn40 -u yg-privacyenhanced
             echo "Press ENTER to return to menu"
             read key
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;            
         YGLIST)
             dialog \
@@ -79,7 +79,7 @@ Press CTRL+C to exit and return to the menu." 10 50
             --prgbox "column $HOME/.joinmarket/logs/yigen-statement.csv -t -s ","" 100 140
             echo "Returning to the menu..."
             sleep 1
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;
         LOGS)
             dialog \
@@ -94,12 +94,13 @@ Press CTRL+C to exit and return to the menu." 10 50
             ls -t /home/joinmarket/.joinmarket/logs | grep J5 | head -n 1 | xargs tail -fn1000
             echo "Press ENTER to return to menu"
             read key
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;            
         STOP)
             # stop the background process (equivalent to CTRL+C)
             # use wallet from joinin.conf
             pkill -sigint -f "python yg-privacyenhanced.py $wallet --wallet-password-stdin"
+            pgrep python | xargs kill -sigint 
             # remove the service
             sudo systemctl stop yg-privacyenhanced
             sudo systemctl disable yg-privacyenhanced
@@ -109,6 +110,6 @@ Press CTRL+C to exit and return to the menu." 10 50
             echo "Stopped the Yield Generator background service"
             echo "Returning to the menu..."
             sleep 1
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;
 esac

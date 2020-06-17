@@ -35,4 +35,4 @@ sudo systemctl enable $SCRIPT 2>/dev/null
 sudo systemctl start $SCRIPT
 
 #create Hidden Service
-./install.hiddenservice.sh ob-watcher 80 62601
+/home/joinmarket/install.hiddenservice.sh ob-watcher 80 62601

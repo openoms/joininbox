@@ -71,26 +71,26 @@ case $CHOICE in
             echo "Type: 'menu' and press ENTER to return to the menu"
             ;;
         WALLET)
-            ./menu.wallet.sh
-            ./menu.sh          
+            /home/joinmarket//menu.wallet.sh
+            /home/joinmarket//menu.sh          
             ;;
         QTGUI)
             /home/joinmarket/info.qtgui.sh
             echo "Returning to the menu..."
             sleep 1
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;
         MAKER)
-            ./menu.yg.sh
-            ./menu.sh           
+            /home/joinmarket/menu.yg.sh
+            /home/joinmarket/menu.sh           
             ;;
         PAY)
-            ./menu.pay.sh
+            /home/joinmarket/menu.pay.sh
             echo ""
             echo "Type: 'menu' and press ENTER to return to the menu"
             ;;
         CONTROL)
-            ./menu.control.sh
+            /home/joinmarket/menu.control.sh
             ;;
         OFFERS)
             #TODO show hidden service only if already running
@@ -114,7 +114,7 @@ case $CHOICE in
             --prgbox "sudo journalctl -fn20 -u ob-watcher" 30 140
             echo "Returning to the menu..."
             sleep 1
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;
         CONFIG)
             /home/joinmarket/install.joinmarket.sh
@@ -125,15 +125,15 @@ case $CHOICE in
             fi
             echo "Returning to the menu..."
             sleep 1
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;
         CONNECT) 
             ;;
         UPDATE)
-            ./update.joininbox.sh
+            /home/joinmarket/update.joininbox.sh
             echo "Returning to the menu..."
             sleep 1
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;
         X)
             clear

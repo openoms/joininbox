@@ -61,7 +61,7 @@ case $CHOICE in
             /home/joinmarket/info.importwallet.sh
             echo "Returning to the menu..."
             sleep 2
-            ./menu.sh
+            /home/joinmarket/menu.sh
             ;;
         RECOVER)
             echo ""

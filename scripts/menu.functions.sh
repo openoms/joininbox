@@ -5,13 +5,13 @@ case $pressed in
     echo "Cancelled"
     echo "Returning to the menu..."
     sleep 1
-    ./menu.sh
+    /home/joinmarket/menu.sh
     exit 1;;
   255)
     echo "ESC pressed."
     echo "Returning to the menu..."
     sleep 1
-    ./menu.sh
+    /home/joinmarket/menu.sh
     exit 1;;
 esac
 }
