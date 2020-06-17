@@ -47,6 +47,7 @@ if [ ${#address} -eq 0 ]; then
   address=""
 fi
 
+source /home/joinmarket/joinin.conf
 if [ ${RPCoverTor} == on ];then 
   tor="torify"
 else
@@ -67,11 +68,17 @@ dialog --backtitle "Decrypting Wallet" \
 pressed=$?
 case $pressed in
   0)
-    . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
-    echo "running the command:
+    if [ ${RPCoverTor} == on ];then 
+      echo "running the command:
 $tor python ~/joinmarket-clientserver/scripts/$script.py \
 $makercount $mixdepth $wallet $option $amount $address"
+    else
+      echo "running the command:
+python ~/joinmarket-clientserver/scripts/$script.py \
+$makercount $mixdepth $wallet $option $amount $address"
+    fi
     echo ""
+    . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
     cat $data | $tor \
     python ~/joinmarket-clientserver/scripts/$script.py \
     $makercount $mixdepth $wallet $option $amount $address --wallet-password-stdin
