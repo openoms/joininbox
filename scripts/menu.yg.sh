@@ -81,6 +81,10 @@ Press CTRL+C to exit and return to the menu." 10 50
             ./menu.sh
             ;;
         STOP)
+            # stop the background process (equivalent to CTRL+C)
+            # use wallet from joinin.conf
+            pkill -sigint -f "python yg-privacyenhanced.py $wallet --wallet-password-stdin"
+            # remove the service
             sudo systemctl stop yg-privacyenhanced
             sudo systemctl disable yg-privacyenhanced
             # check for failed services
