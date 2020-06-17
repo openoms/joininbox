@@ -3,6 +3,7 @@
 # WALLET menu options
 
 source /home/joinmarket/joinin.conf
+source menu.functions.sh
 
 # cd ~/bin/joinmarket-clientserver && source jmvenv/bin/activate && cd scripts
 
@@ -49,6 +50,7 @@ case $CHOICE in
             dialog --backtitle "Choose a wallet" \
             --title "Choose a wallet by typing the full name of the file" \
             --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2> $wallet
+            openMenuIfCancelled $?
             /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) history
             echo ""
             echo "Press ENTER to return to the menu"
