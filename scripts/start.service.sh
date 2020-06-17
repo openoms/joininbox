@@ -13,6 +13,7 @@ sudo systemctl disable $script
 
 if [ $script == "yg-privacyenhanced" ]; then 
   rm -f ~/.joinmarket/wallets/$wallet.lock
+  pkill -sigint -f "python yg-privacyenhanced.py $wallet --wallet-password-stdin"
 fi
 
 if [ ${RPCoverTor} = on ];then 
@@ -22,6 +23,7 @@ else
 fi
 
 startScript="cat /home/joinmarket/.pw | $tor python $script.py $wallet --wallet-password-stdin"
+echo "running: $tor python $script.py $wallet"
 
 echo "
 [Unit]
