@@ -77,7 +77,7 @@ case $CHOICE in
         QTGUI)
             /home/joinmarket/info.qtgui.sh
             echo "Returning to the menu..."
-            sleep 2
+            sleep 1
             ./menu.sh
             ;;
         MAKER)
@@ -90,22 +90,7 @@ case $CHOICE in
             echo "Type: 'menu' and press ENTER to return to the menu"
             ;;
         CONTROL)
-            wallet=$(tempfile 2>/dev/null)
-            dialog --backtitle "Choose a wallet" \
-            --title "Choose a wallet by typing the full name of the file" \
-            --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2> $wallet
-            mixdepth=$(tempfile 2>/dev/null)
-            dialog --backtitle "Choose a mixdepth" \
-            --inputbox "Type a number between 0 to 4 to choose the mixdepth" 8 60 2> $mixdepth
-            echo "Run the following command manually to use the freeze method:
-
-python ~/joinmarket-clientserver/scripts/wallet-tool.py -m$(cat $mixdepth) $(cat $wallet) freeze
-
-type 'menu' and press ENTER to return to the menu
-"     
-            # unlocking through stdin does not work with the freeze method:
-            # https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/598
-            # /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) freeze $(cat $mixdepth)
+            ./menu.control.sh
             ;;
         OFFERS)
             #TODO show hidden service only if already running
@@ -128,7 +113,7 @@ type 'menu' and press ENTER to return to the menu
             --title "Monitoring the ob-watcher - press CTRL+C to exit"  \
             --prgbox "sudo journalctl -fn20 -u ob-watcher" 30 140
             echo "Returning to the menu..."
-            sleep 2
+            sleep 1
             ./menu.sh
             ;;
         CONFIG)
@@ -139,7 +124,7 @@ type 'menu' and press ENTER to return to the menu
                 --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
             fi
             echo "Returning to the menu..."
-            sleep 2
+            sleep 1
             ./menu.sh
             ;;
         CONNECT) 
@@ -147,7 +132,7 @@ type 'menu' and press ENTER to return to the menu
         UPDATE)
             ./update.joininbox.sh
             echo "Returning to the menu..."
-            sleep 2
+            sleep 1
             ./menu.sh
             ;;
         X)

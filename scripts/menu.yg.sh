@@ -48,13 +48,13 @@ case $CHOICE in
             --title "Monitoring the Yield Generator - press CTRL+C to exit"  \
             --prgbox "sudo journalctl -fn20 -u yg-privacyenhanced" 30 140
             echo "Returning to the menu..."
-            sleep 2
+            sleep 1
             ./menu.sh
             ;;
         YGCONF)
             /home/joinmarket/set.conf.sh /home/joinmarket/joinmarket-clientserver/scripts/yg-privacyenhanced.py
             echo "Returning to the menu..."
-            sleep 2
+            
             ./menu.sh        
             ;;
         MONITOR)
@@ -77,7 +77,7 @@ Press CTRL+C to exit and return to the menu." 10 50
             --title "timestamp            cj amount/satoshi  my input count  my input value/satoshi  cjfee/satoshi  earned/satoshi  confirm time/min  notes"  \
             --prgbox "column $HOME/.joinmarket/logs/yigen-statement.csv -t -s ","" 100 140
             echo "Returning to the menu..."
-            sleep 2
+            sleep 1
             ./menu.sh
             ;;
         STOP)
@@ -92,7 +92,7 @@ Press CTRL+C to exit and return to the menu." 10 50
             sudo systemctl reset-failed
             echo "Stopped the Yield Generator background service"
             echo "Returning to the menu..."
-            sleep 2
+            sleep 1
             ./menu.sh
             ;;
 esac
