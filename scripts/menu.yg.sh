@@ -7,7 +7,7 @@ source /home/joinmarket/joinin.conf
 # cd ~/bin/joinmarket-clientserver && source jmvenv/bin/activate && cd scripts
 
 # BASIC MENU INFO
-HEIGHT=12
+HEIGHT=13
 WIDTH=52
 CHOICE_HEIGHT=20
 TITLE="JoininBox"
@@ -21,6 +21,7 @@ OPTIONS+=(\
   YGCONF "Configure the Yield Generator" \
   MONITOR "Monitor the YG service" \
   YGLIST "List the past YG activity"\
+  LOGS "View the last YG logfile"
   STOP "Stop the YG service" \
 )
 
@@ -68,8 +69,8 @@ sudo journalctl -fn40 -u yg-privacyenhanced
 Press CTRL+C to exit and return to the menu." 10 50
 
             sudo journalctl -fn40 -u yg-privacyenhanced
-            echo "Returning to the menu..."
-            sleep 1
+            echo "Press ENTER to return to menu"
+            read key
             ./menu.sh
             ;;            
         YGLIST)
@@ -80,6 +81,21 @@ Press CTRL+C to exit and return to the menu." 10 50
             sleep 1
             ./menu.sh
             ;;
+        LOGS)
+            dialog \
+            --title "Monitoring the Yield Generator"  \
+            --msgbox "
+Will tail the latest YG logfile from:
+
+/home/joinmarket/.joinmarket/logs/
+
+Press CTRL+C to exit and return to the menu." 10 50
+
+            ls -t /home/joinmarket/.joinmarket/logs | grep J5 | head -n 1 | xargs tail -fn1000
+            echo "Press ENTER to return to menu"
+            read key
+            ./menu.sh
+            ;;            
         STOP)
             # stop the background process (equivalent to CTRL+C)
             # use wallet from joinin.conf
