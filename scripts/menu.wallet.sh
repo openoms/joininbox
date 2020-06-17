@@ -43,7 +43,8 @@ case $CHOICE in
             else
               python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
             fi
-            echo "Type: 'menu' and press ENTER to return to the menu"
+            echo "Press ENTER to return to the menu"
+            read key
             ;;
         HISTORY)
             wallet=$(tempfile 2>/dev/null)
@@ -70,6 +71,7 @@ case $CHOICE in
             else
               python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py recover
             fi
-            echo "Type: 'menu' and press ENTER to return to the menu"
+            echo "Press ENTER to return to the menu"
+            read key
             ;;
 esac
