@@ -136,16 +136,6 @@ case $CHOICE in
             /home/joinmarket/menu.sh
             ;;
         X)
-            cd /home/joinmarket/joinmarket-clientserver/scripts/
-            clear
-            echo "***********************************"
-            echo "* JoininBox Commandline"
-            echo "***********************************"
-            echo "Refer to the documentation about how to get started and much more:"
-            echo "https://github.com/openoms/bitcoin-tutorials/tree/master/joinmarket"
-            echo ""
-            echo "To return to main menu use the command: menu"
-            echo ""
             exit 1;
             ;;            
 esac

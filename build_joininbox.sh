@@ -160,20 +160,29 @@ sudo bash -c "echo 'source /usr/share/doc/fzf/examples/key-bindings.bash' >> /ho
 # install tmux
 sudo apt -y install tmux
 
-# bash autostart for joinmarket
+# autostart for joininbox
 echo "
+if [ -f "/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate" ] ; then
+  . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
+  /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python -c \"import PySide2\"
+  cd /home/joinmarket/joinmarket-clientserver/scripts/
+fi
 # shortcut commands
 source /home/joinmarket/_commands.sh
 # automatically start main menu for joinmarket unless
 # when running in a tmux session
-if [ -f "/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate" ] ; then
- . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
-  cd /home/joinmarket/joinmarket-clientserver/scripts/
-fi
 if [ -z \"\$TMUX\" ]; then
   /home/joinmarket/menu.sh
 fi
-" | tee -a /home/joinmarket/.bashrc
+clear
+
+Welcome to the JoininBox command line!
+
+Notes on usage:
+https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/README.md
+
+To open the JoininBox menu use: menu
+" | sudo -u joinmarket tee -a /home/joinmarket/.bashrc
 
 echo "*** READY ***"
 echo ""
