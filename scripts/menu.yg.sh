@@ -19,10 +19,10 @@ BACKTITLE="JoininBox GUI"
 OPTIONS+=(\
   MAKER "Run the Yield Generator" \
   YGCONF "Configure the Yield Generator" \
-  MONITOR "Monitor the YG service" \
   YGLIST "List the past YG activity" \
   OFFER "Show the last used counterparty name" \
-  LOGS "View the last YG logfile" \
+  SERVICE "Monitor the YG service (INFO)" \
+  LOGS "View the last YG logfile (DEBUG)" \
   STOP "Stop the YG service" \
 )
 
@@ -58,21 +58,6 @@ case $CHOICE in
             echo "Returning to the menu..."
             /home/joinmarket/menu.sh        
             ;;
-        MONITOR)
-            dialog \
-            --title "Monitoring the Yield Generator"  \
-            --msgbox "
-Will show the logs using:
-
-sudo journalctl -fn40 -u yg-privacyenhanced
-
-Press CTRL+C to exit and return to the menu." 10 50
-
-            sudo journalctl -fn40 -u yg-privacyenhanced
-            echo "Press ENTER to return to menu"
-            read key
-            /home/joinmarket/menu.sh
-            ;;            
         YGLIST)
             dialog \
             --title "timestamp            cj amount/satoshi  my input count  my input value/satoshi  cjfee/satoshi  earned/satoshi  confirm time/min  notes"  \
@@ -95,7 +80,22 @@ https://joinmarket.me/ob" 12 55
             read key
             cd /home/joinmarket/joinmarket-clientserver/scripts/
             /home/joinmarket/menu.sh
-            ;;                   
+            ;;
+        SERVICE)
+            dialog \
+            --title "Monitoring the Yield Generator"  \
+            --msgbox "
+Will show the INFO logs using:
+
+sudo journalctl -fn40 -u yg-privacyenhanced
+
+Press CTRL+C to exit and return to the menu." 10 50
+
+            sudo journalctl -fn40 -u yg-privacyenhanced
+            echo "Press ENTER to return to menu"
+            read key
+            /home/joinmarket/menu.sh
+            ;;                      
         LOGS)
             dialog \
             --title "Monitoring the Yield Generator"  \
