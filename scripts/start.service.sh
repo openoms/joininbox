@@ -57,3 +57,5 @@ echo ""
 sleep 5
 # delete password once used
 shred -uvz /home/joinmarket/.pw
+# recreate file for systemd
+touch /home/joinmarket/.pw
