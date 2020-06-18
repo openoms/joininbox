@@ -23,6 +23,7 @@ else
 fi
 
 startScript="cat /home/joinmarket/.pw | $tor python $script.py $wallet --wallet-password-stdin"
+echo ""
 echo "running: $tor python $script.py $wallet"
 
 echo "
@@ -57,5 +58,6 @@ echo ""
 sleep 5
 # delete password once used
 shred -uvz /home/joinmarket/.pw
-# recreate file for systemd
+# recreate file to avoid systemd error
+# see: https://github.com/openoms/joininbox/issues/5
 touch /home/joinmarket/.pw
