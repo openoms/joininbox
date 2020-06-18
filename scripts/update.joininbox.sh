@@ -1,7 +1,6 @@
 #!/bin/bash
 
 echo "Removing the joininbox directory.."
-echo ""
 sudo rm -rf /home/joinmarket/joininbox
 echo ""
 echo "Cloning the latest state from https://github.com/openoms/joininbox"
