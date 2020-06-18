@@ -136,6 +136,7 @@ case $CHOICE in
             /home/joinmarket/menu.sh
             ;;
         X)
+            cd /home/joinmarket/joinmarket-clientserver/scripts/
             clear
             echo "***********************************"
             echo "* JoininBox Commandline"

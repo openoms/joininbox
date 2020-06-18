@@ -90,10 +90,11 @@ Will tail the latest YG logfile from:
 /home/joinmarket/.joinmarket/logs/
 
 Press CTRL+C to exit and return to the menu." 10 50
-
-            ls -t /home/joinmarket/.joinmarket/logs | grep J5 | head -n 1 | xargs tail -fn1000
+            cd /home/joinmarket/.joinmarket/logs 
+            ls -t | grep J5 | head -n 1 | xargs tail -fn1000
             echo "Press ENTER to return to menu"
             read key
+            cd /home/joinmarket/joinmarket-clientserver/scripts/
             /home/joinmarket/menu.sh
             ;;            
         STOP)
@@ -108,8 +109,7 @@ Press CTRL+C to exit and return to the menu." 10 50
             # sudo systemctl list-units --type=service
             sudo systemctl reset-failed
             echo "Stopped the Yield Generator background service"
-            echo "Returning to the menu..."
-            sleep 1
-            /home/joinmarket/menu.sh
+            echo "Press ENTER to return to the menu..."
+            read key
             ;;
 esac
