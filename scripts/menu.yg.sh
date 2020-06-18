@@ -7,7 +7,7 @@ source /home/joinmarket/joinin.conf
 # cd ~/bin/joinmarket-clientserver && source jmvenv/bin/activate && cd scripts
 
 # BASIC MENU INFO
-HEIGHT=13
+HEIGHT=14
 WIDTH=52
 CHOICE_HEIGHT=20
 TITLE="JoininBox"
@@ -20,8 +20,9 @@ OPTIONS+=(\
   MAKER "Run the Yield Generator" \
   YGCONF "Configure the Yield Generator" \
   MONITOR "Monitor the YG service" \
-  YGLIST "List the past YG activity"\
-  LOGS "View the last YG logfile"
+  YGLIST "List the past YG activity" \
+  OFFER "Show the last used counterparty name" \
+  LOGS "View the last YG logfile" \
   STOP "Stop the YG service" \
 )
 
@@ -55,7 +56,6 @@ case $CHOICE in
         YGCONF)
             /home/joinmarket/set.conf.sh /home/joinmarket/joinmarket-clientserver/scripts/yg-privacyenhanced.py
             echo "Returning to the menu..."
-            
             /home/joinmarket/menu.sh        
             ;;
         MONITOR)
@@ -81,6 +81,21 @@ Press CTRL+C to exit and return to the menu." 10 50
             sleep 1
             /home/joinmarket/menu.sh
             ;;
+        OFFER)
+            name=$(ls -t /home/joinmarket/.joinmarket/logs | grep J5 | head -n 1 | cut -c -16)
+            whiptail \
+            --title "Counterparty name"  \
+            --msgbox "The last used counterparty name for the offer book:\n
+$name\n
+Check if active in:
+https://joinmarket.me/ob" 12 55
+            cd /home/joinmarket/.joinmarket/logs 
+            ls -t | grep J5 | head -n 1 | xargs tail -fn1000
+            echo "Press ENTER to return to menu"
+            read key
+            cd /home/joinmarket/joinmarket-clientserver/scripts/
+            /home/joinmarket/menu.sh
+            ;;                   
         LOGS)
             dialog \
             --title "Monitoring the Yield Generator"  \
