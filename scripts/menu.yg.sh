@@ -74,11 +74,8 @@ case $CHOICE in
 $name\n
 Check if active in:
 https://joinmarket.me/ob" 12 55
-            cd /home/joinmarket/.joinmarket/logs 
-            ls -t | grep J5 | head -n 1 | xargs tail -fn1000
-            echo "Press ENTER to return to menu"
-            read key
-            cd /home/joinmarket/joinmarket-clientserver/scripts/
+            echo "Returning to the menu..."
+            sleep 1
             /home/joinmarket/menu.sh
             ;;
         SERVICE)
