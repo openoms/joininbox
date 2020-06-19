@@ -51,12 +51,12 @@ case $CHOICE in
             --prgbox "sudo journalctl -fn20 -u yg-privacyenhanced" 30 140
             echo "Returning to the menu..."
             sleep 1
-            /home/joinmarket/menu.sh
+            /home/joinmarket/menu.yg.sh
             ;;
         YGCONF)
             /home/joinmarket/set.conf.sh /home/joinmarket/joinmarket-clientserver/scripts/yg-privacyenhanced.py
             echo "Returning to the menu..."
-            /home/joinmarket/menu.sh        
+            /home/joinmarket/menu.yg.sh        
             ;;
         YGLIST)
             dialog \
@@ -64,7 +64,7 @@ case $CHOICE in
             --prgbox "column $HOME/.joinmarket/logs/yigen-statement.csv -t -s ","" 100 140
             echo "Returning to the menu..."
             sleep 1
-            /home/joinmarket/menu.sh
+            /home/joinmarket/menu.yg.sh
             ;;
         OFFER)
             name=$(ls -t /home/joinmarket/.joinmarket/logs | grep J5 | head -n 1 | cut -c -16)
@@ -76,7 +76,7 @@ Check if active in:
 https://joinmarket.me/ob" 12 55
             echo "Returning to the menu..."
             sleep 1
-            /home/joinmarket/menu.sh
+            /home/joinmarket/menu.yg.sh
             ;;
         SERVICE)
             dialog \
@@ -86,12 +86,10 @@ Will show the INFO logs using:
 
 sudo journalctl -fn40 -u yg-privacyenhanced
 
-Press CTRL+C to exit and return to the menu." 10 50
-
+Press CTRL+C to exit to the command line.
+Use: 'menu' for the JoininBox options." 11 50
             sudo journalctl -fn40 -u yg-privacyenhanced
-            echo "Press ENTER to return to menu"
-            read key
-            /home/joinmarket/menu.sh
+            /home/joinmarket/menu.yg.sh
             ;;                      
         LOGS)
             dialog \
@@ -107,7 +105,7 @@ Press CTRL+C to exit and return to the menu." 10 50
             echo "Press ENTER to return to menu"
             read key
             cd /home/joinmarket/joinmarket-clientserver/scripts/
-            /home/joinmarket/menu.sh
+            /home/joinmarket/menu.yg.sh
             ;;            
         STOP)
             # stop the background process (equivalent to CTRL+C)
