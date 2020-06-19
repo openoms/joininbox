@@ -136,6 +136,17 @@ case $CHOICE in
             /home/joinmarket/menu.sh
             ;;
         X)
-            exit 1;
+            clear
+            echo "
+***********************************
+* JoinMarket command line
+***********************************
+Notes on usage:
+https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/README.md
+
+To open JoininBox menu use: menu
+To exit to the RaspiBlitz menu use: exit
+"
+            exit 0;
             ;;            
 esac

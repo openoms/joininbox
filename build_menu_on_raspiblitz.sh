@@ -50,14 +50,4 @@ source /home/joinmarket/_commands.sh
 if [ -z \"\$TMUX\" ]; then
   /home/joinmarket/menu.sh
 fi
-clear
-
-Welcome to the JoininBox command line!
-
-Notes on usage:
-https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/README.md
-
-To open JoininBox menu use: menu
-
-To exit to the RaspiBlitz menu use: exit
 " | sudo -u joinmarket tee -a /home/joinmarket/.bashrc
