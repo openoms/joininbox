@@ -65,14 +65,15 @@ CHOICE=$(dialog --clear \
 case $CHOICE in
 
         INFO)
+            clear
             /home/joinmarket/start.script.sh wallet-tool
             echo ""
             echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
             echo "Type: 'menu' and press ENTER to return to the menu"
             ;;
         WALLET)
-            /home/joinmarket//menu.wallet.sh
-            /home/joinmarket//menu.sh          
+            /home/joinmarket/menu.wallet.sh
+            /home/joinmarket/menu.sh          
             ;;
         QTGUI)
             /home/joinmarket/info.qtgui.sh
