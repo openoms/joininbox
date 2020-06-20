@@ -105,7 +105,7 @@ See this review thread about the QT GUI:
 https://twitter.com/zndtoshi/status/1191799199119134720
 
 ************************************************************************************
-PRESS ENTER if when done with the instructions to exit to the menu
+Press ENTER when done with the instructions to exit to the menu
 "
 
 sleep 2
