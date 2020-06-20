@@ -96,7 +96,7 @@ https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2019-09-30/
 * Verify Image:
 `gpg --verify raspbian_lite-2019-09-30/2019-09-26-raspbian-buster-lite.zip.sig`
 
-* Gain ssh acces: https://www.raspberrypi.org/documentation/remote-access/ssh/
+* Gain ssh access: https://www.raspberrypi.org/documentation/remote-access/ssh/
 
 * put a file called simply: `ssh` to the root of the sdcard
 
@@ -104,7 +104,7 @@ https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2019-09-30/
 `pi@LAN_IP_ADDRESS`
 
 * change to the `root` user with:  
-`sudo su`
+`$ sudo su`
 
 ### Log in through SSH using a hardware wallet
 
@@ -119,7 +119,7 @@ https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2019-09-30/
     * <https://github.com/martin-lizner/trezor-ssh-agent>
 
 * paste the generated SSH pubkey to:  
-`nano /home/joinmarket/.ssh/authorized_keys`
+`$ nano /home/joinmarket/.ssh/authorized_keys`
 
 ### Activate the bitcoind wallet on a RaspiBlitz
 * Edit the bitcoin.conf:  
