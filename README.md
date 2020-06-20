@@ -4,17 +4,12 @@ A terminal based menu and helper UI for JoinMarket.
 
 <p align="left">
   <img width="400" src="/images/menu.png">
-</p>
-<p align="left">
   <img width="400" src="/images/menu.wallet.png">
 </p>
 <p align="left">
   <img width="400" src="/images/menu.yg.png">
-</p>
-<p align="left">
   <img width="400" src="/images/menu.payjoin.png">
 </p>
-
 
 ## Install the JoininBox menu on a RaspiBlitz v1.5+ 
 * Run the script in the RaspiBlitz terminal (will install JoinMarket if not active already):
