@@ -6,7 +6,7 @@ This guide shows how to prepare a RaspiBlitz to accept this connection.
 ## LAN connection
 
 ### In the node terminal - allow remote RPC connections to Bitcoin Core
-This can be skipped if you connect through Tor (see [below](#tor-connection))
+This can be skipped if you [connect through Tor](#tor-connection))
 
 1) #### Edit the bitcoin.conf:  
     `$ sudo nano /mnt/hdd/bitcoin/bitcoin.conf`
@@ -34,6 +34,11 @@ Make sure that Tor is ative in the SERVICES menu.
 
 #### Create a Hidden Service to forward the bitcoin RPC port
 
+On the RaspiBlitz since v1.4 there is a script to create a hidden service:  
+    `./config.scripts/internet.hiddenservice.sh bitcoinrpc 8332 8332`  
+
+Alternatively proceed manually: 
+
 1) #### Open the Tor configuration file:  
     `$ sudo nano /etc/tor/torrc`
 
@@ -47,10 +52,15 @@ Make sure that Tor is ative in the SERVICES menu.
 3) #### Restart Tor:   
     `$ sudo systemctl restart tor` 
 
-4) #### Take note of the Tor Hidden Service address:  
+4) #### Take note of the `Tor_Hidden_Service.onion`:  
     `$ sudo cat /mnt/hdd/tor/bitcoinrpc/hostname`
 
-5) #### Remember to use `torify` with the python scripts when connecting remotely through Tor. Example:
+5) #### Fill in the `Tor_Hidden_Service.onion` to the `rpc_host` in the `joinmarket.cfg`
+
+#### Take note of the `Tor_Hidden_Service.onion` and fill in to the `rpc_host` in the `joinmarket.cfg`
+
+#### Remember to use `torify` with the python scripts when connecting remotely through Tor.  
+    Example:  
     `torify wallet-tool.py wallet.jmdat`
 
 ## Resources:

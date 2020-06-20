@@ -1,6 +1,6 @@
 ### SSH through Tor from Linux
 #### On a RaspiBlitz:
-* from 1.4 there is  script to create a hidden service on your blitz:  
+* since v1.4 there is a script to create a hidden service on your blitz:  
 `./config.scripts/internet.hiddenservice.sh ssh 22 22`  
 * get the Hidden Service address to connect to with:  
 `sudo cat /mnt/hdd/tor/ssh/hostname`  
@@ -145,7 +145,7 @@ The default password is: `raspberry`
 ### Nuke the joinmarket user and the /home/joinmarket folder
 `sudo userdel -r joinmarket`
 
-### Sample bitcoin.conf for a remote node accepting RPC coonections through LAN
+### Sample bitcoin.conf for a remote node accepting RPC connections through LAN
 ```
 # bitcoind configuration
 
