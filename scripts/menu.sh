@@ -22,15 +22,14 @@ fi
 
 source /home/joinmarket/joinin.conf
 
-# cd ~/bin/joinmarket-clientserver && source jmvenv/bin/activate && cd scripts
-
 # BASIC MENU INFO
-HEIGHT=22
-WIDTH=56
+HEIGHT=24
+WIDTH=57
 CHOICE_HEIGHT=20
 BACKTITLE="JoininBox GUI"
 TITLE="JoininBox"
-MENU="Choose from the options:"
+MENU="
+Choose from the options:"
 OPTIONS=()
 
 # Basic Options
@@ -41,8 +40,9 @@ OPTIONS+=(\
   WALLET "Wallet management options" \
   MAKER "Yield Generator options" \
   "" ""
-  PAY "Pay to an address with/without a coinjoin" \
-  CONTROL "Freeze/unfreeze UTXO-s in a mixdepth" \
+  SEND "Pay to an address with/without a coinjoin" \
+  FREEZE "Exercise coin control within a mixdepth" \
+  PAYJOIN "Send/Receive between JoinMarket wallets"
   "" ""
   OFFERS "Watch the offer book locally" \
   "" "" 
@@ -85,13 +85,16 @@ case $CHOICE in
             /home/joinmarket/menu.yg.sh
             /home/joinmarket/menu.sh           
             ;;
-        PAY)
-            /home/joinmarket/menu.pay.sh
+        SEND)
+            /home/joinmarket/menu.send.sh
             echo ""
             echo "Type: 'menu' and press ENTER to return to the menu"
             ;;
-        CONTROL)
+        FREEZE)
             /home/joinmarket/menu.control.sh
+            ;;
+        PAYJOIN)
+            /home/joinmarket/menu.payjoin.sh
             ;;
         OFFERS)
             #TODO show hidden service only if already running

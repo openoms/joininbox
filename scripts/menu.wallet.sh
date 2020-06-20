@@ -8,12 +8,13 @@ source menu.functions.sh
 # cd ~/bin/joinmarket-clientserver && source jmvenv/bin/activate && cd scripts
 
 # BASIC MENU INFO
-HEIGHT=12
+HEIGHT=13
 WIDTH=52
 CHOICE_HEIGHT=20
 TITLE="JoininBox"
 BACKTITLE="JoininBox - Wallet management options"
-MENU="Wallet management options:"
+MENU="
+Wallet management options:"
 OPTIONS=()
 
 # Basic Options

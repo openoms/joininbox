@@ -4,14 +4,13 @@
 
 source /home/joinmarket/joinin.conf
 
-# cd ~/bin/joinmarket-clientserver && source jmvenv/bin/activate && cd scripts
-
 # BASIC MENU INFO
-HEIGHT=14
+HEIGHT=15
 WIDTH=52
 CHOICE_HEIGHT=20
 TITLE="JoininBox"
-MENU="Yield Generator options:"
+MENU="
+Yield Generator options:"
 OPTIONS=()
 BACKTITLE="JoininBox GUI"
 
@@ -20,7 +19,7 @@ OPTIONS+=(\
   MAKER "Run the Yield Generator" \
   YGCONF "Configure the Yield Generator" \
   YGLIST "List the past YG activity" \
-  OFFER "Show the last used counterparty name" \
+  NICKNAME "Show the last used counterparty name" \
   SERVICE "Monitor the YG service (INFO)" \
   LOGS "View the last YG logfile (DEBUG)" \
   STOP "Stop the YG service" \
@@ -66,7 +65,7 @@ case $CHOICE in
             sleep 1
             /home/joinmarket/menu.yg.sh
             ;;
-        OFFER)
+        NICKNAME)
             name=$(ls -t /home/joinmarket/.joinmarket/logs | grep J5 | head -n 1 | cut -c -16)
             whiptail \
             --title "Counterparty name"  \
