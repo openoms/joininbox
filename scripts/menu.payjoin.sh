@@ -29,28 +29,42 @@ dialog --backtitle "Choose the amount" \
 Enter the amount to receive in satoshis" 9 60 2> $amount
 openMenuIfCancelled $?
 
-# unlocking with stdin does not work with the receive-payjoin.py:
-# https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/598
-# 
-# /home/joinmarket/start.script.sh receive-payjoin $(cat $wallet) nooption \
-#                               $(cat $mixdepth) nomakercount $(cat $amount)
+if [ ${RPCoverTor} = "on" ];then 
+  tor="torify"
+else
+  tor=""
+fi
 
-clear
-echo "
-To receive: $(cat $amount) sats
+# check command
+dialog --backtitle "Confirm the details" \
+--title "Confirm the details" \
+--yesno "
+Receive: $(cat $amount) sats
 
 To the wallet:
 $(cat $wallet)
 mixdepth: $(cat $mixdepth)
-
-run the following command manually:
+" 11 55
+# make decison
+pressed=$?
+case $pressed in
+  0)
+    clear
+    echo "Running the command:
+$tor python ~/joinmarket-clientserver/scripts/receive-payjoin.py -m$(cat $mixdepth) $(cat $wallet) $(cat $amount)
 "
-if [ ${RPCoverTor} == on ];then 
-  echo "torify python ~/joinmarket-clientserver/scripts/receive-payjoin.py -m$(cat $mixdepth) $(cat $wallet) $(cat $amount)"
-else
-  echo "python ~/joinmarket-clientserver/scripts/receive-payjoin.py -m$(cat $mixdepth) $(cat $wallet) $(cat $amount)"
-fi
-echo ""
+    # run command
+    $tor python ~/joinmarket-clientserver/scripts/receive-payjoin.py -m$(cat $mixdepth) $(cat $wallet) $(cat $amount)
+    ;;
+  1)
+    echo "Cancelled"
+    exit 1
+    ;;
+  255)
+    echo "ESC pressed."
+    exit 1
+    ;;
+esac
 }
 
 function sendPayJoin() {
@@ -109,7 +123,7 @@ $(cat $address)
 
 PayJoin with the ephemeral nickname:
 $(cat $nickname)
-" 16 60
+" 16 55
 # make decison
 pressed=$?
 case $pressed in
