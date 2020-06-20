@@ -62,15 +62,17 @@ fi
 echo "*** Add the 'joinmarket' user ***"
 adduser --disabled-password --gecos "" joinmarket
 
+apt install -y git
+
 echo "*** Clone the joininbox repo and copy the scripts ***"
 cd /home/joinmarket
 sudo -u joinmarket git clone https://github.com/openoms/joininbox.git
 sudo -u joinmarket cp ./joininbox/scripts/* /home/joinmarket/
 sudo -u joinmarket cp ./joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
-sudo chmod +x /home/joinmarket/*.sh
+chmod +x /home/joinmarket/*.sh
 
 echo "*** Setting the password for the users 'joinmarket' and 'root' ***"
-apt install dialog
+apt install -y dialog
 /home/joinmarket/set.password.sh
 adduser joinmarket sudo
 # chsh joinmarket -s /bin/bash
@@ -145,7 +147,7 @@ apt update
 ### Hardening
 echo "*** HARDENING ***"
 # install packages
-apt install -y git virtualenv fail2ban ufw
+apt install -y virtualenv fail2ban ufw
 # autostart fail2ban
 systemctl enable fail2ban
 
