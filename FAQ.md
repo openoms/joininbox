@@ -103,9 +103,6 @@ https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2019-09-30/
 * boot up the RPi and log in with ssh to:   
 `pi@LAN_IP_ADDRESS`
 
-* change to the `root` user with:  
-`$ sudo su`
-
 ### Log in through SSH using a hardware wallet
 
 * See the official pages for:

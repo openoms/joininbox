@@ -38,19 +38,22 @@ A terminal based menu and helper UI for JoinMarket.
 * [Download and verify Raspbian SDcard image for a Raspberry Pi](https://github.com/openoms/joininbox/blob/master/FAQ.md#download-and-verify-raspbian-sdcard-image-for-a-raspberry-pi)
 
 ### Set up JoininBox
-* Continue work as the `root` user.
-* Continue with the [manual building steps](build_joininbox.md)  
-or
-* Run the build script:  
+* Continue to work as the `root` user or change with:  
+`$ sudo su`
+
+* Run the build script:
   ```bash 
   # download
   wget https://raw.githubusercontent.com/openoms/joininbox/master/build_joininbox.sh
-  # run (install Tor also)
+  # run (installing Tor also)
   sudo bash build_joininbox.sh --with-tor
   ```
 
-* start in the RaspiBlitz terminal:
- `sudo su joinmarket`
+* start the JoininBox menu by changing to the  `joinmarket` user in the terminal:  
+ `$ sudo su joinmarket`  
+or  
+log in with ssh to:  
+`joinmarket@LAN_IP_ADDRESS`
 
 ---
 
