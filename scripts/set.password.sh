@@ -3,7 +3,7 @@
 
 # command info
 if [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
- echo "script to set a passwords for the users 'joinmarket' and 'root'"
+ echo "script to set a passwords for the users 'joinmarket', 'root' (and 'pi') "
  echo "set.password.sh [?newpassword] "
  echo "or just as a password enter dialog (result as file)"
  exit 1
@@ -70,6 +70,8 @@ fi
 # change user passwords
 echo "joinmarket:$newPassword" | sudo chpasswd
 echo "root:$newPassword" | sudo chpasswd
+echo "pi:$newPassword" | sudo chpasswd
+
 sleep 1
-dialog --backtitle "JoinInBox - Password Change" --msgbox "OK - changed the password for the users 'joinmarket' and 'root'" 6 63
+dialog --backtitle "JoininBox - Password Change" --msgbox "OK - changed the password for the users 'joinmarket' and 'root'" 6 63
 exit 0
