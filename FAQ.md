@@ -84,24 +84,29 @@ https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authe
  Keep pressing [ENTER] to use the default user information.
 
 ### Download and verify Raspbian SDcard image for a Raspberry Pi
-* Download image:  
-https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2019-09-30/2019-09-26-raspbian-buster-lite.zip
 
+To be able to open the JoinMarket-QT GUI on the dekstop from the RPI
+need to use the Raspberry Pi OS (32-bit) with desktop inage
+
+* Download image:  
+https://downloads.raspberrypi.org/raspios_armhf/images/raspios_armhf-2020-05-28/2020-05-27-raspios-buster-armhf.zip
 * Download signature:  
-https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2019-09-30/2019-09-26-raspbian-buster-lite.zip.sig
+https://downloads.raspberrypi.org/raspios_armhf/images/raspios_armhf-2020-05-28/2020-05-27-raspios-buster-armhf.zip.sig
 
 * Import PGP pubkey:  
 `wget https://www.raspberrypi.org/raspberrypi_downloads.gpg.key | gpg --import`
 
-* Verify Image:
-`gpg --verify raspbian_lite-2019-09-30/2019-09-26-raspbian-buster-lite.zip.sig`
+* Verify the image:  
+`gpg --verify 2020-05-27-raspios-buster-armhf.zip.sig`
 
-* Gain ssh access: https://www.raspberrypi.org/documentation/remote-access/ssh/
+* Flash the image to an SDcard, can use the [Raspberry Pi Imager](https://www.raspberrypi.org/downloads/)
 
-* put a file called simply: `ssh` to the root of the sdcard
+* put a file called simply: `ssh` to the root of the sdcard.  
+Read more on [how to gain ssh access here](https://www.raspberrypi.org/documentation/remote-access/ssh/).
 
 * boot up the RPi and log in with ssh to:   
-`pi@LAN_IP_ADDRESS`
+`pi@LAN_IP_ADDRESS`  
+The default password is: `raspberry`
 
 ### Log in through SSH using a hardware wallet
 
