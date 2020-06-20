@@ -91,7 +91,7 @@ case $CHOICE in
             echo "Type: 'menu' and press ENTER to return to the menu"
             ;;
         FREEZE)
-            /home/joinmarket/menu.control.sh
+            /home/joinmarket/menu.freeze.sh
             ;;
         PAYJOIN)
             /home/joinmarket/menu.payjoin.sh
