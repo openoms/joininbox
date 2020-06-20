@@ -4,6 +4,15 @@ script="$1"
 if [ ${#script} -eq 0 ]; then
   echo "must specify a script to run"
   exit 1
+elif [ ${script} == "receive-payjoin" ]; then
+  specialMessage="
+Communicate the sender the:
+- receiving address  (3....)
+- ephemeral nickname (J5...)
+- amount in satoshis
+"
+else
+  specialMessage=""
 fi
 
 wallet="$2"
@@ -31,7 +40,7 @@ else
 fi
 
 makercount="$5"
-if [ ${#makercount} -eq 0 ]; then
+if [ ${#makercount} -eq 0 ] || [ ${makercount} == nomakercount ]; then
   makercount=""
 else
   makercount="-N$5"
@@ -45,6 +54,13 @@ fi
 address="$7"
 if [ ${#address} -eq 0 ]; then
   address=""
+fi
+
+nickname="$8"
+if [ ${#nickname} -eq 0 ]; then
+  nickname=""
+else
+  nickname="-T $8"
 fi
 
 source /home/joinmarket/joinin.conf
@@ -71,17 +87,17 @@ case $pressed in
     if [ ${RPCoverTor} == on ];then 
       echo "running the command:
 $tor python ~/joinmarket-clientserver/scripts/$script.py \
-$makercount $mixdepth $wallet $option $amount $address"
+$makercount $mixdepth $wallet $option $amount $address $nickname"
     else
       echo "running the command:
 python ~/joinmarket-clientserver/scripts/$script.py \
-$makercount $mixdepth $wallet $option $amount $address"
+$makercount $mixdepth $wallet $option $amount $address $nickname"
     fi
-    echo ""
+    echo "$specialMessage"
     . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
     cat $data | $tor \
     python ~/joinmarket-clientserver/scripts/$script.py \
-    $makercount $mixdepth $wallet $option $amount $address --wallet-password-stdin
+    $makercount $mixdepth $wallet $option $amount $address $nickname --wallet-password-stdin
     shred $data
     ;;
   1)

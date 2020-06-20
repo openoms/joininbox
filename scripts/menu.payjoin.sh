@@ -1,0 +1,164 @@
+#!/bin/bash
+
+source joinin.conf
+source menu.functions.sh
+
+function receivePayJoin() {
+
+# wallet
+wallet=$(tempfile 2>/dev/null)
+dialog --backtitle "Choose a wallet" \
+       --title "Choose a wallet by typing the full name of the file" \
+       --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2> $wallet
+openMenuIfCancelled $?
+
+# mixdepth
+mixdepth=$(tempfile 2>/dev/null)
+dialog --backtitle "Choose a mixdepth to receive to" \
+--title "Choose a mixdepth to receive to" \
+--inputbox "
+Enter a number between 0 to 4 to choose the mixdepth
+(make sure there is at least one UTXO there already)" 10 60 2> $mixdepth
+openMenuIfCancelled $?
+
+# amount
+amount=$(tempfile 2>/dev/null)
+dialog --backtitle "Choose the amount" \
+--title "Choose the amount" \
+--inputbox "
+Enter the amount to receive in satoshis" 9 60 2> $amount
+openMenuIfCancelled $?
+
+# unlocking with stdin does not work with the receive-payjoin.py:
+# https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/598
+# 
+# /home/joinmarket/start.script.sh receive-payjoin $(cat $wallet) nooption \
+#                               $(cat $mixdepth) nomakercount $(cat $amount)
+
+clear
+echo "
+To receive: $(cat $amount) sats
+
+To the wallet:
+$(cat $wallet)
+mixdepth: $(cat $mixdepth)
+
+run the following command manually:
+"
+if [ ${RPCoverTor} == on ];then 
+  echo "torify python ~/joinmarket-clientserver/scripts/receive-payjoin.py -m$(cat $mixdepth) $(cat $wallet) $(cat $amount)"
+else
+  echo "python ~/joinmarket-clientserver/scripts/receive-payjoin.py -m$(cat $mixdepth) $(cat $wallet) $(cat $amount)"
+fi
+echo ""
+}
+
+function sendPayJoin() {
+
+# wallet
+wallet=$(tempfile 2>/dev/null)
+dialog --backtitle "Choose a wallet" \
+       --title "Choose a wallet by typing the full name of the file" \
+       --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2> $wallet
+openMenuIfCancelled $?
+
+# mixdepth
+mixdepth=$(tempfile 2>/dev/null)
+dialog --backtitle "Choose a mixdepth to send from" \
+--title "Choose a mixdepth to send from" \
+--inputbox "
+Enter a number between 0 to 4 to choose the mixdepth" 9 60 2> $mixdepth
+openMenuIfCancelled $?
+
+# address
+address=$(tempfile 2>/dev/null)
+dialog --backtitle "Choose the address" \
+--title "Choose the address" \
+--inputbox "
+Paste the destination address" 9 60 2> $address
+openMenuIfCancelled $?
+
+# amount
+amount=$(tempfile 2>/dev/null)
+dialog --backtitle "Choose the amount" \
+--title "Choose the amount" \
+--inputbox "
+Enter the amount to send in satoshis" 9 60 2> $amount
+openMenuIfCancelled $?
+
+# nickname
+nickname=$(tempfile 2>/dev/null)
+dialog --backtitle "Enter the counterparty" \
+--title "Enter the counterparty" \
+--inputbox "
+Paste the ephemeral nickname of the receiver" 9 60 2> $nickname
+openMenuIfCancelled $?
+
+# check command
+dialog --backtitle "Confirm the selections" \
+--title "Confirm the details" \
+--yesno "
+Send: $(cat $amount) sats
+
+from the wallet:
+$(cat $wallet)
+mixdepth: $(cat $mixdepth)
+
+to the address:
+$(cat $address)
+
+PayJoin with the ephemeral nickname:
+$(cat $nickname)
+" 16 60
+# make decison
+pressed=$?
+case $pressed in
+  0)
+    # run command
+    /home/joinmarket/start.script.sh sendpayment $(cat $wallet) nooption \
+    $(cat $mixdepth) nomakercount $(cat $amount) $(cat $address) $(cat $nickname)
+    ;;
+  1)
+    echo "Cancelled"
+    exit 1
+    ;;
+  255)
+    echo "ESC pressed."
+    exit 1
+    ;;
+esac
+}
+
+# BASIC MENU INFO
+HEIGHT=10
+WIDTH=48
+CHOICE_HEIGHT=20
+TITLE="JoininBox"
+MENU="
+PayJoin options:"
+OPTIONS=()
+BACKTITLE="JoininBox GUI"
+
+# Basic Options
+OPTIONS+=(\
+  SEND "Send a payment with PayJoin" \
+  RECEIVE "Receive a payment with PayJoin" \
+)
+
+CHOICE=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --title "$TITLE" \
+                --menu "$MENU" \
+                $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                "${OPTIONS[@]}" \
+                2>&1 >/dev/tty)
+
+case $CHOICE in
+
+        RECEIVE)
+            receivePayJoin
+            ;;
+        SEND)
+            sendPayJoin
+            ;;              
+esac
