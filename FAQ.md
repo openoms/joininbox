@@ -96,6 +96,16 @@ https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2019-09-30/
 * Verify Image:
 `gpg --verify raspbian_lite-2019-09-30/2019-09-26-raspbian-buster-lite.zip.sig`
 
+* Gain ssh acces: https://www.raspberrypi.org/documentation/remote-access/ssh/
+
+* put a file called simply: `ssh` to the root of the sdcard
+
+* boot up the RPi and log in with ssh to:   
+`pi@LAN_IP_ADDRESS`
+
+* change to the `root` user with:  
+`sudo su`
+
 ### Log in through SSH using a hardware wallet
 
 * See the official pages for:
