@@ -64,7 +64,7 @@ else
 fi
 
 source /home/joinmarket/joinin.conf
-if [ ${RPCoverTor} = on ]; then 
+if [ ${RPCoverTor} = "on" ]; then 
   tor="torify"
 else
   tor=""
@@ -84,7 +84,8 @@ dialog --backtitle "Decrypting Wallet" \
 pressed=$?
 case $pressed in
   0)
-    if [ ${RPCoverTor} == on ];then 
+    clear
+    if [ ${RPCoverTor} = "on" ];then 
       echo "running the command:
 $tor python ~/joinmarket-clientserver/scripts/$script.py \
 $makercount $mixdepth $wallet $option $amount $address $nickname"

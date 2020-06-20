@@ -16,7 +16,7 @@ if [ $script == "yg-privacyenhanced" ]; then
   pkill -sigint -f "python yg-privacyenhanced.py $wallet --wallet-password-stdin"
 fi
 
-if [ ${RPCoverTor} = on ];then 
+if [ ${RPCoverTor} = "on" ];then 
   tor="torify"
 else
   tor=""
