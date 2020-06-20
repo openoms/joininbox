@@ -70,8 +70,15 @@ fi
 # change user passwords
 echo "joinmarket:$newPassword" | sudo chpasswd
 echo "root:$newPassword" | sudo chpasswd
-echo "pi:$newPassword" | sudo chpasswd
+# change password for 'pi' if present
+if [ $(compgen -u | grep -c pi) -gt 0 ]; then
+  echo "pi:$newPassword" | sudo chpasswd
+  piUser=" and 'pi'"
+fi
 
 sleep 1
-dialog --backtitle "JoininBox - Password Change" --msgbox "OK - changed the password for the users 'joinmarket' and 'root'" 6 63
+dialog --backtitle "JoininBox - Password Change" \
+--msgbox "OK - changed the password for the users:
+  'joinmarket', 'root' $piUser" 6 45
+
 exit 0
