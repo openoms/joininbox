@@ -49,7 +49,7 @@ Instructions to open the JoinMarket-QT GUI on the desktop
 
 if [ "${CHOICE}" = "LINUX" ]; then
   echo "
-Use the line in the desktop terminal to connect:
+Use the following line in a new desktop terminal to connect:
 
 ssh -X joinmarket@$localip joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
 
@@ -59,7 +59,7 @@ elif [ "${CHOICE}" = "MAC" ]; then
   echo "
 Install the XQuartz application from https://www.xquartz.org/
 
-Use the line in the desktop terminal to connect:
+Use the following line in a new desktop terminal to connect:
 
 ssh -X joinmarket@$localip joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
 
@@ -76,10 +76,10 @@ Open Putty and fill in:
 Under Connection:
     Data -> Auto-login username: joinmarket
 
-Under SSH
+Under SSH:
     X11 -> [x] Enable X11 forwarding
 
-These settings can be saved in Session -> Load. save or delete stored session -> Save
+These settings can be saved in Session -> Load, save or delete stored session -> Save
 Open the connection
 Use the PASSWORD_B to log in
 In the terminal type:
