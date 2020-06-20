@@ -64,7 +64,7 @@ else
 fi
 
 source /home/joinmarket/joinin.conf
-if [ ${RPCoverTor} == on ];then 
+if [ ${RPCoverTor} = on ]; then 
   tor="torify"
 else
   tor=""
