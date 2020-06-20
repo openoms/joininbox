@@ -40,6 +40,25 @@ else
   echo "OK running ${baseImage}"
 fi
 
+if [ "${baseImage}" = "raspbian" ] || [ "${baseImage}" = "dietpi" ] ; then
+  # fixing locales for build
+  # https://github.com/rootzoll/raspiblitz/issues/138
+  # https://daker.me/2014/10/how-to-fix-perl-warning-setting-locale-failed-in-raspbian.html
+  # https://stackoverflow.com/questions/38188762/generate-all-locales-in-a-docker-image
+  echo ""
+  echo "*** FIXING LOCALES FOR BUILD ***"
+
+  sudo sed -i "s/^# en_US.UTF-8 UTF-8.*/en_US.UTF-8 UTF-8/g" /etc/locale.gen
+  sudo sed -i "s/^# en_US ISO-8859-1.*/en_US ISO-8859-1/g" /etc/locale.gen
+  sudo locale-gen
+  export LANGUAGE=en_US.UTF-8
+  export LANG=en_US.UTF-8
+  export LC_ALL=en_US.UTF-8
+
+  # https://github.com/rootzoll/raspiblitz/issues/684
+  sudo sed -i "s/^    SendEnv LANG LC.*/#   SendEnv LANG LC_*/g" /etc/ssh/ssh_config
+fi
+
 echo "*** Add the 'joinmarket' user ***"
 adduser --disabled-password --gecos "" joinmarket
 
@@ -48,8 +67,7 @@ cd /home/joinmarket
 sudo -u joinmarket git clone https://github.com/openoms/joininbox.git
 sudo -u joinmarket cp ./joininbox/scripts/* /home/joinmarket/
 sudo -u joinmarket cp ./joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
-
-chmod +x /home/joinmarket/*.sh
+sudo chmod +x /home/joinmarket/*.sh
 
 echo "*** Setting the password for the users 'joinmarket' and 'root' ***"
 apt install dialog
