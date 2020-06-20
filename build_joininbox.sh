@@ -1,8 +1,21 @@
 #!/bin/bash
+#########################################################################
+# Build your SD card image based on:
+# 
+# Raspberry Pi OS (32-bit) with desktop (2020-05-27)
+# https://www.raspberrypi.org/downloads/raspberry-pi-os/
+# SHA256: b9a5c5321b3145e605b3bcd297ca9ffc350ecb1844880afd8fb75a7589b7bd04
+##########################################################################
+# setup fresh SD card with the image above
+# login with SSH and run this script from the root user.
+##########################################################################
+
+# The JoininBox Build Script is partially based on:
+# https://github.com/rootzoll/raspiblitz/blob/master/build_sdcard.sh
 
 # command info
 if [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
- echo "JoininBox setup with optional Tor install"
+ echo "JoininBox Build Script with optional Tor install"
  echo "sudo build_joininbox.sh [--with-tor]"
  exit 1
 fi
@@ -12,6 +25,12 @@ if [ "$EUID" -ne 0 ]
   then echo "Please run as root (with sudo)"
   exit
 fi
+
+echo ""
+echo "*******************************"
+echo "* JOININBOX BUILD SCRIPT v0.1 *"
+echo "*******************************"
+echo ""
 
 echo "Detect Base Image ..." 
 baseImage="?"
