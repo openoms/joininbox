@@ -57,12 +57,202 @@ if [ "${baseImage}" = "raspbian" ] || [ "${baseImage}" = "dietpi" ] ; then
 
   # https://github.com/rootzoll/raspiblitz/issues/684
   sudo sed -i "s/^    SendEnv LANG LC.*/#   SendEnv LANG LC_*/g" /etc/ssh/ssh_config
+  
+  # remove unneccesary files
+  sudo rm -rf /home/pi/MagPi
 fi
 
+# remove some (big) packages that are not needed
+sudo apt-get remove -y --purge libreoffice* oracle-java* chromium-browser nuscratch scratch sonic-pi minecraft-pi plymouth python2
+sudo apt-get clean
+sudo apt-get -y autoremove
+
+if [ -f "/usr/bin/python3.7" ]; then
+  # make sure /usr/bin/python exists (and calls Python3.7 in Debian Buster)
+  sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+  echo "python calls python3.7"
+elif [ -f "/usr/bin/python3.8" ]; then
+  # use python 3.8 if available
+  sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
+  echo "python calls python3.8"
+else
+  echo "!!! FAIL !!!"
+  echo "There is no tested version of python present"
+  exit 1
+fi
+
+# update debian
+echo ""
+echo "*** UPDATE DEBIAN ***"
+sudo apt-get update -y
+sudo apt-get upgrade -f -y
+
+echo ""
+echo "*** PREPARE ${baseImage} ***"
+
+# special prepare when DietPi
+if [ "${baseImage}" = "dietpi" ]; then
+  echo "renaming dietpi user to pi"
+  sudo usermod -l pi dietpi
+fi
+
+# special prepare when Raspbian
+if [ "${baseImage}" = "raspbian" ]; then
+  # do memory split (16MB)
+  sudo raspi-config nonint do_memory_split 16
+  # set to wait until network is available on boot (0 seems to yes)
+  sudo raspi-config nonint do_boot_wait 0
+  # set WIFI country so boot does not block
+  sudo raspi-config nonint do_wifi_country US
+  # see https://github.com/rootzoll/raspiblitz/issues/428#issuecomment-472822840
+  echo "max_usb_current=1" | sudo tee -a /boot/config.txt
+  # run fsck on sd boot partition on every startup to prevent "maintenance login" screen
+  # see: https://github.com/rootzoll/raspiblitz/issues/782#issuecomment-564981630
+  # use command to check last fsck check: sudo tune2fs -l /dev/mmcblk0p2
+  sudo tune2fs -c 1 /dev/mmcblk0p2
+  # see https://github.com/rootzoll/raspiblitz/issues/1053#issuecomment-600878695
+  sudo sed -i 's/^/fsck.mode=force fsck.repair=yes /g' /boot/cmdline.txt
+fi
+
+# special prepare when Nvidia Jetson Nano
+if [ ${isNvidia} -eq 1 ] ; then
+  # disable GUI on boot
+  sudo systemctl set-default multi-user.target
+fi
+
+echo ""
+echo "*** CONFIG ***"
+# based on https://github.com/Stadicus/guides/blob/master/raspibolt/raspibolt_20_pi.md#raspi-config
+
+# change log rotates
+# see https://github.com/rootzoll/raspiblitz/issues/394#issuecomment-471535483
+echo "/var/log/syslog" >> ./rsyslog
+echo "{" >> ./rsyslog
+echo "	rotate 7" >> ./rsyslog
+echo "	daily" >> ./rsyslog
+echo "	missingok" >> ./rsyslog
+echo "	notifempty" >> ./rsyslog
+echo "	delaycompress" >> ./rsyslog
+echo "	compress" >> ./rsyslog
+echo "	postrotate" >> ./rsyslog
+echo "		invoke-rc.d rsyslog rotate > /dev/null" >> ./rsyslog
+echo "	endscript" >> ./rsyslog
+echo "}" >> ./rsyslog
+echo "" >> ./rsyslog
+echo "/var/log/mail.info" >> ./rsyslog
+echo "/var/log/mail.warn" >> ./rsyslog
+echo "/var/log/mail.err" >> ./rsyslog
+echo "/var/log/mail.log" >> ./rsyslog
+echo "/var/log/daemon.log" >> ./rsyslog
+echo "{" >> ./rsyslog
+echo "        rotate 4" >> ./rsyslog
+echo "        size=100M" >> ./rsyslog
+echo "        missingok" >> ./rsyslog
+echo "        notifempty" >> ./rsyslog
+echo "        compress" >> ./rsyslog
+echo "        delaycompress" >> ./rsyslog
+echo "        sharedscripts" >> ./rsyslog
+echo "        postrotate" >> ./rsyslog
+echo "                invoke-rc.d rsyslog rotate > /dev/null" >> ./rsyslog
+echo "        endscript" >> ./rsyslog
+echo "}" >> ./rsyslog
+echo "" >> ./rsyslog
+echo "/var/log/kern.log" >> ./rsyslog
+echo "/var/log/auth.log" >> ./rsyslog
+echo "{" >> ./rsyslog
+echo "        rotate 4" >> ./rsyslog
+echo "        size=100M" >> ./rsyslog
+echo "        missingok" >> ./rsyslog
+echo "        notifempty" >> ./rsyslog
+echo "        compress" >> ./rsyslog
+echo "        delaycompress" >> ./rsyslog
+echo "        sharedscripts" >> ./rsyslog
+echo "        postrotate" >> ./rsyslog
+echo "                invoke-rc.d rsyslog rotate > /dev/null" >> ./rsyslog
+echo "        endscript" >> ./rsyslog
+echo "}" >> ./rsyslog
+echo "" >> ./rsyslog
+echo "/var/log/user.log" >> ./rsyslog
+echo "/var/log/lpr.log" >> ./rsyslog
+echo "/var/log/cron.log" >> ./rsyslog
+echo "/var/log/debug" >> ./rsyslog
+echo "/var/log/messages" >> ./rsyslog
+echo "{" >> ./rsyslog
+echo "	rotate 4" >> ./rsyslog
+echo "	weekly" >> ./rsyslog
+echo "	missingok" >> ./rsyslog
+echo "	notifempty" >> ./rsyslog
+echo "	compress" >> ./rsyslog
+echo "	delaycompress" >> ./rsyslog
+echo "	sharedscripts" >> ./rsyslog
+echo "	postrotate" >> ./rsyslog
+echo "		invoke-rc.d rsyslog rotate > /dev/null" >> ./rsyslog
+echo "	endscript" >> ./rsyslog
+echo "}" >> ./rsyslog
+sudo mv ./rsyslog /etc/logrotate.d/rsyslog
+sudo chown root:root /etc/logrotate.d/rsyslog
+sudo service rsyslog restart
+
+echo ""
+echo "*** SOFTWARE UPDATE ***"
+# based on https://github.com/Stadicus/guides/blob/master/raspibolt/raspibolt_20_pi.md#software-update
+
+# installs like on RaspiBolt
+sudo apt-get install -y htop git curl bash-completion vim jq dphys-swapfile bsdmainutils
+
+# installs bandwidth monitoring for future statistics
+sudo apt-get install -y vnstat
+
+# prepare for BTRFS data drive raid
+sudo apt-get install -y btrfs-progs btrfs-tools
+
+# network tools
+sudo apt-get install -y autossh telnet
+
+# prepare for display graphics mode
+# see https://github.com/rootzoll/raspiblitz/pull/334
+sudo apt-get install -y fbi
+
+# prepare for powertest
+sudo apt install -y sysbench
+
+# check for dependencies on DietPi, Ubuntu, Armbian
+sudo apt install -y build-essential
+
+# add armbian-config
+if [ "${baseImage}" = "armbian" ]; then
+  # add armbian config
+  sudo apt install armbian-config -y
+fi
+
+# dependencies for python
+sudo apt install -y python3-venv python3-dev python3-wheel python3-jinja2 python3-pip
+
+# make sure /usr/bin/pip exists (and calls pip3 in Debian Buster)
+sudo update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+
+# rsync is needed to copy from HDD
+sudo apt install -y rsync
+# install ifconfig
+sudo apt install -y net-tools
+#to display hex codes
+sudo apt install -y xxd
+# setuptools needed for Nyx
+sudo pip install setuptools
+# netcat for 00infoBlitz.sh
+sudo apt install -y netcat
+# install OpenSSH client + server
+sudo apt install -y openssh-client
+sudo apt install -y openssh-sftp-server
+# install killall, fuser
+sudo apt-get install -y psmisc
+
+sudo apt-get clean
+sudo apt-get -y autoremove
+
+echo ""
 echo "*** Add the 'joinmarket' user ***"
 adduser --disabled-password --gecos "" joinmarket
-
-apt install -y git
 
 echo "*** Clone the joininbox repo and copy the scripts ***"
 cd /home/joinmarket
