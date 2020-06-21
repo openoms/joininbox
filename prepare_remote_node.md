@@ -26,11 +26,13 @@ This can be skipped if you [connect through Tor](#tor-connection))
     `sudo ufw allow from 192.168.1.0/24 to any port 8332`  
     `ufw enable`
 
+### Take note of the `LAN_ADDRESS` of the remote node and fill it in to the `rpc_host` in `joinmarket.cfg`
+
 ## Tor connection
 
 ### On the node - activate Tor and create a Hidden Service
 
-Make sure that Tor is ative in the SERVICES menu.
+Make sure that Tor is active in the SERVICES menu.
 
 #### Create a Hidden Service to forward the bitcoin RPC port
 
@@ -57,9 +59,10 @@ Alternatively proceed manually:
 
 5) #### Fill in the `Tor_Hidden_Service.onion` to the `rpc_host` in the `joinmarket.cfg`
 
-#### Take note of the `Tor_Hidden_Service.onion` and fill in to the `rpc_host` in the `joinmarket.cfg`
+### Take note of the `Tor_Hidden_Service.onion` and fill in to the `rpc_host` in the `joinmarket.cfg`
 
-#### Remember to use `torify` with the python scripts when connecting remotely through Tor.  
+### Remember to use `torify` with the python scripts when connecting remotely through Tor.
+    (Applied automatically in the JoininBox)
     Example:  
     `torify wallet-tool.py wallet.jmdat`
 
