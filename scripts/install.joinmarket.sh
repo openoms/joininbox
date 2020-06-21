@@ -59,8 +59,9 @@ fi
 
 # show info
 dialog \
+--title "Configure JoinMarket" \
 --exit-label "Continue to edit the joinmarket.cfg" \
---textbox "info.conf.txt" 20 102
+--textbox "info.conf.txt" 21 102
 
 # edit joinmarket.cfg
 /home/joinmarket/set.conf.sh /home/joinmarket/.joinmarket/joinmarket.cfg

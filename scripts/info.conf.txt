@@ -1,14 +1,16 @@
+
 On the next screen fill in the values written in CAPITALs:
 
 [BLOCKCHAIN]
 # options: bitcoin-rpc, regtest
 blockchain_source = bitcoin-rpc
 network = mainnet
-rpc_host = LAN_IP_ADDRESS or HIDDEN_SERVICE_ADDRESS_FOR_BITCOINRPC.onion
+rpc_host = LAN_IP_ADDRESS or HIDDEN_SERVICE_ADDRESS_FOR_BITCOIN8832.onion
 rpc_port = 8332
-rpc_user = RPC_USERNAME_OF_THE_REMOTE_NODE (AS IN BITCOIN.CONF)
-rpc_password = RPC_PASSWORD_OF_THE_REMOTE_NODE (AS IN BITCOIN.CONF)
+rpc_user = RPC_USERNAME_OF_THE_CONNECTED_NODE (as in the bitcoin.conf)
+rpc_password = RPC_PASSWORD_OF_THE_CONNECTED_NODE (as in the bitcoin.conf)
+rpc_wallet = LEAVE EMPTY or fill the wallet name specified in bitcoin.conf
 
 
-More info about how to connect JoinMarket running on a Linux desktop to a remote node:
-https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/joinmarket_desktop_to_blitz.md
+More info on how to prepare a remote node to accept the JoinMarket connection:
+https://github.com/openoms/joininbox/blob/master/prepare_remote_node.md
