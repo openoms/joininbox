@@ -28,7 +28,7 @@ if [ ${#wallet} -eq 0 ] || [ ${wallet} == "" ]; then
 fi
 
 option="$3"
-if [ ${#option} -eq 0 ] || [ ${option} == nooption ]; then
+if [ ${#option} -eq 0 ] || [ ${option} = "nooption" ]; then
   option=""
 fi
 
@@ -40,7 +40,7 @@ else
 fi
 
 makercount="$5"
-if [ ${#makercount} -eq 0 ] || [ ${makercount} == nomakercount ]; then
+if [ ${#makercount} -eq 0 ] || [ ${makercount} = "nomakercount" ]; then
   makercount=""
 else
   makercount="-N$5"

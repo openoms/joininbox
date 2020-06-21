@@ -27,7 +27,11 @@ newPassword=$1
 if [ ${#newPassword} -eq 0 ]; then
   # ask user for new password A (first time)
   dialog --backtitle "JoinInBox - Password Change"\
-     --insecure --passwordbox "Set a new password for the users 'joinmarket' and 'root'\n(use at least 8 characters)" 9 56 2>$_temp
+  --title "JoinInBox - Password Change"\
+  --insecure --passwordbox "
+Set a new password for the users:
+  'joinmarket' and 'root'
+(use at least 8 characters)" 10 45 2>$_temp
   
   # get user input
   password1=$( cat $_temp )
