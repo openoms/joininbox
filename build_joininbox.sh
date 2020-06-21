@@ -45,7 +45,7 @@ if [ ${isArmbian} -gt 0 ]; then
   baseImage="armbian"
 fi 
 if [ ${isUbuntu} -gt 0 ]; then
-baseImage="ubuntu"
+  baseImage="ubuntu"
 fi
 if [ ${isDietPi} -gt 0 ]; then
   baseImage="dietpi"
@@ -295,9 +295,9 @@ sudo -u joinmarket touch /home/joinmarket/joinin.conf
 if [ "$1" = "--with-tor" ] || [ "$1" = "tor" ]; then
 
   # add default value to joinin config if needed
-  checkTorEntry=$(cat /home/joinmarket/joinin.conf | grep -c "runBehindTor")
+  checkTorEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | grep -c "runBehindTor")
   if [ ${checkTorEntry} -eq 0 ]; then
-    echo "runBehindTor=off" >> /home/joinmarket/joinin.conf
+    echo "runBehindTor=off" | sudo tee -a /home/joinmarket/joinin.conf
   fi
 
   echo "*** INSTALL TOR REPO ***"
