@@ -168,11 +168,10 @@ CHOICE=$(dialog --clear \
                 2>&1 >/dev/tty)
 
 case $CHOICE in
-
-        RECEIVE)
-            receivePayJoin
-            ;;
-        SEND)
-            sendPayJoin
-            ;;              
+  RECEIVE)
+      receivePayJoin
+      ;;
+  SEND)
+      sendPayJoin
+      ;;              
 esac

@@ -22,7 +22,8 @@ else
   tor=""
 fi
 
-startScript="cat /home/joinmarket/.pw | $tor python $script.py $wallet --wallet-password-stdin"
+startScript="cat /home/joinmarket/.pw | $tor python $script.py $wallet \
+--wallet-password-stdin"
 echo ""
 echo "running: $tor python $script.py $wallet"
 
@@ -32,7 +33,8 @@ Description=$script
 
 [Service]
 WorkingDirectory=/home/joinmarket/joinmarket-clientserver/scripts/
-ExecStart=/bin/sh -c '. /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate && $startScript'
+ExecStart=/bin/sh -c \
+'. /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate && $startScript'
 User=joinmarket
 Group=joinmarket
 Type=simple

@@ -63,88 +63,87 @@ CHOICE=$(dialog --clear \
                 2>&1 >/dev/tty)
 
 case $CHOICE in
-
-        INFO)
-            clear
-            /home/joinmarket/start.script.sh wallet-tool
-            echo ""
-            echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
-            echo "Type: 'menu' and press ENTER to return to the menu"
-            ;;
-        WALLET)
-            /home/joinmarket/menu.wallet.sh
-            /home/joinmarket/menu.sh          
-            ;;
-        QTGUI)
-            /home/joinmarket/info.qtgui.sh
-            echo "Returning to the menu..."
-            sleep 1
-            /home/joinmarket/menu.sh
-            ;;
-        MAKER)
-            /home/joinmarket/menu.yg.sh
-            /home/joinmarket/menu.sh           
-            ;;
-        SEND)
-            /home/joinmarket/menu.send.sh
-            echo ""
-            echo "Type: 'menu' and press ENTER to return to the menu"
-            ;;
-        FREEZE)
-            /home/joinmarket/menu.freeze.sh
-            ;;
-        PAYJOIN)
-            /home/joinmarket/menu.payjoin.sh
-            ;;
-        OFFERS)
-            #TODO show hidden service only if already running
-            /home/joinmarket/start.ob-watcher.sh
-            errorOnInstall=$?
-            if [ ${errorOnInstall} -eq 0 ]; then
-              TOR_ADDRESS=$(sudo cat $HiddenServiceDir/ob-watcher/hostname)
-              whiptail --title "Started the ob-watcher service" \
-                --msgbox "\nVisit the address in the Tor Browser:\n$TOR_ADDRESS" 9 66
-            else 
-              DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
-                --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
-            fi
-            echo ""
-            echo "Started watching the Offer Book in the background"
-            echo ""
-            echo "Showing the systemd status ..."
-            sleep 3
-            dialog \
-            --title "Monitoring the ob-watcher - press CTRL+C to exit"  \
-            --prgbox "sudo journalctl -fn20 -u ob-watcher" 30 140
-            echo "Returning to the menu..."
-            sleep 1
-            /home/joinmarket/menu.sh
-            ;;
-        CONFIG)
-            /home/joinmarket/install.joinmarket.sh
-            errorOnInstall=$?
-            if [ ${errorOnInstall} -gt 0 ]; then
-              DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
-                --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
-            fi
-            echo "Returning to the menu..."
-            sleep 1
-            /home/joinmarket/menu.sh
-            ;;
-        CONNECT) 
-            ;;
-        UPDATE)
-            /home/joinmarket/update.joininbox.sh
-            echo "Returning to the menu..."
-            sleep 1
-            /home/joinmarket/menu.sh
-            ;;
-        X)
-            clear
-            echo "
-***********************************
-* JoinMarket command line
-***********************************
+  INFO)
+      clear
+      /home/joinmarket/start.script.sh wallet-tool
+      echo ""
+      echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
+      echo "Type: 'menu' and press ENTER to return to the menu"
+      ;;
+  WALLET)
+      /home/joinmarket/menu.wallet.sh
+      /home/joinmarket/menu.sh          
+      ;;
+  QTGUI)
+      /home/joinmarket/info.qtgui.sh
+      echo "Returning to the menu..."
+      sleep 1
+      /home/joinmarket/menu.sh
+      ;;
+  MAKER)
+      /home/joinmarket/menu.yg.sh
+      /home/joinmarket/menu.sh           
+      ;;
+  SEND)
+      /home/joinmarket/menu.send.sh
+      echo ""
+      echo "Type: 'menu' and press ENTER to return to the menu"
+      ;;
+  FREEZE)
+      /home/joinmarket/menu.freeze.sh
+      ;;
+  PAYJOIN)
+      /home/joinmarket/menu.payjoin.sh
+      ;;
+  OFFERS)
+      #TODO show hidden service only if already running
+      /home/joinmarket/start.ob-watcher.sh
+      errorOnInstall=$?
+      if [ ${errorOnInstall} -eq 0 ]; then
+        TOR_ADDRESS=$(sudo cat $HiddenServiceDir/ob-watcher/hostname)
+        whiptail --title "Started the ob-watcher service" \
+          --msgbox "\nVisit the address in the Tor Browser:\n$TOR_ADDRESS" 9 66
+      else 
+        DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
+          --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
+      fi
+      echo ""
+      echo "Started watching the Offer Book in the background"
+      echo ""
+      echo "Showing the systemd status ..."
+      sleep 3
+      dialog \
+      --title "Monitoring the ob-watcher - press CTRL+C to exit"  \
+      --prgbox "sudo journalctl -fn20 -u ob-watcher" 30 140
+      echo "Returning to the menu..."
+      sleep 1
+      /home/joinmarket/menu.sh
+      ;;
+  CONFIG)
+      /home/joinmarket/install.joinmarket.sh
+      errorOnInstall=$?
+      if [ ${errorOnInstall} -gt 0 ]; then
+        DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
+          --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
+      fi
+      echo "Returning to the menu..."
+      sleep 1
+      /home/joinmarket/menu.sh
+      ;;
+  CONNECT) 
+      ;;
+  UPDATE)
+      /home/joinmarket/update.joininbox.sh
+      echo "Returning to the menu..."
+      sleep 1
+      /home/joinmarket/menu.sh
+      ;;
+  X)
+      clear
+      echo "
+***************************
+* JoinMarket command line *  
+***************************
 Notes on usage:
 https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/README.md
 

@@ -78,7 +78,8 @@ trap "rm -f $data" 0 1 2 5 15
 
 dialog --backtitle "Decrypting Wallet" \
        --insecure \
-       --passwordbox "Type or paste the wallet decryption password" 8 52 2> $data
+       --passwordbox "Type or paste the wallet decryption password" \
+       8 52 2> $data
 
 # make decison
 pressed=$?
@@ -86,11 +87,11 @@ case $pressed in
   0)
     clear
     if [ ${RPCoverTor} = "on" ];then 
-      echo "running the command:
+      echo "Running the command:
 $tor python ~/joinmarket-clientserver/scripts/$script.py \
 $makercount $mixdepth $wallet $option $amount $address $nickname"
     else
-      echo "running the command:
+      echo "Running the command:
 python ~/joinmarket-clientserver/scripts/$script.py \
 $makercount $mixdepth $wallet $option $amount $address $nickname"
     fi
@@ -98,7 +99,8 @@ $makercount $mixdepth $wallet $option $amount $address $nickname"
     . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
     cat $data | $tor \
     python ~/joinmarket-clientserver/scripts/$script.py \
-    $makercount $mixdepth $wallet $option $amount $address $nickname --wallet-password-stdin
+    $makercount $mixdepth $wallet $option $amount $address $nickname \
+    --wallet-password-stdin
     shred $data
     ;;
   1)
