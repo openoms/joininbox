@@ -24,8 +24,8 @@ fi
 
 startScript="cat /home/joinmarket/.pw | $tor python $script.py $wallet \
 --wallet-password-stdin"
-echo ""
-echo "running: $tor python $script.py $wallet"
+echo "Running the command with systemd:
+$tor python $script.py $wallet"
 
 echo "
 [Unit]
@@ -46,14 +46,12 @@ Restart=no
 WantedBy=multi-user.target
 " | sudo tee /etc/systemd/system/$script.service 1>/dev/null
 
-echo ""
 echo "Starting the systemd service: $script"
 echo ""
 
 sudo systemctl enable $script
 sudo systemctl start $script
 
-echo ""
 echo "Shredding the password once used..."
 echo ""
 
