@@ -53,6 +53,12 @@ case $pressed in
     echo "Running the command:
 $tor python ~/joinmarket-clientserver/scripts/receive-payjoin.py -m$(cat $mixdepth) $(cat $wallet) $(cat $amount)
 "
+    echo " Communicate the payer the:
+- receiving address  (3...)
+- expected amount in satoshis
+- ephemeral nickname (J5...)
+and press `y` to wait for the transaction.
+" 
     # run command
     $tor python ~/joinmarket-clientserver/scripts/receive-payjoin.py -m$(cat $mixdepth) $(cat $wallet) $(cat $amount)
     ;;
