@@ -1,6 +1,6 @@
 # JoininBox
 
-A terminal based menu and helper UI for JoinMarket. 
+A terminal based graphical menu for JoinMarket.
 
 <p align="left">
   <img width="400" src="/images/menu.png">
