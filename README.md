@@ -38,7 +38,7 @@ A terminal based menu and helper UI for JoinMarket.
 
 ### Set up JoininBox
 * Continue to work as the `root` user or change with:  
-`$ sudo su`
+`$ sudo - su`
 
 * Run the build script:
   ```bash 
@@ -54,6 +54,7 @@ or
 log in with ssh to:  
 `joinmarket@LAN_IP_ADDRESS`
 
+* Choose `CONFIG` in the menu to install JoinMarket (on the first run) and edit the `joinmarket.cfg`
 ---
 
 ## More info:
