@@ -38,8 +38,8 @@ case $CHOICE in
         MAKER)
             # wallet
             chooseWallet
-            # get password 
-            /home/joinmarket/get.password.sh
+            # get password
+            passwordToFile
             echo "Using the wallet: $(cat $wallet)"
             /home/joinmarket/start.service.sh yg-privacyenhanced $(cat $wallet)
             echo ""
