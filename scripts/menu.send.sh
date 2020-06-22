@@ -10,21 +10,23 @@ dialog --backtitle "Choose a wallet" \
 openMenuIfCancelled $?
 
 # mixdepth
-mixdepth=$(tempfile 2>/dev/null)
+tempmixdepth=$(tempfile 2>/dev/null)
 dialog --backtitle "Choose a mixdepth" \
 --title "Choose a mixdepth" \
 --inputbox "
-Enter a number between 0 to 4 to choose the mixdepth" 9 60 2> $mixdepth
+Enter a number between 0 to 4 to choose the mixdepth" 9 60 2> $tempmixdepth
 openMenuIfCancelled $?
+mixdepth="-m$(cat $tempmixdepth)"
 
 # makercount
-makercount=$(tempfile 2>/dev/null)
+tempmakercount=$(tempfile 2>/dev/null)
 dialog --backtitle "Choose the makercount" \
 --title "Choose the makercount" \
 --inputbox "
 Enter the number of makers to coinjoin with (0-9)
-Enter 0 to send without a coinjoin." 10 60 2> $makercount
+Enter 0 to send without a coinjoin." 10 60 2> $tempmakercount
 openMenuIfCancelled $?
+makercount="-N$(cat $tempmakercount)"
 
 # amount
 amount=$(tempfile 2>/dev/null)
@@ -43,6 +45,12 @@ dialog --backtitle "Choose the address" \
 Paste the destination address" 9 60 2> $address
 openMenuIfCancelled $?
 
+if [ ${RPCoverTor} = "on" ]; then 
+  tor="torify"
+else
+  tor=""
+fi
+
 # check command
 dialog --backtitle "Confirm the details" \
 --title "Confirm the details" \
@@ -51,20 +59,26 @@ Send: $(cat $amount) sats
 
 From the wallet:
 $(cat $wallet)
-mixdepth: $(cat $mixdepth)
+mixdepth: $mixdepth
 
 to the address:
 $(cat $address)
 
-coinjoined with $(cat $makercount) makers." 16 60
+coinjoined with $makercount makers." 16 60
 
 # make decison
 pressed=$?
 case $pressed in
   0)
-    # run command
-    /home/joinmarket/start.script.sh sendpayment $(cat $wallet) nooption \
-    $(cat $mixdepth) $(cat $makercount) $(cat $amount) $(cat $address)
+    clear
+    # display
+    echo "Running the command:
+$tor python ~/joinmarket-clientserver/scripts/sendpayment.py \
+$mixdepth $makercount $(cat $wallet) $(cat $amount) $(cat $address)
+"
+    # run
+    $tor python ~/joinmarket-clientserver/scripts/sendpayment.py \
+    $mixdepth $makercount $(cat $wallet) $(cat $amount) $(cat $address)
     ;;
   1)
     echo "Cancelled"
