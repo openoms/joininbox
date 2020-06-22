@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source menu.functions.sh
+source /home/joinmarket/menu.functions.sh
 
 # get password
 data=$(tempfile 2>/dev/null)

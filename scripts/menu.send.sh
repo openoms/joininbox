@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source menu.functions.sh
+source /home/joinmarket/menu.functions.sh
 
 # wallet
 chooseWallet

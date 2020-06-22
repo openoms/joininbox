@@ -21,6 +21,7 @@ else
 fi
 
 source /home/joinmarket/joinin.conf
+source /home/joinmarket/menu.functions.sh
 
 # BASIC MENU INFO
 HEIGHT=24
@@ -66,7 +67,6 @@ case $CHOICE in
   INFO)
       # wallet
       chooseWallet
-      clear
       /home/joinmarket/start.script.sh wallet-tool $(cat $wallet)
       echo ""
       echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."

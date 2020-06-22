@@ -4,8 +4,8 @@
 # https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/598
 # /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) freeze $(cat $mixdepth)
 
-source joinin.conf
-source menu.functions.sh
+source /home/joinmarket/joinin.conf
+source /home/joinmarket/menu.functions.sh
 
 chooseWallet
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source joinin.conf
-source menu.functions.sh
+source /home/joinmarket/joinin.conf
+source /home/joinmarket/menu.functions.sh
 
 function receivePayJoin() {
 

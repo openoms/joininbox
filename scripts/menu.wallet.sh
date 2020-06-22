@@ -3,7 +3,7 @@
 # WALLET menu options
 
 source /home/joinmarket/joinin.conf
-source menu.functions.sh
+source /home/joinmarket/menu.functions.sh
 
 # BASIC MENU INFO
 HEIGHT=13

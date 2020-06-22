@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # YG menu options
-source menu.functions.sh
+source /home/joinmarket/menu.functions.sh
 source /home/joinmarket/joinin.conf
 
 # BASIC MENU INFO
