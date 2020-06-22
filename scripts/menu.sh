@@ -67,7 +67,15 @@ case $CHOICE in
   INFO)
       # wallet
       chooseWallet
-      /home/joinmarket/start.script.sh wallet-tool $(cat $wallet)
+      # mixdepth
+      mixdepth=$(tempfile 2>/dev/null)
+      dialog --backtitle "Choose a mixdepth" \
+      --title "Choose a mixdepth" \
+      --inputbox "
+Enter a number between 0 to 4 to limit the visible mixdepths
+Leave the box empty to show the addresses in all five" 10 60 2> $mixdepth
+      openMenuIfCancelled $?
+      /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) nooption $(cat $mixdepth)
       echo ""
       echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
       echo ""
