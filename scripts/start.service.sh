@@ -25,7 +25,8 @@ fi
 startScript="cat /home/joinmarket/.pw | $tor python $script.py $wallet \
 --wallet-password-stdin"
 # display
-echo "Running the command with systemd:
+echo "
+Running the command with systemd:
 $tor python $script.py $wallet"
 
 echo "
@@ -47,18 +48,17 @@ Restart=no
 WantedBy=multi-user.target
 " | sudo tee /etc/systemd/system/$script.service 1>/dev/null
 
-echo "Starting the systemd service: $script"
-echo ""
+echo "
+Starting the systemd service: $script
+"
 
 sudo systemctl enable $script
 sudo systemctl start $script
 
-echo "Shredding the password once used..."
-echo ""
+echo "
+Shredding the password once used...
+"
 
 sleep 5
 # delete password once used
 shred -uvz /home/joinmarket/.pw
-# recreate file to avoid systemd error
-# see: https://github.com/openoms/joininbox/issues/5
-touch /home/joinmarket/.pw

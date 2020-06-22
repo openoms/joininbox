@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# unlocking with stdin does not work with the freeze method:
-# https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/598
-# /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) freeze $(cat $mixdepth)
-
 source /home/joinmarket/joinin.conf
 source /home/joinmarket/menu.functions.sh
 

@@ -60,6 +60,7 @@ case $CHOICE in
       /home/joinmarket/menu.sh
       ;;
   RECOVER)
+      clear
       echo ""
       . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
       if [ ${RPCoverTor} = "on" ];then 
