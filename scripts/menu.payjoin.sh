@@ -6,11 +6,7 @@ source menu.functions.sh
 function receivePayJoin() {
 
 # wallet
-wallet=$(tempfile 2>/dev/null)
-dialog --backtitle "Choose a wallet" \
-       --title "Choose a wallet by typing the full name of the file" \
-       --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2> $wallet
-openMenuIfCancelled $?
+chooseWallet
 
 # mixdepth
 mixdepth=$(tempfile 2>/dev/null)
@@ -77,20 +73,15 @@ esac
 function sendPayJoin() {
 
 # wallet
-wallet=$(tempfile 2>/dev/null)
-dialog --backtitle "Choose a wallet" \
-       --title "Choose a wallet by typing the full name of the file" \
-       --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2> $wallet
-openMenuIfCancelled $?
+chooseWallet
 
 # mixdepth
-tempmixdepth=$(tempfile 2>/dev/null)
+mixdepth=$(tempfile 2>/dev/null)
 dialog --backtitle "Choose a mixdepth to send from" \
 --title "Choose a mixdepth to send from" \
 --inputbox "
-Enter a number between 0 to 4 to choose the mixdepth" 9 60 2> $tempmixdepth
+Enter a number between 0 to 4 to choose the mixdepth" 9 60 2> $mixdepth
 openMenuIfCancelled $?
-mixdepth="-m$(cat $tempmixdepth)"
 
 # address
 address=$(tempfile 2>/dev/null)
@@ -109,13 +100,12 @@ Enter the amount to send in satoshis" 9 60 2> $amount
 openMenuIfCancelled $?
 
 # nickname
-tempnickname=$(tempfile 2>/dev/null)
+nickname=$(tempfile 2>/dev/null)
 dialog --backtitle "Enter the counterparty" \
 --title "Enter the counterparty" \
 --inputbox "
-Paste the ephemeral nickname of the receiver" 9 60 2> $tempnickname
+Paste the ephemeral nickname of the receiver" 9 60 2> $nickname
 openMenuIfCancelled $?
-nickname="-T $(cat $tempnickname)"
 
 if [ ${RPCoverTor} = "on" ]; then 
   tor="torify"
@@ -131,13 +121,13 @@ Send: $(cat $amount) sats
 
 from the wallet:
 $(cat $wallet)
-mixdepth: $(cat $tempmixdepth)
+mixdepth: $(cat $mixdepth)
 
 to the address:
 $(cat $address)
 
 PayJoin with the ephemeral nickname:
-$(cat $tempnickname)
+$(cat $nickname)
 " 16 55
 # make decison
 pressed=$?
@@ -146,11 +136,11 @@ case $pressed in
     # display
     echo "Running the command:
 $tor python sendpayment.py \
-$mixdepth $(cat $wallet) $(cat $amount) $(cat $address) $nickname
+-m$(cat $mixdepth) $(cat $wallet) $(cat $amount) $(cat $address) -T $(cat $nickname)
 "
     # run
     $tor python ~/joinmarket-clientserver/scripts/sendpayment.py \
-    $mixdepth $(cat $wallet) $(cat $amount) $(cat $address) $nickname
+    -m$(cat $mixdepth) $(cat $wallet) $(cat $amount) $(cat $address) -T $(cat $nickname)
     ;;
   1)
     echo "Cancelled"

@@ -3,30 +3,24 @@
 source menu.functions.sh
 
 # wallet
-wallet=$(tempfile 2>/dev/null)
-dialog --backtitle "Choose a wallet" \
-       --title "Choose a wallet by typing the full name of the file" \
-       --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2> $wallet
-openMenuIfCancelled $?
+chooseWallet
 
 # mixdepth
-tempmixdepth=$(tempfile 2>/dev/null)
+mixdepth=$(tempfile 2>/dev/null)
 dialog --backtitle "Choose a mixdepth to send from" \
 --title "Choose a mixdepth to send from" \
 --inputbox "
-Enter a number between 0 to 4 to choose the mixdepth" 9 60 2> $tempmixdepth
+Enter a number between 0 to 4 to choose the mixdepth" 9 60 2> $mixdepth
 openMenuIfCancelled $?
-mixdepth="-m$(cat $tempmixdepth)"
 
 # makercount
-tempmakercount=$(tempfile 2>/dev/null)
+makercount=$(tempfile 2>/dev/null)
 dialog --backtitle "Choose the makercount" \
 --title "Choose the makercount" \
 --inputbox "
 Enter the number of makers to coinjoin with (0-9)
-Enter 0 to send without a coinjoin." 10 60 2> $tempmakercount
+Enter 0 to send without a coinjoin." 10 60 2> $makercount
 openMenuIfCancelled $?
-makercount="-N$(cat $tempmakercount)"
 
 # amount
 amount=$(tempfile 2>/dev/null)
@@ -59,12 +53,12 @@ Send: $(cat $amount) sats
 
 From the wallet:
 $(cat $wallet)
-mixdepth: $mixdepth
+mixdepth: $(cat $mixdepth)
 
 to the address:
 $(cat $address)
 
-coinjoined with $makercount makers." 16 60
+coinjoined with $(cat $makercount) makers." 16 60
 
 # make decison
 pressed=$?
@@ -74,11 +68,11 @@ case $pressed in
     # display
     echo "Running the command:
 $tor python sendpayment.py \
-$mixdepth $makercount $(cat $wallet) $(cat $amount) $(cat $address)
+-m$(cat $mixdepth) -N$(cat $makercount) $(cat $wallet) $(cat $amount) $(cat $address)
 "
     # run
     $tor python ~/joinmarket-clientserver/scripts/sendpayment.py \
-    $mixdepth $makercount $(cat $wallet) $(cat $amount) $(cat $address)
+    -m$(cat $mixdepth) -N$(cat $makercount) $(cat $wallet) $(cat $amount) $(cat $address)
     ;;
   1)
     echo "Cancelled"
