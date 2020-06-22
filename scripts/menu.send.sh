@@ -18,9 +18,21 @@ makercount=$(tempfile 2>/dev/null)
 dialog --backtitle "Choose the makercount" \
 --title "Choose the makercount" \
 --inputbox "
-Enter the number of makers to coinjoin with (0-9)
-Enter 0 to send without a coinjoin." 10 60 2> $makercount
-openMenuIfCancelled $?
+Enter the number of makers to coinjoin with (min 4)
+Leave empty for the default 5-7 (randomized)
+Enter 0 to send without a coinjoin." 11 60 2> $makercount
+#openMenuIfCancelled $?
+varMakercount=$(cat $makercount)
+if [ ${#varMakercount} -eq 0 ]; then
+  makercountMessage="coinjoined with 5-7 (randomized) makers"
+  makercountOption=""
+elif [ $varMakercount = "0" ]; then
+  makercountMessage="no coinjoin"
+  makercountOption="-N 0"
+else
+  makercountMessage="coinjoined with $varMakercount makers"
+  makercountOption="-N $varMakercount"
+fi
 
 # amount
 amount=$(tempfile 2>/dev/null)
@@ -58,7 +70,7 @@ mixdepth: $(cat $mixdepth)
 to the address:
 $(cat $address)
 
-coinjoined with $(cat $makercount) makers." 16 60
+$makercountMessage." 16 60
 
 # make decison
 pressed=$?
@@ -68,11 +80,11 @@ case $pressed in
     # display
     echo "Running the command:
 $tor python sendpayment.py \
--m$(cat $mixdepth) -N$(cat $makercount) $(cat $wallet) $(cat $amount) $(cat $address)
+-m $(cat $mixdepth) $makercountOption $(cat $wallet) $(cat $amount) $(cat $address)
 "
     # run
     $tor python ~/joinmarket-clientserver/scripts/sendpayment.py \
-    -m$(cat $mixdepth) -N$(cat $makercount) $(cat $wallet) $(cat $amount) $(cat $address)
+    -m $(cat $mixdepth) $makercountOption $(cat $wallet) $(cat $amount) $(cat $address)
     ;;
   1)
     echo "Cancelled"
