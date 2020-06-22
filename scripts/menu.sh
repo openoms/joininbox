@@ -64,8 +64,10 @@ CHOICE=$(dialog --clear \
 
 case $CHOICE in
   INFO)
+      # wallet
+      chooseWallet
       clear
-      /home/joinmarket/start.script.sh wallet-tool
+      /home/joinmarket/start.script.sh wallet-tool $(cat $wallet)
       echo ""
       echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
       echo ""

@@ -8,14 +8,8 @@ fi
 
 wallet="$2"
 if [ ${#wallet} -eq 0 ] || [ ${wallet} == "" ]; then
-  # wallet
-  source menu.functions.sh
-  tempwallet=$(tempfile 2>/dev/null)
-  dialog --backtitle "Choose a wallet" \
-       --title "Choose a wallet by typing the full name of the file" \
-       --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2> $tempwallet
-  openMenuIfCancelled $?
-  wallet=$(cat $tempwallet)
+  echo "must specify a wallet to use"
+  exit 1
 fi
 
 option="$3"

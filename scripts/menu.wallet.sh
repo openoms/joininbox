@@ -46,11 +46,8 @@ case $CHOICE in
       read key
       ;;
   HISTORY)
-      wallet=$(tempfile 2>/dev/null)
-      dialog --backtitle "Choose a wallet" \
-      --title "Choose a wallet by typing the full name of the file" \
-      --fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2> $wallet
-      openMenuIfCancelled $?
+      # wallet
+      chooseWallet
       /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) history
       echo ""
       echo "Press ENTER to return to the menu"

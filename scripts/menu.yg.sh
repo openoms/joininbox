@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # YG menu options
-
+source menu.functions.sh
 source /home/joinmarket/joinin.conf
 
 # BASIC MENU INFO
@@ -36,10 +36,12 @@ CHOICE=$(dialog --clear \
 case $CHOICE in
 
         MAKER)
+            # wallet
+            chooseWallet
+            # get password 
             /home/joinmarket/get.password.sh
-            source /home/joinmarket/joinin.conf
-            echo "Using wallet: $wallet"
-            /home/joinmarket/start.service.sh yg-privacyenhanced $wallet
+            echo "Using the wallet: $(cat $wallet)"
+            /home/joinmarket/start.service.sh yg-privacyenhanced $(cat $wallet)
             echo ""
             echo "Started the Yield Generator in the background"
             echo ""
