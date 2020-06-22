@@ -11,8 +11,8 @@ openMenuIfCancelled $?
 
 # mixdepth
 tempmixdepth=$(tempfile 2>/dev/null)
-dialog --backtitle "Choose a mixdepth" \
---title "Choose a mixdepth" \
+dialog --backtitle "Choose a mixdepth to send from" \
+--title "Choose a mixdepth to send from" \
 --inputbox "
 Enter a number between 0 to 4 to choose the mixdepth" 9 60 2> $tempmixdepth
 openMenuIfCancelled $?
@@ -73,7 +73,7 @@ case $pressed in
     clear
     # display
     echo "Running the command:
-$tor python ~/joinmarket-clientserver/scripts/sendpayment.py \
+$tor python sendpayment.py \
 $mixdepth $makercount $(cat $wallet) $(cat $amount) $(cat $address)
 "
     # run

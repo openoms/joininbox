@@ -29,7 +29,7 @@ fi
 clear
 # display
 echo "Running the command:
-$tor python ~/joinmarket-clientserver/scripts/wallet-tool.py -m$(cat $mixdepth) $(cat $wallet) freeze
+$tor python wallet-tool.py -m$(cat $mixdepth) $(cat $wallet) freeze
 "
 # run
 $tor python ~/joinmarket-clientserver/scripts/wallet-tool.py -m$(cat $mixdepth) $(cat $wallet) freeze

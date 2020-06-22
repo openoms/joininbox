@@ -77,16 +77,10 @@ pressed=$?
 case $pressed in
   0)
     clear
-    if [ ${RPCoverTor} = "on" ]; then 
-      # display 
-      echo "Running the command:
-$tor python ~/joinmarket-clientserver/scripts/$script.py \
+    # display 
+    echo "Running the command:
+$tor python $script.py \
 $makercount $mixdepth $wallet $option $amount $address $nickname"
-    else
-      echo "Running the command:
-python ~/joinmarket-clientserver/scripts/$script.py \
-$makercount $mixdepth $wallet $option $amount $address $nickname"
-    fi
     # run
     . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
     cat $data | $tor \
