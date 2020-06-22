@@ -50,6 +50,7 @@ pressed=$?
 case $pressed in
   0)
     clear
+    # display
     echo "Running the command:
 $tor python ~/joinmarket-clientserver/scripts/receive-payjoin.py -m$(cat $mixdepth) $(cat $wallet) $(cat $amount)
 "
@@ -59,7 +60,7 @@ $tor python ~/joinmarket-clientserver/scripts/receive-payjoin.py -m$(cat $mixdep
 - ephemeral nickname (J5...)
 and press `y` to wait for the transaction.
 " 
-    # run command
+    # run
     $tor python ~/joinmarket-clientserver/scripts/receive-payjoin.py -m$(cat $mixdepth) $(cat $wallet) $(cat $amount)
     ;;
   1)

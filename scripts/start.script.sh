@@ -4,15 +4,6 @@ script="$1"
 if [ ${#script} -eq 0 ]; then
   echo "must specify a script to run"
   exit 1
-elif [ ${script} == "receive-payjoin" ]; then
-  specialMessage="
-Communicate the sender the:
-- receiving address  (3....)
-- ephemeral nickname (J5...)
-- amount in satoshis
-"
-else
-  specialMessage=""
 fi
 
 wallet="$2"
@@ -86,7 +77,8 @@ pressed=$?
 case $pressed in
   0)
     clear
-    if [ ${RPCoverTor} = "on" ];then 
+    if [ ${RPCoverTor} = "on" ]; then 
+      # display 
       echo "Running the command:
 $tor python ~/joinmarket-clientserver/scripts/$script.py \
 $makercount $mixdepth $wallet $option $amount $address $nickname"
@@ -95,7 +87,7 @@ $makercount $mixdepth $wallet $option $amount $address $nickname"
 python ~/joinmarket-clientserver/scripts/$script.py \
 $makercount $mixdepth $wallet $option $amount $address $nickname"
     fi
-    echo "$specialMessage"
+    # run
     . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
     cat $data | $tor \
     python ~/joinmarket-clientserver/scripts/$script.py \

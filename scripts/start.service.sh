@@ -24,6 +24,7 @@ fi
 
 startScript="cat /home/joinmarket/.pw | $tor python $script.py $wallet \
 --wallet-password-stdin"
+# display
 echo "Running the command with systemd:
 $tor python $script.py $wallet"
 

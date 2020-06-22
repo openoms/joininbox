@@ -20,15 +20,16 @@ dialog --backtitle "Choose a mixdepth" \
 --inputbox "Enter a number between 0 to 4 to choose the mixdepth" 8 60 2> $mixdepth
 openMenuIfCancelled $?
 
-if [ ${RPCoverTor} = "on" ];then 
+if [ ${RPCoverTor} = "on" ]; then 
   tor="torify"
 else
   tor=""
 fi
 
 clear
+# display
 echo "Running the command:
-$tor torify python ~/joinmarket-clientserver/scripts/wallet-tool.py -m$(cat $mixdepth) $(cat $wallet) freeze
+$tor python ~/joinmarket-clientserver/scripts/wallet-tool.py -m$(cat $mixdepth) $(cat $wallet) freeze
 "
-# run command
+# run
 $tor python ~/joinmarket-clientserver/scripts/wallet-tool.py -m$(cat $mixdepth) $(cat $wallet) freeze
