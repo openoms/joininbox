@@ -3,21 +3,21 @@
 if [ $(dialog | grep -c "ComeOn Dialog!") -eq 0 ]; then
   sudo apt install dialog
 fi
-if [ -f joinin.conf ]; then
+if [ -f /home/joinmarket/joinin.conf ]; then
   touch /home/joinmarket/joinin.conf
 fi
 
 # add default value to joinin config if needed
-if ! grep -Eq "^RPCoverTor=" joinin.conf; then
-  echo "RPCoverTor=off" >> joinin.conf
+if ! grep -Eq "^RPCoverTor=" /home/joinmarket/joinin.conf; then
+  echo "RPCoverTor=off" >> /home/joinmarket/joinin.conf
 fi
 
 if grep -Eq "^rpc_host = .*.onion" /home/joinmarket/.joinmarket/joinmarket.cfg; then 
   echo "RPC over Tor is on"
-  sudo sed -i "s/^RPCoverTor=.*/RPCoverTor=on/g" joinin.conf
+  sudo sed -i "s/^RPCoverTor=.*/RPCoverTor=on/g" /home/joinmarket/joinin.conf
 else
   echo "RPC over Tor is off"
-  sudo sed -i "s/^RPCoverTor=.*/RPCoverTor=off/g" joinin.conf
+  sudo sed -i "s/^RPCoverTor=.*/RPCoverTor=off/g" /home/joinmarket/joinin.conf
 fi
 
 source /home/joinmarket/joinin.conf
