@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# add default value to joinin config if needed
+if ! grep -Eq "^YGwallet=" /home/joinmarket/joinin.conf; then
+  echo "YGwallet=nil" >> /home/joinmarket/joinin.conf
+fi
+
 # YG menu options
 source /home/joinmarket/menu.functions.sh
 source /home/joinmarket/joinin.conf
@@ -38,6 +43,8 @@ case $CHOICE in
         MAKER)
             # wallet
             chooseWallet
+            # save wallet in conf
+            sudo sed -i "s/^YGwallet=.*/YGwallet=$(cat $wallet)/g" /home/joinmarket/joinin.conf
             # get password
             passwordToFile
             echo "Using the wallet: $(cat $wallet)"
@@ -83,14 +90,13 @@ https://joinmarket.me/ob" 12 55
             dialog \
             --title "Monitoring the Yield Generator"  \
             --msgbox "
-Will show the INFO logs using:
+Shows the service status with INFO logs using:
 
-sudo journalctl -fn40 -u yg-privacyenhanced
+sudo systemctl status yg-privacyenhanced
 
 Press CTRL+C to exit to the command line.
 Use: 'menu' for the JoininBox options." 11 50
-            sudo journalctl -fn40 -u yg-privacyenhanced
-            /home/joinmarket/menu.yg.sh
+            sudo systemctl status yg-privacyenhanced
             ;;                      
         LOGS)
             dialog \
@@ -111,7 +117,8 @@ Press CTRL+C to exit and return to the menu." 10 50
         STOP)
             # stop the background process (equivalent to CTRL+C)
             # use wallet from joinin.conf
-            pkill -sigint -f "python yg-privacyenhanced.py $wallet --wallet-password-stdin"
+            source /home/joinmarket/joinin.conf
+            pkill -sigint -f "python yg-privacyenhanced.py $YGwallet --wallet-password-stdin"
             # pgrep python | xargs kill -sigint 
             # remove the service
             sudo systemctl stop yg-privacyenhanced

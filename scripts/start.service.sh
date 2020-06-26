@@ -7,7 +7,6 @@ wallet="$2"
 
 echo ""
 echo "Making sure $script not running"
-echo ""
 sudo systemctl stop $script
 sudo systemctl disable $script
 
