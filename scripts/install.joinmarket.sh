@@ -12,7 +12,7 @@ if [ ! -f "/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate" ] ; the
   sudo apt install -y python3-dev python3-pip git build-essential automake pkg-config libtool libffi-dev libssl-dev libgmp-dev libsodium-dev
   sudo -u joinmarket git clone https://github.com/Joinmarket-Org/joinmarket-clientserver
   cd joinmarket-clientserver
-  git reset --hard v0.6.2
+  git reset --hard v0.6.3.1
   # set up jmvenv 
   sudo apt install -y virtualenv
   # use the PySide2 armf package from the system
