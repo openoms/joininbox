@@ -11,8 +11,12 @@ sudo systemctl stop $script
 sudo systemctl disable $script
 
 if [ $script == "yg-privacyenhanced" ]; then 
-  rm -f ~/.joinmarket/wallets/$wallet.lock
+  # shut down the process gracefully
   pkill -sigint -f "python yg-privacyenhanced.py $wallet --wallet-password-stdin"
+  # make sure the lock file is deleted 
+  rm -f ~/.joinmarket/wallets/.$wallet.lock
+  # for old version <v0.6.3
+  rm -f ~/.joinmarket/wallets/$wallet.lock
 fi
 
 if [ ${RPCoverTor} = "on" ];then 
