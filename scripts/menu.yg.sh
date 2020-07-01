@@ -44,7 +44,7 @@ case $CHOICE in
             # wallet
             chooseWallet
             # save wallet in conf
-            sudo sed -i "s/^YGwallet=.*/YGwallet=$(cat $wallet)/g" /home/joinmarket/joinin.conf
+            sudo sed -i "s#^YGwallet=.*#YGwallet=$(cat $wallet)#g" /home/joinmarket/joinin.conf
             # get password
             passwordToFile
             echo "Using the wallet: $(cat $wallet)"
@@ -119,13 +119,17 @@ Press CTRL+C to exit and return to the menu." 10 50
             # use wallet from joinin.conf
             source /home/joinmarket/joinin.conf
             pkill -sigint -f "python yg-privacyenhanced.py $YGwallet --wallet-password-stdin"
-            # pgrep python | xargs kill -sigint 
+            # pgrep python | xargs kill -sigint             
             # remove the service
             sudo systemctl stop yg-privacyenhanced
             sudo systemctl disable yg-privacyenhanced
             # check for failed services
             # sudo systemctl list-units --type=service
             sudo systemctl reset-failed
+            # make sure the lock file is deleted 
+            rm -f ~/.joinmarket/wallets/.$wallet.lock
+            # for old version <v0.6.3
+            rm -f ~/.joinmarket/wallets/$wallet.lock
             echo "Stopped the Yield Generator background service"
             echo "Press ENTER to return to the menu..."
             read key
