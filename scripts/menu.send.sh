@@ -1,5 +1,6 @@
 #!/bin/bash
 
+source /home/joinmarket/joinin.conf
 source /home/joinmarket/menu.functions.sh
 
 # wallet
