@@ -73,7 +73,7 @@ case $CHOICE in
       --title "Choose a mixdepth" \
       --inputbox "
 Enter a number between 0 to 4 to limit the visible mixdepths
-Leave the box empty to show the addresses in all five" 10 60 2> $mixdepth
+Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       openMenuIfCancelled $?
       /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) nooption $(cat $mixdepth)
       echo ""
@@ -97,8 +97,6 @@ Leave the box empty to show the addresses in all five" 10 60 2> $mixdepth
       ;;
   SEND)
       /home/joinmarket/menu.send.sh
-      echo ""
-      echo "Type: 'menu' and press ENTER to return to the menu"
       ;;
   FREEZE)
       /home/joinmarket/menu.freeze.sh
