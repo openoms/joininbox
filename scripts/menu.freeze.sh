@@ -20,7 +20,9 @@ fi
 clear
 # display
 echo "Running the command:
-$tor python wallet-tool.py -m$(cat $mixdepth) $(cat $wallet) freeze
+$tor python wallet-tool.py -m$(cat $mixdepth) \
+$(echo $(cat $wallet) | sed "s#$walletPath##g") freeze
 "
 # run
-$tor python ~/joinmarket-clientserver/scripts/wallet-tool.py -m$(cat $mixdepth) $(cat $wallet) freeze
+$tor python ~/joinmarket-clientserver/scripts/wallet-tool.py \
+-m$(cat $mixdepth) $(cat $wallet) freeze

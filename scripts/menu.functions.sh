@@ -1,5 +1,7 @@
 #!/bin/bash
 
+walletPath="/home/joinmarket/.joinmarket/wallets/"
+
 # openMenuIfCancelled
 openMenuIfCancelled() {
 pressed=$1
@@ -59,6 +61,6 @@ chooseWallet() {
 wallet=$(tempfile 2>/dev/null)
 dialog --backtitle "Choose a wallet" \
 --title "Choose a wallet by typing the full name of the file" \
---fselect "/home/joinmarket/.joinmarket/wallets/" 10 60 2> $wallet
+--fselect "$walletPath" 10 60 2> $wallet
 openMenuIfCancelled $?
 }

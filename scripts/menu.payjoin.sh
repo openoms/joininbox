@@ -38,7 +38,7 @@ dialog --backtitle "Confirm the details" \
 Receive: $(cat $amount) sats
 
 To the wallet:
-$(cat $wallet)
+$(echo $(cat $wallet) | sed "s#$walletPath##g")
 mixdepth: $(cat $mixdepth)
 " 11 55
 # make decison
@@ -48,16 +48,18 @@ case $pressed in
     clear
     # display
     echo "Running the command:
-$tor python receive-payjoin.py -m$(cat $mixdepth) $(cat $wallet) $(cat $amount)
+$tor python receive-payjoin.py -m$(cat $mixdepth) \
+$(echo $(cat $wallet) | sed "s#$walletPath##g") $(cat $amount)
 "
     echo " Communicate the payer the:
 - receiving address  (3...)
 - expected amount in satoshis
 - ephemeral nickname (J5...)
-and press `y` to wait for the transaction.
+and press 'y' to wait for the transaction.
 " 
     # run
-    $tor python ~/joinmarket-clientserver/scripts/receive-payjoin.py -m$(cat $mixdepth) $(cat $wallet) $(cat $amount)
+    $tor python ~/joinmarket-clientserver/scripts/receive-payjoin.py \
+    -m$(cat $mixdepth) $(cat $wallet) $(cat $amount)
     ;;
   1)
     echo "Cancelled"
@@ -120,7 +122,7 @@ dialog --backtitle "Confirm the selections" \
 Send: $(cat $amount) sats
 
 from the wallet:
-$(cat $wallet)
+$(echo $(cat $wallet) | sed "s#$walletPath##g")
 mixdepth: $(cat $mixdepth)
 
 to the address:
@@ -135,8 +137,9 @@ case $pressed in
   0)
     # display
     echo "Running the command:
-$tor python sendpayment.py \
--m$(cat $mixdepth) $(cat $wallet) $(cat $amount) $(cat $address) -T $(cat $nickname)
+$tor python sendpayment.py -m$(cat $mixdepth) \
+$(echo $(cat $wallet) | sed "s#$walletPath##g") \
+$(cat $amount) $(cat $address) -T $(cat $nickname)
 "
     # run
     $tor python ~/joinmarket-clientserver/scripts/sendpayment.py \

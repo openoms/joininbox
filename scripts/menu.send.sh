@@ -65,7 +65,7 @@ dialog --backtitle "Confirm the details" \
 Send: $(cat $amount) sats
 
 From the wallet:
-$(cat $wallet)
+$(echo $(cat $wallet) | sed "s#$walletPath##g")
 mixdepth: $(cat $mixdepth)
 
 to the address:
@@ -81,11 +81,13 @@ case $pressed in
     # display
     echo "Running the command:
 $tor python sendpayment.py \
--m $(cat $mixdepth) $makercountOption $(cat $wallet) $(cat $amount) $(cat $address)
+-m $(cat $mixdepth) $makercountOption \
+$(echo $(cat $wallet) | sed "s#$walletPath##g") $(cat $amount) $(cat $address)
 "
     # run
     $tor python ~/joinmarket-clientserver/scripts/sendpayment.py \
-    -m $(cat $mixdepth) $makercountOption $(cat $wallet) $(cat $amount) $(cat $address)
+    -m $(cat $mixdepth) $makercountOption $(cat $wallet) \
+    $(cat $amount) $(cat $address)
     ;;
   1)
     echo "Cancelled"

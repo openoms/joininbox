@@ -30,7 +30,7 @@ startScript="cat /home/joinmarket/.pw | $tor python $script.py $wallet \
 # display
 echo "
 Running the command with systemd:
-$tor python $script.py $wallet"
+$tor python $script.py $(echo $wallet | sed "s#$walletPath##g")"
 
 echo "
 [Unit]

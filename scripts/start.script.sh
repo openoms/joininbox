@@ -61,7 +61,8 @@ clear
 # display 
 echo "Running the command:
 $tor python $script.py \
-$makercount $mixdepth $wallet $option $amount $address $nickname
+$makercount $mixdepth $(echo $wallet | sed "s#$walletPath##g") $option \
+$amount $address $nickname
 "
 # run
 . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
