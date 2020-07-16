@@ -7,14 +7,12 @@ openMenuIfCancelled() {
 pressed=$1
 case $pressed in
   1)
-    clear
     echo "Cancelled"
     echo "Returning to the menu..."
     sleep 1
     /home/joinmarket/menu.sh
     exit 1;;
   255)
-    clear
     echo "ESC pressed."
     echo "Returning to the menu..."
     sleep 1
@@ -59,7 +57,7 @@ esac
 # chooseWallet
 chooseWallet() {
 wallet=$(tempfile 2>/dev/null)
-dialog --backtitle "Choose a wallet" \
+dialog --backtitle "Choose a wallet by typing the full name of the file" \
 --title "Choose a wallet by typing the full name of the file" \
 --fselect "$walletPath" 10 60 2> $wallet
 openMenuIfCancelled $?
