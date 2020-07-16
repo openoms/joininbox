@@ -39,8 +39,9 @@ Receive: $(cat $amount) sats
 
 To the wallet:
 $(echo $(cat $wallet) | sed "s#$walletPath##g")
+
 mixdepth: $(cat $mixdepth)
-" 11 55
+" 12 55
 # make decison
 pressed=$?
 case $pressed in
@@ -51,11 +52,10 @@ case $pressed in
 $tor python receive-payjoin.py -m$(cat $mixdepth) \
 $(echo $(cat $wallet) | sed "s#$walletPath##g") $(cat $amount)
 "
-    echo " Communicate the payer the:
-- receiving address  (3...)
-- expected amount in satoshis
-- ephemeral nickname (J5...)
-and press 'y' to wait for the transaction.
+    echo "Communicate the payer the Receive URI
+in the format:    
+bitcoin:RECEIVING_ADDRESS?amount=AMOUNT_IN_BTC&jmnick=EPHEMERAL_NICKNAME
+and press y to wait for the transaction.
 " 
     # run
     $tor python ~/joinmarket-clientserver/scripts/receive-payjoin.py \
@@ -85,28 +85,12 @@ dialog --backtitle "Choose a mixdepth to send from" \
 Enter a number between 0 to 4 to choose the mixdepth" 9 60 2> $mixdepth
 openMenuIfCancelled $?
 
-# address
-address=$(tempfile 2>/dev/null)
-dialog --backtitle "Choose the address" \
---title "Choose the address" \
+# receiveURI
+receiveURI=$(tempfile 2>/dev/null)
+dialog --backtitle "Receive URI" \
+--title "Receive URI" \
 --inputbox "
-Paste the destination address" 9 60 2> $address
-openMenuIfCancelled $?
-
-# amount
-amount=$(tempfile 2>/dev/null)
-dialog --backtitle "Choose the amount" \
---title "Choose the amount" \
---inputbox "
-Enter the amount to send in satoshis" 9 60 2> $amount
-openMenuIfCancelled $?
-
-# nickname
-nickname=$(tempfile 2>/dev/null)
-dialog --backtitle "Enter the counterparty" \
---title "Enter the counterparty" \
---inputbox "
-Paste the ephemeral nickname of the receiver" 9 60 2> $nickname
+Paste the Receive URI to send to" 9 60 2> $receiveURI
 openMenuIfCancelled $?
 
 if [ ${RPCoverTor} = "on" ]; then 
@@ -119,18 +103,14 @@ fi
 dialog --backtitle "Confirm the selections" \
 --title "Confirm the details" \
 --yesno "
-Send: $(cat $amount) sats
+Send to: 
+$(cat $receiveURI)
 
 from the wallet:
 $(echo $(cat $wallet) | sed "s#$walletPath##g")
+
 mixdepth: $(cat $mixdepth)
-
-to the address:
-$(cat $address)
-
-PayJoin with the ephemeral nickname:
-$(cat $nickname)
-" 16 55
+" 13 55
 # make decison
 pressed=$?
 case $pressed in
@@ -139,11 +119,11 @@ case $pressed in
     echo "Running the command:
 $tor python sendpayment.py -m$(cat $mixdepth) \
 $(echo $(cat $wallet) | sed "s#$walletPath##g") \
-$(cat $amount) $(cat $address) -T $(cat $nickname)
+$(cat $receiveURI)
 "
     # run
     $tor python ~/joinmarket-clientserver/scripts/sendpayment.py \
-    -m$(cat $mixdepth) $(cat $wallet) $(cat $amount) $(cat $address) -T $(cat $nickname)
+    -m$(cat $mixdepth) $(cat $wallet) $(cat $receiveURI)
     ;;
   1)
     echo "Cancelled"
