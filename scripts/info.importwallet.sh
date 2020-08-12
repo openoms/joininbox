@@ -41,7 +41,7 @@ if [ "${CHOICE}" = "LAN" ]; then
   localip=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1 -d'/')
 elif [ "${CHOICE}" = "TOR" ]; then
   # set up a Hidden Service for ssh
-  ./install.hiddenservice.sh ssh 22 22
+  /home/joinmarket/install.hiddenservice.sh ssh 22 22
   TOR_ADDRESS=$(sudo cat $HiddenServiceDir/ssh/hostname)
 fi
 
