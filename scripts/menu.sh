@@ -45,7 +45,7 @@ OPTIONS+=(\
   FREEZE "Exercise coin control within a mixdepth" \
   PAYJOIN "Send/Receive between JoinMarket wallets"
   "" ""
-  OFFERS "Watch the offer book locally" \
+  OFFERS "Watch the Offer Book locally" \
   "" "" 
   CONFIG "Edit the joinmarket.cfg" \
   UPDATE "Update the JoininBox scripts and menu" \
@@ -87,8 +87,6 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       ;;
   QTGUI)
       /home/joinmarket/info.qtgui.sh
-      echo "Returning to the menu..."
-      sleep 1
       /home/joinmarket/menu.sh
       ;;
   MAKER)
@@ -97,35 +95,18 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       ;;
   SEND)
       /home/joinmarket/menu.send.sh
+      /home/joinmarket/menu.sh
       ;;
   FREEZE)
       /home/joinmarket/menu.freeze.sh
+      /home/joinmarket/menu.sh
       ;;
   PAYJOIN)
       /home/joinmarket/menu.payjoin.sh
+      /home/joinmarket/menu.sh
       ;;
   OFFERS)
-      #TODO show hidden service only if already running
-      /home/joinmarket/start.ob-watcher.sh
-      errorOnInstall=$?
-      if [ ${errorOnInstall} -eq 0 ]; then
-        TOR_ADDRESS=$(sudo cat $HiddenServiceDir/ob-watcher/hostname)
-        whiptail --title "Started the ob-watcher service" \
-          --msgbox "\nVisit the address in the Tor Browser:\n$TOR_ADDRESS" 9 66
-      else 
-        DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
-          --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
-      fi
-      echo ""
-      echo "Started watching the Offer Book in the background"
-      echo ""
-      echo "Showing the systemd status ..."
-      sleep 3
-      dialog \
-      --title "Monitoring the ob-watcher - press CTRL+C to exit"  \
-      --prgbox "sudo journalctl -fn20 -u ob-watcher" 30 140
-      echo "Returning to the menu..."
-      sleep 1
+      /home/joinmarket/menu.offerbook.sh
       /home/joinmarket/menu.sh
       ;;
   CONFIG)
@@ -143,8 +124,6 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       ;;
   UPDATE)
       /home/joinmarket/update.joininbox.sh
-      echo "Returning to the menu..."
-      sleep 1
       /home/joinmarket/menu.sh
       ;;
   X)
