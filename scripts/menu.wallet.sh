@@ -21,6 +21,7 @@ OPTIONS+=(\
   HISTORY "Show all past transactions" \
   IMPORT "Copy wallet(s) from a remote node"\
   RECOVER "Restore a wallet from the seed" \
+  UNLOCK "Remove the lockfiles"
 )
 
 CHOICE=$(dialog --clear \
@@ -56,7 +57,7 @@ case $CHOICE in
   IMPORT) 
       /home/joinmarket/info.importwallet.sh
       echo "Returning to the menu..."
-      sleep 2
+      sleep 1
       /home/joinmarket/menu.sh
       ;;
   RECOVER)
@@ -68,6 +69,14 @@ case $CHOICE in
       else
         python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py recover
       fi
+      echo "Press ENTER to return to the menu"
+      read key
+      ;;
+  UNLOCK)
+      echo "Removing the wallet lockfiles with the command:
+rm ~/.joinmarket/wallets/*.lock"
+      rm ~/.joinmarket/wallets/*.lock
+      echo ""
       echo "Press ENTER to return to the menu"
       read key
       ;;
