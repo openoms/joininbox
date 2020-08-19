@@ -129,7 +129,7 @@ Press CTRL+C to exit and return to the menu." 10 50
             # make sure the lock file is deleted 
             rm -f ~/.joinmarket/wallets/.$wallet.lock
             # for old version <v0.6.3
-            rm -f ~/.joinmarket/wallets/$wallet.lock
+            rm -f ~/.joinmarket/wallets/$wallet.lock 2>/dev/null
             echo "Stopped the Yield Generator background service"
             echo "Press ENTER to return to the menu..."
             read key

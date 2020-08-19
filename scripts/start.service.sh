@@ -16,7 +16,7 @@ if [ $script == "yg-privacyenhanced" ]; then
   # make sure the lock file is deleted 
   rm -f ~/.joinmarket/wallets/.$wallet.lock
   # for old version <v0.6.3
-  rm -f ~/.joinmarket/wallets/$wallet.lock
+  rm -f ~/.joinmarket/wallets/$wallet.lock 2>/dev/null
 fi
 
 if [ ${RPCoverTor} = "on" ];then 

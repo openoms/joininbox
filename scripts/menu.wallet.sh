@@ -74,8 +74,10 @@ case $CHOICE in
       ;;
   UNLOCK)
       echo "Removing the wallet lockfiles with the command:
-rm ~/.joinmarket/wallets/*.lock"
-      rm ~/.joinmarket/wallets/*.lock
+rm ~/.joinmarket/wallets/.*.lock"
+      rm ~/.joinmarket/wallets/.*.lock
+      # for old version <v0.6.3
+      rm ~/.joinmarket/wallets/*.lock 2>/dev/null
       echo ""
       echo "Press ENTER to return to the menu"
       read key
