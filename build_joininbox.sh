@@ -82,9 +82,8 @@ if [ "${baseImage}" = "raspbian" ] || [ "${baseImage}" = "dietpi" ] ; then
 fi
 
 # remove some (big) packages that are not needed
-sudo apt-get remove -y --purge libreoffice* oracle-java* chromium-browser nuscratch scratch sonic-pi minecraft-pi plymouth python2
-sudo apt-get clean
-sudo apt-get -y autoremove
+sudo apt-get remove -y --purge libreoffice* oracle-java* chromium-browser \
+nuscratch scratch sonic-pi minecraft-pi plymouth python2 vlc
 
 if [ -f "/usr/bin/python3.7" ]; then
   # make sure /usr/bin/python exists (and calls Python3.7 in Debian Buster)
