@@ -18,7 +18,6 @@ if [ $running -gt 0 ]; then
   --msgbox "\nVisit the address in the Tor Browser:\n$TOR_ADDRESS" 9 66
 else
   startOfferBook
-  showOfferBookAddress
 fi 
 }
 
@@ -67,7 +66,6 @@ sleep 3
 dialog \
 --title "Monitoring the ob-watcher - press CTRL+C to exit"  \
 --prgbox "sudo journalctl -fn20 -u ob-watcher" 30 140
-
 }
 
 # BASIC MENU INFO
