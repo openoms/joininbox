@@ -110,7 +110,7 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       /home/joinmarket/menu.sh
       ;;
   CONFIG)
-      /home/joinmarket/install.joinmarket.sh
+      /home/joinmarket/install.joinmarket.sh config
       errorOnInstall=$?
       if [ ${errorOnInstall} -gt 0 ]; then
         DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
