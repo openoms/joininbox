@@ -16,18 +16,17 @@ echo "updated the JoininBox menu and scripts to the latest master"
 
 # BASIC MENU INFO
 HEIGHT=10
-WIDTH=48
+WIDTH=55
 CHOICE_HEIGHT=20
 TITLE="JoininBox"
-MENU="
-Update options:"
+MENU="Update options:"
 OPTIONS=()
 BACKTITLE="JoininBox GUI"
 
 # Basic Options
 OPTIONS+=(\
   JOININBOX "Update the JoininBox scripts and menu" \
-  JOINMARKET "Update JoinMarket to $(cat install.joinmarket.sh | grep version | cut -d '"' -f 2) \
+  JOINMARKET "Update JoinMarket to $(cat install.joinmarket.sh | grep version= | cut -d '"' -f 2)" \
 )
 
 CHOICE=$(dialog --clear \

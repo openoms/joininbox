@@ -48,7 +48,7 @@ OPTIONS+=(\
   OFFERS "Watch the Offer Book locally" \
   "" "" 
   CONFIG "Edit the joinmarket.cfg" \
-  UPDATE "Update options for JoininBox and JoinMarket" \
+  UPDATE "Update JoininBox or JoinMarket" \
   "" "" 
   X "Exit to the Command Line" \
   #CONNECT "Connect to a remote bitcoind"
