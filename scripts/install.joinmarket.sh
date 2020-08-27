@@ -81,6 +81,7 @@ if [ "$1" = "config" ]; then
 fi
 
 if [ "$1" = "update" ]; then
+  . menu.yg.sh stopYG
   echo "# exiting jmvenv"
   deactivate
   echo "# deleting the joinmarket-clientserver directory"
