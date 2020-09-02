@@ -56,9 +56,15 @@ esac
 
 # chooseWallet
 chooseWallet() {
+source /home/joinmarket/joinin.conf
 wallet=$(tempfile 2>/dev/null)
-dialog --backtitle "Choose a wallet by typing the full name of the file" \
---title "Choose a wallet by typing the full name of the file" \
---fselect "$walletPath" 10 60 2> $wallet
-openMenuIfCancelled $?
+if [ $defaultWallet = "off" ]; then
+  wallet=$(tempfile 2>/dev/null)
+  dialog --backtitle "Choose a wallet by typing the full name of the file" \
+  --title "Choose a wallet by typing the full name of the file" \
+  --fselect "$walletPath" 10 60 2> $wallet
+  openMenuIfCancelled $?
+else
+  echo $defaultWallet > $wallet
+fi
 }
