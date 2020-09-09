@@ -23,7 +23,8 @@ Do you want to install Joinmarket now?" 7 42
   echo "response(${response})"
   if [ "${response}" = "0" ]; then
     echo "OK - starting JoinMarket installation"
-    ./install.joinmarket.sh
+    /home/joinmarket/install.joinmarket.sh install
+    /home/joinmarket/install.joinmarket.sh config
     errorOnInstall=$?
     if [ ${errorOnInstall} -eq 0 ]; then
       dialog --title "Installed JoinMarket" \

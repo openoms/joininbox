@@ -65,7 +65,7 @@ OPTIONS+=(\
   OFFERS "Watch the Offer Book locally" \
   "" "" 
   CONFIG "Edit the joinmarket.cfg" \
-  UPDATE "Update the JoininBox scripts and menu" \
+  UPDATE "Update JoininBox or JoinMarket" \
   "" "" 
   X "Exit to the Command Line" \
   #CONNECT "Connect to a remote bitcoind"
@@ -127,7 +127,7 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       /home/joinmarket/menu.sh
       ;;
   CONFIG)
-      /home/joinmarket/install.joinmarket.sh
+      /home/joinmarket/install.joinmarket.sh config
       errorOnInstall=$?
       if [ ${errorOnInstall} -gt 0 ]; then
         DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
@@ -140,7 +140,7 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
   CONNECT) 
       ;;
   UPDATE)
-      /home/joinmarket/update.joininbox.sh
+      /home/joinmarket/menu.update.sh
       /home/joinmarket/menu.sh
       ;;
   X)
