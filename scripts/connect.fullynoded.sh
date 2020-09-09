@@ -20,6 +20,7 @@ sudo fbi -a -T 1 -d /dev/fb1 --noverbose /home/admin/qr.png 2> /dev/null
 exit 0
 
 qrencode -t ANSI256 $quickConnect
+echo ""
 echo "Press ENTER to return to the menu"
 read key
 

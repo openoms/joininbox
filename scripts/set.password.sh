@@ -15,7 +15,7 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-# tempfile 
+# mktemp 
 _temp="./dialog.$$"
 
 # 1. parameter [?newpassword]
@@ -75,7 +75,7 @@ fi
 echo "joinmarket:$newPassword" | sudo chpasswd
 echo "root:$newPassword" | sudo chpasswd
 # change password for 'pi' if present
-if [ $(compgen -u | grep -c pi) -gt 0 ]; then
+if [ "$(compgen -u | grep -c pi)" -gt 0 ]; then
   echo "pi:$newPassword" | sudo chpasswd
   piUser=" and 'pi'"
 fi

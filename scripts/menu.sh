@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $(dialog | grep -c "ComeOn Dialog!") -eq 0 ]; then
+if [ "$(dialog | grep -c "ComeOn Dialog!")" -eq 0 ]; then
   sudo apt install dialog
 fi
 if [ -f /home/joinmarket/joinin.conf ]; then
@@ -12,12 +12,29 @@ if ! grep -Eq "^RPCoverTor=" /home/joinmarket/joinin.conf; then
   echo "RPCoverTor=off" >> /home/joinmarket/joinin.conf
 fi
 
+# check if bitcoin RPC connection is over Tor
 if grep -Eq "^rpc_host = .*.onion" /home/joinmarket/.joinmarket/joinmarket.cfg; then 
-  echo "RPC over Tor is on"
-  sudo sed -i "s/^RPCoverTor=.*/RPCoverTor=on/g" /home/joinmarket/joinin.conf
+  echo "# RPC over Tor is on"
+  sed -i "s/^RPCoverTor=.*/RPCoverTor=on/g" /home/joinmarket/joinin.conf
 else
-  echo "RPC over Tor is off"
-  sudo sed -i "s/^RPCoverTor=.*/RPCoverTor=off/g" /home/joinmarket/joinin.conf
+  echo "# RPC over Tor is off"
+  sed -i "s/^RPCoverTor=.*/RPCoverTor=off/g" /home/joinmarket/joinin.conf
+fi
+
+# check if there is only one wallet and make default
+# add default value to joinin config if needed
+if ! grep -Eq "^defaultWallet=" /home/joinmarket/joinin.conf; then
+  echo "defaultWallet=off" >> /home/joinmarket/joinin.conf
+fi
+if [ "$(ls /home/joinmarket/.joinmarket/wallets/*.jmdat 2>/dev/null | grep -c jmdat)" -gt 1 ]; then
+  echo "# Found more than one wallet file"
+  echo "# Setting defaultWallet to off"
+  sed -i "s#^defaultWallet=.*#defaultWallet=off#g" /home/joinmarket/joinin.conf
+elif  [ "$(ls /home/joinmarket/.joinmarket/wallets/*.jmdat 2>/dev/null | grep -c jmdat)" -eq 1 ]; then
+  onlyWallet=$(ls /home/joinmarket/.joinmarket/wallets/*.jmdat 2>/dev/null | grep jmdat)
+  echo "# Found only one wallet file: $onlyWallet"
+  echo "# Using it as default"
+  sed -i "s#^defaultWallet=.*#defaultWallet=$onlyWallet#g" /home/joinmarket/joinin.conf
 fi
 
 source /home/joinmarket/joinin.conf
@@ -68,14 +85,14 @@ case $CHOICE in
       # wallet
       chooseWallet
       # mixdepth
-      mixdepth=$(tempfile 2>/dev/null)
+      mixdepth=$(mktemp 2>/dev/null)
       dialog --backtitle "Choose a mixdepth" \
       --title "Choose a mixdepth" \
       --inputbox "
 Enter a number between 0 to 4 to limit the visible mixdepths
 Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       openMenuIfCancelled $?
-      /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) nooption $(cat $mixdepth)
+      /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)" nooption "$(cat $mixdepth)"
       echo ""
       echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
       echo ""
