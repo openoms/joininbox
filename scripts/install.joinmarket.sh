@@ -55,7 +55,7 @@ if [ "$1" = "config" ]; then
   # set strict permission to joinmarket.cfg
   sudo chmod 600 /home/joinmarket/.joinmarket/joinmarket.cfg || exit 1
 
-  if [ ${runBehindTor} = "on" ]; then
+  if [ "${runBehindTor}" = "on" ]; then
     #communicate with IRC servers via Tor
     sed -i "s/^host = irc.darkscience.net/#host = irc.darkscience.net/g" /home/joinmarket/.joinmarket/joinmarket.cfg
     sed -i "s/^#host = darksci3bfoka7tw.onion/host = darksci3bfoka7tw.onion/g" /home/joinmarket/.joinmarket/joinmarket.cfg

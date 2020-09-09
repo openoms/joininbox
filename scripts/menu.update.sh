@@ -11,7 +11,7 @@ echo "# copying the scripts in place"
 sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/
 sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
 sudo -u joinmarket chmod +x /home/joinmarket/*.sh
-echo "updated the JoininBox menu and scripts to the latest master"
+echo "# updated the JoininBox menu and scripts to the latest master"
 }
 
 # BASIC MENU INFO
