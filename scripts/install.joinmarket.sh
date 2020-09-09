@@ -13,17 +13,17 @@ function installJoinMarket() {
   cd joinmarket-clientserver
   sudo -u joinmarket git reset --hard $version
   # make install.sh set up jmvenv with -- system-site-packages
-  sed -i "s#^    virtualenv -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1#\
-  virtualenv --system-site-packages -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1#g" \
-  install.sh
+  # and import the PySide2 armf package from the system
+  sudo -u joinmarket sed -i "s#^    virtualenv -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1#\
+  virtualenv --system-site-packages -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1 ;\
+  /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python -c \'import PySide2\'\
+  #g" install.sh
+  # don't install PySide2 - using the system-site-package instead 
+  sudo -u joinmarket sed -i "s#^PySide2##g" requirements/gui.txt
+  # don't install PyQt5 - using the system package instead 
+  sudo -u joinmarket sed -i "s#^PyQt5==5.14.2##g" requirements/gui.txt
+  sudo apt-get install -y python3-pyqt5
   sudo -u joinmarket ./install.sh --with-qt
-  
-  echo "# installing python requirements to run the QT GUI on ARM"    
-  source jmvenv/bin/activate || exit 1
-  # use the PySide2 armf package from the system
-  /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python -c 'import PySide2'
-  pip install qrcode[pil]
-  pip install https://github.com/sunu/qt5reactor/archive/58410aaead2185e9917ae9cac9c50fe7b70e4a60.zip#egg=qt5reactor
   echo "# installed JoinMarket $version"
 }
 
