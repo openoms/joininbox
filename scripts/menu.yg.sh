@@ -9,26 +9,6 @@ fi
 source /home/joinmarket/menu.functions.sh
 source /home/joinmarket/joinin.conf
 
-# functions
-function stopYG() {
-# stop the background process (equivalent to CTRL+C)
-# use wallet from joinin.conf
-source /home/joinmarket/joinin.conf
-pkill -sigint -f "python yg-privacyenhanced.py $YGwallet --wallet-password-stdin"
-# pgrep python | xargs kill -sigint             
-# remove the service
-sudo systemctl stop yg-privacyenhanced
-sudo systemctl disable yg-privacyenhanced
-# check for failed services
-# sudo systemctl list-units --type=service
-sudo systemctl reset-failed
-# make sure the lock file is deleted 
-rm -f ~/.joinmarket/wallets/.$wallet.lock
-# for old version <v0.6.3
-rm -f ~/.joinmarket/wallets/$wallet.lock 2>/dev/null
-echo "Stopped the Yield Generator background service"
-}
-
 # BASIC MENU INFO
 HEIGHT=15
 WIDTH=52
@@ -70,27 +50,27 @@ case $CHOICE in
             echo "Using the wallet: $(cat $wallet)"
             /home/joinmarket/start.service.sh yg-privacyenhanced $(cat $wallet)
             echo ""
-            echo "Started the Yield Generator in the background"
+            echo "# started the Yield Generator in the background"
             echo ""
-            echo "Showing the systemd status ..."
+            echo "# showing the systemd status ..."
             sleep 3
             dialog \
             --title "Monitoring the Yield Generator - press CTRL+C to exit"  \
             --prgbox "sudo journalctl -fn20 -u yg-privacyenhanced" 30 140
-            echo "Returning to the menu..."
+            echo "# returning to the menu..."
             sleep 1
             /home/joinmarket/menu.yg.sh
             ;;
         YGCONF)
             /home/joinmarket/set.conf.sh /home/joinmarket/joinmarket-clientserver/scripts/yg-privacyenhanced.py
-            echo "Returning to the menu..."
+            echo "# returning to the menu..."
             /home/joinmarket/menu.yg.sh        
             ;;
         YGLIST)
             dialog \
             --title "timestamp            cj amount/satoshi  my input count  my input value/satoshi  cjfee/satoshi  earned/satoshi  confirm time/min  notes"  \
             --prgbox "column $HOME/.joinmarket/logs/yigen-statement.csv -t -s ","" 100 140
-            echo "Returning to the menu..."
+            echo "# returning to the menu..."
             sleep 1
             /home/joinmarket/menu.yg.sh
             ;;

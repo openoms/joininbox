@@ -11,7 +11,7 @@ echo "# copying the scripts in place"
 sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/
 sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
 sudo -u joinmarket chmod +x /home/joinmarket/*.sh
-echo "# updated the JoininBox menu and scripts to the latest master"
+echo "# updated the JoininBox menu and scripts to the latest state in https://github.com/openoms/joininbox"
 }
 
 # BASIC MENU INFO
@@ -40,7 +40,9 @@ CHOICE=$(dialog --clear \
 case $CHOICE in
   JOININBOX)
       updateJoininBox
-      exit 0
+      echo ""
+      echo "Press ENTER to return to the menu"
+      read key
       ;;
   JOINMARKET)
       /home/joinmarket/install.joinmarket.sh update

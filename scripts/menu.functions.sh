@@ -71,3 +71,22 @@ else
   echo "$defaultWallet" > "$wallet"
 fi
 }
+
+function stopYG() {
+# stop the background process (equivalent to CTRL+C)
+# use wallet from joinin.conf
+source /home/joinmarket/joinin.conf
+pkill -sigint -f "python yg-privacyenhanced.py $YGwallet --wallet-password-stdin"
+# pgrep python | xargs kill -sigint             
+# remove the service
+sudo systemctl stop yg-privacyenhanced
+sudo systemctl disable yg-privacyenhanced
+# check for failed services
+# sudo systemctl list-units --type=service
+sudo systemctl reset-failed
+# make sure the lock file is deleted 
+rm -f ~/.joinmarket/wallets/.$wallet.lock
+# for old version <v0.6.3
+rm -f ~/.joinmarket/wallets/$wallet.lock 2>/dev/null
+echo "# stopped the Yield Generator background service"
+}
