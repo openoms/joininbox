@@ -43,7 +43,7 @@ if [ ${#toPort2} -gt 0 ]; then
 fi
 
 checkDirEntry=$(cat /home/joinmarket/joinin.conf | grep -c "HiddenServiceDir")
-if [ ${checkDirEntry} -eq 0 ]; then
+if [ "${checkDirEntry}" -eq 0 ]; then
     echo "HiddenServiceDir=" >> /home/joinmarket/joinin.conf
 fi
 
@@ -57,10 +57,10 @@ sudo sed -i  "s#HiddenServiceDir=.*#HiddenServiceDir=$HiddenServiceDir#g" /home/
 if [ "${runBehindTor}" = "on" ]; then
   #check if the service is already present
   isHiddenService=$(sudo cat /etc/tor/torrc 2>/dev/null | grep -c $service)
-  if [ ${isHiddenService} -eq 0 ]; then
+  if [ "${isHiddenService}" -eq 0 ]; then
     #check if the port is already forwarded
     alreadyThere=$(sudo cat /etc/tor/torrc 2>/dev/null | grep -c "\b127.0.0.1:$fromPort\b")
-    if [ ${alreadyThere} -gt 0 ]; then
+    if [ "${alreadyThere}" -gt 0 ]; then
       echo "The port $fromPort is already forwarded. Check /etc/tor/torrc for the details."
       exit 1
     fi
@@ -73,7 +73,7 @@ HiddenServicePort $toPort 127.0.0.1:$fromPort" | sudo tee -a /etc/tor/torrc
     # check and insert second port pair
     if [ ${#toPort2} -gt 0 ]; then
       alreadyThere=$(sudo cat /etc/tor/torrc 2>/dev/null | grep -c "\b127.0.0.1:$fromPort2\b")
-      if [ ${alreadyThere} -gt 0 ]; then
+      if [ "${alreadyThere}" -gt 0 ]; then
         echo "The port $fromPort2 is already forwarded. Check the /etc/tor/torrc for the details."
       else
         echo "HiddenServicePort $toPort2 127.0.0.1:$fromPort2" | sudo tee -a /etc/tor/torrc
@@ -88,11 +88,11 @@ HiddenServicePort $toPort 127.0.0.1:$fromPort" | sudo tee -a /etc/tor/torrc
     echo "The Hidden Service for $service is already installed."
   fi
   # show the Hidden Service address
-  TOR_ADDRESS=$(sudo cat $HiddenServiceDir/$service/hostname)
+  TOR_ADDRESS=$(sudo cat $HiddenServiceDir/"$service"/hostname)
   if [ -z "$TOR_ADDRESS" ]; then
     echo "Waiting for the Hidden Service"
     sleep 10
-    TOR_ADDRESS=$(sudo cat $HiddenServiceDir/$service/hostname)
+    TOR_ADDRESS=$(sudo cat $HiddenServiceDir/"$service"/hostname)
     if [ -z "$TOR_ADDRESS" ]; then
       echo " FAIL - The Hidden Service address could not be found - Tor error?"
       exit 1
@@ -105,7 +105,7 @@ HiddenServicePort $toPort 127.0.0.1:$fromPort" | sudo tee -a /etc/tor/torrc
   echo ""
   if [ ${#toPort2} -gt 0 ]; then
     alreadyThere=$(sudo cat /etc/tor/torrc 2>/dev/null | grep -c "\b127.0.0.1:$fromPort2\b")
-    if [ ${alreadyThere} -eq 0 ]; then
+    if [ "${alreadyThere}" -eq 0 ]; then
       echo "or the port: $toPort2"
     else
       echo "The port $fromPort2 is forwarded for another Hidden Service. Check the /etc/tor/torrc for the details."

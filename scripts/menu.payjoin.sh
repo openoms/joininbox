@@ -9,7 +9,7 @@ function receivePayJoin() {
 chooseWallet
 
 # mixdepth
-mixdepth=$(tempfile 2>/dev/null)
+mixdepth=$(mktemp 2>/dev/null)
 dialog --backtitle "Choose a mixdepth to receive to" \
 --title "Choose a mixdepth to receive to" \
 --inputbox "
@@ -18,7 +18,7 @@ Enter a number between 0 to 4 to choose the mixdepth
 openMenuIfCancelled $?
 
 # amount
-amount=$(tempfile 2>/dev/null)
+amount=$(mktemp 2>/dev/null)
 dialog --backtitle "Choose the amount" \
 --title "Choose the amount" \
 --inputbox "
@@ -78,7 +78,7 @@ function sendPayJoin() {
 chooseWallet
 
 # mixdepth
-mixdepth=$(tempfile 2>/dev/null)
+mixdepth=$(mktemp 2>/dev/null)
 dialog --backtitle "Choose a mixdepth to send from" \
 --title "Choose a mixdepth to send from" \
 --inputbox "
@@ -86,7 +86,7 @@ Enter a number between 0 to 4 to choose the mixdepth" 9 60 2> $mixdepth
 openMenuIfCancelled $?
 
 # receiveURI
-receiveURI=$(tempfile 2>/dev/null)
+receiveURI=$(mktemp 2>/dev/null)
 dialog --backtitle "Receive URI" \
 --title "Receive URI" \
 --inputbox "
@@ -107,9 +107,9 @@ Send to:
 $(cat $receiveURI)
 
 from the wallet:
-$(echo $(cat $wallet) | sed "s#$walletPath##g")
+$(sed "s#$walletPath##g" < "$wallet")
 
-mixdepth: $(cat $mixdepth)
+mixdepth: $(cat "$mixdepth")
 " 13 55
 # make decison
 pressed=$?
@@ -117,13 +117,16 @@ case $pressed in
   0)
     # display
     echo "Running the command:
-$tor python sendpayment.py -m$(cat $mixdepth) \
-$(echo $(cat $wallet) | sed "s#$walletPath##g") \
-$(cat $receiveURI)
+$tor python sendpayment.py -m$(cat "$mixdepth") \
+$(sed "s#$walletPath##g" < "$wallet") \
+$(cat "$receiveURI")
 "
     # run
     $tor python ~/joinmarket-clientserver/scripts/sendpayment.py \
-    -m$(cat $mixdepth) $(cat $wallet) $(cat $receiveURI)
+    -m"$(cat "$mixdepth")" "$(cat "$wallet")" "$(cat "$receiveURI")"
+    echo ""
+    echo "Press ENTER to return to the menu..."
+    read key
     ;;
   1)
     echo "Cancelled"

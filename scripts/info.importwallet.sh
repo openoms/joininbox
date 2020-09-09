@@ -42,7 +42,7 @@ if [ "${CHOICE}" = "LAN" ]; then
 elif [ "${CHOICE}" = "TOR" ]; then
   # set up a Hidden Service for ssh
   /home/joinmarket/install.hiddenservice.sh ssh 22 22
-  TOR_ADDRESS=$(sudo cat $HiddenServiceDir/ssh/hostname)
+  TOR_ADDRESS=$(sudo cat "$HiddenServiceDir"/ssh/hostname)
 fi
 
 echo "

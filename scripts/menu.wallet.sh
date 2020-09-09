@@ -38,11 +38,12 @@ case $CHOICE in
       clear
       echo ""
       . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
-      if [ ${RPCoverTor} = "on" ]; then 
+      if [ "${RPCoverTor}" = "on" ]; then 
         torify python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
       else
         python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
       fi
+      echo ""
       echo "Press ENTER to return to the menu"
       read key
       ;;
@@ -64,11 +65,12 @@ case $CHOICE in
       clear
       echo ""
       . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
-      if [ ${RPCoverTor} = "on" ];then 
+      if [ "${RPCoverTor}" = "on" ];then 
         torify python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py recover
       else
         python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py recover
       fi
+      echo ""
       echo "Press ENTER to return to the menu"
       read key
       ;;

@@ -11,9 +11,9 @@ sudo systemctl disable ob-watcher 2>/dev/null
 }
 
 function showOfferBookAddress() {
-running=$(ps $(pidof python) | grep -c "python ob-watcher.py")
-if [ $running -gt 0 ]; then  
-  TOR_ADDRESS=$(sudo cat $HiddenServiceDir/ob-watcher/hostname)
+running=$(ps "$(pidof python)" | grep -c "python ob-watcher.py")
+if [ "$running" -gt 0 ]; then  
+  TOR_ADDRESS=$(sudo cat "$HiddenServiceDir"/ob-watcher/hostname)
   whiptail --title "Started the ob-watcher service" \
   --msgbox "\nVisit the address in the Tor Browser:\n$TOR_ADDRESS" 9 66
 else
@@ -25,7 +25,7 @@ function startOfferBook() {
 echo "# Checking matplotlib"
 . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
 depend=$(pip show matplotlib | grep -c "matplotlib")
-if [ $depend -lt 1 ]; then
+if [ "$depend" -lt 1 ]; then
   pip install matplotlib
 else
   echo "matplotlib is installed"
@@ -101,7 +101,8 @@ case $CHOICE in
       showOfferBookAddress
       ;;              
   STOP)
-      stopOfferBook            
+      stopOfferBook
+      echo ""            
       echo "Press ENTER to return to the menu..."
       read key
       ;;        

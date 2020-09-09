@@ -109,6 +109,7 @@ Will tail the latest YG logfile from:
 Press CTRL+C to exit and return to the menu." 10 50
             cd /home/joinmarket/.joinmarket/logs 
             ls -t | grep J5 | head -n 1 | xargs tail -fn1000
+            echo ""
             echo "Press ENTER to return to menu"
             read key
             cd /home/joinmarket/joinmarket-clientserver/scripts/
@@ -131,6 +132,7 @@ Press CTRL+C to exit and return to the menu." 10 50
             # for old version <v0.6.3
             rm -f ~/.joinmarket/wallets/$wallet.lock 2>/dev/null
             echo "Stopped the Yield Generator background service"
+            echo ""
             echo "Press ENTER to return to the menu..."
             read key
             ;;

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $(dialog | grep -c "ComeOn Dialog!") -eq 0 ]; then
+if [ "$(dialog | grep -c "ComeOn Dialog!")" -eq 0 ]; then
   sudo apt install dialog
 fi
 if [ -f /home/joinmarket/joinin.conf ]; then
@@ -26,11 +26,11 @@ fi
 if ! grep -Eq "^defaultWallet=" /home/joinmarket/joinin.conf; then
   echo "defaultWallet=off" >> /home/joinmarket/joinin.conf
 fi
-if [ $(ls /home/joinmarket/.joinmarket/wallets/*.jmdat 2>/dev/null | grep -c jmdat) -gt 1 ]; then
+if [ "$(ls /home/joinmarket/.joinmarket/wallets/*.jmdat 2>/dev/null | grep -c jmdat)" -gt 1 ]; then
   echo "# Found more than one wallet file"
   echo "# Setting defaultWallet to off"
   sed -i "s#^defaultWallet=.*#defaultWallet=off#g" /home/joinmarket/joinin.conf
-elif  [ $(ls /home/joinmarket/.joinmarket/wallets/*.jmdat 2>/dev/null | grep -c jmdat) -eq 1 ]; then
+elif  [ "$(ls /home/joinmarket/.joinmarket/wallets/*.jmdat 2>/dev/null | grep -c jmdat)" -eq 1 ]; then
   onlyWallet=$(ls /home/joinmarket/.joinmarket/wallets/*.jmdat 2>/dev/null | grep jmdat)
   echo "# Found only one wallet file: $onlyWallet"
   echo "# Using it as default"
@@ -85,14 +85,14 @@ case $CHOICE in
       # wallet
       chooseWallet
       # mixdepth
-      mixdepth=$(tempfile 2>/dev/null)
+      mixdepth=$(mktemp 2>/dev/null)
       dialog --backtitle "Choose a mixdepth" \
       --title "Choose a mixdepth" \
       --inputbox "
 Enter a number between 0 to 4 to limit the visible mixdepths
 Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       openMenuIfCancelled $?
-      /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) nooption $(cat $mixdepth)
+      /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)" nooption "$(cat $mixdepth)"
       echo ""
       echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
       echo ""
