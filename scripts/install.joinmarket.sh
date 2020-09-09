@@ -6,17 +6,17 @@ function installJoinMarket() {
   version="v0.7.0"
   cd /home/joinmarket
   # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
-  echo "# installing ARM specific dependencies for the QT GUI"
+  echo "# installing ARM specific dependencies to run the QT GUI on ARM"
   sudo apt install -y python3-pyside2.qtcore python3-pyside2.qtgui python3-pyside2.qtwidgets zlib1g-dev libjpeg-dev
   echo "# installing JoinMarket"
   sudo -u joinmarket git clone https://github.com/Joinmarket-Org/joinmarket-clientserver
   cd joinmarket-clientserver
-  git reset --hard $version
+  sudo -u joinmarket git reset --hard $version
   # make install.sh set up jmvenv with -- system-site-packages
   sed -i "s#^    virtualenv -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1#\
   virtualenv --system-site-packages -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1#g" \
   install.sh
-  ./install.sh --with-qt
+  sudo -u joinmarket ./install.sh --with-qt
   
   echo "# installing python requirements to run the QT GUI on ARM"    
   source jmvenv/bin/activate || exit 1
