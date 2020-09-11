@@ -46,5 +46,8 @@ case $CHOICE in
       ;;
   JOINMARKET)
       /home/joinmarket/install.joinmarket.sh update
+      echo ""
+      echo "Press ENTER to return to the menu"
+      read key
       ;;              
 esac
