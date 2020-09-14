@@ -26,12 +26,12 @@ fi
 if ! grep -Eq "^defaultWallet=" /home/joinmarket/joinin.conf; then
   echo "defaultWallet=off" >> /home/joinmarket/joinin.conf
 fi
-if [ "$(ls /home/joinmarket/.joinmarket/wallets/*.jmdat 2>/dev/null | grep -c jmdat)" -gt 1 ]; then
+if [ "$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -cv /)" -gt 1 ]; then
   echo "# Found more than one wallet file"
   echo "# Setting defaultWallet to off"
   sed -i "s#^defaultWallet=.*#defaultWallet=off#g" /home/joinmarket/joinin.conf
-elif  [ "$(ls /home/joinmarket/.joinmarket/wallets/*.jmdat 2>/dev/null | grep -c jmdat)" -eq 1 ]; then
-  onlyWallet=$(ls /home/joinmarket/.joinmarket/wallets/*.jmdat 2>/dev/null | grep jmdat)
+elif [ "$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -cv /)" -eq 1 ]; then
+  onlyWallet=$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -v /)
   echo "# Found only one wallet file: $onlyWallet"
   echo "# Using it as default"
   sed -i "s#^defaultWallet=.*#defaultWallet=$onlyWallet#g" /home/joinmarket/joinin.conf
