@@ -14,8 +14,12 @@ function showOfferBookAddress() {
 running=$(ps "$(pidof python)" | grep -c "python ob-watcher.py")
 if [ "$running" -gt 0 ]; then  
   TOR_ADDRESS=$(sudo cat "$HiddenServiceDir"/ob-watcher/hostname)
-  whiptail --title "Started the ob-watcher service" \
-  --msgbox "\nVisit the address in the Tor Browser:\n$TOR_ADDRESS" 9 66
+  clear
+  echo ""
+  echo "The local Offer book instance is running"
+  echo ""
+  echo "Visit the address in the Tor Browser:"
+  echo "$TOR_ADDRESS"
 else
   startOfferBook
 fi 
@@ -96,9 +100,16 @@ CHOICE=$(dialog --clear \
 case $CHOICE in
   START)
       startOfferBook
+      showOfferBookAddress
+      echo ""            
+      echo "Press ENTER to return to the menu..."
+      read key
       ;;
   SHOW)
       showOfferBookAddress
+      echo ""            
+      echo "Press ENTER to return to the menu..."
+      read key
       ;;              
   STOP)
       stopOfferBook
