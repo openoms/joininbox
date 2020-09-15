@@ -11,10 +11,10 @@ This can be skipped if you [connect through Tor](#tor-connection))
 1) #### Edit the bitcoin.conf:  
     `$ sudo nano /mnt/hdd/bitcoin/bitcoin.conf`
 
-    Change the values (edit to your local subnet): 
+    Add the values:  
+    (edit to your local subnet - the first 3 numbes of the LAN IP address, example here: 192.168.1)  
+    (can keep the other `rpcallowip` and `rpcbind` entires especially for the localhost: 127.0.0.1)
     ```
-    #rpcallowip=127.0.0.1
-    #rpcbind=127.0.0.1:8332
     rpcallowip=192.168.1.0/24
     rpcbind=0.0.0.0
     ```
