@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# command info
+if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
+ echo "a script to install, update or configure JoinMarket"
+ echo "install.joinamrket.sh [install|config|update|testPR <PRnumber>]"
+ exit 1
+fi
+
 # functions
 
 function installJoinMarket() {
@@ -26,6 +33,32 @@ function installJoinMarket() {
   sudo -u joinmarket ./install.sh --with-qt
   echo "# installed JoinMarket $version"
 }
+
+if [ "$1" = "testPR" ]; then
+  PRnumber=$2
+  echo "# deleting the old source code (joinmarket-clientserver directory)"
+  sudo rm -rf /home/joinmarket/joinmarket-clientserver
+  echo "# installing JoinMarket"
+  echo "# using the PR:"
+  echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber"
+  sudo -u joinmarket git clone https://github.com/Joinmarket-Org/joinmarket-clientserver
+  cd joinmarket-clientserver
+  git fetch origin pull/$PRnumber/head:pr$PRnumber
+  git checkout pr$PRnumber
+  # make install.sh set up jmvenv with -- system-site-packages
+  # and import the PySide2 armf package from the system
+  sudo -u joinmarket sed -i "s#^    virtualenv -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1#\
+  virtualenv --system-site-packages -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1 ;\
+  /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python -c \'import PySide2\'\
+  #g" install.sh
+  # don't install PySide2 - using the system-site-package instead 
+  sudo -u joinmarket sed -i "s#^PySide2##g" requirements/gui.txt
+  # don't install PyQt5 - using the system package instead 
+  sudo -u joinmarket sed -i "s#^PyQt5==5.14.2##g" requirements/gui.txt
+  sudo -u joinmarket ./install.sh --with-qt
+  echo "# installed JoinMarket with the PR:"
+  echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber"
+fi
 
 source /home/joinmarket/joinin.conf
 
@@ -83,7 +116,7 @@ fi
 if [ "$1" = "update" ]; then
   source /home/joinmarket/menu.functions.sh
   stopYG
-  echo "# deleting the joinmarket-clientserver directory"
+  echo "# deleting the old source code (joinmarket-clientserver directory)"
   sudo rm -rf /home/joinmarket/joinmarket-clientserver
   installJoinMarket
   exit 0
