@@ -1,12 +1,11 @@
 #!/bin/bash
 
-# SHORTCUT COMMANDS for the user 'joinmarket' from terminal
+# SHORTCUT COMMANDS for the user 'joinmarket'
 
 # command: menu
 # calls directly the main menu
 function menu() {
-  cd /home/joinmarket
-  ./menu.sh
+  $HOME/menu.sh
 }
 
 # command: torthistx
@@ -20,4 +19,9 @@ function torthistx() {
   else
     echo "Not running behind Tor"
   fi
+}
+# command: fees
+# shows the fees earned as a Maker
+function fees() {
+  $HOME/info.feereport.sh
 }
