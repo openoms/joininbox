@@ -1,11 +1,22 @@
+<!-- omit in toc -->
+# Frequently Asked Questions and Notes
+- [SSH through Tor from Linux](#ssh-through-tor-from-linux)
+- [Allow Tor to connect to localhost](#allow-tor-to-connect-to-localhost)
+- [Set up Armbian on the Hardkernel Odroid XU4](#set-up-armbian-on-the-hardkernel-odroid-xu4)
+- [Download and verify Raspbian SDcard image for a Raspberry Pi](#download-and-verify-raspbian-sdcard-image-for-a-raspberry-pi)
+- [Log in through SSH using a hardware wallet](#log-in-through-ssh-using-a-hardware-wallet)
+- [Activate the bitcoind wallet on a RaspiBlitz](#activate-the-bitcoind-wallet-on-a-raspiblitz)
+- [Error when connecting to a full node remotely through Tor](#error-when-connecting-to-a-full-node-remotely-through-tor)
+- [Nuke the joinmarket user and the /home/joinmarket folder](#nuke-the-joinmarket-user-and-the-homejoinmarket-folder)
+- [Sample bitcoin.conf for a remote node accepting RPC connections through LAN](#sample-bitcoinconf-for-a-remote-node-accepting-rpc-connections-through-lan)
 ### SSH through Tor from Linux
-#### On a RaspiBlitz:
+On a RaspiBlitz
 * since v1.4 there is a script to create a hidden service on your blitz:  
 `./config.scripts/internet.hiddenservice.sh ssh 22 22`  
 * get the Hidden Service address to connect to with:  
 `sudo cat /mnt/hdd/tor/ssh/hostname`  
 
-#### On the Debian based Linux Desktop (Ubuntu, Debian, MX Linux etc.):
+On the Debian based Linux Desktop (Ubuntu, Debian, MX Linux etc.)
 * needs Tor running on your desktop:  
 `sudo apt install tor`
 * might need to add:  
@@ -14,20 +25,21 @@
 * edit the Tor config file:  
 `sudo nano /etc/tor/torrc`
 * add:
-```
-# Hidden Service for ssh
-HiddenServiceDir /var/lib/tor/ssh
-HiddenServiceVersion 3
-HiddenServicePort 22 127.0.0.1:22
-```
+    ```
+    # Hidden Service for ssh
+    HiddenServiceDir /var/lib/tor/ssh
+    HiddenServiceVersion 3
+    HiddenServicePort 22 127.0.0.1:22
+    ```
 * Restart Tor:  
 `sudo systemctl restart tor`
 * get the Hidden Service address to connect to with:  
 `sudo cat /mnt/hdd/tor/ssh/hostname`  
-#### Use with `torify`:  
-`torify admin@HiddenServiceAddress.onion`
 
-### Run the Yield Generator with `torify` (remote RPC connection to a full node)
+Use `ssh` with `torify`  on the desktop (needs Tor installed):  
+`torify ssh admin@HiddenServiceAddress.onion`
+
+### Allow Tor to connect to localhost
 
 * To solve the error when running `$ torify python yg-privacyenhanced.py wallet.jmdat`
     ```
