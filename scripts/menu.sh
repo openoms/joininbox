@@ -155,6 +155,6 @@ https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/README.md
 To open JoininBox menu use: menu
 To exit to the RaspiBlitz menu use: exit
 "
-            exit 0;
-            ;;            
+      exit 0
+      ;;            
 esac

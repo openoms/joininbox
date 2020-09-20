@@ -11,7 +11,7 @@ sudo systemctl disable ob-watcher 2>/dev/null
 }
 
 function showOfferBookAddress() {
-running=$(ps "$(pidof python)" | grep -c "python ob-watcher.py")
+running=$(ps $(pidof python) | grep -c "python ob-watcher.py")
 if [ "$running" -gt 0 ]; then  
   TOR_ADDRESS=$(sudo cat "$HiddenServiceDir"/ob-watcher/hostname)
   clear
