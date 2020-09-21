@@ -27,7 +27,7 @@ newPassword=$1
 if [ ${#newPassword} -eq 0 ]; then
   # ask user for new password A (first time)
   dialog --backtitle "JoinInBox - Password Change"\
-  --title "JoinInBox - Password Change"\
+  --title "JoininBox - Password Change"\
   --insecure --passwordbox "
 Set a new password for the users:
   'joinmarket' and 'root'
@@ -38,7 +38,7 @@ Set a new password for the users:
   shred $_temp
   
   # ask user for new password A (second time)
-  dialog --backtitle "JoinInBox - Password Change"\
+  dialog --backtitle "JoininBox - Password Change"\
      --insecure --passwordbox "Re-enter the password:\n(This is the new password to login via SSH)" 9 56 2>$_temp
   
   # get user input

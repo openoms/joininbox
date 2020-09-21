@@ -42,17 +42,15 @@ if [ ${#toPort2} -gt 0 ]; then
   fi
 fi
 
-checkDirEntry=$(cat /home/joinmarket/joinin.conf | grep -c "HiddenServiceDir")
-if [ "${checkDirEntry}" -eq 0 ]; then
-    echo "HiddenServiceDir=" >> /home/joinmarket/joinin.conf
+checkDirEntry=$(grep -c "HiddenServiceDir" < /home/joinmarket/joinin.conf)
+if [ "$checkDirEntry" -eq 0 ]; then
+  if [ -d "/mnt/hdd/tor" ] ; then
+    HiddenServiceDir="/mnt/hdd/tor"
+  else
+    HiddenServiceDir="/var/lib/tor"
+  fi  
+  echo "HiddenServiceDir=$HiddenServiceDir" >> /home/joinmarket/joinin.conf
 fi
-
-if [ -d "/mnt/hdd/tor" ] ; then
-  HiddenServiceDir="/mnt/hdd/tor"
-else
-  HiddenServiceDir="/var/lib/tor"
-fi  
-sudo sed -i  "s#HiddenServiceDir=.*#HiddenServiceDir=$HiddenServiceDir#g" /home/joinmarket/joinin.conf 
 
 if [ "${runBehindTor}" = "on" ]; then
   #check if the service is already present

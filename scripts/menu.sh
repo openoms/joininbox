@@ -1,11 +1,6 @@
 #!/bin/bash
 
-if [ "$(dialog | grep -c "ComeOn Dialog!")" -eq 0 ]; then
-  sudo apt install dialog
-fi
-if [ -f /home/joinmarket/joinin.conf ]; then
-  touch /home/joinmarket/joinin.conf
-fi
+/home/joinmarket/start.joininbox.sh
 
 # add default value to joinin config if needed
 if ! grep -Eq "^RPCoverTor=" /home/joinmarket/joinin.conf; then
