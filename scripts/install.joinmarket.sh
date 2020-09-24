@@ -3,7 +3,7 @@
 # command info
 if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
  echo "a script to install, update or configure JoinMarket"
- echo "install.joinamrket.sh [install|config|update|testPR <PRnumber>]"
+ echo "install.joinmarket.sh [install|config|update|testPR <PRnumber>]"
  exit 1
 fi
 

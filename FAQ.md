@@ -9,6 +9,8 @@
 - [Error when connecting to a full node remotely through Tor](#error-when-connecting-to-a-full-node-remotely-through-tor)
 - [Nuke the joinmarket user and the /home/joinmarket folder](#nuke-the-joinmarket-user-and-the-homejoinmarket-folder)
 - [Sample bitcoin.conf for a remote node accepting RPC connections through LAN](#sample-bitcoinconf-for-a-remote-node-accepting-rpc-connections-through-lan)
+- [Using the 2.13" WaveShare e-ink display](#using-the-213-waveshare-e-ink-display)
+- [Compile Tor for the RPi Zero (armv6l)](#compile-tor-for-the-rpi-zero-armv6l)
 ### SSH through Tor from Linux
 On a RaspiBlitz
 * since v1.4 there is a script to create a hidden service on your blitz:  
@@ -205,3 +207,54 @@ dns=0
 # for Bisq
 peerbloomfilters=1
 ```
+
+### Using the 2.13" WaveShare e-ink display
+https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT
+https://www.raspberrypi.org/documentation/hardware/raspberrypi/spi/README.md
+SPI0 is disabled by default. To enable it, use raspi-config, or ensure the line dtparam=spi=on isn't commented out in /boot/config.txt
+```
+#Install BCM2835 libraries
+wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.60.tar.gz
+tar zxvf bcm2835-1.60.tar.gz 
+cd bcm2835-1.60/
+sudo ./configure
+sudo make
+sudo make check
+sudo make install
+#For more details, please refer to http://www.airspayce.com/mikem/bcm2835/
+
+#Install wiringPi libraries
+
+sudo apt-get install wiringpi
+
+#For Pi 4, you need to update it：
+cd /tmp
+wget https://project-downloads.drogon.net/wiringpi-latest.deb
+sudo dpkg -i wiringpi-latest.deb
+gpio -v
+#You will get 2.52 information if you install it correctly
+
+#Install Python libraries
+#python3
+sudo apt-get update
+sudo apt-get install python3-pip
+sudo apt-get install python3-pil
+sudo apt-get install python3-numpy
+sudo pip3 install RPi.GPIO
+sudo pip3 install spidev
+
+```
+
+Test:
+```
+sudo git clone https://github.com/waveshare/e-Paper
+cd e-Paper/RaspberryPi\&JetsonNano/python/examples
+sudo python epd_2in13_V2_test.py
+```
+Code examples:   
+https://github.com/waveshare/e-Paper/blob/master/RaspberryPi%26JetsonNano/python/examples/epd_2in13_V2_test.py
+https://github.com/21isenough/LightningATM/blob/master/displays/waveshare2in13.py  
+
+### Compile Tor for the RPi Zero (armv6l)
+
+https://2019.www.torproject.org/docs/debian#source
