@@ -90,3 +90,12 @@ rm -f ~/.joinmarket/wallets/.$wallet.lock
 rm -f ~/.joinmarket/wallets/$wallet.lock 2>/dev/null
 echo "# stopped the Yield Generator background service"
 }
+
+function QRinTerminal() {
+  datastring=$1
+  if [ ${#datastring} -eq 0 ]; then
+    echo "error='missing string'"
+  fi
+  qrencode -t ANSI256 "${datastring}"
+  echo "(To shrink QR code: MacOS press CMD- / Linux press CTRL-)"
+}
