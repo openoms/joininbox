@@ -109,7 +109,7 @@ echo "# UPDATE DEBIAN "
 sudo apt-get update -y
 sudo apt-get upgrade -f -y
 
-echo ""
+echo
 echo "# PREPARE ${baseImage} "
 
 # special prepare when DietPi
@@ -336,6 +336,44 @@ if [ "$cpu" = "armv6l" ]; then
   cd ..
   dpkg -i tor_*.deb
 
+  echo "# add the 'tor' user"
+  adduser --disabled-password --gecos "" tor
+
+  # sudo nano /etc/systemd/system/tor-armv6l.service 
+    echo "
+[Unit]
+Description=tor Service
+
+[Service]
+ExecStart=/usr/local/bin/tor
+User=tor
+Group=tor
+Type=simple
+KillMode=process
+TimeoutSec=60
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
+" | sudo tee -a /etc/systemd/system/tor-armv6l.service
+    sudo systemctl enable tor-armv6l
+    echo "OK - the Tor service is now enabled"
+
+  sudo systemctl start tor-armv6l
+  torTest=$(curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
+  tries=0
+  while [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]
+  do
+    echo "waiting for Tor"
+    sleep 5
+    tries=$((tries+1))
+    if [ $tries = 10 ]; then
+      echo "# FAIL - Tor was not set up successfully"
+      exit 1
+    fi
+  done
+  echo "# $torTest"
 
 else
   echo "# INSTALL TOR "
