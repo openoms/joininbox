@@ -11,15 +11,6 @@ A terminal based graphical menu for JoinMarket.
   <img width="400" src="/images/menu.payjoin.png">
 </p>
 
-## Install the JoininBox menu on a RaspiBlitz v1.5+ 
-* Run the script in the RaspiBlitz terminal (will install JoinMarket if not active already):
-  ```bash
-  # download
-  wget https://raw.githubusercontent.com/openoms/joininbox/master/build_menu_on_raspiblitz.sh
-  # run
-  bash build_menu_on_raspiblitz.sh
-  ```
-
 ## Build a dedicated JoinMarket Box remotely connected to a full node
 
 <p align="left">
@@ -27,10 +18,10 @@ A terminal based graphical menu for JoinMarket.
 </p>
 
 * Test environments:
-  * Hardkernel Odroid XU4 running Armbian
-  * Raspberry Pi 3 and 4 running Raspbian
+  * Hardkernel Odroid XU4 running Armbian (32 bit)
+  * Raspberry Pi Zero, 3 and 4 running Raspberry OS (32 bit)
   * Debian Buster desktop
-  * Connected to a RaspiBlitz 1.4 (any Bitcoin Core node can work, including previous RaspiBlitz versions)
+  * Connected to a RaspiBlitz >1.4 (any Bitcoin Core node can work, including previous RaspiBlitz versions)
 
 ### Install and set up the base image
 * [Set up Armbian on the Hardkernel Odroid XU4](https://github.com/openoms/joininbox/blob/master/FAQ.md#set-up-armbian-on-the-hardkernel-odroid-xu4)
@@ -44,8 +35,8 @@ A terminal based graphical menu for JoinMarket.
   ```bash 
   # download
   wget https://raw.githubusercontent.com/openoms/joininbox/master/build_joininbox.sh
-  # run (installing Tor also)
-  sudo bash build_joininbox.sh --with-tor
+  # run
+  sudo bash build_joininbox.sh
   ```
 
 * start the JoininBox menu by changing to the  `joinmarket` user in the terminal:  
