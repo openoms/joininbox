@@ -365,10 +365,11 @@ WantedBy=multi-user.target
   tries=0
   while [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]
   do
-    echo "waiting for Tor"
-    sleep 5
+    echo "waiting another 10 seconds for Tor"
+    echo "press CTRL + C to abort"
+    sleep 10
     tries=$((tries+1))
-    if [ $tries = 10 ]; then
+    if [ $tries = 100 ]; then
       echo "# FAIL - Tor was not set up successfully"
       exit 1
     fi
@@ -376,9 +377,12 @@ WantedBy=multi-user.target
   echo "# $torTest"
 
 else
-  echo "# INSTALL TOR "
-  apt install -y tor torsocks tor-arm
+  echo "# INSTALL TOR"
+  apt install -y tor 
 fi
+
+echo "# install torsocks and nyx"
+apt install -y torsocks tor-arm
 
 if ! grep -Eq "^DataDirectory" /etc/tor/torrc; then
   echo "
