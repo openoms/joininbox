@@ -3,8 +3,8 @@
 
 # command info
 if [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
- echo "script to set a passwords for the users 'joinmarket', 'root' (and 'pi') "
- echo "set.password.sh [?newpassword] "
+ echo "script to set a passwords for the users 'joinmarket', 'root' (and 'pi')"
+ echo "sudo set.password.sh [?newpassword] "
  echo "or just as a password enter dialog (result as file)"
  exit 1
 fi

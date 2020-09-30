@@ -40,7 +40,7 @@ source /home/joinmarket/joinin.conf
 if [ "$runningEnv" = "standalone" ]; then
   if [ "$setupStep" = "0" ]; then
     # set ssh passwords on the first run
-    /home/joinmarket/set.password.sh || exit 1
+    sudo /home/joinmarket/set.password.sh || exit 1
     sudo sed -i  "s#setupStep=.*#setupStep=100#g" /home/joinmarket/joinin.conf
   fi
 elif [ "$runningEnv" = "raspiblitz" ]; then
