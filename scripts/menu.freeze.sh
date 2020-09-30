@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source /home/joinmarket/joinin.conf
-source /home/joinmarket/menu.functions.sh
+source /home/joinmarket/_functions.sh
 
 chooseWallet
 

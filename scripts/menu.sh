@@ -33,7 +33,7 @@ elif [ "$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -cv /)" -eq 1 ]; th
 fi
 
 source /home/joinmarket/joinin.conf
-source /home/joinmarket/menu.functions.sh
+source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
 HEIGHT=24

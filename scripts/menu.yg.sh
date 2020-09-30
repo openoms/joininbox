@@ -6,7 +6,7 @@ if ! grep -Eq "^YGwallet=" /home/joinmarket/joinin.conf; then
 fi
 
 # YG menu options
-source /home/joinmarket/menu.functions.sh
+source /home/joinmarket/_functions.sh
 source /home/joinmarket/joinin.conf
 
 # BASIC MENU INFO

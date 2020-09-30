@@ -117,7 +117,7 @@ if [ "$1" = "config" ]; then
 fi
 
 if [ "$1" = "update" ]; then
-  source /home/joinmarket/menu.functions.sh
+  source /home/joinmarket/_functions.sh
   stopYG
   echo "# deleting the old source code (joinmarket-clientserver directory)"
   sudo rm -rf /home/joinmarket/joinmarket-clientserver

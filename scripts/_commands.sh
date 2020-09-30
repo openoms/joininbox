@@ -20,8 +20,9 @@ function torthistx() {
     echo "Not running behind Tor"
   fi
 }
-# command: fees
-# shows the fees earned as a Maker
-function fees() {
-  $HOME/info.feereport.sh
+
+# command: stats
+# shows the uptime and the fees earned as a Maker
+function stats() {
+  $HOME/info.stats.sh
 }

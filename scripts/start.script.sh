@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /home/joinmarket/menu.functions.sh
+source /home/joinmarket/_functions.sh
 
 script="$1"
 if [ ${#script} -eq 0 ]; then
