@@ -144,7 +144,7 @@ IFS=$OLDIFS
 function YGuptime() {
 # puts the Yild Generator uptime to $JMUptime
 source /home/joinmarket/joinin.conf
-JMpid=$(pgrep -f "python yg-privacyenhanced.py $YGwallet --wallet-password-stdin" | head -1)
-JMUptimeInSeconds=$(ps -p $JMpid -oetime= | tr '-' ':' | awk -F: '{ total=0; m=1; } { for (i=0; i < NF; i++) {total += $(NF-i)*m; m *= i >= 2 ? 24 : 60 }} {print total}')
+JMpid=$(pgrep -f "python yg-privacyenhanced.py $YGwallet --wallet-password-stdin" 2>/dev/null | head -1)
+JMUptimeInSeconds=$(ps -p $JMpid -oetime= 2>/dev/null | tr '-' ':' | awk -F: '{ total=0; m=1; } { for (i=0; i < NF; i++) {total += $(NF-i)*m; m *= i >= 2 ? 24 : 60 }} {print total}')
 JMUptime=$(printf '%dd:%dh:%dm\n' $((JMUptimeInSeconds/86400)) $((JMUptimeInSeconds%86400/3600)) $((JMUptimeInSeconds%3600/60)))
 }
