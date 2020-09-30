@@ -69,7 +69,7 @@ echo "Showing the systemd status ..."
 sleep 3
 dialog \
 --title "Monitoring the ob-watcher - press CTRL+C to exit"  \
---prgbox "sudo journalctl -fn20 -u ob-watcher" 30 140
+--prgbox "sudo journalctl -fn20 -u ob-watcher" 30 200
 }
 
 # BASIC MENU INFO
