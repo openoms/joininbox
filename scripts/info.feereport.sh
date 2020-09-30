@@ -1,7 +1,7 @@
 #!/bin/bash
 
+function feereport() {
 # shows the fees earned as a Maker
-
 INPUT=$HOME/.joinmarket/logs/yigen-statement.csv
 allEarned=0
 allCoinjoins=0
@@ -53,3 +53,15 @@ week:  $weekEarned
 month: $monthEarned
 all:   $allEarned
 "
+}
+
+function YGuptime() {
+source /home/joinmarket/joinin.conf
+JMpid=$(pgrep -f "python yg-privacyenhanced.py $YGwallet --wallet-password-stdin" | head -1)
+JMUptimeInSeconds=$(ps -p $JMpid -oetime= | tr '-' ':' | awk -F: '{ total=0; m=1; } { for (i=0; i < NF; i++) {total += $(NF-i)*m; m *= i >= 2 ? 24 : 60 }} {print total}')
+JMUptime=$(printf '%dd:%dh:%dm\n' $(($JMUptimeInSeconds/86400)) $(($JMUptimeInSeconds%86400/3600)) $(($JMUptimeInSeconds%3600/60)))
+echo "Maker uptime: $JMUptime"
+}
+
+feereport
+YGuptime
