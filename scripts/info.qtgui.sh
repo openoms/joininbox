@@ -85,7 +85,7 @@ Open the connection
 Use the PASSWORD_B to log in
 In the terminal type:
 
-python joinmarket-qt.py
+python joinmarket-clientserver/scripts/joinmarket-qt.py
 
 The QT GUI will appear on the Windows desktop running from your RaspiBlitz."
 fi 
