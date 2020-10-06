@@ -74,20 +74,22 @@ Open Putty and fill in:
     Host Name: $localip
     Port: 22
 
-Under Connection:
+Under Connection set:
     Data -> Auto-login username: joinmarket
+    SSH -> X11 -> [x] Enable X11 forwarding
 
-Under SSH:
-    X11 -> [x] Enable X11 forwarding
+The settings can be saved in Session -> type a name under Saved session -> Save
+Make sure that Xming is running (the icon is present on the taskbar)
 
-These settings can be saved in Session -> Load, save or delete stored session -> Save
 Open the connection
 Use the PASSWORD_B to log in
-In the terminal type:
+In the terminal Exit to the Command Line and type:
 
-python joinmarket-clientserver/scripts/joinmarket-qt.py
+qtgui
 
-The QT GUI will appear on the Windows desktop running from your RaspiBlitz."
+The QT GUI will appear on the Windows desktop running from your RaspiBlitz.
+
+"
 fi 
 
 echo "

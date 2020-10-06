@@ -26,3 +26,9 @@ function torthistx() {
 function stats() {
   $HOME/info.stats.sh
 }
+
+# command: qtgui
+# starts the JoinMarket-QT GUI
+function qtgui() {
+  echo "# opening the JoinMarket-QT GUI with the command: '(jmvenv) python joinmarket-qt.py'"
+}
