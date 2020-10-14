@@ -1,18 +1,6 @@
 #!/bin/bash
 
-# functions
-
-function updateJoininBox() {
-echo "# removing the joininbox directory"
-sudo rm -rf /home/joinmarket/joininbox
-echo "# cloning the latest code from https://github.com/openoms/joininbox"
-sudo -u joinmarket git clone https://github.com/openoms/joininbox.git
-echo "# copying the scripts in place"
-sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/*.* /home/joinmarket/
-sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
-sudo -u joinmarket chmod +x /home/joinmarket/*.sh
-echo "# updated the JoininBox menu and scripts to the latest state in https://github.com/openoms/joininbox"
-}
+source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
 HEIGHT=8
