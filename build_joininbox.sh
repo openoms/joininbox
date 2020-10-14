@@ -361,15 +361,24 @@ fi
 echo "# install torsocks and nyx"
 apt install -y torsocks tor-arm
 
+# Tor config
+# torrc
 if ! grep -Eq "^DataDirectory" /etc/tor/torrc; then
-  echo "
-DataDirectory /var/lib/tor
-ControlPort 9051
-CookieAuthentication 1" | sudo tee -a /etc/tor/torrc
+  echo "DataDirectory /var/lib/tor" | sudo tee -a /etc/tor/torrc
 fi
-  echo "
-AllowOutboundLocalhost 1" | sudo tee -a /etc/tor/torsocks.conf
-
+if ! grep -Eq "^ControlPort 9051" /etc/tor/torrc; then
+  echo "ControlPort 9051" | sudo tee -a /etc/tor/torrc
+fi
+if ! grep -Eq "^CookieAuthentication 1" /etc/tor/torrc; then
+  echo "CookieAuthentication 1" | sudo tee -a /etc/tor/torrc
+fi
+sudo sed -i "s:^CookieAuthFile*:#CookieAuthFile:g" /etc/tor/torrc
+# torsocks.conf
+if ! grep -Eq "^AllowOutboundLocalhost 1" /etc/tor/torsocks.conf; then          
+  echo "AllowOutboundLocalhost 1" | sudo tee -a /etc/tor/torsocks.conf
+fi
+# add the joinmarket user to the tor group
+usermod -a -G debian-tor joinmarket
 # setting value in joinin config
 sed -i "s/^runBehindTor=.*/runBehindTor=on/g" /home/joinmarket/joinin.conf
 
