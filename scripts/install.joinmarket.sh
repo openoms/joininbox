@@ -10,7 +10,7 @@ fi
 # functions
 
 function installJoinMarket() {
-  version="v0.7.0"
+  version="v0.7.1"
   cd /home/joinmarket
   # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
   echo "# installing ARM specific dependencies to run the QT GUI"
