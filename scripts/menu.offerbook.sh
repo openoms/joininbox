@@ -73,12 +73,11 @@ dialog \
 }
 
 # BASIC MENU INFO
-HEIGHT=11
+HEIGHT=9
 WIDTH=48
 CHOICE_HEIGHT=20
-TITLE="JoininBox"
-MENU="
-Offer Book options:"
+TITLE="Offer Book options"
+MENU=""
 OPTIONS=()
 BACKTITLE="JoininBox GUI"
 

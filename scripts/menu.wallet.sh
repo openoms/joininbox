@@ -6,13 +6,12 @@ source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
-HEIGHT=13
+HEIGHT=11
 WIDTH=52
 CHOICE_HEIGHT=20
-TITLE="JoininBox"
-BACKTITLE="JoininBox - Wallet management options"
-MENU="
-Wallet management options:"
+TITLE="Wallet management options"
+BACKTITLE="Wallet management options"
+MENU=""
 OPTIONS=()
 
 # Basic Options

@@ -15,11 +15,11 @@ echo "# updated the JoininBox menu and scripts to the latest state in https://gi
 }
 
 # BASIC MENU INFO
-HEIGHT=10
+HEIGHT=8
 WIDTH=55
-CHOICE_HEIGHT=20
-TITLE="JoininBox"
-MENU="Update options:"
+CHOICE_HEIGHT=2
+TITLE="Update options"
+MENU=""
 OPTIONS=()
 BACKTITLE="JoininBox GUI"
 

@@ -10,12 +10,11 @@ source /home/joinmarket/_functions.sh
 source /home/joinmarket/joinin.conf
 
 # BASIC MENU INFO
-HEIGHT=15
+HEIGHT=13
 WIDTH=52
 CHOICE_HEIGHT=20
-TITLE="JoininBox"
-MENU="
-Yield Generator options:"
+TITLE="Yield Generator options"
+MENU=""
 OPTIONS=()
 BACKTITLE="JoininBox GUI"
 
