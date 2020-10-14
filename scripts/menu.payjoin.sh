@@ -124,9 +124,6 @@ $(cat "$receiveURI")
     # run
     $tor python ~/joinmarket-clientserver/scripts/sendpayment.py \
     -m"$(cat "$mixdepth")" "$(cat "$wallet")" "$(cat "$receiveURI")"
-    echo ""
-    echo "Press ENTER to return to the menu..."
-    read key
     ;;
   1)
     echo "Cancelled"
@@ -166,8 +163,14 @@ CHOICE=$(dialog --clear \
 case $CHOICE in
   RECEIVE)
       receivePayJoin
+      echo ""
+      echo "Press ENTER to return to the menu..."
+      read key
       ;;
   SEND)
       sendPayJoin
+      echo ""
+      echo "Press ENTER to return to the menu..."
+      read key
       ;;              
 esac

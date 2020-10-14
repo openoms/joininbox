@@ -107,9 +107,6 @@ $(cat "$amount") $(cat "$address") $txfeeOption
     $tor python ~/joinmarket-clientserver/scripts/sendpayment.py \
     -m "$(cat "$mixdepth")" $makercountOption "$(cat "$wallet")" \
     "$(cat "$amount")" "$(cat "$address")" $txfeeOption
-    echo ""
-    echo "Press ENTER to return to the menu..."
-    read key
     ;;
   1)
     echo "Cancelled"

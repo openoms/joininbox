@@ -91,7 +91,9 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       echo ""
       echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
       echo ""
-      echo "Type: 'menu' and press ENTER to return to the menu"
+      echo "Press ENTER to return to the menu..."
+      read key
+      /home/joinmarket/menu.sh
       ;;
   WALLET)
       /home/joinmarket/menu.wallet.sh
@@ -107,6 +109,9 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       ;;
   SEND)
       /home/joinmarket/menu.send.sh
+      echo ""
+      echo "Press ENTER to return to the menu..."
+      read key
       /home/joinmarket/menu.sh
       ;;
   FREEZE)
