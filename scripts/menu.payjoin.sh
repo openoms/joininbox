@@ -52,10 +52,8 @@ case $pressed in
 $tor python receive-payjoin.py -m$(cat $mixdepth) \
 $(echo $(cat $wallet) | sed "s#$walletPath##g") $(cat $amount)
 "
-    echo "Communicate the payer the Receive URI
-in the format:    
-bitcoin:RECEIVING_ADDRESS?amount=AMOUNT_IN_BTC&jmnick=EPHEMERAL_NICKNAME
-and press y to wait for the transaction.
+    echo "Will wait for the ephemeral Tor Hidden Service to be created.
+Can cancel the process by pressing CTRL+C .
 " 
     # run
     $tor python ~/joinmarket-clientserver/scripts/receive-payjoin.py \
@@ -137,12 +135,12 @@ esac
 }
 
 # BASIC MENU INFO
-HEIGHT=10
+HEIGHT=8
 WIDTH=48
 CHOICE_HEIGHT=20
-TITLE="JoininBox"
+TITLE="PayJoin options"
 MENU="
-PayJoin options:"
+"
 OPTIONS=()
 BACKTITLE="JoininBox GUI"
 
