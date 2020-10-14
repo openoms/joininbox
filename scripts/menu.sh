@@ -32,6 +32,8 @@ elif [ "$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -cv /)" -eq 1 ]; th
   sed -i "s#^defaultWallet=.*#defaultWallet=$onlyWallet#g" /home/joinmarket/joinin.conf
 fi
 
+currentVersion=$(cd ~/joininbox; git tag | sort -V | tail -1)
+
 source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
@@ -39,8 +41,8 @@ source /home/joinmarket/_functions.sh
 HEIGHT=24
 WIDTH=57
 CHOICE_HEIGHT=20
-BACKTITLE="JoininBox GUI"
-TITLE="JoininBox"
+BACKTITLE="JoininBox GUI $currentVersion"
+TITLE="JoininBox $currentVersion"
 MENU="
 Choose from the options:"
 OPTIONS=()

@@ -150,7 +150,7 @@ JMUptime=$(printf '%dd:%dh:%dm\n' $((JMUptimeInSeconds/86400)) $((JMUptimeInSeco
 }
 
 function installJoinMarket() {
-  version="v0.7.1"
+  JMVersion="v0.7.1"
   cd /home/joinmarket
   # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
   echo "# installing ARM specific dependencies to run the QT GUI"
@@ -158,7 +158,7 @@ function installJoinMarket() {
   echo "# installing JoinMarket"
   sudo -u joinmarket git clone https://github.com/Joinmarket-Org/joinmarket-clientserver
   cd joinmarket-clientserver
-  sudo -u joinmarket git reset --hard $version
+  sudo -u joinmarket git reset --hard $JMVersion
   # make install.sh set up jmvenv with -- system-site-packages
   # and import the PySide2 armf package from the system
   sudo -u joinmarket sed -i "s#^    virtualenv -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1#\
@@ -174,7 +174,7 @@ function installJoinMarket() {
   # don't install PyQt5 - using the system package instead 
   sudo -u joinmarket sed -i "s#^PyQt5==5.14.2##g" requirements/gui.txt
   sudo -u joinmarket ./install.sh --with-qt
-  echo "# installed JoinMarket $version"
+  echo "# installed JoinMarket $JMVersion"
 }
 
 function updateJoininBox() {
