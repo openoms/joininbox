@@ -31,4 +31,5 @@ function stats() {
 # starts the JoinMarket-QT GUI
 function qtgui() {
   echo "# opening the JoinMarket-QT GUI with the command: '(jmvenv) python joinmarket-qt.py'"
+  $HOME/joinmarket-clientserver/jmvenv/bin/python $HOME/joinmarket-clientserver/scripts/joinmarket-qt.py
 }
