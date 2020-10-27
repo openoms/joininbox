@@ -2,11 +2,16 @@
 
 echo "# starting JoininBox ..."
 
-if [ "$(dialog | grep -c "ComeOn Dialog!")" -eq 0 ]; then
-  sudo apt install dialog
-fi
 if [ -f /home/joinmarket/joinin.conf ]; then
   touch /home/joinmarket/joinin.conf
+fi
+
+# identify cpu architecture
+cpuEntry=$(grep -c "cpu" < /home/joinmarket/joinin.conf)
+if [ "$cpuEntry" -eq 0 ]; then
+  cpu=$(sudo uname -m)
+  echo "# cpu=${cpu}"
+  echo "cpu=$cpu" >> /home/joinmarket/joinin.conf
 fi
 
 # get settings on first run
@@ -34,13 +39,11 @@ if [ "$runningEnvEntry" -eq 0 ]; then
   echo "HiddenServiceDir=$HiddenServiceDir" >> /home/joinmarket/joinin.conf
   fi
 
-  # identify cpu architecture
-  cpuEntry=$(grep -c "cpu" < /home/joinmarket/joinin.conf)
-  if [ "$cpuEntry" -eq 0 ]; then
-    cpu=$(sudo uname -m)
-    echo "# cpu=${cpu}"
-    echo "cpu=$cpu" >> /home/joinmarket/joinin.conf
+  # check for dialog
+  if [ "$(dialog | grep -c "ComeOn Dialog!")" -eq 0 ]; then
+    sudo apt install dialog
   fi
+
 fi
 
 source /home/joinmarket/joinin.conf
