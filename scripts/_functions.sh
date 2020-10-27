@@ -195,8 +195,7 @@ cd /home/joinmarket/joininbox
 sudo -u joinmarket git fetch
 if [ "$1" = "commit" ]; then
   TAG=$(git describe --tags)
-  echo "# Updating to the latest commit in the default branch:"
-  echo "# $TAG"
+  echo "# Updating to the latest commit in the default branch"
 else
   TAG=$(git tag | sort -V | tail -1)
   # unset $1
@@ -206,14 +205,13 @@ else
   REMOTE=$(git rev-parse "$UPSTREAM")
   if [ $LOCAL = $REMOTE ]; then
     echo "# You are up-to-date on version" $TAG
-  else
-    echo "# Pulling latest changes..."
-    sudo -u joinmarket git pull -p
-    echo "# Reset to the latest release tag"
-    sudo -u joinmarket git reset --hard $TAG
-    echo "# Updated to version" $TAG
+    exit 0
   fi
 fi
+echo "# Pulling latest changes..."
+sudo -u joinmarket git pull -p
+sudo -u joinmarket git reset --hard $TAG
+echo "# Updated to version" $TAG
 echo "# Copying the scripts in place"
 sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/*.* /home/joinmarket/
 sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
