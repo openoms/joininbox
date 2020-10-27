@@ -193,23 +193,27 @@ echo "# Checking the updates in https://github.com/openoms/joininbox"
 cd /home/joinmarket/joininbox
 # fetch latest master
 sudo -u joinmarket git fetch
-# unset $1
-set --
-UPSTREAM=${1:-'@{u}'}
-LOCAL=$(git rev-parse @)
-REMOTE=$(git rev-parse "$UPSTREAM")
-if [ $LOCAL = $REMOTE ]; then
-  TAG=$(git tag | sort -V | tail -1)
-  echo "# You are up-to-date on version" $TAG
+if [ "$1" = "commit" ]; then
+  TAG=$(git describe --tags)
+  echo "# Updating to the latest commit in the default branch:"
+  echo "# $TAG"
 else
-  echo "# Pulling latest changes..."
-  sudo -u joinmarket git pull -p
-  echo "# Reset to the latest release tag"
   TAG=$(git tag | sort -V | tail -1)
-  sudo -u joinmarket git reset --hard $TAG
-  echo "# Updated to version" $TAG
+  # unset $1
+  set --
+  UPSTREAM=${1:-'@{u}'}
+  LOCAL=$(git rev-parse @)
+  REMOTE=$(git rev-parse "$UPSTREAM")
+  if [ $LOCAL = $REMOTE ]; then
+    echo "# You are up-to-date on version" $TAG
+  else
+    echo "# Pulling latest changes..."
+    sudo -u joinmarket git pull -p
+    echo "# Reset to the latest release tag"
+    sudo -u joinmarket git reset --hard $TAG
+    echo "# Updated to version" $TAG
+  fi
 fi
-
 echo "# Copying the scripts in place"
 sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/*.* /home/joinmarket/
 sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
