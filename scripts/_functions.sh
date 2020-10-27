@@ -142,7 +142,7 @@ IFS=$OLDIFS
 }
 
 function YGuptime() {
-# puts the Yild Generator uptime to $JMUptime
+# puts the Yield Generator uptime to $JMUptime
 source /home/joinmarket/joinin.conf
 JMpid=$(pgrep -f "python yg-privacyenhanced.py $YGwallet --wallet-password-stdin" 2>/dev/null | head -1)
 JMUptimeInSeconds=$(ps -p $JMpid -oetime= 2>/dev/null | tr '-' ':' | awk -F: '{ total=0; m=1; } { for (i=0; i < NF; i++) {total += $(NF-i)*m; m *= i >= 2 ? 24 : 60 }} {print total}')
@@ -150,7 +150,8 @@ JMUptime=$(printf '%dd:%dh:%dm\n' $((JMUptimeInSeconds/86400)) $((JMUptimeInSeco
 }
 
 function installJoinMarket() {
-  JMVersion="v0.7.1"
+  source /home/joinmarket/joinin.conf
+  JMVersion="v0.7.2"
   cd /home/joinmarket
   # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
   echo "# installing ARM specific dependencies to run the QT GUI"
@@ -159,28 +160,31 @@ function installJoinMarket() {
   sudo -u joinmarket git clone https://github.com/Joinmarket-Org/joinmarket-clientserver
   cd joinmarket-clientserver
   sudo -u joinmarket git reset --hard $JMVersion
-  # make install.sh set up jmvenv with -- system-site-packages
-  # and import the PySide2 armf package from the system
-  sudo -u joinmarket sed -i "s#^    virtualenv -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1#\
-    virtualenv --system-site-packages -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1 ;\
-  /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python -c \'import PySide2\'\
-  #g" install.sh
   # do not stop at installing debian dependencies
   sudo -u joinmarket sed -i \
   "s#^        if ! sudo apt-get install \${deb_deps\[@\]}; then#\
         if ! sudo apt-get install -y \${deb_deps\[@\]}; then#g" install.sh
-  # don't install PySide2 - using the system-site-package instead 
-  sudo -u joinmarket sed -i "s#^PySide2##g" requirements/gui.txt
-  # don't install PyQt5 - using the system package instead 
-  sudo -u joinmarket sed -i "s#^PyQt5==5.14.2##g" requirements/gui.txt
+  if [ ${cpu} != "x86_64" ]; then
+    echo "# Make install.sh set up jmvenv with -- system-site-packages on arm"
+    # and import the PySide2 armf package from the system
+    sudo -u joinmarket sed -i "s#^    virtualenv -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1#\
+      virtualenv --system-site-packages -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1 ;\
+    /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python -c \'import PySide2\'\
+    #g" install.sh
+    # don't install PySide2 - using the system-site-package instead 
+    sudo -u joinmarket sed -i "s#^PySide2##g" requirements/gui.txt
+    # don't install PyQt5 - using the system package instead 
+    sudo -u joinmarket sed -i "s#^PyQt5==5.14.2##g" requirements/gui.txt
+  fi
   sudo -u joinmarket ./install.sh --with-qt
   echo "# installed JoinMarket $JMVersion"
 }
 
 function updateJoininBox() {
 if [ "$1" = "reset" ];then
-  echo "removing the "
+  echo "# Removing the joininbox source code"
   sudo rm -rf /home/joinmarket/joininbox
+  echo "# Downloading the latest joininbox source code"
 fi
 # clone repo in case it is not present
 sudo -u joinmarket git clone https://github.com/openoms/joininbox.git /home/joinmarket/joininbox 2>/dev/null
