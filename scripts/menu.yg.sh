@@ -77,10 +77,10 @@ case $CHOICE in
             name=$(ls -t /home/joinmarket/.joinmarket/logs | grep J5 | head -n 1 | cut -c -16)
             whiptail \
             --title "Counterparty name"  \
-            --msgbox "The last used counterparty name for the offer book:\n
+            --msgbox "The last used counterparty name for the Order Book:\n
 $name\n
-Check if active in:
-https://joinmarket.me/ob" 12 55
+Check if active in: https://joinmarket.me/ob
+or use the local Order Book" 12 55
             echo "Returning to the menu..."
             sleep 1
             /home/joinmarket/menu.yg.sh

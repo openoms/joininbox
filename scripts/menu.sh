@@ -59,7 +59,7 @@ OPTIONS+=(\
   FREEZE "Exercise coin control within a mixdepth" \
   PAYJOIN "Send/Receive between JoinMarket wallets"
   "" ""
-  OFFERS "Watch the Offer Book locally" \
+  OFFERS "Watch the Order Book locally" \
   "" "" 
   CONFIG "Edit the joinmarket.cfg" \
   UPDATE "Update JoininBox or JoinMarket" \
@@ -125,7 +125,7 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       /home/joinmarket/menu.sh
       ;;
   OFFERS)
-      /home/joinmarket/menu.offerbook.sh
+      /home/joinmarket/menu.orderbook.sh
       /home/joinmarket/menu.sh
       ;;
   CONFIG)
