@@ -10,8 +10,8 @@ if [ -f /home/joinmarket/joinin.conf ]; then
 fi
 
 # get settings on first run
-runningEnv=$(grep -c "runningEnv" < /home/joinmarket/joinin.conf)
-if [ "$runningEnv" -eq 0 ]; then
+runningEnvEntry=$(grep -c "runningEnv" < /home/joinmarket/joinin.conf)
+if [ "$runningEnvEntry" -eq 0 ]; then
   if [ -f "/mnt/hdd/raspiblitz.conf" ] ; then
     runningEnv="raspiblitz"
     setupStep=100
@@ -24,14 +24,22 @@ if [ "$runningEnv" -eq 0 ]; then
   echo "# running in the environment: $runningEnv"
 
   # make sure Tor path is known
-  checkDirEntry=$(grep -c "HiddenServiceDir" < /home/joinmarket/joinin.conf)
-  if [ "$checkDirEntry" -eq 0 ]; then
+  DirEntry=$(grep -c "HiddenServiceDir" < /home/joinmarket/joinin.conf)
+  if [ "$DirEntry" -eq 0 ]; then
     if [ -d "/mnt/hdd/tor" ] ; then
       HiddenServiceDir="/mnt/hdd/tor"
     else
       HiddenServiceDir="/var/lib/tor"
     fi  
   echo "HiddenServiceDir=$HiddenServiceDir" >> /home/joinmarket/joinin.conf
+  fi
+
+  # identify cpu architecture
+  cpuEntry=$(grep -c "cpu" < /home/joinmarket/joinin.conf)
+  if [ "$cpuEntry" -eq 0 ]; then
+    cpu=$(sudo uname -m)
+    echo "# cpu=${cpu}"
+    echo "cpu=$cpu" >> /home/joinmarket/joinin.conf
   fi
 fi
 
