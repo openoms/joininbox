@@ -25,34 +25,35 @@ if [ "$EUID" -ne 0 ]; then
  echo "Please run as root (with sudo)"
  exit
 fi
-
 echo 
 echo "###############################"
-echo "# JOININBOX BUILD SCRIPT v0.2 #"
+echo "# JOININBOX BUILD SCRIPT v0.3 #"
 echo "###############################"
 echo 
-
-################################
-# IDENTIFY CPU ARCHITECTURE
-################################
-
+echo 
+echo "###################################"
+echo "# Identify the CPU and base image #"
+echo "###################################"
+echo 
 cpu=$(sudo uname -m)
 echo "# cpu=${cpu}"
-
-echo "# detect Base Image ..." 
 baseImage="?"
 isDietPi=$(uname -n | grep -c 'DietPi')
 isRaspbian=$(cat /etc/os-release 2>/dev/null | grep -c 'Raspbian')
 isArmbian=$(cat /etc/os-release 2>/dev/null | grep -c 'Debian')
-isUbuntu=$(cat /etc/os-release 2>/dev/null | grep -c 'Ubuntu')
+isBionic=$(cat /etc/os-release 2>/dev/null | grep -c 'Bionic')
+isFocal=$(cat /etc/os-release 2>/dev/null | grep -c 'Focal')
 if [ ${isRaspbian} -gt 0 ]; then
   baseImage="raspbian"
 fi
 if [ ${isArmbian} -gt 0 ]; then
   baseImage="armbian"
 fi 
-if [ ${isUbuntu} -gt 0 ]; then
-  baseImage="ubuntu"
+if [ ${isBionic} -gt 0 ]; then
+  baseImage="bionic"
+fi
+if [ ${isFocal} -gt 0 ]; then
+  baseImage="focal"
 fi
 if [ ${isDietPi} -gt 0 ]; then
   baseImage="dietpi"
@@ -66,6 +67,21 @@ else
   echo "# OK running ${baseImage}"
 fi
 
+echo 
+echo "###########################"
+echo "# Cleaning the base image #"
+echo "###########################"
+echo 
+# remove some (big) packages that are not needed
+sudo apt-get remove -y --purge libreoffice* oracle-java* chromium-browser \
+nuscratch scratch sonic-pi minecraft-pi plymouth python2 vlc 2>/dev/null
+
+
+echo 
+echo "############################"
+echo "# Preparing the base image #"
+echo "############################"
+echo 
 if [ "${baseImage}" = "raspbian" ] || [ "${baseImage}" = "dietpi" ] ; then
   # fixing locales for build
   # https://github.com/rootzoll/raspiblitz/issues/138
@@ -85,10 +101,6 @@ if [ "${baseImage}" = "raspbian" ] || [ "${baseImage}" = "dietpi" ] ; then
   sudo rm -rf /home/pi/MagPi
 fi
 
-# remove some (big) packages that are not needed
-sudo apt-get remove -y --purge libreoffice* oracle-java* chromium-browser \
-nuscratch scratch sonic-pi minecraft-pi plymouth python2 vlc 2>/dev/null
-
 if [ -f "/usr/bin/python3.7" ]; then
   # make sure /usr/bin/python exists (and calls Python3.7 in Debian Buster)
   sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
@@ -102,13 +114,6 @@ else
   echo "There is no tested version of python present"
   exit 1
 fi
-
-# update debian
-echo
-echo "# UPDATE DEBIAN "
-sudo apt-get update -y
-sudo apt-get upgrade -f -y
-
 echo
 echo "# PREPARE ${baseImage} "
 
@@ -137,8 +142,7 @@ if [ "${baseImage}" = "raspbian" ]; then
 fi
 
 echo 
-echo "# CONFIG "
-# change log rotates
+echo "# change log rotates"
 # see https://github.com/rootzoll/raspiblitz/issues/394#issuecomment-471535483
 echo "/var/log/syslog" >> ./rsyslog
 echo "{" >> ./rsyslog
@@ -207,8 +211,19 @@ sudo mv ./rsyslog /etc/logrotate.d/rsyslog
 sudo chown root:root /etc/logrotate.d/rsyslog
 sudo service rsyslog restart
 
-echo
-echo "# SOFTWARE UPDATE "
+echo 
+echo "###############################"
+echo "# apt update & upgrade        #"
+echo "###############################"
+echo 
+sudo apt-get update -y
+sudo apt-get upgrade -f -y
+
+echo 
+echo "##########################"
+echo "# Tools and dependencies #"
+echo "##########################"
+echo 
 if [ "${baseImage}" = "armbian" ]; then
   # add armbian config
   sudo apt install armbian-config -y
@@ -245,34 +260,11 @@ sudo apt install -y dialog
 sudo apt-get clean
 sudo apt-get -y autoremove
 
-echo "# add the 'joinmarket' user"
-adduser --disabled-password --gecos "" joinmarket
-
-echo "# clone the joininbox repo and copy the scripts"
-cd /home/joinmarket
-sudo -u joinmarket git clone https://github.com/openoms/joininbox.git
-sudo -u joinmarket cp ./joininbox/scripts/* /home/joinmarket/
-sudo -u joinmarket cp ./joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
-chmod +x /home/joinmarket/*.sh
-
-echo "# set the default password 'joininbox' for the users 'pi', 'joinmarket' and 'root'"
-
-adduser joinmarket sudo
-# chsh joinmarket -s /bin/bash
-# configure sudo for usage without password entry for the joinmarket user
-# https://www.tecmint.com/run-sudo-command-without-password-linux/
-echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
-echo "pi:joininbox" | sudo chpasswd
-echo "root:joininbox" | sudo chpasswd
-echo "joinmarket:joininbox" | sudo chpasswd
-
-# create config file
-sudo -u joinmarket touch /home/joinmarket/joinin.conf
-
-########
-# Tor
-########
-
+echo 
+echo "#######"
+echo "# Tor #"
+echo "#######"
+echo 
 # add default value to joinin config if needed
 checkTorEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | grep -c "runBehindTor")
 if [ ${checkTorEntry} -eq 0 ]; then
@@ -302,9 +294,12 @@ if [ ${torSourceListAvailable} -eq 0 ]; then
   if [ "${baseImage}" = "raspbian" ] || [ "${baseImage}" = "armbian" ] || [ "${baseImage}" = "dietpi" ]; then
     echo "deb https://deb.torproject.org/torproject.org buster main" | sudo tee -a /etc/apt/sources.list
     echo "deb-src https://deb.torproject.org/torproject.org buster main" | sudo tee -a /etc/apt/sources.list
-  elif [ "${baseImage}" = "ubuntu" ]; then
+  elif [ "${baseImage}" = "bionic" ]; then
     echo "deb https://deb.torproject.org/torproject.org bionic main" | sudo tee -a /etc/apt/sources.list
-    echo "deb-src https://deb.torproject.org/torproject.org bionic main" | sudo tee -a /etc/apt/sources.list    
+    echo "deb-src https://deb.torproject.org/torproject.org bionic main" | sudo tee -a /etc/apt/sources.list
+  elif [ "${baseImage}" = "focal" ]; then
+    echo "deb https://deb.torproject.org/torproject.org focal main" | sudo tee -a /etc/apt/sources.list
+    echo "deb-src https://deb.torproject.org/torproject.org focal main" | sudo tee -a /etc/apt/sources.list    
   fi
   echo "OK"
 else
@@ -342,7 +337,7 @@ if [ "$cpu" = "armv6l" ]; then
 
 else
   echo "# INSTALL TOR"
-  apt install -y tor 
+  apt install -y tor || exit 1
 fi
 
 echo "# install torsocks and nyx"
@@ -369,8 +364,11 @@ usermod -a -G debian-tor joinmarket
 # setting value in joinin config
 sed -i "s/^runBehindTor=.*/runBehindTor=on/g" /home/joinmarket/joinin.conf
 
-### Hardening
-echo "# HARDENING"
+echo 
+echo "#############"
+echo "# Hardening #"
+echo "#############"
+echo 
 # install packages
 apt install -y virtualenv fail2ban ufw
 # autostart fail2ban
@@ -405,7 +403,40 @@ sudo bash -c "echo 'source /usr/share/doc/fzf/examples/key-bindings.bash' >> /ho
 # install tmux
 sudo apt -y install tmux
 
-# autostart for joininbox
+echo 
+echo "#############"
+echo "# JoininBox #"
+echo "#############"
+echo 
+echo "# add the 'joinmarket' user"
+adduser --disabled-password --gecos "" joinmarket
+
+echo "# clone the joininbox repo and copy the scripts"
+cd /home/joinmarket
+sudo -u joinmarket git clone https://github.com/openoms/joininbox.git
+sudo -u joinmarket cp ./joininbox/scripts/* /home/joinmarket/
+sudo -u joinmarket cp ./joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
+chmod +x /home/joinmarket/*.sh
+
+echo "# set the default password 'joininbox' for the users 'pi', 'joinmarket' and 'root'"
+
+adduser joinmarket sudo
+# chsh joinmarket -s /bin/bash
+# configure sudo for usage without password entry for the joinmarket user
+# https://www.tecmint.com/run-sudo-command-without-password-linux/
+echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
+echo "pi:joininbox" | sudo chpasswd
+echo "root:joininbox" | sudo chpasswd
+echo "joinmarket:joininbox" | sudo chpasswd
+
+# create config file
+sudo -u joinmarket touch /home/joinmarket/joinin.conf
+
+echo 
+echo "#############"
+echo "# Autostart #"
+echo "#############"
+echo 
 echo "
 if [ -f "/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate" ] ; then
   . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
