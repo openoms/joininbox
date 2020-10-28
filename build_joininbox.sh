@@ -87,7 +87,7 @@ fi
 
 # remove some (big) packages that are not needed
 sudo apt-get remove -y --purge libreoffice* oracle-java* chromium-browser \
-nuscratch scratch sonic-pi minecraft-pi plymouth python2 vlc
+nuscratch scratch sonic-pi minecraft-pi plymouth python2 vlc 2>/dev/null
 
 if [ -f "/usr/bin/python3.7" ]; then
   # make sure /usr/bin/python exists (and calls Python3.7 in Debian Buster)
@@ -104,7 +104,7 @@ else
 fi
 
 # update debian
-echo ""
+echo
 echo "# UPDATE DEBIAN "
 sudo apt-get update -y
 sudo apt-get upgrade -f -y
@@ -136,10 +136,8 @@ if [ "${baseImage}" = "raspbian" ]; then
   sudo sed -i 's/^/fsck.mode=force fsck.repair=yes /g' /boot/cmdline.txt
 fi
 
-echo ""
+echo 
 echo "# CONFIG "
-# based on https://github.com/Stadicus/guides/blob/master/raspibolt/raspibolt_20_pi.md#raspi-config
-
 # change log rotates
 # see https://github.com/rootzoll/raspiblitz/issues/394#issuecomment-471535483
 echo "/var/log/syslog" >> ./rsyslog
@@ -209,35 +207,26 @@ sudo mv ./rsyslog /etc/logrotate.d/rsyslog
 sudo chown root:root /etc/logrotate.d/rsyslog
 sudo service rsyslog restart
 
-echo ""
+echo
 echo "# SOFTWARE UPDATE "
-# based on https://github.com/Stadicus/guides/blob/master/raspibolt/raspibolt_20_pi.md#software-update
-# installs like on RaspiBolt
-sudo apt-get install -y htop git curl bash-completion vim jq dphys-swapfile bsdmainutils
-# installs bandwidth monitoring for future statistics
-sudo apt-get install -y vnstat
-# prepare for BTRFS data drive raid
-sudo apt-get install -y btrfs-progs btrfs-tools
-# network tools
-sudo apt-get install -y autossh telnet
-# prepare for display graphics mode
-# see https://github.com/rootzoll/raspiblitz/pull/334
-sudo apt-get install -y fbi
-# prepare for powertest
-sudo apt install -y sysbench
-# check for dependencies on DietPi, Ubuntu, Armbian
-sudo apt install -y build-essential
-# add armbian-config
 if [ "${baseImage}" = "armbian" ]; then
   # add armbian config
   sudo apt install armbian-config -y
 fi
+sudo apt-get install -y htop git curl bash-completion vim jq bsdmainutils
+# prepare for BTRFS data drive raid
+sudo apt-get install -y btrfs-progs btrfs-tools
+# network tools
+sudo apt-get install -y autossh
+# prepare for display graphics mode
+# see https://github.com/rootzoll/raspiblitz/pull/334
+sudo apt-get install -y fbi
+# check for dependencies on DietPi, Ubuntu, Armbian
+sudo apt install -y build-essential
 # dependencies for python
 sudo apt install -y python3-venv python3-dev python3-wheel python3-jinja2 python3-pip
 # make sure /usr/bin/pip exists (and calls pip3 in Debian Buster)
 sudo update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
-# rsync is needed to copy from HDD
-sudo apt install -y rsync
 # install ifconfig
 sudo apt install -y net-tools
 #to display hex codes
@@ -252,7 +241,7 @@ sudo apt install -y openssh-sftp-server
 # install killall, fuser
 sudo apt-get install -y psmisc
 # dialog
-apt install -y dialog
+sudo apt install -y dialog
 sudo apt-get clean
 sudo apt-get -y autoremove
 
@@ -273,7 +262,6 @@ adduser joinmarket sudo
 # configure sudo for usage without password entry for the joinmarket user
 # https://www.tecmint.com/run-sudo-command-without-password-linux/
 echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
-
 echo "pi:joininbox" | sudo chpasswd
 echo "root:joininbox" | sudo chpasswd
 echo "joinmarket:joininbox" | sudo chpasswd
@@ -304,10 +292,9 @@ if [ ${torKeyAvailable} -eq 0 ]; then
   sudo gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | sudo apt-key add -
   echo "OK"
 else
-  echo "TOR key is available"
+  echo "# TOR key is available"
 fi
-echo ""
-echo "# Adding Tor Sources to sources.list "
+echo "# Adding Tor Sources to sources.list"
 torSourceListAvailable=$(sudo cat /etc/apt/sources.list | grep -c 'https://deb.torproject.org/torproject.org')
 echo "torSourceListAvailable=${torSourceListAvailable}"  
 if [ ${torSourceListAvailable} -eq 0 ]; then
@@ -383,7 +370,7 @@ usermod -a -G debian-tor joinmarket
 sed -i "s/^runBehindTor=.*/runBehindTor=on/g" /home/joinmarket/joinin.conf
 
 ### Hardening
-echo "# HARDENING "
+echo "# HARDENING"
 # install packages
 apt install -y virtualenv fail2ban ufw
 # autostart fail2ban
@@ -436,6 +423,5 @@ fi
 
 echo "# BASE IMAGE IS READY "
 echo 
-echo "# installing JoinMarket"
-
-sudo -u joinmarket /home/joinmarket/install.joinmarket.sh install
+echo "# look through / save this output and continue with:"
+echo "# 'sudo su - joinmarket'"
