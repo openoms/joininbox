@@ -173,7 +173,8 @@ function installJoinMarket() {
   sudo apt install -y python3-pyside2.qtcore python3-pyside2.qtgui \
   python3-pyside2.qtwidgets zlib1g-dev libjpeg-dev python3-pyqt5 libltdl-dev
   # https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/668#issuecomment-717815719
-  sudo -u joinmarket pip install coincurve
+  sudo apt install build-essential automake pkg-config libffi-dev python3-dev libgmp-dev 
+  sudo -u joinmarket pip install libtool asn1crypto cffi pycparser coincurve
   echo "# installing JoinMarket"
   sudo -u joinmarket git clone https://github.com/Joinmarket-Org/joinmarket-clientserver
   cd joinmarket-clientserver
