@@ -40,10 +40,17 @@ source /home/joinmarket/joinin.conf
 if [ "$1" = "install" ]; then
   # install joinmarket
   if [ ! -f "/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate" ] ; then
-    installJoinMarket
+    echo
+    echo "# JoinMarket is not yet installed - proceeding now"
+    echo
+    installJoinMarket  
+    errorOnInstall $?
+    # run config after install
+    /home/joinmarket/install.joinmarket.sh config
   else
-    echo "# JoinMarket is already installed"
-    echo ""
+    echo
+    echo "# JoinMarket $currentJMversion is installed"
+    echo
   fi
   exit 0
 fi
@@ -52,7 +59,7 @@ if [ "$1" = "config" ]; then
   # generate joinmarket.cfg
   if [ ! -f "/home/joinmarket/.joinmarket/joinmarket.cfg" ] ; then
     echo "# generating the joinmarket.cfg"
-    echo ""
+    echo
     . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
     cd /home/joinmarket/joinmarket-clientserver/scripts/
     python wallet-tool.py generate --datadir=/home/joinmarket/.joinmarket
@@ -89,10 +96,10 @@ if [ "$1" = "config" ]; then
 fi
 
 if [ "$1" = "update" ]; then
-  source /home/joinmarket/_functions.sh
   stopYG
   echo "# deleting the old source code (joinmarket-clientserver directory)"
   sudo rm -rf /home/joinmarket/joinmarket-clientserver
   installJoinMarket
+  errorOnInstall $?
   exit 0
 fi

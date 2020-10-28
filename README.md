@@ -44,8 +44,6 @@ A terminal based graphical menu for JoinMarket.
 or  
 log in with ssh to:  
 `joinmarket@LAN_IP_ADDRESS` (the default password is: `joininbox` - will be prompted to change it on the first start)
-
-* Choose `UPDATE` in the menu to install JoinMarket and edit the `joinmarket.cfg` to connect to bitcoind.
 ---
 
 ## More info:

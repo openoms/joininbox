@@ -2,16 +2,13 @@
 
 source /home/joinmarket/_functions.sh
 
-currentJBversion=$(cd $HOME/joininbox; git describe --tags)
-currentJMversion=$(cd $HOME/joinmarket-clientserver; git describe --tags)
-
 # BASIC MENU INFO
 HEIGHT=11
 WIDTH=56
 CHOICE_HEIGHT=2
 TITLE="Update options"
 MENU="
-Current JoininBox version: $currentJBversion
+Current JoininBox version: $currentJBcommit
 Current JoinMarket version: $currentJMversion"
 OPTIONS=()
 BACKTITLE="JoininBox GUI"
@@ -33,6 +30,7 @@ CHOICE=$(dialog --clear \
 case $CHOICE in
   JOININBOX)
       updateJoininBox
+      errorOnInstall $?
       echo ""
       echo "Press ENTER to return to the menu"
       read key

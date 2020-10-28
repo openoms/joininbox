@@ -452,3 +452,4 @@ echo "# BASE IMAGE IS READY "
 echo 
 echo "# look through / save this output and continue with:"
 echo "# 'sudo su - joinmarket'"
+echo

@@ -1,6 +1,9 @@
 #!/bin/bash
 
 walletPath="/home/joinmarket/.joinmarket/wallets/"
+currentJBcommit=$(cd $HOME/joininbox; git describe --tags)
+currentJBtag=$(cd ~/joininbox; git tag | sort -V | tail -1)
+currentJMversion=$(cd $HOME/joinmarket-clientserver; git describe --tags)
 
 # openMenuIfCancelled
 openMenuIfCancelled() {
@@ -19,6 +22,14 @@ case $pressed in
     /home/joinmarket/menu.sh
     exit 1;;
 esac
+}
+
+# errorOnInstall
+errorOnInstall() {
+if [ "$1" -gt 0 ]; then
+  DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
+    --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
+fi
 }
 
 # write password into a file (to be shredded)

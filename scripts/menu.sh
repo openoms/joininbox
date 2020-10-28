@@ -1,39 +1,6 @@
 #!/bin/bash
 
 /home/joinmarket/start.joininbox.sh
-
-# add default value to joinin config if needed
-if ! grep -Eq "^RPCoverTor=" /home/joinmarket/joinin.conf; then
-  echo "RPCoverTor=off" >> /home/joinmarket/joinin.conf
-fi
-
-# check if bitcoin RPC connection is over Tor
-if grep -Eq "^rpc_host = .*.onion" /home/joinmarket/.joinmarket/joinmarket.cfg; then 
-  echo "# RPC over Tor is on"
-  sed -i "s/^RPCoverTor=.*/RPCoverTor=on/g" /home/joinmarket/joinin.conf
-else
-  echo "# RPC over Tor is off"
-  sed -i "s/^RPCoverTor=.*/RPCoverTor=off/g" /home/joinmarket/joinin.conf
-fi
-
-# check if there is only one wallet and make default
-# add default value to joinin config if needed
-if ! grep -Eq "^defaultWallet=" /home/joinmarket/joinin.conf; then
-  echo "defaultWallet=off" >> /home/joinmarket/joinin.conf
-fi
-if [ "$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -cv /)" -gt 1 ]; then
-  echo "# Found more than one wallet file"
-  echo "# Setting defaultWallet to off"
-  sed -i "s#^defaultWallet=.*#defaultWallet=off#g" /home/joinmarket/joinin.conf
-elif [ "$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -cv /)" -eq 1 ]; then
-  onlyWallet=$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -v /)
-  echo "# Found only one wallet file: $onlyWallet"
-  echo "# Using it as default"
-  sed -i "s#^defaultWallet=.*#defaultWallet=$onlyWallet#g" /home/joinmarket/joinin.conf
-fi
-
-currentVersion=$(cd ~/joininbox; git tag | sort -V | tail -1)
-
 source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
@@ -41,8 +8,8 @@ source /home/joinmarket/_functions.sh
 HEIGHT=24
 WIDTH=57
 CHOICE_HEIGHT=20
-BACKTITLE="JoininBox GUI $currentVersion"
-TITLE="JoininBox $currentVersion"
+BACKTITLE="JoininBox GUI $currentJBtag"
+TITLE="JoininBox $currentJBtag"
 MENU="
 Choose from the options:"
 OPTIONS=()
@@ -130,11 +97,6 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       ;;
   CONFIG)
       /home/joinmarket/install.joinmarket.sh config
-      errorOnInstall=$?
-      if [ ${errorOnInstall} -gt 0 ]; then
-        DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
-          --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
-      fi
       echo "Returning to the menu..."
       sleep 1
       /home/joinmarket/menu.sh

@@ -16,26 +16,7 @@ case $CHOICE in
         *) exit 1;;
 esac
 
-if [ ! -f "/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate" ]; then
-  dialog --title "JoinMarket is not installed" --yesno "
-Do you want to install Joinmarket now?" 7 42
-  response=$?
-  echo "response(${response})"
-  if [ "${response}" = "0" ]; then
-    echo "OK - starting JoinMarket installation"
-    /home/joinmarket/install.joinmarket.sh install
-    /home/joinmarket/install.joinmarket.sh config
-    errorOnInstall=$?
-    if [ ${errorOnInstall} -eq 0 ]; then
-      dialog --title "Installed JoinMarket" \
-        --msgbox "\nContinue from the menu or use the command line " 3 50
-    else 
-      DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
-        --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
-    fi
-    menu
-  fi
-fi
+
 
 if [ "${CHOICE}" = "LAN" ]; then
   # get local ip

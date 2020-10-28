@@ -14,7 +14,7 @@ if [ "$cpuEntry" -eq 0 ]; then
   echo "cpu=$cpu" >> /home/joinmarket/joinin.conf
 fi
 
-# get settings on first run
+# get settings on the first run
 runningEnvEntry=$(grep -c "runningEnv" < /home/joinmarket/joinin.conf)
 if [ "$runningEnvEntry" -eq 0 ]; then
   if [ -f "/mnt/hdd/raspiblitz.conf" ] ; then
@@ -44,6 +44,9 @@ if [ "$runningEnvEntry" -eq 0 ]; then
     sudo apt install dialog
   fi
 
+  # check if JoinMarket is installed
+  /home/joinmarket/install.joinmarket.sh install
+  
 fi
 
 source /home/joinmarket/joinin.conf
@@ -82,4 +85,34 @@ elif [ "$runningEnv" = "raspiblitz" ]; then
     sed -i "s/^#usessl = false/usessl = false/g" /home/joinmarket/.joinmarket/joinmarket.cfg
     echo "# edited the joinmarket.cfg to communicate over Tor only"
   fi
+fi
+
+# check bitcoind RPC setting
+# add default value to joinin config if needed
+if ! grep -Eq "^RPCoverTor=" /home/joinmarket/joinin.conf; then
+  echo "RPCoverTor=off" >> /home/joinmarket/joinin.conf
+fi
+# check if bitcoin RPC connection is over Tor
+if grep -Eq "^rpc_host = .*.onion" /home/joinmarket/.joinmarket/joinmarket.cfg; then 
+  echo "# RPC over Tor is on"
+  sed -i "s/^RPCoverTor=.*/RPCoverTor=on/g" /home/joinmarket/joinin.conf
+else
+  echo "# RPC over Tor is off"
+  sed -i "s/^RPCoverTor=.*/RPCoverTor=off/g" /home/joinmarket/joinin.conf
+fi
+
+# check if there is only one wallet and make default
+# add default value to joinin config if needed
+if ! grep -Eq "^defaultWallet=" /home/joinmarket/joinin.conf; then
+  echo "defaultWallet=off" >> /home/joinmarket/joinin.conf
+fi
+if [ "$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -cv /)" -gt 1 ]; then
+  echo "# Found more than one wallet file"
+  echo "# Setting defaultWallet to off"
+  sed -i "s#^defaultWallet=.*#defaultWallet=off#g" /home/joinmarket/joinin.conf
+elif [ "$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -cv /)" -eq 1 ]; then
+  onlyWallet=$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -v /)
+  echo "# Found only one wallet file: $onlyWallet"
+  echo "# Using it as default"
+  sed -i "s#^defaultWallet=.*#defaultWallet=$onlyWallet#g" /home/joinmarket/joinin.conf
 fi
