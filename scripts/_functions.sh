@@ -168,6 +168,8 @@ function installJoinMarket() {
   echo "# installing ARM specific dependencies to run the QT GUI"
   sudo apt install -y python3-pyside2.qtcore python3-pyside2.qtgui \
   python3-pyside2.qtwidgets zlib1g-dev libjpeg-dev python3-pyqt5 libltdl-dev
+  # https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/668#issuecomment-717815719
+  sudo -u joinmarket pip install coincurve
   echo "# installing JoinMarket"
   sudo -u joinmarket git clone https://github.com/Joinmarket-Org/joinmarket-clientserver
   cd joinmarket-clientserver
