@@ -39,13 +39,13 @@ A terminal based graphical menu for JoinMarket.
   sudo bash build_joininbox.sh
   ```
 
-* start the JoininBox menu by changing to the  `joinmarket` user in the terminal:  
+* start the JoininBox menu by changing to the `joinmarket` user in the terminal:  
  `$ sudo su joinmarket`  
 or  
 log in with ssh to:  
-`joinmarket@LAN_IP_ADDRESS`
+`joinmarket@LAN_IP_ADDRESS` (the default password is: `joininbox` - will be prompted to change it on the first start)
 
-* Choose `CONFIG` in the menu to install JoinMarket (on the first run) and edit the `joinmarket.cfg`
+* Choose `UPDATE` in the menu to install JoinMarket and edit the `joinmarket.cfg` to connect to bitcoind.
 ---
 
 ## More info:

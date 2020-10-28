@@ -270,7 +270,6 @@ sudo -u joinmarket cp ./joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
 chmod +x /home/joinmarket/*.sh
 
 echo "# set the default password 'joininbox' for the users 'pi', 'joinmarket' and 'root'"
-
 adduser joinmarket sudo
 # chsh joinmarket -s /bin/bash
 # configure sudo for usage without password entry for the joinmarket user
