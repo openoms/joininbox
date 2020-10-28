@@ -155,7 +155,8 @@ function installJoinMarket() {
   cd /home/joinmarket
   # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
   echo "# installing ARM specific dependencies to run the QT GUI"
-  sudo apt install -y python3-pyside2.qtcore python3-pyside2.qtgui python3-pyside2.qtwidgets zlib1g-dev libjpeg-dev python3-pyqt5
+  sudo apt install -y python3-pyside2.qtcore python3-pyside2.qtgui \
+  python3-pyside2.qtwidgets zlib1g-dev libjpeg-dev python3-pyqt5 libltdl-dev
   echo "# installing JoinMarket"
   sudo -u joinmarket git clone https://github.com/Joinmarket-Org/joinmarket-clientserver
   cd joinmarket-clientserver
