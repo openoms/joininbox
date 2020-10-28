@@ -1,14 +1,9 @@
 #!/bin/bash
-#########################################################################
-# Build your SD card image based on:
-# 
-# Raspberry Pi OS (32-bit) with desktop (2020-05-27)
-# https://www.raspberrypi.org/downloads/raspberry-pi-os/
-# SHA256: b9a5c5321b3145e605b3bcd297ca9ffc350ecb1844880afd8fb75a7589b7bd04
-##########################################################################
-# setup fresh SD card with the image above
+
+#####################################################################
+# setup fresh SD card with a tested image
 # login with SSH and run this script from the root user.
-##########################################################################
+#####################################################################
 
 # The JoininBox Build Script is partially based on:
 # https://github.com/rootzoll/raspiblitz/blob/master/build_sdcard.sh
@@ -39,15 +34,15 @@ cpu=$(sudo uname -m)
 echo "# cpu=${cpu}"
 baseImage="?"
 isDietPi=$(uname -n | grep -c 'DietPi')
-isRaspbian=$(cat /etc/os-release 2>/dev/null | grep -c 'Raspbian')
-isArmbian=$(cat /etc/os-release 2>/dev/null | grep -c 'Debian')
-isBionic=$(cat /etc/os-release 2>/dev/null | grep -c 'Bionic')
-isFocal=$(cat /etc/os-release 2>/dev/null | grep -c 'Focal')
+isRaspbian=$(grep -c 'Raspbian' < /etc/os-release)
+isBuster=$(grep -c 'Buster' < /etc/os-release)
+isBionic=$(grep -c 'Bionic' < /etc/os-release)
+isFocal=$(grep -c 'Focal' < /etc/os-release)
 if [ ${isRaspbian} -gt 0 ]; then
   baseImage="raspbian"
 fi
-if [ ${isArmbian} -gt 0 ]; then
-  baseImage="armbian"
+if [ ${isBuster} -gt 0 ]; then
+  baseImage="buster"
 fi 
 if [ ${isBionic} -gt 0 ]; then
   baseImage="bionic"
@@ -61,7 +56,7 @@ fi
 if [ "${baseImage}" = "?" ]; then
   cat /etc/os-release 2>/dev/null
   echo "# !!! FAIL !!!"
-  echo "# Base Image cannot be detected or is not supported."
+  echo "# Base image cannot be detected or is not supported."
   exit 1
 else
   echo "# OK running ${baseImage}"
@@ -74,15 +69,14 @@ echo "###########################"
 echo 
 # remove some (big) packages that are not needed
 sudo apt-get remove -y --purge libreoffice* oracle-java* chromium-browser \
-nuscratch scratch sonic-pi minecraft-pi plymouth python2 vlc 2>/dev/null
-
+nuscratch scratch sonic-pi minecraft-pi plymouth python2 vlc
 
 echo 
 echo "############################"
 echo "# Preparing the base image #"
 echo "############################"
 echo 
-if [ "${baseImage}" = "raspbian" ] || [ "${baseImage}" = "dietpi" ] ; then
+if [ "${baseImage}" = "raspbian" ] || [ "${baseImage}" = "dietpi" ]; then
   # fixing locales for build
   # https://github.com/rootzoll/raspiblitz/issues/138
   # https://daker.me/2014/10/how-to-fix-perl-warning-setting-locale-failed-in-raspbian.html
@@ -213,7 +207,7 @@ sudo service rsyslog restart
 
 echo 
 echo "###############################"
-echo "# apt update & upgrade        #"
+echo "# Apt update & upgrade        #"
 echo "###############################"
 echo 
 sudo apt-get update -y
@@ -224,7 +218,7 @@ echo "##########################"
 echo "# Tools and dependencies #"
 echo "##########################"
 echo 
-if [ "${baseImage}" = "armbian" ]; then
+if [ "${baseImage}" = "buster" ]||[ "${baseImage}" = "bionic" ]||[ "${baseImage}" = "focal" ]; then
   # add armbian config
   sudo apt install armbian-config -y
 fi
@@ -261,6 +255,35 @@ sudo apt-get clean
 sudo apt-get -y autoremove
 
 echo 
+echo "#############"
+echo "# JoininBox #"
+echo "#############"
+echo 
+echo "# add the 'joinmarket' user"
+adduser --disabled-password --gecos "" joinmarket
+
+echo "# clone the joininbox repo and copy the scripts"
+cd /home/joinmarket
+sudo -u joinmarket git clone https://github.com/openoms/joininbox.git
+sudo -u joinmarket cp ./joininbox/scripts/* /home/joinmarket/
+sudo -u joinmarket cp ./joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
+chmod +x /home/joinmarket/*.sh
+
+echo "# set the default password 'joininbox' for the users 'pi', 'joinmarket' and 'root'"
+
+adduser joinmarket sudo
+# chsh joinmarket -s /bin/bash
+# configure sudo for usage without password entry for the joinmarket user
+# https://www.tecmint.com/run-sudo-command-without-password-linux/
+echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
+echo "pi:joininbox" | sudo chpasswd
+echo "root:joininbox" | sudo chpasswd
+echo "joinmarket:joininbox" | sudo chpasswd
+
+# create config file
+sudo -u joinmarket touch /home/joinmarket/joinin.conf
+
+echo 
 echo "#######"
 echo "# Tor #"
 echo "#######"
@@ -270,75 +293,78 @@ checkTorEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | grep -c "r
 if [ ${checkTorEntry} -eq 0 ]; then
   echo "runBehindTor=off" | sudo tee -a /home/joinmarket/joinin.conf
 fi
-echo "# install the Tor repo"
-echo 
-echo "# Install dirmngr"
-apt install -y dirmngr apt-transport-https
-echo 
 
-echo "# Adding KEYS deb.torproject.org "
-torKeyAvailable=$(sudo gpg --list-keys | grep -c "A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89")
-echo "torKeyAvailable=${torKeyAvailable}"
-if [ ${torKeyAvailable} -eq 0 ]; then
-  curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | sudo gpg --import
-  sudo gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | sudo apt-key add -
-  echo "OK"
-else
-  echo "# TOR key is available"
-fi
-echo "# Adding Tor Sources to sources.list"
-torSourceListAvailable=$(sudo cat /etc/apt/sources.list | grep -c 'https://deb.torproject.org/torproject.org')
-echo "torSourceListAvailable=${torSourceListAvailable}"  
-if [ ${torSourceListAvailable} -eq 0 ]; then
-  echo "Adding TOR sources ..."
-  if [ "${baseImage}" = "raspbian" ] || [ "${baseImage}" = "armbian" ] || [ "${baseImage}" = "dietpi" ]; then
-    echo "deb https://deb.torproject.org/torproject.org buster main" | sudo tee -a /etc/apt/sources.list
-    echo "deb-src https://deb.torproject.org/torproject.org buster main" | sudo tee -a /etc/apt/sources.list
-  elif [ "${baseImage}" = "bionic" ]; then
-    echo "deb https://deb.torproject.org/torproject.org bionic main" | sudo tee -a /etc/apt/sources.list
-    echo "deb-src https://deb.torproject.org/torproject.org bionic main" | sudo tee -a /etc/apt/sources.list
-  elif [ "${baseImage}" = "focal" ]; then
-    echo "deb https://deb.torproject.org/torproject.org focal main" | sudo tee -a /etc/apt/sources.list
-    echo "deb-src https://deb.torproject.org/torproject.org focal main" | sudo tee -a /etc/apt/sources.list    
+torTest=$(curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
+if [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]; then
+  echo "# install the Tor repo"
+  echo 
+  echo "# Install dirmngr"
+  apt install -y dirmngr apt-transport-https
+  echo 
+  echo "# Adding KEYS deb.torproject.org "
+  torKeyAvailable=$(sudo gpg --list-keys | grep -c "A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89")
+  echo "torKeyAvailable=${torKeyAvailable}"
+  if [ ${torKeyAvailable} -eq 0 ]; then
+    curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | sudo gpg --import
+    sudo gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | sudo apt-key add -
+    echo "OK"
+  else
+    echo "# TOR key is available"
   fi
-  echo "OK"
-else
-  echo "TOR sources are available"
-fi
-apt update
-if [ "$cpu" = "armv6l" ]; then
-  # https://2019.www.torproject.org/docs/debian#source
-  echo "# running on armv6l - need to compile Tor from source"
-  apt install -y build-essential fakeroot devscripts
-  apt build-dep -y tor deb.torproject.org-keyring
-  mkdir ~/debian-packages; cd ~/debian-packages
-  apt source tor
-  cd tor-*
-  debuild -rfakeroot -uc -us
-  cd ..
-  dpkg -i tor_*.deb
-  # setup Tor in the backgound
-  # TODO - test if remains in the background after the Tor service is started
-  tor &
-  torTest=$(curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
-  tries=0
-  while [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]
-  do
-    echo "waiting another 10 seconds for Tor"
-    echo "press CTRL + C to abort"
-    sleep 10
-    tries=$((tries+1))
-    if [ $tries = 100 ]; then
-      echo "# FAIL - Tor was not set up successfully"
-      exit 1
+  echo "# Adding Tor Sources to sources.list"
+  torSourceListAvailable=$(sudo cat /etc/apt/sources.list | grep -c 'https://deb.torproject.org/torproject.org')
+  echo "torSourceListAvailable=${torSourceListAvailable}"  
+  if [ ${torSourceListAvailable} -eq 0 ]; then
+    echo "Adding TOR sources ..."
+    if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "armbian" ]||[ "${baseImage}" = "dietpi" ]; then
+      echo "deb https://deb.torproject.org/torproject.org buster main" | sudo tee -a /etc/apt/sources.list
+      echo "deb-src https://deb.torproject.org/torproject.org buster main" | sudo tee -a /etc/apt/sources.list
+    elif [ "${baseImage}" = "bionic" ]; then
+      echo "deb https://deb.torproject.org/torproject.org bionic main" | sudo tee -a /etc/apt/sources.list
+      echo "deb-src https://deb.torproject.org/torproject.org bionic main" | sudo tee -a /etc/apt/sources.list
+    elif [ "${baseImage}" = "focal" ]; then
+      echo "deb https://deb.torproject.org/torproject.org focal main" | sudo tee -a /etc/apt/sources.list
+      echo "deb-src https://deb.torproject.org/torproject.org focal main" | sudo tee -a /etc/apt/sources.list    
     fi
-  done
-  echo "# $torTest"
-
-else
-  echo "# INSTALL TOR"
-  apt install -y tor || exit 1
+    echo "OK"
+  else
+    echo "TOR sources are available"
+  fi
+  apt update
+  if [ "$cpu" = "armv6l" ]; then
+    # https://2019.www.torproject.org/docs/debian#source
+    echo "# running on armv6l - need to compile Tor from source"
+    apt install -y build-essential fakeroot devscripts
+    apt build-dep -y tor deb.torproject.org-keyring
+    mkdir ~/debian-packages; cd ~/debian-packages
+    apt source tor
+    cd tor-*
+    debuild -rfakeroot -uc -us
+    cd ..
+    dpkg -i tor_*.deb
+    # setup Tor in the backgound
+    # TODO - test if remains in the background after the Tor service is started
+    tor &
+  else
+    echo "# INSTALL TOR"
+    apt install -y tor
+  fi
 fi
+
+# test Tor
+tries=0
+while [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]
+do
+  echo "waiting another 10 seconds for Tor"
+  echo "press CTRL + C to abort"
+  sleep 10
+  tries=$((tries+1))
+  if [ $tries = 100 ]; then
+    echo "# FAIL - Tor was not set up successfully"
+    exit 1
+  fi
+done
+echo "# $torTest"
 
 echo "# install torsocks and nyx"
 apt install -y torsocks tor-arm
@@ -405,40 +431,11 @@ sudo apt -y install tmux
 
 echo 
 echo "#############"
-echo "# JoininBox #"
-echo "#############"
-echo 
-echo "# add the 'joinmarket' user"
-adduser --disabled-password --gecos "" joinmarket
-
-echo "# clone the joininbox repo and copy the scripts"
-cd /home/joinmarket
-sudo -u joinmarket git clone https://github.com/openoms/joininbox.git
-sudo -u joinmarket cp ./joininbox/scripts/* /home/joinmarket/
-sudo -u joinmarket cp ./joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
-chmod +x /home/joinmarket/*.sh
-
-echo "# set the default password 'joininbox' for the users 'pi', 'joinmarket' and 'root'"
-
-adduser joinmarket sudo
-# chsh joinmarket -s /bin/bash
-# configure sudo for usage without password entry for the joinmarket user
-# https://www.tecmint.com/run-sudo-command-without-password-linux/
-echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
-echo "pi:joininbox" | sudo chpasswd
-echo "root:joininbox" | sudo chpasswd
-echo "joinmarket:joininbox" | sudo chpasswd
-
-# create config file
-sudo -u joinmarket touch /home/joinmarket/joinin.conf
-
-echo 
-echo "#############"
 echo "# Autostart #"
 echo "#############"
 echo 
 echo "
-if [ -f "/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate" ] ; then
+if [ -f "/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate" ]; then
   . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
   /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python -c \"import PySide2\"
   cd /home/joinmarket/joinmarket-clientserver/scripts/
