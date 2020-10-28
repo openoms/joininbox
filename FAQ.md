@@ -138,6 +138,12 @@ The default password is: `raspberry`
 `$ nano /home/joinmarket/.ssh/authorized_keys`
 
 ### Activate the bitcoind wallet on a RaspiBlitz
+
+Since the RaspiBlitz v1.6 run this script:
+`$ config.scripts/network.wallet.sh on`
+
+To set up manually:
+
 * Edit the bitcoin.conf:  
 `$ sudo nano /mnt/hdd/bitcoin/bitcoin.conf`
     
@@ -145,8 +151,19 @@ The default password is: `raspberry`
     ```
     disablewallet=0
     ```
+* Specify the wallet to be used:
+    ```
+    main.wallet=wallet.dat
+    ```
+    The default setting in JoininBox is to use the `wallet.dat`.   
+    It needs to specified in the `bitcoin.conf` because otherwise when other applications (like Specter) add bitcoind wallets JoinMarket would stop working.
+
 * Restart bitcoind:  
 `$ sudo systemctl restart bitcoind`
+
+
+
+
 
 ### Error when connecting to a full node remotely through Tor
 * Getting the error:
@@ -172,6 +189,9 @@ daemon=1
 txindex=1
 disablewallet=0
 
+main.wallet=wallet.dat
+datadir=/mnt/hdd/bitcoin
+
 # Connection settings
 rpcuser=REDACTED
 rpcpassword=REDACTED
@@ -191,7 +211,7 @@ maxmempool=300
 maxconnections=40
 maxuploadtarget=5000
 
-datadir=/mnt/hdd/bitcoin
+# Tor
 onlynet=onion
 proxy=127.0.0.1:9050
 main.bind=127.0.0.1
