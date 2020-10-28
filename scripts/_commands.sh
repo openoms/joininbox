@@ -5,7 +5,7 @@
 # command: menu
 # calls directly the main menu
 function menu() {
-  $HOME/menu.sh
+  /home/joinmarket/menu.sh
 }
 
 # command: torthistx
@@ -24,12 +24,12 @@ function torthistx() {
 # command: stats
 # shows the uptime and the fees earned as a Maker
 function stats() {
-  $HOME/info.stats.sh
+  /home/joinmarket/info.stats.sh
 }
 
 # command: qtgui
 # starts the JoinMarket-QT GUI
 function qtgui() {
   echo "# opening the JoinMarket-QT GUI with the command: '(jmvenv) python joinmarket-qt.py'"
-  $HOME/joinmarket-clientserver/jmvenv/bin/python $HOME/joinmarket-clientserver/scripts/joinmarket-qt.py
+  /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python /home/joinmarket/joinmarket-clientserver/scripts/joinmarket-qt.py
 }

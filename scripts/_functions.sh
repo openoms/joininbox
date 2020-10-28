@@ -1,9 +1,13 @@
 #!/bin/bash
 
+# paths
 walletPath="/home/joinmarket/.joinmarket/wallets/"
-currentJBcommit=$(cd $HOME/joininbox; git describe --tags)
+
+# versions
+currentJBcommit=$(cd /home/joinmarket/joininbox; git describe --tags)
 currentJBtag=$(cd ~/joininbox; git tag | sort -V | tail -1)
-currentJMversion=$(cd $HOME/joinmarket-clientserver; git describe --tags)
+currentJMversion=$(cd /home/joinmarket/joinmarket-clientserver 2>/dev/null; \
+git describe --tags 2>/dev/null)
 
 # openMenuIfCancelled
 openMenuIfCancelled() {
@@ -113,7 +117,7 @@ function QRinTerminal() {
 
 function feereport() {
 # puts the fees earned as a Maker into variables
-INPUT=$HOME/.joinmarket/logs/yigen-statement.csv
+INPUT=/home/joinmarket/.joinmarket/logs/yigen-statement.csv
 allEarned=0
 allCoinjoins=0
 monthEarned=0
@@ -201,7 +205,8 @@ if [ "$1" = "reset" ];then
   echo "# Downloading the latest joininbox source code"
 fi
 # clone repo in case it is not present
-sudo -u joinmarket git clone https://github.com/openoms/joininbox.git /home/joinmarket/joininbox 2>/dev/null
+sudo -u joinmarket git clone https://github.com/openoms/joininbox.git \
+/home/joinmarket/joininbox 2>/dev/null
 echo "# Checking the updates in https://github.com/openoms/joininbox"
 # based on https://github.com/apotdevin/thunderhub/blob/master/scripts/updateToLatest.sh
 cd /home/joinmarket/joininbox

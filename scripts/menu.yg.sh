@@ -68,7 +68,7 @@ case $CHOICE in
         YGLIST)
             dialog \
             --title "timestamp            cj amount/satoshi  my input count  my input value/satoshi  cjfee/satoshi  earned/satoshi  confirm time/min  notes"  \
-            --prgbox "column $HOME/.joinmarket/logs/yigen-statement.csv -t -s ","" 100 140
+            --prgbox "column /home/joinmarket/.joinmarket/logs/yigen-statement.csv -t -s ","" 100 140
             echo "# returning to the menu..."
             sleep 1
             /home/joinmarket/menu.yg.sh
