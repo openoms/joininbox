@@ -98,11 +98,11 @@ fi
 if [ -f "/usr/bin/python3.7" ]; then
   # make sure /usr/bin/python exists (and calls Python3.7 in Debian Buster)
   sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
-  echo "python calls python3.7"
+  echo "# python calls python3.7"
 elif [ -f "/usr/bin/python3.8" ]; then
   # use python 3.8 if available
   sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
-  echo "python calls python3.8"
+  echo "# python calls python3.8"
 else
   echo "!!! FAIL !!!"
   echo "There is no tested version of python present"
@@ -218,7 +218,8 @@ echo "##########################"
 echo "# Tools and dependencies #"
 echo "##########################"
 echo 
-if [ "${baseImage}" = "buster" ]||[ "${baseImage}" = "bionic" ]||[ "${baseImage}" = "focal" ]; then
+if [ "${baseImage}" = "buster" ]||[ "${baseImage}" = "bionic" ]||\
+[ "${baseImage}" = "focal" ]; then
   # add armbian config
   sudo apt install armbian-config -y
 fi
@@ -233,7 +234,8 @@ sudo apt-get install -y fbi
 # check for dependencies on DietPi, Ubuntu, Armbian
 sudo apt install -y build-essential
 # dependencies for python
-sudo apt install -y python3-venv python3-dev python3-wheel python3-jinja2 python3-pip
+sudo apt install -y python3-venv python3-dev python3-wheel python3-jinja2 \
+python3-pip
 # make sure /usr/bin/pip exists (and calls pip3 in Debian Buster)
 sudo update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 # install ifconfig
@@ -269,7 +271,8 @@ sudo -u joinmarket cp ./joininbox/scripts/* /home/joinmarket/
 sudo -u joinmarket cp ./joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
 chmod +x /home/joinmarket/*.sh
 
-echo "# set the default password 'joininbox' for the users 'pi', 'joinmarket' and 'root'"
+echo "# set the default password 'joininbox' for the users 'pi', \
+'joinmarket' and 'root'"
 adduser joinmarket sudo
 # chsh joinmarket -s /bin/bash
 # configure sudo for usage without password entry for the joinmarket user
@@ -288,30 +291,36 @@ echo "# Tor #"
 echo "#######"
 echo 
 # add default value to joinin config if needed
-checkTorEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | grep -c "runBehindTor")
+checkTorEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | \
+grep -c "runBehindTor")
 if [ ${checkTorEntry} -eq 0 ]; then
   echo "runBehindTor=off" | sudo tee -a /home/joinmarket/joinin.conf
 fi
 
-torTest=$(curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
-if [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]; then
+torTest=$(curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s \
+https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
+if [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]
+then
   echo "# install the Tor repo"
   echo 
   echo "# Install dirmngr"
   apt install -y dirmngr apt-transport-https
   echo 
   echo "# Adding KEYS deb.torproject.org "
-  torKeyAvailable=$(sudo gpg --list-keys | grep -c "A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89")
+  torKeyAvailable=$(sudo gpg --list-keys | grep -c \
+  "A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89")
   echo "torKeyAvailable=${torKeyAvailable}"
   if [ ${torKeyAvailable} -eq 0 ]; then
-    curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | sudo gpg --import
+    curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | \
+    sudo gpg --import
     sudo gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | sudo apt-key add -
     echo "OK"
   else
-    echo "# TOR key is available"
+    echo "# Tor key is available"
   fi
   echo "# Adding Tor Sources to sources.list"
-  torSourceListAvailable=$(sudo cat /etc/apt/sources.list | grep -c 'https://deb.torproject.org/torproject.org')
+  torSourceListAvailable=$(sudo cat /etc/apt/sources.list | grep -c \
+  'https://deb.torproject.org/torproject.org')
   echo "torSourceListAvailable=${torSourceListAvailable}"  
   if [ ${torSourceListAvailable} -eq 0 ]; then
     echo "Adding TOR sources ..."
@@ -327,7 +336,7 @@ if [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]; 
     fi
     echo "OK"
   else
-    echo "TOR sources are available"
+    echo "Tor sources are available"
   fi
   apt update
   if [ "$cpu" = "armv6l" ]; then
@@ -345,7 +354,7 @@ if [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]; 
     # TODO - test if remains in the background after the Tor service is started
     tor &
   else
-    echo "# INSTALL TOR"
+    echo "# Install Tor"
     apt install -y tor
   fi
 fi
@@ -354,14 +363,16 @@ fi
 tries=0
 while [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]
 do
-  echo "waiting another 10 seconds for Tor"
-  echo "press CTRL + C to abort"
+  echo "# waiting another 10 seconds for Tor"
+  echo "# press CTRL + C to abort"
   sleep 10
   tries=$((tries+1))
   if [ $tries = 100 ]; then
     echo "# FAIL - Tor was not set up successfully"
     exit 1
   fi
+  torTest=$(curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s \
+  https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
 done
 echo "# $torTest"
 
@@ -423,7 +434,8 @@ sudo chmod -R 700 /home/joinmarket/.ssh
 
 # install a command-line fuzzy finder (https://github.com/junegunn/fzf)
 sudo apt -y install fzf
-sudo bash -c "echo 'source /usr/share/doc/fzf/examples/key-bindings.bash' >> /home/joinmarket/.bashrc"
+sudo bash -c "echo 'source /usr/share/doc/fzf/examples/key-bindings.bash' >> \
+/home/joinmarket/.bashrc"
 
 # install tmux
 sudo apt -y install tmux
@@ -448,7 +460,7 @@ if [ -z \"\$TMUX\" ]; then
 fi
 " | sudo -u joinmarket tee -a /home/joinmarket/.bashrc
 
-echo "# BASE IMAGE IS READY "
+echo "# THE BASE IMAGE IS READY "
 echo 
 echo "# look through / save this output and continue with:"
 echo "# 'sudo su - joinmarket'"
