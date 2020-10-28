@@ -21,25 +21,24 @@ _temp="./dialog.$$"
 # 1. parameter [?newpassword]
 newPassword=$1
 
-############################
-
 # if no password given by parameter - ask by dialog
 if [ ${#newPassword} -eq 0 ]; then
   # ask user for new password A (first time)
-  dialog --backtitle "JoinInBox - Password Change"\
+  DIALOGRC=.dialogrc dialog --backtitle "JoininBox - Password Change"\
   --title "JoininBox - Password Change"\
   --insecure --passwordbox "
 Set a new password for the users:
   'joinmarket' and 'root'
-(use at least 8 characters)" 10 45 2>$_temp
+(use at least 8 characters)" 10 40 2>$_temp
   
   # get user input
   password1=$( cat $_temp )
   shred $_temp
   
   # ask user for new password A (second time)
-  dialog --backtitle "JoininBox - Password Change"\
-     --insecure --passwordbox "Re-enter the password:\n(This is the new password to login via SSH)" 9 56 2>$_temp
+  DIALOGRC=.dialogrc dialog --backtitle "JoininBox - Password Change"\
+  --insecure \
+  --passwordbox "Re-enter the password:\n(This is the new password to login via SSH)" 9 56 2>$_temp
   
   # get user input
   password2=$( cat $_temp )
@@ -47,21 +46,27 @@ Set a new password for the users:
   
   # check if passwords match
   if [ "${password1}" != "${password2}" ]; then
-    DIALOGRC=.dialogrc.onerror dialog --backtitle "JoinInBox - Password Change" --msgbox "FAIL -> Passwords don't match\nPlease try again ..." 6 56
+    DIALOGRC=.dialogrc.onerror dialog \
+    --backtitle "JoininBox - Password Change" \
+    --msgbox "FAIL -> Passwords don't match\nPlease try again ..." 6 56
     sudo /home/joinmarket/set.password.sh
     exit 1
   fi
   
   # password zero
   if [ ${#password1} -eq 0 ]; then
-    DIALOGRC=.dialogrc.onerror dialog --backtitle "JoinInBox - Password Change" --msgbox "FAIL -> Password cannot be empty\nPlease try again ..." 6 56
+    DIALOGRC=.dialogrc.onerror dialog \
+    --backtitle "JoininBox - Password Change" \
+    --msgbox "FAIL -> Password cannot be empty\nPlease try again ..." 6 56
     sudo /home/joinmarket/set.password.sh
     exit 1
   fi
   
   # password longer than 8
   if [ ${#password1} -lt 8 ]; then
-    DIALOGRC=.dialogrc.onerror dialog --backtitle "JoinInBox - Password Change" --msgbox "FAIL -> Password length under 8\nPlease try again ..." 6 56
+    DIALOGRC=.dialogrc.onerror dialog \
+    --backtitle "JoininBox - Password Change" \
+    --msgbox "FAIL -> Password length under 8\nPlease try again ..." 6 56
     sudo /home/joinmarket/set.password.sh
     exit 1
   fi
@@ -81,7 +86,7 @@ if [ "$(compgen -u | grep -c pi)" -gt 0 ]; then
 fi
 
 sleep 1
-dialog --backtitle "JoininBox - Password Change" \
+DIALOGRC=.dialogrc dialog --backtitle "JoininBox - Password Change" \
 --msgbox "OK - changed the password for the users:
   'joinmarket', 'root' $piUser" 6 45
 
