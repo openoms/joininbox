@@ -18,9 +18,10 @@ A terminal based graphical menu for JoinMarket.
 </p>
 
 * Test environments:
-  * Hardkernel Odroid XU4 running Armbian (32 bit)
-  * Raspberry Pi Zero, 3 and 4 running Raspberry OS (32 bit)
-  * Debian Buster desktop
+  * Hardkernel Odroid XU4 running 32 bit Armbian Buster
+  * Hardkernel Odroid C4 running 64bit Armbian Focal and Buster
+  * Raspberry Pi Zero, 3 and 4 running Raspberry OS (32 bit Buster)
+  * Debian Buster X86_64 desktop
   * Connected to a RaspiBlitz >1.4 (any Bitcoin Core node can work, including previous RaspiBlitz versions)
 
 ### Install and set up the base image

@@ -31,16 +31,13 @@ echo "# Identify the CPU and base image #"
 echo "###################################"
 echo 
 cpu=$(sudo uname -m)
-echo "# cpu=${cpu}"
+echo "# CPU: ${cpu}"
 baseImage="?"
+isBuster=$(grep -c 'buster' < /etc/os-release)
+isBionic=$(grep -c 'bionic' < /etc/os-release)
+isFocal=$(grep -c 'focal' < /etc/os-release)
 isDietPi=$(uname -n | grep -c 'DietPi')
 isRaspbian=$(grep -c 'Raspbian' < /etc/os-release)
-isBuster=$(grep -c 'Buster' < /etc/os-release)
-isBionic=$(grep -c 'Bionic' < /etc/os-release)
-isFocal=$(grep -c 'Focal' < /etc/os-release)
-if [ ${isRaspbian} -gt 0 ]; then
-  baseImage="raspbian"
-fi
 if [ ${isBuster} -gt 0 ]; then
   baseImage="buster"
 fi 
@@ -53,13 +50,16 @@ fi
 if [ ${isDietPi} -gt 0 ]; then
   baseImage="dietpi"
 fi
+if [ ${isRaspbian} -gt 0 ]; then
+  baseImage="raspbian"
+fi
 if [ "${baseImage}" = "?" ]; then
   cat /etc/os-release 2>/dev/null
   echo "# !!! FAIL !!!"
   echo "# Base image cannot be detected or is not supported."
   exit 1
 else
-  echo "# OK running ${baseImage}"
+  echo "# Base image: ${baseImage}"
 fi
 
 echo 
@@ -315,7 +315,7 @@ if [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]; 
   echo "torSourceListAvailable=${torSourceListAvailable}"  
   if [ ${torSourceListAvailable} -eq 0 ]; then
     echo "Adding TOR sources ..."
-    if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "armbian" ]||[ "${baseImage}" = "dietpi" ]; then
+    if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "buster" ]||[ "${baseImage}" = "dietpi" ]; then
       echo "deb https://deb.torproject.org/torproject.org buster main" | sudo tee -a /etc/apt/sources.list
       echo "deb-src https://deb.torproject.org/torproject.org buster main" | sudo tee -a /etc/apt/sources.list
     elif [ "${baseImage}" = "bionic" ]; then
