@@ -36,6 +36,8 @@ A terminal based graphical menu for JoinMarket.
   ```bash 
   # download
   wget https://raw.githubusercontent.com/openoms/joininbox/master/build_joininbox.sh
+  # inspect the script
+  cat build_joininbox.sh
   # run
   sudo bash build_joininbox.sh
   ```
