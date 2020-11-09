@@ -214,7 +214,13 @@ function installJoinMarket() {
     # don't install PyQt5 - using the system package instead 
     sudo -u joinmarket sed -i "s#^PyQt5==5.14.2##g" requirements/gui.txt
   fi
-  sudo -u joinmarket ./install.sh --with-qt
+  if [ "$1" = "update" ] || [ "$1" = "testPR" ]; then
+    # build the Qt GUI, do not run libsecp256k1 test
+    sudo -u joinmarket ./install.sh --with-qt --disable-secp-check 
+  else
+    # build the Qt GUI
+    sudo -u joinmarket ./install.sh --with-qt
+  fi
   echo "# installed JoinMarket $JMVersion"
 }
 
