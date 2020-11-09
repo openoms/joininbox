@@ -85,6 +85,9 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       ;;
   FREEZE)
       /home/joinmarket/menu.freeze.sh
+      echo ""
+      echo "Press ENTER to return to the menu..."
+      read key
       /home/joinmarket/menu.sh
       ;;
   PAYJOIN)
