@@ -164,9 +164,10 @@ JMUptimeInSeconds=$(ps -p $JMpid -oetime= 2>/dev/null | tr '-' ':' | awk -F: '{ 
 JMUptime=$(printf '%dd:%dh:%dm\n' $((JMUptimeInSeconds/86400)) $((JMUptimeInSeconds%86400/3600)) $((JMUptimeInSeconds%3600/60)))
 }
 
+
+# installJoinMarket [update|testPR <PRnumber>]
 function installJoinMarket() {
   source /home/joinmarket/joinin.conf
-  JMVersion="v0.7.2"
   cd /home/joinmarket
   # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
   echo "# installing ARM specific dependencies to run the QT GUI"
@@ -176,13 +177,31 @@ function installJoinMarket() {
   sudo apt -y install build-essential automake pkg-config libffi-dev python3-dev libgmp-dev 
   sudo -u joinmarket pip install libtool asn1crypto cffi pycparser coincurve
   echo "# installing JoinMarket"
+  
+  if [ "$1" = "update" ] || [ "$1" = "testPR" ]; then
+    echo "# deleting the old source code (joinmarket-clientserver directory)"
+    sudo rm -rf /home/joinmarket/joinmarket-clientserver
+  fi
+  
   sudo -u joinmarket git clone https://github.com/Joinmarket-Org/joinmarket-clientserver
   cd joinmarket-clientserver
-  sudo -u joinmarket git reset --hard $JMVersion
+  
+  if [ "$1" = "testPR" ]; then
+    PRnumber=$2
+    echo "# using the PR:"
+    echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber"
+    git fetch origin pull/$PRnumber/head:pr$PRnumber
+    git checkout pr$PRnumber
+  else
+    JMVersion="v0.7.2"
+    sudo -u joinmarket git reset --hard $JMVersion
+  fi
+
   # do not stop at installing debian dependencies
   sudo -u joinmarket sed -i \
   "s#^        if ! sudo apt-get install \${deb_deps\[@\]}; then#\
         if ! sudo apt-get install -y \${deb_deps\[@\]}; then#g" install.sh
+  
   if [ ${cpu} != "x86_64" ]; then
     echo "# Make install.sh set up jmvenv with -- system-site-packages on arm"
     # and import the PySide2 armf package from the system
