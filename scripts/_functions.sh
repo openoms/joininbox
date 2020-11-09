@@ -224,6 +224,7 @@ function installJoinMarket() {
   echo "# installed JoinMarket $JMVersion"
 }
 
+# updateJoininBox <reset|commit>
 function updateJoininBox() {
 if [ "$1" = "reset" ];then
   echo "# Removing the joininbox source code"
@@ -238,6 +239,8 @@ echo "# Checking the updates in https://github.com/openoms/joininbox"
 cd /home/joinmarket/joininbox
 # fetch latest master
 sudo -u joinmarket git fetch
+echo "# Pulling latest changes..."
+sudo -u joinmarket git pull -p
 if [ "$1" = "commit" ]; then
   TAG=$(git describe --tags)
   echo "# Updating to the latest commit in the default branch"
@@ -253,8 +256,6 @@ else
     exit 0
   fi
 fi
-echo "# Pulling latest changes..."
-sudo -u joinmarket git pull -p
 sudo -u joinmarket git reset --hard $TAG
 echo "# Updated to version" $TAG
 echo "# Copying the scripts in place"
