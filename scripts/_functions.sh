@@ -193,7 +193,7 @@ function installJoinMarket() {
     git fetch origin pull/$PRnumber/head:pr$PRnumber
     git checkout pr$PRnumber
   else
-    JMVersion="v0.7.2"
+    JMVersion="v0.8.0"
     sudo -u joinmarket git reset --hard $JMVersion
   fi
 
