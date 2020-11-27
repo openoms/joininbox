@@ -46,18 +46,20 @@ A terminal based graphical menu for JoinMarket.
  `$ sudo su joinmarket`  
 or  
 log in with ssh to:  
-`joinmarket@LAN_IP_ADDRESS` (the default password is: `joininbox` - will be prompted to change it on the first start)
+`joinmarket@LAN_IP_ADDRESS`  
+the default password is: `joininbox` - will be prompted to change it on the first start
 ---
 
-## More info:
+## More info
 
+* Video demonstration of [running JoinMarket with JoininBox on the RaspiBlitz](https://www.youtube.com/watch?v=uGHRjilMhwY)
 * How to [prepare a remote node to accept the JoinMarket connection](prepare_remote_node.md)
-* Manual instructions on how to [build the JoininBox](build_joininbox.md)
 * [Frequently Asked Questions and notes](FAQ.md)
 * [JoinMarket on the RaspiBlitz guide](https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/README.md)
 * [Connect JoinMarket running on a Linux desktop to a remote node](https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/joinmarket_desktop_to_blitz.md)
+* Instructions on how to [build the JoininBox](build_joininbox.md) step-by-step manually
 
-## Forums:
+## Forums
 
 * Keybase: https://keybase.io/team/raspiblitz#joinmarket  
 * Telegram: https://t.me/joinmarketorg  
