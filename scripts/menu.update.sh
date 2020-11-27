@@ -3,9 +3,9 @@
 source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
-HEIGHT=11
+HEIGHT=12
 WIDTH=56
-CHOICE_HEIGHT=2
+CHOICE_HEIGHT=3
 TITLE="Update options"
 MENU="
 Current JoininBox version: $currentJBcommit
@@ -17,6 +17,7 @@ BACKTITLE="JoininBox GUI"
 OPTIONS+=(\
   JOININBOX "Update the JoininBox scripts and menu" \
   JOINMARKET "Update/reinstall JoinMarket to $(grep JMVersion= < ~/_functions.sh | cut -d '"' -f 2)" \
+  ADVANCED "Advanced update options" \
 )
 
 CHOICE=$(dialog --clear \
@@ -31,14 +32,17 @@ case $CHOICE in
   JOININBOX)
       updateJoininBox
       errorOnInstall $?
-      echo ""
+      echo
       echo "Press ENTER to return to the menu"
       read key
       ;;
   JOINMARKET)
       /home/joinmarket/install.joinmarket.sh update
-      echo ""
+      echo
       echo "Press ENTER to return to the menu"
       read key
-      ;;              
+      ;;
+  ADVANCED)
+      /home/joinmarket/menu.update.advanced.sh
+      ;;
 esac

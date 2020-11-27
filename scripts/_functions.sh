@@ -226,6 +226,7 @@ function installJoinMarket() {
 
 # updateJoininBox <reset|commit>
 function updateJoininBox() {
+cd /home/joinmarket
 if [ "$1" = "reset" ];then
   echo "# Removing the joininbox source code"
   sudo rm -rf /home/joinmarket/joininbox
@@ -253,6 +254,9 @@ else
   REMOTE=$(git rev-parse "$UPSTREAM")
   if [ $LOCAL = $REMOTE ]; then
     echo "# You are up-to-date on version" $TAG
+    echo
+    echo "Press ENTER to return to the menu"
+    read key
     exit 0
   fi
 fi
