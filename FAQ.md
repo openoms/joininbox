@@ -108,7 +108,7 @@ https://downloads.raspberrypi.org/raspios_armhf/images/raspios_armhf-2020-05-28/
 https://downloads.raspberrypi.org/raspios_armhf/images/raspios_armhf-2020-05-28/2020-05-27-raspios-buster-armhf.zip.sig
 
 * Import PGP pubkey:  
-`wget https://www.raspberrypi.org/raspberrypi_downloads.gpg.key | gpg --import`
+`curl https://www.raspberrypi.org/raspberrypi_downloads.gpg.key | gpg --import`
 
 * Verify the image:  
 `gpg --verify 2020-05-27-raspios-buster-armhf.zip.sig`
