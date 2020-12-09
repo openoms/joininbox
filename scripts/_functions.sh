@@ -210,9 +210,9 @@ function installJoinMarket() {
     /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python -c \'import PySide2\'\
     #g" install.sh
     # don't install PySide2 - using the system-site-package instead 
-    sudo -u joinmarket sed -i "s#^PySide2##g" requirements/gui.txt
+    sudo -u joinmarket sed -i "s#^PySide2.*##g" requirements/gui.txt
     # don't install PyQt5 - using the system package instead 
-    sudo -u joinmarket sed -i "s#^PyQt5==5.14.2##g" requirements/gui.txt
+    sudo -u joinmarket sed -i "s#^PyQt5.*##g" requirements/gui.txt
   fi
   if [ "$1" = "update" ] || [ "$1" = "testPR" ]; then
     # build the Qt GUI, do not run libsecp256k1 test
