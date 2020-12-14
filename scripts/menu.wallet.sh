@@ -49,7 +49,7 @@ case $CHOICE in
   HISTORY)
       # wallet
       chooseWallet
-      /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) history
+      /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) history -v 4
       echo ""
       echo "Press ENTER to return to the menu"
       read key
