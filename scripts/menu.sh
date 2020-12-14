@@ -5,9 +5,9 @@ source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
-HEIGHT=24
+HEIGHT=25
 WIDTH=57
-CHOICE_HEIGHT=20
+CHOICE_HEIGHT=21
 BACKTITLE="JoininBox GUI $currentJBtag"
 TITLE="JoininBox $currentJBtag"
 MENU="
@@ -29,10 +29,11 @@ OPTIONS+=(\
   OFFERS "Watch the Order Book locally" \
   "" "" 
   CONFIG "Edit the joinmarket.cfg" \
+  TOOLS "Use other tools and extras"
   UPDATE "Update JoininBox or JoinMarket" \
   "" "" 
   X "Exit to the Command Line" \
-  #CONNECT "Connect to a remote bitcoind"
+  #CONNECT "Connect to a remote bitcoind" \
   #TUMBLER "Run the Tumbler to mix quickly" \
 )
 
@@ -104,7 +105,9 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       sleep 1
       /home/joinmarket/menu.sh
       ;;
-  CONNECT) 
+  TOOLS)
+      /home/joinmarket/menu.tools.sh
+      /home/joinmarket/menu.sh
       ;;
   UPDATE)
       /home/joinmarket/menu.update.sh
