@@ -1,6 +1,10 @@
 #!/bin/bash
 
+source /home/joinmarket/_functions.sh
+
 clear
+
+generateJMconfig
 
 echo "See how to prepare a remote node to accept the JoinMarket connection:"
 echo "https://github.com/openoms/joininbox/blob/master/prepare_remote_node.md#prepare-a-remote-node-to-accept-the-joinmarket-connection"  
