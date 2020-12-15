@@ -47,8 +47,15 @@ if [ "$runningEnvEntry" -eq 0 ]; then
   # check if JoinMarket is installed
   /home/joinmarket/install.joinmarket.sh install
   
+  # connect to remote node
+  /home/joinmarket/menu.bitcoinrpc.sh
+
+  # run config after install
+  /home/joinmarket/install.joinmarket.sh config
+  
 fi
 
+source /home/joinmarket/_functions.sh
 source /home/joinmarket/joinin.conf
 
 if [ "$runningEnv" = "standalone" ]; then
@@ -58,33 +65,20 @@ if [ "$runningEnv" = "standalone" ]; then
     sudo sed -i  "s#setupStep=.*#setupStep=100#g" /home/joinmarket/joinin.conf
   fi
 elif [ "$runningEnv" = "raspiblitz" ]; then
-  # check for the joinmarket.cfg
-  if [ ! -f "/home/joinmarket/.joinmarket/joinmarket.cfg" ]; then
-    echo " # generating the joinmarket.cfg"
-    echo ""
-    . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
-    cd /home/joinmarket/joinmarket-clientserver/scripts/
-    python wallet-tool.py generate --datadir=/home/joinmarket/.joinmarket
-    sudo chmod 600 /home/joinmarket/.joinmarket/joinmarket.cfg || exit 1
-    echo ""
-    echo "# editing the joinmarket.cfg"
-    sed -i "s/^rpc_user =.*/rpc_user = raspibolt/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    PASSWORD_B=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
-    sed -i "s/^rpc_password =.*/rpc_password = $PASSWORD_B/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    echo "# filled the bitcoin RPC password (PASSWORD_B)"
-    sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    echo "# using the bitcoind wallet: wallet.dat"
-    #communicate with IRC servers via Tor
-    sed -i "s/^host = irc.darkscience.net/#host = irc.darkscience.net/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    sed -i "s/^#host = darksci3bfoka7tw.onion/host = darksci3bfoka7tw.onion/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    sed -i "s/^host = irc.hackint.org/#host = irc.hackint.org/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    sed -i "s/^#host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion/host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    sed -i "s/^socks5 = false/#socks5 = false/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    sed -i "s/^#socks5 = true/socks5 = true/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    sed -i "s/^#port = 6667/port = 6667/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    sed -i "s/^#usessl = false/usessl = false/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    echo "# edited the joinmarket.cfg to communicate over Tor only"
-  fi
+
+  generateJMconfig
+  
+  echo
+  echo "# editing the joinmarket.cfg"
+  sed -i "s/^rpc_user =.*/rpc_user = raspibolt/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+  PASSWORD_B=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+  sed -i "s/^rpc_password =.*/rpc_password = $PASSWORD_B/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+  echo "# filled the bitcoin RPC password (PASSWORD_B)"
+  sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+  echo "# using the bitcoind wallet: wallet.dat"
+
+  setIRCtoTor
+  
 fi
 
 # check bitcoind RPC setting

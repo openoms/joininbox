@@ -446,7 +446,7 @@ echo "# Autostart #"
 echo "#############"
 echo 
 echo "
-if [ -f "/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate" ]; then
+if [ -f \"/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate\" ]; then
   . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
   /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python -c \"import PySide2\"
   cd /home/joinmarket/joinmarket-clientserver/scripts/
