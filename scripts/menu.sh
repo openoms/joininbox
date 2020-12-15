@@ -29,7 +29,7 @@ OPTIONS+=(\
   OFFERS "Watch the Order Book locally" \
   "" "" 
   CONFIG "Edit the joinmarket.cfg" \
-  TOOLS "Use other tools and extras"
+  TOOLS "Extra helper functions and Boltzmann"
   UPDATE "Update JoininBox or JoinMarket" \
   "" "" 
   X "Exit to the Command Line" \

@@ -2,19 +2,18 @@
 
 import configparser
 import os
-import signal
 import sys
 import getopt
 
 def main(argv):
 
-    description = "\nBoltzmann - \n\
+    description = "\nBoltzmann - https://code.samourai.io/oxt/boltzmann/\n\
 A python script computing the entropy of Bitcoin transactions and the linkability of their inputs and outputs.\n\
 For a description of the metrics:\n\
 Bitcoin Transactions & Privacy (part 1) : https://gist.github.com/LaurentMT/e758767ca4038ac40aaf\n\
 Bitcoin Transactions & Privacy (part 2) : https://gist.github.com/LaurentMT/d361bca6dc52868573a2\n\
 Bitcoin Transactions & Privacy (part 3) : https://gist.github.com/LaurentMT/e8644d5bc903f02613c6\n"
-    
+    os.system('clear')
     print(description)
 
     txids = ''
