@@ -9,9 +9,10 @@
 # https://github.com/rootzoll/raspiblitz/blob/master/build_sdcard.sh
 
 # command info
-if [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
  echo "JoininBox Build Script" 
- echo "sudo build_joininbox.sh"
+ echo "Usage: sudo bash build_joininbox.sh [branch] [github user]"
+ echo "Example: sudo bash bash build_joininbox.sh dev openoms"
  exit 1
 fi
 
@@ -20,11 +21,30 @@ if [ "$EUID" -ne 0 ]; then
  echo "Please run as root (with sudo)"
  exit
 fi
+
 echo 
 echo "###############################"
 echo "# JOININBOX BUILD SCRIPT v0.3 #"
 echo "###############################"
 echo 
+
+echo "# Check the command options"
+wantedBranch="$1"
+if [ ${#wantedBranch} -eq 0 ]; then
+  wantedBranch="master"
+fi
+
+githubUser="$2"
+if [ ${#githubUser} -eq 0 ]; then
+  githubUser="openoms"
+fi
+
+echo "Installing JoininBox from the ${wantedBranch} branch of \
+https://github.com/${githubUser}/joininbox.git
+
+Press ENTER to confirm or CTRL+C to exit"
+read key
+
 echo 
 echo "###################################"
 echo "# Identify the CPU and base image #"
@@ -266,7 +286,7 @@ adduser --disabled-password --gecos "" joinmarket
 
 echo "# clone the joininbox repo and copy the scripts"
 cd /home/joinmarket
-sudo -u joinmarket git clone https://github.com/openoms/joininbox.git
+sudo -u joinmarket git clone -b ${wantedBranch} https://github.com/${githubUser}/joininbox.git
 sudo -u joinmarket cp ./joininbox/scripts/* /home/joinmarket/
 sudo -u joinmarket cp ./joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
 chmod +x /home/joinmarket/*.sh
