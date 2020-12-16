@@ -39,10 +39,11 @@ if [ ${#githubUser} -eq 0 ]; then
   githubUser="openoms"
 fi
 
-echo "Installing JoininBox from the ${wantedBranch} branch of \
-https://github.com/${githubUser}/joininbox.git
+echo "
+# Installing JoininBox from: 
+# https://github.com/${githubUser}/joininbox/tree/${wantedBranch}
 
-Press ENTER to confirm or CTRL+C to exit"
+# Press ENTER to confirm or CTRL+C to exit"
 read key
 
 echo 
@@ -83,15 +84,6 @@ else
 fi
 
 echo 
-echo "###########################"
-echo "# Cleaning the base image #"
-echo "###########################"
-echo 
-# remove some (big) packages that are not needed
-sudo apt-get remove -y --purge libreoffice* oracle-java* chromium-browser \
-nuscratch scratch sonic-pi minecraft-pi plymouth python2 vlc
-
-echo 
 echo "############################"
 echo "# Preparing the base image #"
 echo "############################"
@@ -130,12 +122,6 @@ else
 fi
 echo
 echo "# PREPARE ${baseImage} "
-
-# special prepare when DietPi
-if [ "${baseImage}" = "dietpi" ]; then
-  echo "# renaming dietpi user to pi"
-  sudo usermod -l pi dietpi
-fi
 
 # special prepare when Raspbian
 if [ "${baseImage}" = "raspbian" ]; then
@@ -244,10 +230,6 @@ if [ "${baseImage}" = "buster" ]||[ "${baseImage}" = "bionic" ]||\
   sudo apt install armbian-config -y
 fi
 sudo apt-get install -y htop git curl bash-completion vim jq bsdmainutils
-# prepare for BTRFS data drive raid
-sudo apt-get install -y btrfs-progs btrfs-tools
-# network tools
-sudo apt-get install -y autossh
 # prepare for display graphics mode
 # see https://github.com/rootzoll/raspiblitz/pull/334
 sudo apt-get install -y fbi
@@ -260,15 +242,12 @@ python3-pip
 sudo update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 # install ifconfig
 sudo apt install -y net-tools
-#to display hex codes
+# to display hex codes
 sudo apt install -y xxd
 # setuptools needed for Nyx
 sudo pip install setuptools
-# netcat for 00infoBlitz.sh
+# netcat
 sudo apt install -y netcat
-# install OpenSSH client + server
-sudo apt install -y openssh-client
-sudo apt install -y openssh-sftp-server
 # install killall, fuser
 sudo apt-get install -y psmisc
 # dialog
