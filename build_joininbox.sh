@@ -277,9 +277,11 @@ adduser joinmarket sudo
 # configure sudo for usage without password entry for the joinmarket user
 # https://www.tecmint.com/run-sudo-command-without-password-linux/
 echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
-echo "pi:joininbox" | sudo chpasswd
 echo "root:joininbox" | sudo chpasswd
 echo "joinmarket:joininbox" | sudo chpasswd
+if [ $(grep -c pi  < /etc/passwd) -gt 0 ];then
+  echo "pi:joininbox" | sudo chpasswd
+fi
 
 # create config file
 sudo -u joinmarket touch /home/joinmarket/joinin.conf
