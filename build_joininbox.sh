@@ -373,8 +373,11 @@ do
   torTest=$(curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s \
   https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
 done
+echo
 echo "# $torTest"
-
+echo
+echo "# Tor has been tested successfully"
+echo
 echo "# install torsocks and nyx"
 apt install -y torsocks tor-arm
 
