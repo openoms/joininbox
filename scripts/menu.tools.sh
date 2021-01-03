@@ -49,7 +49,10 @@ CHOICE=$(dialog --clear \
 case $CHOICE in
   CONNECT)
       /home/joinmarket/menu.bitcoinrpc.sh
-      echo ""            
+      if [ "$1" -gt 0 ]; then
+        /home/joinmarket/menu.bitcoinrpc.sh
+      fi
+      echo         
       echo "Press ENTER to return to the menu..."
       read key
       ;;
@@ -57,7 +60,7 @@ case $CHOICE in
       installBoltzmann
       getTXID
       python /home/joinmarket/start.boltzmann.py --txid=$(cat $txid)
-      echo ""            
+      echo            
       echo "Press ENTER to return to the menu..."
       read key
       ;;
