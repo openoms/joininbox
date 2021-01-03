@@ -52,7 +52,7 @@ if [ "$runningEnvEntry" -eq 0 ]; then
   
   # connect to remote node
   /home/joinmarket/menu.bitcoinrpc.sh
-  if [ "$1" -gt 0 ]; then
+  if ! connectedTrue; then
     /home/joinmarket/menu.bitcoinrpc.sh
   fi
 

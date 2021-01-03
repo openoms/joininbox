@@ -49,7 +49,7 @@ CHOICE=$(dialog --clear \
 case $CHOICE in
   CONNECT)
       /home/joinmarket/menu.bitcoinrpc.sh
-      if [ "$1" -gt 0 ]; then
+      if ! connectedTrue; then
         /home/joinmarket/menu.bitcoinrpc.sh
       fi
       echo         

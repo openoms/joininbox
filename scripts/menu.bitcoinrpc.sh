@@ -21,23 +21,24 @@ read rpc_port
 }
 
 function checkRPC {
-echo "# Checking the remote RPC connection with curl..."
-echo
 tor=""
-if [ $(echo $rpc_addr | grep -c .onion) -gt 0 ]; then
+if [ $(echo $rpc_host | grep -c .onion) -gt 0 ]; then
   tor="torify"
   echo "# Connecting over Tor..."
   echo
 fi
 $tor curl --data-binary \
 '{"jsonrpc": "1.0", "id":"# Connected to bitcoinRPC successfully", "method": "getblockcount", "params": [] }' \
-http://$rpc_user:$rpc_pass@$rpc_addr:$rpc_port
+http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port
 } 
 
 inputRPC
+echo "# Checking the remote RPC connection with curl..."
+echo
 checkRPC
 
 if [ $(checkRPC 2>/dev/null | grep -c "bitcoinRPC") -gt 0 ]; then
+  echo
   echo "# Connected to bitcoinRPC successfully"
   echo
   echo "# Blockheight on the connected node: $(checkRPC 2>/dev/null|grep "result"|cut -d":" -f2|cut -d"," -f1)"
@@ -50,8 +51,8 @@ if [ $(checkRPC 2>/dev/null | grep -c "bitcoinRPC") -gt 0 ]; then
   read key
   exit 0
 else
+  echo
   echo "# Could not connect to bitcoinRPC with the error:"
-  echo 
   checkRPC
   echo
   echo "See how to prepare a remote node to accept the JoinMarket connection:"
