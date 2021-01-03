@@ -6,9 +6,10 @@ clear
 
 generateJMconfig
 
-function inputRPC {
 echo "See how to prepare a remote node to accept the JoinMarket connection:"
 echo "https://github.com/openoms/joininbox/blob/master/prepare_remote_node.md#prepare-a-remote-node-to-accept-the-joinmarket-connection"  
+
+function inputRPC {
 echo
 echo "Input the RPC username of the remote bitcoin node:"
 read rpc_user
@@ -37,7 +38,8 @@ echo "# Checking the remote RPC connection with curl..."
 echo
 checkRPC
 
-while [ $(checkRPC 2>/dev/null | grep -c "bitcoinRPC") -eq 0 ]; do
+connectionSuccess=$(checkRPC 2>/dev/null | grep -c "bitcoinRPC")
+while [ $connectionSuccess -eq 0 ]; do
   echo
   echo "# Could not connect to bitcoinRPC with the error:"
   checkRPC
@@ -47,7 +49,8 @@ while [ $(checkRPC 2>/dev/null | grep -c "bitcoinRPC") -eq 0 ]; do
   echo
   echo "Press ENTER to retry or CTLR+C to abort"
   read key
-  /home/joinmarket/menu.bitcoinrpc.sh
+  inputRPC
+  connectionSuccess=$(checkRPC 2>/dev/null | grep -c "bitcoinRPC")
 done
 
 echo
