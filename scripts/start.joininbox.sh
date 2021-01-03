@@ -23,6 +23,9 @@ if [ "$runningEnvEntry" -eq 0 ]; then
   else
     runningEnv="standalone"
     setupStep=0
+    # set ssh passwords on the first run
+    sudo /home/joinmarket/set.password.sh || exit 1
+    sudo sed -i  "s#setupStep=.*#setupStep=100#g" /home/joinmarket/joinin.conf
   fi  
   echo "runningEnv=$runningEnv" >> /home/joinmarket/joinin.conf
   echo "setupStep=$setupStep" >> /home/joinmarket/joinin.conf
@@ -49,6 +52,9 @@ if [ "$runningEnvEntry" -eq 0 ]; then
   
   # connect to remote node
   /home/joinmarket/menu.bitcoinrpc.sh
+  if [ "$1" -gt 0 ]; then
+    /home/joinmarket/menu.bitcoinrpc.sh
+  fi
 
   # run config after install
   /home/joinmarket/install.joinmarket.sh config
@@ -58,13 +64,7 @@ fi
 source /home/joinmarket/_functions.sh
 source /home/joinmarket/joinin.conf
 
-if [ "$runningEnv" = "standalone" ]; then
-  if [ "$setupStep" = "0" ]; then
-    # set ssh passwords on the first run
-    sudo /home/joinmarket/set.password.sh || exit 1
-    sudo sed -i  "s#setupStep=.*#setupStep=100#g" /home/joinmarket/joinin.conf
-  fi
-elif [ "$runningEnv" = "raspiblitz" ]; then
+if [ "$runningEnv" = "raspiblitz" ]; then
 
   generateJMconfig
   
