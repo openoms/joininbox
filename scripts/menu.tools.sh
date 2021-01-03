@@ -48,20 +48,17 @@ CHOICE=$(dialog --clear \
 
 case $CHOICE in
   CONNECT)
-      /home/joinmarket/menu.bitcoinrpc.sh
-      if ! connectedTrue; then
-        /home/joinmarket/menu.bitcoinrpc.sh
-      fi
-      echo         
-      echo "Press ENTER to return to the menu..."
-      read key
-      ;;
+    /home/joinmarket/menu.bitcoinrpc.sh
+    echo         
+    echo "Press ENTER to return to the menu..."
+    read key
+    ;;
   BOLTZMANN)
-      installBoltzmann
-      getTXID
-      python /home/joinmarket/start.boltzmann.py --txid=$(cat $txid)
-      echo            
-      echo "Press ENTER to return to the menu..."
-      read key
-      ;;
+    installBoltzmann
+    getTXID
+    python /home/joinmarket/start.boltzmann.py --txid=$(cat $txid)
+    echo            
+    echo "Press ENTER to return to the menu..."
+    read key
+    ;;
 esac

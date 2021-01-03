@@ -37,20 +37,7 @@ echo "# Checking the remote RPC connection with curl..."
 echo
 checkRPC
 
-if [ $(checkRPC 2>/dev/null | grep -c "bitcoinRPC") -gt 0 ]; then
-  echo
-  echo "# Connected to bitcoinRPC successfully"
-  echo
-  echo "# Blockheight on the connected node: $(checkRPC 2>/dev/null|grep "result"|cut -d":" -f2|cut -d"," -f1)"
-  echo
-  python /home/joinmarket/set.bitcoinrpc.py --rpc_user=$rpc_user --rpc_pass=$rpc_pass --rpc_host=$rpc_host --rpc_port=$rpc_port
-  echo
-  echo "# The bitcoinRPC connection settings are set in the joinmarket.cfg"
-  echo 
-  echo "Press ENTER to continue"
-  read key
-  exit 0
-else
+while [ $(checkRPC 2>/dev/null | grep -c "bitcoinRPC") -eq 0 ]; do
   echo
   echo "# Could not connect to bitcoinRPC with the error:"
   checkRPC
@@ -60,5 +47,17 @@ else
   echo
   echo "Press ENTER to retry or CTLR+C to abort"
   read key
-  exit 1
-fi
+  /home/joinmarket/menu.bitcoinrpc.sh
+done
+
+echo
+echo "# Connected to bitcoinRPC successfully"
+echo
+echo "# Blockheight on the connected node: $(checkRPC 2>/dev/null|grep "result"|cut -d":" -f2|cut -d"," -f1)"
+echo
+python /home/joinmarket/set.bitcoinrpc.py --rpc_user=$rpc_user --rpc_pass=$rpc_pass --rpc_host=$rpc_host --rpc_port=$rpc_port
+echo
+echo "# The bitcoinRPC connection settings are set in the joinmarket.cfg"
+echo 
+echo "Press ENTER to continue"
+read key

@@ -52,10 +52,6 @@ if [ "$runningEnvEntry" -eq 0 ]; then
   
   # connect to remote node
   /home/joinmarket/menu.bitcoinrpc.sh
-  if ! connectedTrue; then
-    /home/joinmarket/menu.bitcoinrpc.sh
-  fi
-
   # run config after install
   /home/joinmarket/install.joinmarket.sh config
   
