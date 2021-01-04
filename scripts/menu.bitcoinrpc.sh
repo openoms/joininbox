@@ -49,6 +49,7 @@ while [ $connectionSuccess -eq 0 ]; do
   echo
   echo "Press ENTER to retry or CTLR+C to abort"
   read key
+  echo "---------------------------------------"
   inputRPC
   connectionSuccess=$(checkRPC 2>/dev/null | grep -c "bitcoinRPC")
 done
