@@ -6,8 +6,10 @@ clear
 
 generateJMconfig
 
-echo "See how to prepare a remote node to accept the JoinMarket connection:"
-echo "https://github.com/openoms/joininbox/blob/master/prepare_remote_node.md#prepare-a-remote-node-to-accept-the-joinmarket-connection"  
+function displayHelp {
+echo "# See how to prepare a remote node to accept the JoinMarket connection:"
+echo "# https://github.com/openoms/joininbox/blob/master/prepare_remote_node.md#prepare-a-remote-node-to-accept-the-joinmarket-connection"  
+}
 
 function inputRPC {
 echo
@@ -28,30 +30,29 @@ if [ $(echo $rpc_host | grep -c .onion) -gt 0 ]; then
   echo "# Connecting over Tor..."
   echo
 fi
-$tor curl --data-binary \
+$tor curl -sS --data-binary \
 '{"jsonrpc": "1.0", "id":"# Connected to bitcoinRPC successfully", "method": "getblockcount", "params": [] }' \
 http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port
 } 
 
+displayHelp
 inputRPC
 echo "# Checking the remote RPC connection with curl..."
 echo
-checkRPC
-
-connectionSuccess=$(checkRPC 2>/dev/null | grep -c "bitcoinRPC")
+connectionOutput=$(mktemp 2>/dev/null)
+connectionSuccess=$(checkRPC 2>$connectionOutput | grep -c "bitcoinRPC")
 while [ $connectionSuccess -eq 0 ]; do
   echo
   echo "# Could not connect to bitcoinRPC with the error:"
-  checkRPC
+  cat $connectionOutput
   echo
-  echo "See how to prepare a remote node to accept the JoinMarket connection:"
-  echo "https://github.com/openoms/joininbox/blob/master/prepare_remote_node.md#prepare-a-remote-node-to-accept-the-joinmarket-connection" 
+  displayHelp
   echo
   echo "Press ENTER to retry or CTLR+C to abort"
   read key
   echo "---------------------------------------"
   inputRPC
-  connectionSuccess=$(checkRPC 2>/dev/null | grep -c "bitcoinRPC")
+  connectionSuccess=$(checkRPC 2>$connectionOutput | grep -c "bitcoinRPC")
 done
 
 echo
