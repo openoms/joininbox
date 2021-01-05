@@ -1,25 +1,30 @@
 #!/bin/bash
 
-#####################################################################
-# setup fresh SD card with a tested image
-# login with SSH and run this script from the root user.
-#####################################################################
+########################################################################
+# setup a Linux environment see: 
+# https://github.com/openoms/joininbox#tested-environments-for-joininbox
+# login with SSH or boot directly
+# run this script as root or with sudo
+# can specify donwloading from a branch or forked repo:
+# sudo bash build_joininbox.sh [branch] [github user]
+########################################################################
 
 # The JoininBox Build Script is partially based on:
 # https://github.com/rootzoll/raspiblitz/blob/master/build_sdcard.sh
 
 # command info
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
- echo "JoininBox Build Script" 
- echo "Usage: sudo bash build_joininbox.sh [branch] [github user]"
- echo "Example: sudo bash bash build_joininbox.sh dev openoms"
- exit 1
+  echo "JoininBox Build Script" 
+  echo "Usage: sudo bash build_joininbox.sh [branch] [github user]"
+  echo "Example: sudo bash bash build_joininbox.sh dev openoms"
+  exit 1
 fi
 
 # check if sudo
 if [ "$EUID" -ne 0 ]; then
- echo "Please run as root (with sudo)"
- exit
+  echo "Please run as root or with sudo"
+  echo "Root access is needed to create the dedicated user to install system dependencies"
+  exit 1
 fi
 
 echo 
