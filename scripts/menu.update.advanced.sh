@@ -4,7 +4,7 @@ source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
 HEIGHT=12
-WIDTH=74
+WIDTH=60
 CHOICE_HEIGHT=3
 TITLE="Advanced update options"
 MENU="
@@ -16,7 +16,7 @@ BACKTITLE="JoininBox GUI"
 # Basic Options
 OPTIONS+=(\
   JBRESET "Reinstall the JoininBox scripts and menu" \
-  JBCOMMIT "Update JoininBox to the latest commit in the master branch" \
+  JBCOMMIT "Update JoininBox to the latest commit" \
   JMPR "Test a JoinMarket pull request" \
 )
 

@@ -9,9 +9,10 @@
 # https://github.com/rootzoll/raspiblitz/blob/master/build_sdcard.sh
 
 # command info
-if [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
  echo "JoininBox Build Script" 
- echo "sudo build_joininbox.sh"
+ echo "Usage: sudo bash build_joininbox.sh [branch] [github user]"
+ echo "Example: sudo bash bash build_joininbox.sh dev openoms"
  exit 1
 fi
 
@@ -20,11 +21,31 @@ if [ "$EUID" -ne 0 ]; then
  echo "Please run as root (with sudo)"
  exit
 fi
+
 echo 
 echo "###############################"
 echo "# JOININBOX BUILD SCRIPT v0.3 #"
 echo "###############################"
 echo 
+
+echo "# Check the command options"
+wantedBranch="$1"
+if [ ${#wantedBranch} -eq 0 ]; then
+  wantedBranch="master"
+fi
+
+githubUser="$2"
+if [ ${#githubUser} -eq 0 ]; then
+  githubUser="openoms"
+fi
+
+echo "
+# Installing JoininBox from: 
+# https://github.com/${githubUser}/joininbox/tree/${wantedBranch}
+
+# Press ENTER to confirm or CTRL+C to exit"
+read key
+
 echo 
 echo "###################################"
 echo "# Identify the CPU and base image #"
@@ -61,15 +82,6 @@ if [ "${baseImage}" = "?" ]; then
 else
   echo "# Base image: ${baseImage}"
 fi
-
-echo 
-echo "###########################"
-echo "# Cleaning the base image #"
-echo "###########################"
-echo 
-# remove some (big) packages that are not needed
-sudo apt-get remove -y --purge libreoffice* oracle-java* chromium-browser \
-nuscratch scratch sonic-pi minecraft-pi plymouth python2 vlc
 
 echo 
 echo "############################"
@@ -110,12 +122,6 @@ else
 fi
 echo
 echo "# PREPARE ${baseImage} "
-
-# special prepare when DietPi
-if [ "${baseImage}" = "dietpi" ]; then
-  echo "# renaming dietpi user to pi"
-  sudo usermod -l pi dietpi
-fi
 
 # special prepare when Raspbian
 if [ "${baseImage}" = "raspbian" ]; then
@@ -224,10 +230,6 @@ if [ "${baseImage}" = "buster" ]||[ "${baseImage}" = "bionic" ]||\
   sudo apt install armbian-config -y
 fi
 sudo apt-get install -y htop git curl bash-completion vim jq bsdmainutils
-# prepare for BTRFS data drive raid
-sudo apt-get install -y btrfs-progs btrfs-tools
-# network tools
-sudo apt-get install -y autossh
 # prepare for display graphics mode
 # see https://github.com/rootzoll/raspiblitz/pull/334
 sudo apt-get install -y fbi
@@ -240,15 +242,12 @@ python3-pip
 sudo update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 # install ifconfig
 sudo apt install -y net-tools
-#to display hex codes
+# to display hex codes
 sudo apt install -y xxd
 # setuptools needed for Nyx
 sudo pip install setuptools
-# netcat for 00infoBlitz.sh
+# netcat
 sudo apt install -y netcat
-# install OpenSSH client + server
-sudo apt install -y openssh-client
-sudo apt install -y openssh-sftp-server
 # install killall, fuser
 sudo apt-get install -y psmisc
 # dialog
@@ -266,7 +265,7 @@ adduser --disabled-password --gecos "" joinmarket
 
 echo "# clone the joininbox repo and copy the scripts"
 cd /home/joinmarket
-sudo -u joinmarket git clone https://github.com/openoms/joininbox.git
+sudo -u joinmarket git clone -b ${wantedBranch} https://github.com/${githubUser}/joininbox.git
 sudo -u joinmarket cp ./joininbox/scripts/* /home/joinmarket/
 sudo -u joinmarket cp ./joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
 chmod +x /home/joinmarket/*.sh
@@ -278,9 +277,11 @@ adduser joinmarket sudo
 # configure sudo for usage without password entry for the joinmarket user
 # https://www.tecmint.com/run-sudo-command-without-password-linux/
 echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
-echo "pi:joininbox" | sudo chpasswd
 echo "root:joininbox" | sudo chpasswd
 echo "joinmarket:joininbox" | sudo chpasswd
+if [ $(grep -c pi  < /etc/passwd) -gt 0 ];then
+  echo "pi:joininbox" | sudo chpasswd
+fi
 
 # create config file
 sudo -u joinmarket touch /home/joinmarket/joinin.conf
@@ -374,8 +375,11 @@ do
   torTest=$(curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s \
   https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
 done
+echo
 echo "# $torTest"
-
+echo
+echo "# Tor has been tested successfully"
+echo
 echo "# install torsocks and nyx"
 apt install -y torsocks tor-arm
 
@@ -446,7 +450,7 @@ echo "# Autostart #"
 echo "#############"
 echo 
 echo "
-if [ -f "/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate" ]; then
+if [ -f \"/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate\" ]; then
   . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
   /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python -c \"import PySide2\"
   cd /home/joinmarket/joinmarket-clientserver/scripts/

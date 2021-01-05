@@ -29,7 +29,7 @@ if [ ${#newPassword} -eq 0 ]; then
   --insecure --passwordbox "
 Set a new password for the users:
   'joinmarket' and 'root'
-(use at least 8 characters)" 10 40 2>$_temp
+(use at least 8 characters)" 11 40 2>$_temp
   
   # get user input
   password1=$( cat $_temp )

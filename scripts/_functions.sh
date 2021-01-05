@@ -9,101 +9,98 @@ currentJBtag=$(cd ~/joininbox; git tag | sort -V | tail -1)
 currentJMversion=$(cd /home/joinmarket/joinmarket-clientserver 2>/dev/null; \
 git describe --tags 2>/dev/null)
 
-# openMenuIfCancelled
-openMenuIfCancelled() {
-pressed=$1
-case $pressed in
-  1)
-    echo "Cancelled"
-    echo "Returning to the menu..."
-    sleep 1
-    /home/joinmarket/menu.sh
-    exit 1;;
-  255)
-    echo "ESC pressed."
-    echo "Returning to the menu..."
-    sleep 1
-    /home/joinmarket/menu.sh
-    exit 1;;
-esac
+function openMenuIfCancelled() {
+  pressed=$1
+  case $pressed in
+    1)
+      echo "Cancelled"
+      echo "Returning to the menu..."
+      sleep 1
+      /home/joinmarket/menu.sh
+      exit 1;;
+    255)
+      echo "ESC pressed."
+      echo "Returning to the menu..."
+      sleep 1
+      /home/joinmarket/menu.sh
+      exit 1;;
+  esac
 }
 
-# errorOnInstall
-errorOnInstall() {
-if [ "$1" -gt 0 ]; then
-  DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
-    --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
-fi
+function errorOnInstall() {
+  if [ "$1" -gt 0 ]; then
+    DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
+      --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
+  fi
 }
 
-# write password into a file (to be shredded)
-passwordToFile() {
-# get password
-data=$(mktemp 2>/dev/null)
-# trap it
-trap 'rm -f $data' 0 1 2 5 15
-dialog --backtitle "Enter password" \
-       --title "Enter password" \
-       --insecure \
-       --passwordbox "Type or paste the wallet decryption password" 8 52 2> "$data"
-# make decison
-pressed=$?
-case $pressed in
-  0)
-    touch /home/joinmarket/.pw
-    chmod 600 /home/joinmarket/.pw
-    tee /home/joinmarket/.pw 1>/dev/null < "$data"
-    shred "$data"
-    ;;
-  1)
-    shred "$data"
-    shred "$wallet"
-    rm -f .pw
-    echo "Cancelled"
-    exit 1
-    ;;
-  255)
-    shred "$data"
-    shred "$wallet"
-    rm -f .pw
-    [ -s "$data" ] &&  cat "$data" || echo "ESC pressed."
-    exit 1
-    ;;
-esac
+function passwordToFile() {
+  # write password into a file (to be shredded)
+  # get password
+  data=$(mktemp 2>/dev/null)
+  # trap it
+  trap 'rm -f $data' 0 1 2 5 15
+  dialog --backtitle "Enter password" \
+        --title "Enter password" \
+        --insecure \
+        --passwordbox "Type or paste the wallet decryption password" 8 52 2> "$data"
+  # make decison
+  pressed=$?
+  case $pressed in
+    0)
+      touch /home/joinmarket/.pw
+      chmod 600 /home/joinmarket/.pw
+      tee /home/joinmarket/.pw 1>/dev/null < "$data"
+      shred "$data"
+      ;;
+    1)
+      shred "$data"
+      shred "$wallet"
+      rm -f .pw
+      echo "Cancelled"
+      exit 1
+      ;;
+    255)
+      shred "$data"
+      shred "$wallet"
+      rm -f .pw
+      [ -s "$data" ] &&  cat "$data" || echo "ESC pressed."
+      exit 1
+      ;;
+  esac
 }
 
-# chooseWallet
-chooseWallet() {
+function chooseWallet() {
 source /home/joinmarket/joinin.conf
-wallet=$(mktemp 2>/dev/null)
-if [ "$defaultWallet" = "off" ]; then
   wallet=$(mktemp 2>/dev/null)
-  dialog --backtitle "Choose a wallet by typing the full name of the file" \
-  --title "Choose a wallet by typing the full name of the file" \
-  --fselect "$walletPath" 10 60 2> "$wallet"
-  openMenuIfCancelled $?
-else
-  echo "$defaultWallet" > "$wallet"
-fi
+  if [ "$defaultWallet" = "off" ]; then
+    wallet=$(mktemp 2>/dev/null)
+    dialog --backtitle "Choose a wallet by typing the full name of the file" \
+    --title "Choose a wallet by typing the full name of the file" \
+    --fselect "$walletPath" 10 60 2> "$wallet"
+    openMenuIfCancelled $?
+  else
+    echo "$defaultWallet" > "$wallet"
+  fi
 }
 
 function stopYG() {
-# stop the background process (equivalent to CTRL+C)
-# use wallet from joinin.conf
-source /home/joinmarket/joinin.conf
-pkill -sigint -f "python yg-privacyenhanced.py $YGwallet --wallet-password-stdin"
-# pgrep python | xargs kill -sigint             
-# remove the service
-sudo systemctl stop yg-privacyenhanced
-sudo systemctl disable yg-privacyenhanced
-# check for failed services
-# sudo systemctl list-units --type=service
-sudo systemctl reset-failed
-# make sure the lock file is deleted 
-rm -f ~/.joinmarket/wallets/.$wallet.lock
-# for old version <v0.6.3
-rm -f ~/.joinmarket/wallets/$wallet.lock 2>/dev/null
-echo "# stopped the Yield Generator background service"
+  # stop the background process (equivalent to CTRL+C)
+  # use wallet from joinin.conf
+  source /home/joinmarket/joinin.conf
+  pkill -sigint -f "python yg-privacyenhanced.py $YGwallet --wallet-password-stdin"
+  # pgrep python | xargs kill -sigint             
+  # remove the service
+  sudo systemctl stop yg-privacyenhanced
+  sudo systemctl disable yg-privacyenhanced
+  # check for failed services
+  # sudo systemctl list-units --type=service
+  sudo systemctl reset-failed
+  # make sure the lock file is deleted 
+  rm -f ~/.joinmarket/wallets/.$wallet.lock
+  # for old version <v0.6.3
+  rm -f ~/.joinmarket/wallets/$wallet.lock 2>/dev/null
+  echo "# stopped the Yield Generator background service"
 }
 
 function QRinTerminal() {
@@ -116,52 +113,52 @@ function QRinTerminal() {
 }
 
 function feereport() {
-# puts the fees earned as a Maker into variables
-INPUT=/home/joinmarket/.joinmarket/logs/yigen-statement.csv
-allEarned=0
-allCoinjoins=0
-monthEarned=0
-monthCoinjoins=0
-weekEarned=0
-weekCoinjoins=0
-dayEarned=0
-dayCoinjoins=0
-unixtimeMonthAgo=$(date -d "1 month ago" +%s)
-unixtimeWeekAgo=$(date -d "1 week ago" +%s)
-unixtimeDayAgo=$(date -d "1 day ago" +%s)
-OLDIFS=$IFS
-IFS=","
-[ ! -f $INPUT ] && { echo "$INPUT file not found"; exit 99; }
-#timestamp            cj amount/satoshi  my input count  my input value/satoshi  cjfee/satoshi  earned/satoshi  confirm time/min  notes
-while read -r timestamp cj_amount_satoshi my_input_count my_input_value_satoshi  cjfee_satoshi  earned_satoshi  confirm_time_min  notes
-do
-  unixtimeEvent=$(date -d "$timestamp" +%s 2>/dev/null)
-  if [ "$earned_satoshi" -gt 0 ]; then
-    allEarned=$(( allEarned + earned_satoshi ))
-    allCoinjoins=$(( allCoinjoins + 1 ))
-    if [ "$unixtimeEvent" -gt "$unixtimeMonthAgo" ]; then
-      monthEarned=$(( monthEarned + earned_satoshi ))
-      monthCoinjoins=$(( monthCoinjoins + 1 ))
-      if [ "$unixtimeEvent" -gt "$unixtimeWeekAgo" ]; then
-        weekEarned=$(( weekEarned + earned_satoshi ))
-        weekCoinjoins=$((weekCoinjoins+1))
-        if [ "$unixtimeEvent" -gt "$unixtimeDayAgo" ]; then
-          dayEarned=$((dayEarned+earned_satoshi))
-          dayCoinjoins=$((dayCoinjoins+1))
+  # puts the fees earned as a Maker into variables
+  INPUT=/home/joinmarket/.joinmarket/logs/yigen-statement.csv
+  allEarned=0
+  allCoinjoins=0
+  monthEarned=0
+  monthCoinjoins=0
+  weekEarned=0
+  weekCoinjoins=0
+  dayEarned=0
+  dayCoinjoins=0
+  unixtimeMonthAgo=$(date -d "1 month ago" +%s)
+  unixtimeWeekAgo=$(date -d "1 week ago" +%s)
+  unixtimeDayAgo=$(date -d "1 day ago" +%s)
+  OLDIFS=$IFS
+  IFS=","
+  [ ! -f $INPUT ] && { echo "$INPUT file not found"; exit 99; }
+  #timestamp            cj amount/satoshi  my input count  my input value/satoshi  cjfee/satoshi  earned/satoshi  confirm time/min  notes
+  while read -r timestamp cj_amount_satoshi my_input_count my_input_value_satoshi  cjfee_satoshi  earned_satoshi  confirm_time_min  notes
+  do
+    unixtimeEvent=$(date -d "$timestamp" +%s 2>/dev/null)
+    if [ "$earned_satoshi" -gt 0 ]; then
+      allEarned=$(( allEarned + earned_satoshi ))
+      allCoinjoins=$(( allCoinjoins + 1 ))
+      if [ "$unixtimeEvent" -gt "$unixtimeMonthAgo" ]; then
+        monthEarned=$(( monthEarned + earned_satoshi ))
+        monthCoinjoins=$(( monthCoinjoins + 1 ))
+        if [ "$unixtimeEvent" -gt "$unixtimeWeekAgo" ]; then
+          weekEarned=$(( weekEarned + earned_satoshi ))
+          weekCoinjoins=$((weekCoinjoins+1))
+          if [ "$unixtimeEvent" -gt "$unixtimeDayAgo" ]; then
+            dayEarned=$((dayEarned+earned_satoshi))
+            dayCoinjoins=$((dayCoinjoins+1))
+          fi
         fi
       fi
-    fi
-  fi 2>/dev/null
-done < "$INPUT"
-IFS=$OLDIFS
+    fi 2>/dev/null
+  done < "$INPUT"
+  IFS=$OLDIFS
 }
 
 function YGuptime() {
-# puts the Yield Generator uptime to $JMUptime
-source /home/joinmarket/joinin.conf
-JMpid=$(pgrep -f "python yg-privacyenhanced.py $YGwallet --wallet-password-stdin" 2>/dev/null | head -1)
-JMUptimeInSeconds=$(ps -p $JMpid -oetime= 2>/dev/null | tr '-' ':' | awk -F: '{ total=0; m=1; } { for (i=0; i < NF; i++) {total += $(NF-i)*m; m *= i >= 2 ? 24 : 60 }} {print total}')
-JMUptime=$(printf '%dd:%dh:%dm\n' $((JMUptimeInSeconds/86400)) $((JMUptimeInSeconds%86400/3600)) $((JMUptimeInSeconds%3600/60)))
+  # puts the Yield Generator uptime to $JMUptime
+  source /home/joinmarket/joinin.conf
+  JMpid=$(pgrep -f "python yg-privacyenhanced.py $YGwallet --wallet-password-stdin" 2>/dev/null | head -1)
+  JMUptimeInSeconds=$(ps -p $JMpid -oetime= 2>/dev/null | tr '-' ':' | awk -F: '{ total=0; m=1; } { for (i=0; i < NF; i++) {total += $(NF-i)*m; m *= i >= 2 ? 24 : 60 }} {print total}')
+  JMUptime=$(printf '%dd:%dh:%dm\n' $((JMUptimeInSeconds/86400)) $((JMUptimeInSeconds%86400/3600)) $((JMUptimeInSeconds%3600/60)))
 }
 
 
@@ -226,44 +223,72 @@ function installJoinMarket() {
 
 # updateJoininBox <reset|commit>
 function updateJoininBox() {
-cd /home/joinmarket
-if [ "$1" = "reset" ];then
-  echo "# Removing the joininbox source code"
-  sudo rm -rf /home/joinmarket/joininbox
-  echo "# Downloading the latest joininbox source code"
-fi
-# clone repo in case it is not present
-sudo -u joinmarket git clone https://github.com/openoms/joininbox.git \
-/home/joinmarket/joininbox 2>/dev/null
-echo "# Checking the updates in https://github.com/openoms/joininbox"
-# based on https://github.com/apotdevin/thunderhub/blob/master/scripts/updateToLatest.sh
-cd /home/joinmarket/joininbox
-# fetch latest master
-sudo -u joinmarket git fetch
-echo "# Pulling latest changes..."
-sudo -u joinmarket git pull -p
-if [ "$1" = "commit" ]; then
-  TAG=$(git describe --tags)
-  echo "# Updating to the latest commit in the default branch"
-else
-  TAG=$(git tag | sort -V | tail -1)
-  # unset $1
-  set --
-  UPSTREAM=${1:-'@{u}'}
-  LOCAL=$(git rev-parse @)
-  REMOTE=$(git rev-parse "$UPSTREAM")
-  if [ $LOCAL = $REMOTE ]; then
-    echo "# You are up-to-date on version" $TAG
-    echo
-    echo "Press ENTER to return to the menu"
-    read key
-    exit 0
+  cd /home/joinmarket
+  if [ "$1" = "reset" ];then
+    echo "# Removing the joininbox source code"
+    sudo rm -rf /home/joinmarket/joininbox
+    echo "# Downloading the latest joininbox source code"
   fi
-fi
-sudo -u joinmarket git reset --hard $TAG
-echo "# Updated to version" $TAG
-echo "# Copying the scripts in place"
-sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/*.* /home/joinmarket/
-sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
-sudo -u joinmarket chmod +x /home/joinmarket/*.sh
+  # clone repo in case it is not present
+  sudo -u joinmarket git clone https://github.com/openoms/joininbox.git \
+  /home/joinmarket/joininbox 2>/dev/null
+  echo "# Checking the updates in https://github.com/openoms/joininbox"
+  # based on https://github.com/apotdevin/thunderhub/blob/master/scripts/updateToLatest.sh
+  cd /home/joinmarket/joininbox
+  # fetch latest master
+  sudo -u joinmarket git fetch
+  echo "# Pulling latest changes..."
+  sudo -u joinmarket git pull -p
+  if [ "$1" = "commit" ]; then
+    TAG=$(git describe --tags)
+    echo "# Updating to the latest commit in the default branch"
+  else
+    TAG=$(git tag | sort -V | tail -1)
+    # unset $1
+    set --
+    UPSTREAM=${1:-'@{u}'}
+    LOCAL=$(git rev-parse @)
+    REMOTE=$(git rev-parse "$UPSTREAM")
+    if [ $LOCAL = $REMOTE ]; then
+      echo "# You are up-to-date on version" $TAG
+      echo
+      echo "Press ENTER to return to the menu"
+      read key
+      exit 0
+    fi
+  fi
+  sudo -u joinmarket git reset --hard $TAG
+  echo "# Updated to version" $TAG
+  echo "# Copying the scripts in place"
+  sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/*.* /home/joinmarket/
+  sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
+  sudo -u joinmarket chmod +x /home/joinmarket/*.sh
 }
+
+function setIRCtoTor() {
+  #communicate with IRC servers via Tor
+  sed -i "s/^host = irc.darkscience.net/#host = irc.darkscience.net/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+  sed -i "s/^#host = darksci3bfoka7tw.onion/host = darksci3bfoka7tw.onion/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+  sed -i "s/^host = irc.hackint.org/#host = irc.hackint.org/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+  sed -i "s/^#host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion/host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+  sed -i "s/^socks5 = false/#socks5 = false/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+  sed -i "s/^#socks5 = true/socks5 = true/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+  sed -i "s/^#port = 6667/port = 6667/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+  sed -i "s/^#usessl = false/usessl = false/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+  echo "Edited the joinmarket.cfg to communicate over Tor only."
+}
+
+function generateJMconfig() {
+  if [ ! -f "/home/joinmarket/.joinmarket/joinmarket.cfg" ] ; then
+    echo "# generating the joinmarket.cfg"
+    echo
+    . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
+    cd /home/joinmarket/joinmarket-clientserver/scripts/
+    python wallet-tool.py generate --datadir=/home/joinmarket/.joinmarket
+  else
+    echo "# the joinmarket.cfg is present"
+    echo ""
+  fi
+  # set strict permission to joinmarket.cfg
+  sudo chmod 600 /home/joinmarket/.joinmarket/joinmarket.cfg || exit 1
+ }
