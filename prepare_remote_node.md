@@ -1,9 +1,43 @@
-# Prepare a remote node to accept the JoinMarket connection
-JoinMarket (running in JoinInBox) needs to connect to Bitcoin Core.  
-A pruned node with the [**wallet enabled**](FAQ.md#activate-the-bitcoind-wallet-on-a-raspiblitz) will do and txindex is not required.  
-This guide shows how to prepare a RaspiBlitz to accept this connection.
+<!-- omit in toc -->
+# Prepare a bitcoin node to accept a remote RPC connection
+JoinMarket (running in JoinInBox) needs to connect to Bitcoin Core via RPC.  
+A pruned node with the **bitcoind wallet enabled** will do and txindex is not required.  
+- [RaspiBlitz](#raspiblitz)
+  - [Enable the bitcoind wallet](#enable-the-bitcoind-wallet)
+  - [LAN connection](#lan-connection)
+  - [Tor connection](#tor-connection)
+- [RoninDojo](#ronindojo)
+  - [Enable the bitcoind wallet](#enable-the-bitcoind-wallet-1)
+  - [LAN connection](#lan-connection-1)
+  - [Tor connection](#tor-connection-1)
+  - [Recompile the Docker containers (takes time)](#recompile-the-docker-containers-takes-time)
+  - [Get the Credentials](#get-the-credentials)
+- [Resources](#resources)
+## RaspiBlitz
 
-## LAN connection
+### Enable the bitcoind wallet 
+Since the RaspiBlitz v1.6 run this script:  
+`$ config.scripts/network.wallet.sh on`
+
+To set up manually:
+
+* Edit the bitcoin.conf:  
+`$ sudo nano /mnt/hdd/bitcoin/bitcoin.conf`
+    
+* Change the disablewallet option to 0:
+    ```
+    disablewallet=0
+    ```
+* Specify the wallet to be used:
+    ```
+    main.wallet=wallet.dat
+    ```
+    The default setting in JoininBox is to use the `wallet.dat`.   
+    It needs to specified in the `bitcoin.conf` because otherwise when other applications (like Specter) add bitcoind wallets JoinMarket would stop working.
+
+* Restart bitcoind:  
+`$ sudo systemctl restart bitcoind`
+### LAN connection
 
 In the terminal of the node - allow remote RPC connections to Bitcoin Core  
 This can be skipped if you [connect through Tor](#tor-connection)
@@ -24,19 +58,18 @@ This can be skipped if you [connect through Tor](#tor-connection)
 
 3) Open the firewall to allow the RPC connection from LAN  
    
-    (edit to your local subnet):  
-    `sudo ufw allow from 192.168.1.0/24 to any port 8332`  
-    `ufw enable`
+    (edit to your local subnet- in the example here 192.168.1.X):  
+    `sudo ufw allow from 192.168.1.0/24 to any port 8332`
 
 4) Take note of the `LAN_ADDRESS` of the remote node and fill it in to the `rpc_host` in `joinmarket.cfg`
 
-## Tor connection
+### Tor connection
 
 On the node - activate Tor and create a Hidden Service
 
 Make sure that Tor is installed or active in the SERVICES menu
 
-#### Create a Hidden Service to forward the bitcoin RPC port
+Create a Hidden Service to forward the bitcoin RPC port:
 
 1) On the RaspiBlitz since v1.4 there is a script to create a hidden service:  
     `./config.scripts/internet.hiddenservice.sh bitcoinrpc 8332 8332`  
@@ -63,16 +96,92 @@ Alternatively proceed manually:
    
     `$ sudo cat /mnt/hdd/tor/bitcoinrpc/hostname`
 
-5) Fill in the `Tor_Hidden_Service.onion` to the `rpc_host` in the `joinmarket.cfg`
+Fill in the `Tor_Hidden_Service.onion` to the `rpc_host` in the `joinmarket.cfg`
+
+---
+## RoninDojo
+
+### Enable the bitcoind wallet 
+Copy the two lines as one command to the ssh terminal:
+```bash
+$ sed -i 's/  -disablewallet=.*$/  -disablewallet=0\
+  -wallet=wallet.dat/' ~/dojo/docker/my-dojo/bitcoin/restart.sh
+```
+
+Alternatively edit manually:  
+`$ nano ~/dojo/docker/my-dojo/bitcoin/restart.sh`  
+and modify:
+```bash
+  -disablewallet=1
+```
+to
+```bash
+  -disablewallet=0
+```
+
+and add within the brackets:
+```bash
+  -wallet=wallet.dat
+```
+
+### LAN connection
+
+Edit the bitcoind container settings: 
+
+`$ nano ~/dojo/docker/my-dojo/conf/docker-bitcoind.conf`
+
+Set the following: 
+```bash
+# should be already on
+BITCOIND_RPC_EXTERNAL=on   
+# the RoninDojo_IP is the LAN IP address of your RoninDojo
+BITCOIND_RPC_EXTERNAL_IP=RoninDojo_IP
+```
+
+Open the firewall to allow the RPC connection from LAN  
+(edit to your local subnet - in the example here 192.168.1.X):  
+`$ sudo ufw allow from 192.168.1.0/24 to any port 28256`
+
+Take note: Dojo uses the port 28256 instead of the deafult 8332.
+
+### Tor connection
+Create a Hidden Service to forward the bitcoin RPC port:
+
+Edit the torrc:  
+`$ sudo nano /etc/tor/torrc`  
+
+Add:
+```bash
+HiddenServiceDir /var/lib/tor/bitcoinrpc/
+HiddenServiceVersion 3
+HiddenServicePort 8332 127.0.0.1:28256
+```
+Restart Tor:  
+`$ sudo systemctl restart tor`
+
+Show the .onion service address:  
+`$ sudo cat /var/lib/tor/bitcoinrpc/hostname`
 
 
-Remember to use `torify` with the python scripts when connecting remotely through Tor - applied automatically in the JoininBox
+### Recompile the Docker containers (takes time)
+
+`$ cd ~/dojo/docker/my-dojo && ./dojo.sh upgrade --nolog`
+
+### Get the Credentials
+Fill the connection settings from the `5 Credentials` -> `6 Bitcoind` menu:  
+Username: RoninDojo  
+Password: [RPC Password]  
+Host: [RoninDojo_IP or `sudo cat /var/lib/tor/bitcoinrpc/hostname`]  
+Port: [28256 for LAN or 8332 for the .onion service] 
+
+---
+Remember to use `torify` with the python scripts when connecting remotely through Tor (applied automatically in the JoininBox)
 
 Example:  
 `torify wallet-tool.py wallet.jmdat`
 
 also need to [allow Tor to connect to localhost](FAQ.md#allow-tor-to-connect-to-localhost)
-## Resources:
+## Resources
 
 * [JoinMarket on the RaspiBlitz guide](https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/README.md)
 

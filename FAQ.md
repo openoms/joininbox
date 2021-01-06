@@ -5,7 +5,6 @@
 - [Set up Armbian on the Hardkernel Odroid XU4](#set-up-armbian-on-the-hardkernel-odroid-xu4)
 - [Download and verify Raspbian SDcard image for a Raspberry Pi](#download-and-verify-raspbian-sdcard-image-for-a-raspberry-pi)
 - [Log in through SSH using a hardware wallet](#log-in-through-ssh-using-a-hardware-wallet)
-- [Activate the bitcoind wallet on a RaspiBlitz](#activate-the-bitcoind-wallet-on-a-raspiblitz)
 - [Error when connecting to a full node remotely through Tor](#error-when-connecting-to-a-full-node-remotely-through-tor)
 - [Nuke the joinmarket user and the /home/joinmarket folder](#nuke-the-joinmarket-user-and-the-homejoinmarket-folder)
 - [Sample bitcoin.conf for a remote node accepting RPC connections through LAN](#sample-bitcoinconf-for-a-remote-node-accepting-rpc-connections-through-lan)
@@ -136,34 +135,6 @@ The default password is: `raspberry`
 
 * paste the generated SSH pubkey to:  
 `$ nano /home/joinmarket/.ssh/authorized_keys`
-
-### Activate the bitcoind wallet on a RaspiBlitz
-
-Since the RaspiBlitz v1.6 run this script:
-`$ config.scripts/network.wallet.sh on`
-
-To set up manually:
-
-* Edit the bitcoin.conf:  
-`$ sudo nano /mnt/hdd/bitcoin/bitcoin.conf`
-    
-* Change the disablewallet option to 0:
-    ```
-    disablewallet=0
-    ```
-* Specify the wallet to be used:
-    ```
-    main.wallet=wallet.dat
-    ```
-    The default setting in JoininBox is to use the `wallet.dat`.   
-    It needs to specified in the `bitcoin.conf` because otherwise when other applications (like Specter) add bitcoind wallets JoinMarket would stop working.
-
-* Restart bitcoind:  
-`$ sudo systemctl restart bitcoind`
-
-
-
-
 
 ### Error when connecting to a full node remotely through Tor
 * Getting the error:

@@ -17,12 +17,15 @@ A terminal based graphical menu for JoinMarket.
   <img width="400" src="/images/joininbox.jpeg">
 </p>
 
-* Test environments:
+### Tested environments for JoininBox
+  * Debian Buster X86_64 desktop
   * Hardkernel Odroid XU4 running 32 bit Armbian Buster
   * Hardkernel Odroid C4 running 64bit Armbian Focal and Buster
   * Raspberry Pi Zero, 3 and 4 running Raspberry OS (32 bit Buster)
-  * Debian Buster X86_64 desktop
-  * Connected to a RaspiBlitz >1.4 (any Bitcoin Core node can work, including previous RaspiBlitz versions)
+### Connected to Bitcoin Core
+* running locally
+* on RaspiBlitz over LAN or Tor
+* on RoninDojo over Tor
 
 ### Install and set up the base image
 * [Set up Armbian on the Hardkernel Odroid XU4](https://github.com/openoms/joininbox/blob/master/FAQ.md#set-up-armbian-on-the-hardkernel-odroid-xu4)
@@ -32,7 +35,7 @@ A terminal based graphical menu for JoinMarket.
 * Continue to work as the `root` user or change with:  
 `$ sudo - su`
 
-* Run the build script:
+* Run the [build script](https://github.com/openoms/joininbox/blob/master/build_joininbox.sh):
   ```bash 
   # download
   wget https://raw.githubusercontent.com/openoms/joininbox/master/build_joininbox.sh
@@ -52,7 +55,7 @@ the default password is: `joininbox` - will be prompted to change it on the firs
 
 ## More info
 
-* Video demonstration of [running JoinMarket with JoininBox on the RaspiBlitz](https://www.youtube.com/watch?v=uGHRjilMhwY)
+* [Video demonstration](https://www.youtube.com/watch?v=uGHRjilMhwY) / [Slides](https://keybase.pub/oms/slides/RaspiBlitz_Tech_DeepDive/Running_JoinMarket_on_the_RaspiBlitz.pdf) of running JoinMarket with JoininBox on the RaspiBlitz 
 * How to [prepare a remote node to accept the JoinMarket connection](prepare_remote_node.md)
 * [Frequently Asked Questions and notes](FAQ.md)
 * [JoinMarket on the RaspiBlitz guide](https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/README.md)
