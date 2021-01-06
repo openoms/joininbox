@@ -25,7 +25,7 @@ function getTXID {
 
 # BASIC MENU INFO
 HEIGHT=8
-WIDTH=49
+WIDTH=53
 CHOICE_HEIGHT=20
 TITLE="Tools"
 MENU=""
@@ -35,7 +35,7 @@ BACKTITLE="JoininBox GUI"
 # Basic Options
 OPTIONS+=(\
   CONNECT "Connect to a remote bitcoin node"\
-  BOLTZMANN "Analyze a transaction"\
+  BOLTZMANN "Analyze the entropy of a transaction"\
 )
 
 CHOICE=$(dialog --clear \
