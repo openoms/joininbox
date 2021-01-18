@@ -1,6 +1,9 @@
 <!-- omit in toc -->
 # Prepare a bitcoin node to accept a remote RPC connection
-JoinMarket (running in JoinInBox) needs to connect to Bitcoin Core via RPC.  
+
+If you have arrived here from runing JoininBox locally on the RaspiBlitz can skip these steps (CTRL+C to exit the connection settings). The connection to the local bitcoin node is set up automatically.
+
+JoinMarket (running in JoininBox) needs to connect to Bitcoin Core via RPC.  
 A pruned node with the **bitcoind wallet enabled** will do and txindex is not required.  
 - [RaspiBlitz](#raspiblitz)
   - [Enable the bitcoind wallet](#enable-the-bitcoind-wallet)
@@ -46,11 +49,17 @@ This can be skipped if you [connect through Tor](#tor-connection)
     `$ sudo nano /mnt/hdd/bitcoin/bitcoin.conf`
 
     Add the values:  
-    (edit to your local subnet - the first 3 numbes of the LAN IP address, the example used here is: 192.168.1)  
-    (can keep the other `rpcallowip` and `rpcbind` entires especially for the localhost: 127.0.0.1)
+    * `rpcallowip=JOININBOX_IP` or `RANGE` 
+      * either specify the LAN IP of the computer (here JoininBox) you want to connect remotely
+      * or use a range like: `192.168.1.0/24` - edit to your local subnet - the first 3 numbes of the LAN IP address, the example used here is: 192.168.1.x  
+    * `rpcbind=LAN_IP_OF_THE_NODE` 
+      * use the local IP of the bitcoin node in the example: `192.168.1.4`
+    * can keep the other `rpcallowip` and `rpcbind` entires especially for the localhost: `127.0.0.1`
+
+    Example: 
     ```
     rpcallowip=192.168.1.0/24
-    rpcbind=0.0.0.0
+    rpcbind=192.168.1.4
     ```
 2) Restart Bitcoin Core   
    
@@ -58,8 +67,8 @@ This can be skipped if you [connect through Tor](#tor-connection)
 
 3) Open the firewall to allow the RPC connection from LAN  
    
-    (edit to your local subnet- in the example here 192.168.1.X):  
-    `sudo ufw allow from 192.168.1.0/24 to any port 8332`
+    edit to your local subnet - in the example here 192.168.1.X):  
+    `$ sudo ufw allow from 192.168.1.0/24 to any port 8332`
 
 4) Take note of the `LAN_ADDRESS` of the remote node and fill it in to the `rpc_host` in `joinmarket.cfg`
 
