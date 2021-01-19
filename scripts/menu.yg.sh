@@ -79,7 +79,7 @@ case $CHOICE in
             --title "Counterparty name"  \
             --msgbox "The last used counterparty name for the Order Book:\n
 $name\n
-Check if active in: https://joinmarket.me/ob
+Check if active in: https://nixbitcoin.org/obwatcher/
 or use the local Order Book" 12 55
             echo "Returning to the menu..."
             sleep 1
