@@ -317,9 +317,9 @@ then
   "A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89")
   echo "torKeyAvailable=${torKeyAvailable}"
   if [ ${torKeyAvailable} -eq 0 ]; then
-    curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | \
-    sudo gpg --import
-    sudo gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | sudo apt-key add -
+    # https://support.torproject.org/apt/tor-deb-repo/
+    wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import
+    gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | sudo apt-key add -
     echo "OK"
   else
     echo "# Tor key is available"
