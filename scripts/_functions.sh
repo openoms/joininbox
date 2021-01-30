@@ -13,14 +13,14 @@ function openMenuIfCancelled() {
   pressed=$1
   case $pressed in
     1)
-      echo "Cancelled"
-      echo "Returning to the menu..."
+      echo "# Cancelled"
+      echo "# Returning to the menu..."
       sleep 1
       /home/joinmarket/menu.sh
       exit 1;;
     255)
-      echo "ESC pressed."
-      echo "Returning to the menu..."
+      echo "# ESC pressed."
+      echo "# Returning to the menu..."
       sleep 1
       /home/joinmarket/menu.sh
       exit 1;;
@@ -57,14 +57,14 @@ function passwordToFile() {
       shred "$data"
       shred "$wallet"
       rm -f .pw
-      echo "Cancelled"
+      echo "# Cancelled"
       exit 1
       ;;
     255)
       shred "$data"
       shred "$wallet"
       rm -f .pw
-      [ -s "$data" ] &&  cat "$data" || echo "ESC pressed."
+      [ -s "$data" ] &&  cat "$data" || echo "# ESC pressed."
       exit 1
       ;;
   esac
@@ -100,13 +100,13 @@ function stopYG() {
   rm -f ~/.joinmarket/wallets/.$wallet.lock
   # for old version <v0.6.3
   rm -f ~/.joinmarket/wallets/$wallet.lock 2>/dev/null
-  echo "# stopped the Yield Generator background service"
+  echo "# Stopped the Yield Generator background service"
 }
 
 function QRinTerminal() {
   datastring=$1
   if [ ${#datastring} -eq 0 ]; then
-    echo "error='missing string'"
+    echo "# Error='missing string'"
   fi
   qrencode -t ANSI256 "${datastring}"
   echo "(To shrink QR code: MacOS press CMD- / Linux press CTRL-)"
@@ -167,7 +167,7 @@ function installJoinMarket() {
   source /home/joinmarket/joinin.conf
   cd /home/joinmarket
   # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
-  echo "# installing ARM specific dependencies to run the QT GUI"
+  echo "# Installing ARM specific dependencies to run the QT GUI"
   sudo apt install -y python3-pyside2.qtcore python3-pyside2.qtgui \
   python3-pyside2.qtwidgets zlib1g-dev libjpeg-dev python3-pyqt5 libltdl-dev
   # https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/668#issuecomment-717815719
@@ -176,7 +176,7 @@ function installJoinMarket() {
   echo "# installing JoinMarket"
   
   if [ "$1" = "update" ] || [ "$1" = "testPR" ]; then
-    echo "# deleting the old source code (joinmarket-clientserver directory)"
+    echo "# Deleting the old source code (joinmarket-clientserver directory)"
     sudo rm -rf /home/joinmarket/joinmarket-clientserver
   fi
   
@@ -185,7 +185,7 @@ function installJoinMarket() {
   
   if [ "$1" = "testPR" ]; then
     PRnumber=$2
-    echo "# using the PR:"
+    echo "# Using the PR:"
     echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber"
     git fetch origin pull/$PRnumber/head:pr$PRnumber
     git checkout pr$PRnumber
@@ -275,18 +275,18 @@ function setIRCtoTor() {
   sed -i "s/^#socks5 = true/socks5 = true/g" /home/joinmarket/.joinmarket/joinmarket.cfg
   sed -i "s/^#port = 6667/port = 6667/g" /home/joinmarket/.joinmarket/joinmarket.cfg
   sed -i "s/^#usessl = false/usessl = false/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-  echo "Edited the joinmarket.cfg to communicate over Tor only."
+  echo "# Edited the joinmarket.cfg to communicate over Tor only."
 }
 
 function generateJMconfig() {
   if [ ! -f "/home/joinmarket/.joinmarket/joinmarket.cfg" ] ; then
-    echo "# generating the joinmarket.cfg"
+    echo "# Generating the joinmarket.cfg"
     echo
     . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
     cd /home/joinmarket/joinmarket-clientserver/scripts/
     python wallet-tool.py generate --datadir=/home/joinmarket/.joinmarket
   else
-    echo "# the joinmarket.cfg is present"
+    echo "# The joinmarket.cfg is present"
     echo ""
   fi
   # set strict permission to joinmarket.cfg
