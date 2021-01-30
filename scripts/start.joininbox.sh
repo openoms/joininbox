@@ -14,12 +14,14 @@ if [ "$cpuEntry" -eq 0 ]; then
   echo "cpu=$cpu" >> /home/joinmarket/joinin.conf
 fi
 
-# get settings on the first run
+#############
+# FIRST RUN #
+#############
 runningEnvEntry=$(grep -c "runningEnv" < /home/joinmarket/joinin.conf)
 if [ "$runningEnvEntry" -eq 0 ]; then
   if [ -f "/mnt/hdd/raspiblitz.conf" ] ; then
     runningEnv="raspiblitz"
-    setupStep=100
+    setupStep=0
   else
     runningEnv="standalone"
     setupStep=0
@@ -50,20 +52,19 @@ if [ "$runningEnvEntry" -eq 0 ]; then
   # check if JoinMarket is installed
   /home/joinmarket/install.joinmarket.sh install
   
-  # connect to remote node
-  /home/joinmarket/menu.bitcoinrpc.sh
-  # run config after install
-  /home/joinmarket/install.joinmarket.sh config
-  
+  # connect to remote node on first start if standalone
+  if [ "$runningEnv" = "standalone" ]; then
+    /home/joinmarket/menu.bitcoinrpc.sh
+    # run config after install
+    /home/joinmarket/install.joinmarket.sh config
+  fi
 fi
 
 source /home/joinmarket/_functions.sh
 source /home/joinmarket/joinin.conf
 
-if [ "$runningEnv" = "raspiblitz" ]; then
-
+if [ "$runningEnv" = "raspiblitz" ] && [ "$setupStep" -eq 0 ]; then
   generateJMconfig
-  
   echo
   echo "# editing the joinmarket.cfg"
   sed -i "s/^rpc_user =.*/rpc_user = raspibolt/g" /home/joinmarket/.joinmarket/joinmarket.cfg
@@ -72,11 +73,14 @@ if [ "$runningEnv" = "raspiblitz" ]; then
   echo "# filled the bitcoin RPC password (PASSWORD_B)"
   sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/g" /home/joinmarket/.joinmarket/joinmarket.cfg
   echo "# using the bitcoind wallet: wallet.dat"
-
   setIRCtoTor
-  
+  # setup finished
+  sudo sed -i  "s#setupStep=.*#setupStep=100#g" /home/joinmarket/joinin.conf
 fi
 
+#############
+# EVERY RUN #
+#############
 # check bitcoind RPC setting
 # add default value to joinin config if needed
 if ! grep -Eq "^RPCoverTor=" /home/joinmarket/joinin.conf; then
@@ -91,7 +95,7 @@ else
   sed -i "s/^RPCoverTor=.*/RPCoverTor=off/g" /home/joinmarket/joinin.conf
 fi
 
-# check if there is only one wallet and make default
+# check if there is only one joinmarket wallet and make default
 # add default value to joinin config if needed
 if ! grep -Eq "^defaultWallet=" /home/joinmarket/joinin.conf; then
   echo "defaultWallet=off" >> /home/joinmarket/joinin.conf
