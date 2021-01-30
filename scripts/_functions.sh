@@ -292,3 +292,55 @@ function generateJMconfig() {
   # set strict permission to joinmarket.cfg
   sudo chmod 600 /home/joinmarket/.joinmarket/joinmarket.cfg || exit 1
  }
+
+# updateTor
+function updateTor() {
+  # as in https://2019.www.torproject.org/docs/debian#source
+  # https://github.com/rootzoll/raspiblitz/blob/82e0d6c3714ce1b2878780c4bdef72a6417f71c7/home.admin/config.scripts/internet.tor.sh#L493
+  echo "# Adding tor-nightly-master to sources.list"
+  torSourceListAvailable=$(sudo cat /etc/apt/sources.list | grep -c \
+  'tor-nightly-master')
+  echo "torSourceListAvailable=${torSourceListAvailable}"  
+  if [ ${torSourceListAvailable} -eq 0 ]; then
+    echo "Adding TOR sources ..."
+    if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "buster" ]||[ "${baseImage}" = "dietpi" ]; then
+      distro="buster"
+    elif [ "${baseImage}" = "bionic" ]; then
+      distro="bionic"
+    elif [ "${baseImage}" = "focal" ]; then
+      distro="focal"
+    fi
+    echo "
+deb https://deb.torproject.org/torproject.org tor-nightly-master-$distro main
+deb-src https://deb.torproject.org/torproject.org tor-nightly-master-$distro main" \
+    | sudo tee -a  /etc/apt/sources.list
+  fi
+  echo "# Running apt update"
+  sudo apt update
+  source /home/joinmarket/joinin.conf
+  if [ ${cpu} = "x86_64" ]; then
+    echo "# CPU is x86_64 - updating to the latest alpha binary"
+    sudo apt install -y tor
+    echo "# Restarting the tor.service "
+    sudo systemctl restart tor
+  else
+    echo "# Install the dependencies for building from source"
+    sudo apt install -y build-essential fakeroot devscripts
+    sudo apt build-dep -y tor deb.torproject.org-keyring
+    rm -rf $HOME//download/debian-packages
+    mkdir -p $HOME/download/debian-packages
+    cd $HOME/download/debian-packages || exit 1
+    echo "# Building Tor from the source code ..."
+    apt source tor
+    cd tor-* || exit 1
+    debuild -rfakeroot -uc -us
+    cd .. || exit 1
+    echo "# Stopping the tor.service before updating"
+    sudo systemctl stop tor
+    echo "# Update ..."
+    sudo dpkg -i tor_*.deb
+    echo "# Starting the tor.service "
+    sudo systemctl start tor
+    echo "# Installed $(tor --version)"
+  fi
+}

@@ -3,9 +3,9 @@
 source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
-HEIGHT=12
+HEIGHT=13
 WIDTH=60
-CHOICE_HEIGHT=3
+CHOICE_HEIGHT=4
 TITLE="Advanced update options"
 MENU="
 Current JoininBox version: $currentJBcommit
@@ -18,6 +18,7 @@ OPTIONS+=(\
   JBRESET "Reinstall the JoininBox scripts and menu" \
   JBCOMMIT "Update JoininBox to the latest commit" \
   JMPR "Test a JoinMarket pull request" \
+  TOR "Update Tor to the latest alpha"
 )
 
 CHOICE=$(dialog --clear \
@@ -50,6 +51,13 @@ https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber
 (Y/N)? " confirm && [[ $confirm == [yY]||$confirm == [yY][eE][sS] ]]||exit 1
       stopYG
       installJoinMarket testPR $PRnumber
+      errorOnInstall $?
+      echo
+      echo "Press ENTER to return to the menu"
+      read key
+      ;;
+  TOR)
+      updateTor
       errorOnInstall $?
       echo
       echo "Press ENTER to return to the menu"
