@@ -162,7 +162,7 @@ function YGuptime() {
 }
 
 
-# installJoinMarket [update|testPR <PRnumber>]
+# installJoinMarket [update|testPR <PRnumber>|commit]
 function installJoinMarket() {
   source /home/joinmarket/joinin.conf
   cd /home/joinmarket
@@ -175,7 +175,7 @@ function installJoinMarket() {
   sudo -u joinmarket pip install libtool asn1crypto cffi pycparser coincurve
   echo "# installing JoinMarket"
   
-  if [ "$1" = "update" ] || [ "$1" = "testPR" ]; then
+  if [ "$1" = "update" ] || [ "$1" = "testPR" ] || [ "$1" = "commit" ]; then
     echo "# Deleting the old source code (joinmarket-clientserver directory)"
     sudo rm -rf /home/joinmarket/joinmarket-clientserver
   fi
@@ -189,6 +189,9 @@ function installJoinMarket() {
     echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber"
     git fetch origin pull/$PRnumber/head:pr$PRnumber
     git checkout pr$PRnumber
+  elif [ "$1" = "commit" ]; then
+    echo "# Updating to the latest commit in:"
+    echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver"
   else
     JMVersion="v0.8.0"
     sudo -u joinmarket git reset --hard $JMVersion
@@ -211,7 +214,7 @@ function installJoinMarket() {
     # don't install PyQt5 - using the system package instead 
     sudo -u joinmarket sed -i "s#^PyQt5.*##g" requirements/gui.txt
   fi
-  if [ "$1" = "update" ] || [ "$1" = "testPR" ]; then
+  if [ "$1" = "update" ] || [ "$1" = "testPR" ] || [ "$1" = "commit" ]; then
     # build the Qt GUI, do not run libsecp256k1 test
     sudo -u joinmarket ./install.sh --with-qt --disable-secp-check 
   else
