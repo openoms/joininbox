@@ -33,3 +33,6 @@ function qtgui() {
   echo "# opening the JoinMarket-QT GUI with the command: '(jmvenv) python joinmarket-qt.py'"
   /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python /home/joinmarket/joinmarket-clientserver/scripts/joinmarket-qt.py
 }
+
+alias signet-cli="/home/joinmarket/bitcoin/bitcoin-cli -signet"
+alias signetd="/home/joinmarket/bitcoin/bitcoind -signet"
