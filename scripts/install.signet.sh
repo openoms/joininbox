@@ -3,6 +3,8 @@
 # Concise instructions on setting up Joinmarket for testing on signet
 # https://gist.github.com/AdamISZ/325716a66c7be7dd3fc4acdfce449fb1
 
+# installBitcoinCore
+function installBitcoinCoreSignet() {
 # set version
 # https://bitcoincore.org/en/download/
 bitcoinVersion="0.21.0"
@@ -177,7 +179,10 @@ sudo systemctl start signetd
 echo
 echo "Installed $(/home/joinmarket/bitcoin/bitcoind --version | grep version)"
 echo 
+echo "# Monitor the signet bitcoind with: tail -f ~/.bitcoin/signet/debug.log"
+}
 
+setJMconfigToSignet() {
 echo "# editing the joinmarket.cfg"
 # rpc_user
 sed -i "s/^rpc_user =.*/rpc_user = joinmarket/g" /home/joinmarket/.joinmarket/joinmarket.cfg
@@ -195,5 +200,34 @@ sed -i "s/^rpc_port =.*/rpc_port = 38332/g" /home/joinmarket/.joinmarket/joinmar
 sed -i "s/^network =.*/network = signet/g" /home/joinmarket/.joinmarket/joinmarket.cfg
 # minimum_makers
 sed -i "s/^minimum_makers =.*/minimum_makers = 2/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+}
 
-echo "# Monitor the signet bitcoind with: tail -f ~/.bitcoin/signet/debug.log"
+# check connectedRemoteNode var in joinin.conf
+if ! grep -Eq "^connectedRemoteNode=" /home/joinmarket/joinin.conf; then
+  echo "connectedRemoteNode=off" >> /home/joinmarket/joinin.conf
+fi
+source /home/joinmarket/joinin.conf
+source /home/joinmarket/_functions.sh
+
+if [ "$1" = "on" ]||[ "$1" = "signet" ]; then
+  installBitcoinCoreSignet
+  if [ $connectedRemoteNode = "on" ];then
+    backupJMconf
+  fi
+  generateJMconfig 
+  setJMconfigToSignet
+elif [ "$1" = "off" ]||[ "$1" = "mainnet" ]; then
+  if [ -f "/etc/systemd/system/signetd.service" ];then
+    sudo systemctl stop signetd
+    sudo systemctl disable signetd
+    echo "# Bitcoin Core on signet service is stopped and disabled"
+  fi
+  isSignet=$(grep -c "network = signet" < /home/joinmarket/.joinmarket/joinmarket.cfg)
+  if [ isSignet -gt 0 ];then
+    echo "# Removing the joinmarket.cfg with signet settings"
+    rm -f /home/joinmarket/.joinmarket/joinmarket.cfg
+  else
+    echo "# Signet is not set in joinmarket.cfg, leaving settings in place"
+  fi
+  generateJMconfig
+fi

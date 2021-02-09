@@ -12,9 +12,6 @@ source /home/joinmarket/joinin.conf
 
 if [ "$1" = "config" ]; then
   generateJMconfig
-  if [ "${runBehindTor}" = "on" ]; then
-    setIRCtoTor
-  fi
   # show info
   dialog \
   --title "Configure JoinMarket" \
