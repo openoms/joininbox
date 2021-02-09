@@ -11,22 +11,17 @@ source /home/joinmarket/_functions.sh
 source /home/joinmarket/joinin.conf
 
 if [ "$1" = "config" ]; then
-
   generateJMconfig
-
   if [ "${runBehindTor}" = "on" ]; then
     setIRCtoTor
   fi
-
   # show info
   dialog \
   --title "Configure JoinMarket" \
   --exit-label "Continue to edit the joinmarket.cfg" \
   --textbox "info.conf.txt" 21 102
-
   # edit joinmarket.cfg
   /home/joinmarket/set.conf.sh /home/joinmarket/.joinmarket/joinmarket.cfg
-
   exit 0
 fi
 

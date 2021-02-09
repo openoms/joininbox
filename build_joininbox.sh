@@ -93,13 +93,15 @@ echo "############################"
 echo "# Preparing the base image #"
 echo "############################"
 echo 
-if [ "${baseImage}" = "raspbian" ] || [ "${baseImage}" = "dietpi" ]; then
+if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "dietpi" ]||\
+   [ "${baseImage}" = "buster" ]; then
   # fixing locales for build
   # https://github.com/rootzoll/raspiblitz/issues/138
   # https://daker.me/2014/10/how-to-fix-perl-warning-setting-locale-failed-in-raspbian.html
   # https://stackoverflow.com/questions/38188762/generate-all-locales-in-a-docker-image
-  echo ""
+  echo
   echo "# FIXING LOCALES FOR BUILD "
+  sudo apt install -y locales
   sudo sed -i "s/^# en_US.UTF-8 UTF-8.*/en_US.UTF-8 UTF-8/g" /etc/locale.gen
   sudo sed -i "s/^# en_US ISO-8859-1.*/en_US ISO-8859-1/g" /etc/locale.gen
   sudo locale-gen
@@ -110,6 +112,9 @@ if [ "${baseImage}" = "raspbian" ] || [ "${baseImage}" = "dietpi" ]; then
   sudo sed -i "s/^    SendEnv LANG LC.*/#   SendEnv LANG LC_*/g" /etc/ssh/ssh_config
   # remove unnecessary files
   sudo rm -rf /home/pi/MagPi
+  # https://www.reddit.com/r/linux/comments/lbu0t1/microsoft_repo_installed_on_all_raspberry_pis/
+  sudo rm -f /etc/apt/sources.list.d/vscode.list 
+  sudo rm -f /etc/apt/trusted.gpg.d/microsoft.gpg
 fi
 
 if [ -f "/usr/bin/python3.7" ]; then
@@ -229,11 +234,6 @@ echo "##########################"
 echo "# Tools and dependencies #"
 echo "##########################"
 echo 
-if [ "${baseImage}" = "buster" ]||[ "${baseImage}" = "bionic" ]||\
-[ "${baseImage}" = "focal" ]; then
-  # add armbian config
-  sudo apt install armbian-config -y
-fi
 sudo apt-get install -y htop git curl bash-completion vim jq bsdmainutils
 # prepare for display graphics mode
 # see https://github.com/rootzoll/raspiblitz/pull/334

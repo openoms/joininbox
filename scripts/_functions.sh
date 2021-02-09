@@ -161,7 +161,6 @@ function YGuptime() {
   JMUptime=$(printf '%dd:%dh:%dm\n' $((JMUptimeInSeconds/86400)) $((JMUptimeInSeconds%86400/3600)) $((JMUptimeInSeconds%3600/60)))
 }
 
-
 # installJoinMarket [update|testPR <PRnumber>|commit]
 function installJoinMarket() {
   source /home/joinmarket/joinin.conf
