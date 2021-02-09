@@ -87,6 +87,8 @@ echo "# BITCOIN v${bitcoinVersion} for ${bitcoinOSversion}"
 binaryName="bitcoin-${bitcoinVersion}-${bitcoinOSversion}.tar.gz"
 if [ ! -f "./${binaryName}" ];then
   sudo -u joinmarket wget https://bitcoin.org/bin/bitcoin-core-${bitcoinVersion}/${binaryName}
+else
+  echo "# ${binaryName} was already downloaded"
 fi
 if [ ! -f "./${binaryName}" ];then
     echo "# !!! FAIL !!! ${binaryName} is not present"
@@ -97,7 +99,7 @@ fi
 binaryChecksum=$(sha256sum ${binaryName} | cut -d " " -f1)
 if [ "${binaryChecksum}" != "${bitcoinSHA256}" ]; then
   echo "# !!! FAIL !!! Downloaded BITCOIN BINARY not matching SHA256 checksum: ${bitcoinSHA256}"
-  echo "# Deleting the downloaded file"
+  echo "# Deleting the corrupt file"
   rm -f ${binaryName}
   exit 1
 else
@@ -182,6 +184,7 @@ echo
 echo "Installed $(/home/joinmarket/bitcoin/bitcoind --version | grep version)"
 echo 
 echo "# Monitor the signet bitcoind with: tail -f ~/.bitcoin/signet/debug.log"
+echo
 }
 
 setJMconfigToSignet() {
