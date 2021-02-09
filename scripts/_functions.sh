@@ -223,6 +223,14 @@ function installJoinMarket() {
   echo "# installed JoinMarket $JMVersion"
 }
 
+# copyJoininboxScripts
+function copyJoininboxScripts() {
+  echo "# Copying the scripts in place"
+  sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/*.* /home/joinmarket/
+  sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
+  sudo -u joinmarket chmod +x /home/joinmarket/*.sh
+}
+
 # updateJoininBox <reset|commit>
 function updateJoininBox() {
   cd /home/joinmarket
@@ -261,10 +269,7 @@ function updateJoininBox() {
   fi
   sudo -u joinmarket git reset --hard $TAG
   echo "# Updated to version" $TAG
-  echo "# Copying the scripts in place"
-  sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/*.* /home/joinmarket/
-  sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
-  sudo -u joinmarket chmod +x /home/joinmarket/*.sh
+  copyJoininboxScripts
 }
 
 function setIRCtoTor() {
