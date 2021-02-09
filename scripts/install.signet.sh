@@ -28,7 +28,6 @@ fi
 echo
 echo "# *** PREPARING BITCOIN ***"
 # prepare directories
-sudo rm -rf /home/joinmarket/download 2>/dev/null
 sudo -u joinmarket mkdir /home/joinmarket/download 2>/dev/null
 cd /home/joinmarket/download || exit 1 
 
@@ -82,14 +81,15 @@ fi
 bitcoinSHA256=$(grep -i "$bitcoinOSversion" SHA256SUMS.asc | cut -d " " -f1)
 
 echo
-echo "# *** BITCOIN v${bitcoinVersion} for ${bitcoinOSversion} ***"
+echo "# BITCOIN v${bitcoinVersion} for ${bitcoinOSversion}"
 
 # download resources
 binaryName="bitcoin-${bitcoinVersion}-${bitcoinOSversion}.tar.gz"
-sudo -u joinmarket wget https://bitcoin.org/bin/bitcoin-core-${bitcoinVersion}/${binaryName}
-if [ ! -f "./${binaryName}" ]
-then
-    echo "# !!! FAIL !!! Download BITCOIN BINARY not success."
+if [ ! -f "./${binaryName}" ];then
+  sudo -u joinmarket wget https://bitcoin.org/bin/bitcoin-core-${bitcoinVersion}/${binaryName}
+fi
+if [ ! -f "./${binaryName}" ];then
+    echo "# !!! FAIL !!! ${binaryName} is not present"
     exit 1
 fi
 
@@ -97,6 +97,8 @@ fi
 binaryChecksum=$(sha256sum ${binaryName} | cut -d " " -f1)
 if [ "${binaryChecksum}" != "${bitcoinSHA256}" ]; then
   echo "# !!! FAIL !!! Downloaded BITCOIN BINARY not matching SHA256 checksum: ${bitcoinSHA256}"
+  echo "# Deleting the downloaded file"
+  rm -f ${binaryName}
   exit 1
 else
   echo
@@ -110,7 +112,7 @@ echo "# Stopping signetd"
 sudo systemctl stop signetd
 echo
 
-echo "Installing Bitcoin Core v${bitcoinVersion}"
+echo "# Installing Bitcoin Core v${bitcoinVersion}"
 sudo -u joinmarket tar -xvf ${binaryName}
 sudo -u joinmarket mkdir -p /home/joinmarket/bitcoin
 sudo install -m 0755 -o root -g root -t /home/joinmarket/bitcoin bitcoin-${bitcoinVersion}/bin/*
@@ -160,7 +162,7 @@ StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
-" | sudo tee -a /etc/systemd/system/signetd.service
+" | sudo tee /etc/systemd/system/signetd.service
     sudo systemctl enable signetd
     echo "# OK - the bitcoin daemon on signet service is now enabled"
 
