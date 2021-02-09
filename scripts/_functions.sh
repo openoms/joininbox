@@ -268,32 +268,51 @@ function updateJoininBox() {
 }
 
 function setIRCtoTor() {
-  #communicate with IRC servers via Tor
-  sed -i "s/^host = irc.darkscience.net/#host = irc.darkscience.net/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-  sed -i "s/^#host = darksci3bfoka7tw.onion/host = darksci3bfoka7tw.onion/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-  sed -i "s/^host = irc.hackint.org/#host = irc.hackint.org/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-  sed -i "s/^#host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion/host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-  sed -i "s/^socks5 = false/#socks5 = false/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-  sed -i "s/^#socks5 = true/socks5 = true/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-  sed -i "s/^#port = 6667/port = 6667/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-  sed -i "s/^#usessl = false/usessl = false/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-  echo "# Edited the joinmarket.cfg to communicate over Tor only."
+  source /home/joinmarket/joinin.conf
+  if [ "${runBehindTor}" = "on" ]; then
+    sed -i "s/^host = irc.darkscience.net/#host = irc.darkscience.net/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    sed -i "s/^#host = darksci3bfoka7tw.onion/host = darksci3bfoka7tw.onion/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    sed -i "s/^host = irc.hackint.org/#host = irc.hackint.org/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    sed -i "s/^#host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion/host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    sed -i "s/^socks5 = false/#socks5 = false/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    sed -i "s/^#socks5 = true/socks5 = true/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    sed -i "s/^#port = 6667/port = 6667/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    sed -i "s/^#usessl = false/usessl = false/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    echo "# Edited the joinmarket.cfg to communicate over Tor only."
+  else
+    echo "# Tor is not active, will communicate with IRC servers via clearnet"
+  fi
 }
 
 function generateJMconfig() {
   if [ ! -f "/home/joinmarket/.joinmarket/joinmarket.cfg" ] ; then
-    echo "# Generating the joinmarket.cfg"
+    echo "# Generating joinmarket.cfg with default settings"
     echo
     . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
     cd /home/joinmarket/joinmarket-clientserver/scripts/
     python wallet-tool.py generate --datadir=/home/joinmarket/.joinmarket
   else
     echo "# The joinmarket.cfg is present"
-    echo ""
+    echo
   fi
+  setIRCtoTor
   # set strict permission to joinmarket.cfg
   sudo chmod 600 /home/joinmarket/.joinmarket/joinmarket.cfg || exit 1
  }
+
+#backupJMconf
+function backupJMconf() {
+  if [ -f "/home/joinmarket/.joinmarket/joinmarket.cfg" ] ; then
+    now=$(date +"%Y_%m_%d_%H%M%S")
+    echo "# Moving the joinmarket.cfg to the filename joinmarket.cfg.backup$now"
+    mv /home/joinmarket/.joinmarket/joinmarket.cfg \
+    /home/joinmarket/.joinmarket/joinmarket.cfg.backup$now
+    echo
+  else
+    echo "# The joinmarket.cfg is not present"
+    echo
+  fi
+}
 
 # updateTor
 function updateTor() {
