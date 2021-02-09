@@ -39,9 +39,9 @@ case $CHOICE in
     echo "# Removing the joinmarket.cfg"
     rm -f /home/joinmarket/.joinmarket/joinmarket.cfg
     generateJMconfig
-    echo "Returning to the menu..."
-    sleep 1
-    /home/joinmarket/menu.sh
+    echo         
+    echo "Press ENTER to return to the menu..."
+    read key
     ;;
   CONNECT)
     /home/joinmarket/install.signet.sh off
