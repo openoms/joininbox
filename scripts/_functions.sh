@@ -181,7 +181,7 @@ function installJoinMarket() {
   fi
   
   sudo -u joinmarket git clone https://github.com/Joinmarket-Org/joinmarket-clientserver
-  cd joinmarket-clientserver
+  cd joinmarket-clientserver || exit 1
   
   if [ "$1" = "testPR" ]; then
     PRnumber=$2
@@ -201,7 +201,9 @@ function installJoinMarket() {
   sudo -u joinmarket sed -i \
   "s#^        if ! sudo apt-get install \${deb_deps\[@\]}; then#\
         if ! sudo apt-get install -y \${deb_deps\[@\]}; then#g" install.sh
-  
+  # https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/805/files
+  sudo -u joinmarket sed -i \
+  "s#txtorcon#txtorcon', 'cryptography==3.3.2#g" jmdaemon/setup.py
   if [ ${cpu} != "x86_64" ]; then
     echo "# Make install.sh set up jmvenv with -- system-site-packages on arm"
     # and import the PySide2 armf package from the system
