@@ -6,7 +6,7 @@
 # login with SSH or boot directly
 # run this script as root or with sudo
 # can specify donwloading from a branch or forked repo:
-# sudo bash build_joininbox.sh [branch] [github user]
+# bash build_joininbox.sh [branch] [github user]
 ########################################################################
 
 # The JoininBox Build Script is partially based on:
@@ -15,8 +15,8 @@
 # command info
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
   echo "JoininBox Build Script" 
-  echo "Usage: sudo bash build_joininbox.sh [branch] [github user]"
-  echo "Example: sudo bash bash build_joininbox.sh dev openoms"
+  echo "Usage: bash build_joininbox.sh [branch] [github user]"
+  echo "Example: bash bash build_joininbox.sh dev openoms"
   exit 1
 fi
 
@@ -56,7 +56,7 @@ echo "###################################"
 echo "# Identify the CPU and base image #"
 echo "###################################"
 echo 
-cpu=$(sudo uname -m)
+cpu=$(uname -m)
 echo "# CPU: ${cpu}"
 baseImage="?"
 isBuster=$(grep -c 'buster' < /etc/os-release)
@@ -101,29 +101,27 @@ if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "dietpi" ]||\
   # https://stackoverflow.com/questions/38188762/generate-all-locales-in-a-docker-image
   echo
   echo "# FIXING LOCALES FOR BUILD "
-  sudo apt install -y locales
-  sudo sed -i "s/^# en_US.UTF-8 UTF-8.*/en_US.UTF-8 UTF-8/g" /etc/locale.gen
-  sudo sed -i "s/^# en_US ISO-8859-1.*/en_US ISO-8859-1/g" /etc/locale.gen
-  sudo locale-gen
-  export LANGUAGE=en_US.UTF-8
-  export LANG=en_US.UTF-8
-  export LC_ALL=en_US.UTF-8
+  apt install -y locales
+  sed -i "s/^# en_US.UTF-8 UTF-8.*/en_US.UTF-8 UTF-8/g" /etc/locale.gen
+  sed -i "s/^# en_US ISO-8859-1.*/en_US ISO-8859-1/g" /etc/locale.gen
+  locale-gen
+  update-locale
   # https://github.com/rootzoll/raspiblitz/issues/684
-  sudo sed -i "s/^    SendEnv LANG LC.*/#   SendEnv LANG LC_*/g" /etc/ssh/ssh_config
+  sed -i "s/^    SendEnv LANG LC.*/#   SendEnv LANG LC_*/g" /etc/ssh/ssh_config
   # remove unnecessary files
-  sudo rm -rf /home/pi/MagPi
+  rm -rf /home/pi/MagPi
   # https://www.reddit.com/r/linux/comments/lbu0t1/microsoft_repo_installed_on_all_raspberry_pis/
-  sudo rm -f /etc/apt/sources.list.d/vscode.list 
-  sudo rm -f /etc/apt/trusted.gpg.d/microsoft.gpg
+  rm -f /etc/apt/sources.list.d/vscode.list 
+  rm -f /etc/apt/trusted.gpg.d/microsoft.gpg
 fi
 
 if [ -f "/usr/bin/python3.7" ]; then
   # make sure /usr/bin/python exists (and calls Python3.7 in Debian Buster)
-  sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+  update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
   echo "# python calls python3.7"
 elif [ -f "/usr/bin/python3.8" ]; then
   # use python 3.8 if available
-  sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
+  update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
   echo "# python calls python3.8"
 else
   echo "!!! FAIL !!!"
@@ -136,19 +134,19 @@ echo "# PREPARE ${baseImage} "
 # special prepare when Raspbian
 if [ "${baseImage}" = "raspbian" ]; then
   # do memory split (16MB)
-  sudo raspi-config nonint do_memory_split 16
+ raspi-config nonint do_memory_split 16
   # set to wait until network is available on boot (0 seems to yes)
-  sudo raspi-config nonint do_boot_wait 0
+ raspi-config nonint do_boot_wait 0
   # set WIFI country so boot does not block
-  sudo raspi-config nonint do_wifi_country US
+ raspi-config nonint do_wifi_country US
   # see https://github.com/rootzoll/raspiblitz/issues/428#issuecomment-472822840
-  echo "max_usb_current=1" | sudo tee -a /boot/config.txt
+  echo "max_usb_current=1" |tee -a /boot/config.txt
   # run fsck on sd boot partition on every startup to prevent "maintenance login" screen
   # see: https://github.com/rootzoll/raspiblitz/issues/782#issuecomment-564981630
-  # use command to check last fsck check: sudo tune2fs -l /dev/mmcblk0p2
-  sudo tune2fs -c 1 /dev/mmcblk0p2
+  # use command to check last fsck check: tune2fs -l /dev/mmcblk0p2
+ tune2fs -c 1 /dev/mmcblk0p2
   # see https://github.com/rootzoll/raspiblitz/issues/1053#issuecomment-600878695
-  sudo sed -i 's/^/fsck.mode=force fsck.repair=yes /g' /boot/cmdline.txt
+ sed -i 's/^/fsck.mode=force fsck.repair=yes /g' /boot/cmdline.txt
 fi
 
 echo 
@@ -217,48 +215,48 @@ echo "	postrotate" >> ./rsyslog
 echo "		invoke-rc.d rsyslog rotate > /dev/null" >> ./rsyslog
 echo "	endscript" >> ./rsyslog
 echo "}" >> ./rsyslog
-sudo mv ./rsyslog /etc/logrotate.d/rsyslog
-sudo chown root:root /etc/logrotate.d/rsyslog
-sudo service rsyslog restart
+mv ./rsyslog /etc/logrotate.d/rsyslog
+chown root:root /etc/logrotate.d/rsyslog
+aptservice rsyslog restart
 
 echo 
 echo "###############################"
 echo "# Apt update & upgrade        #"
 echo "###############################"
 echo 
-sudo apt-get update -y
-sudo apt-get upgrade -f -y
+apt-get update -y
+apt-get upgrade -f -y
 
 echo 
 echo "##########################"
 echo "# Tools and dependencies #"
 echo "##########################"
 echo 
-sudo apt-get install -y htop git curl bash-completion vim jq bsdmainutils
+apt-get install -y htop git curl bash-completion vim jq bsdmainutils
 # prepare for display graphics mode
 # see https://github.com/rootzoll/raspiblitz/pull/334
-sudo apt-get install -y fbi
+apt-get install -y fbi
 # check for dependencies on DietPi, Ubuntu, Armbian
-sudo apt install -y build-essential
+apt install -y build-essential
 # dependencies for python
-sudo apt install -y python3-venv python3-dev python3-wheel python3-jinja2 \
+apt install -y python3-venv python3-dev python3-wheel python3-jinja2 \
 python3-pip
 # make sure /usr/bin/pip exists (and calls pip3 in Debian Buster)
-sudo update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+aptupdate-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 # install ifconfig
-sudo apt install -y net-tools
+apt install -y net-tools
 # to display hex codes
-sudo apt install -y xxd
+apt install -y xxd
 # setuptools needed for Nyx
-sudo pip install setuptools
+aptpip install setuptools
 # netcat
-sudo apt install -y netcat
+apt install -y netcat
 # install killall, fuser
-sudo apt-get install -y psmisc
+apt-get install -y psmisc
 # dialog
-sudo apt install -y dialog
-sudo apt-get clean
-sudo apt-get -y autoremove
+apt install -y dialog
+apt-get clean
+apt-get -y autoremove
 
 echo 
 echo "#############"
@@ -279,13 +277,13 @@ echo "# set the default password 'joininbox' for the users 'pi', \
 'joinmarket' and 'root'"
 adduser joinmarket sudo
 # chsh joinmarket -s /bin/bash
-# configure sudo for usage without password entry for the joinmarket user
+# configure for usage without password entry for the joinmarket user
 # https://www.tecmint.com/run-sudo-command-without-password-linux/
 echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
-echo "root:joininbox" | sudo chpasswd
-echo "joinmarket:joininbox" | sudo chpasswd
+echo "root:joininbox" | chpasswd
+echo "joinmarket:joininbox" | chpasswd
 if [ $(grep -c pi  < /etc/passwd) -gt 0 ];then
-  echo "pi:joininbox" | sudo chpasswd
+  echo "pi:joininbox" | chpasswd
 fi
 
 # create config file
@@ -300,7 +298,7 @@ echo
 checkTorEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | \
 grep -c "runBehindTor")
 if [ ${checkTorEntry} -eq 0 ]; then
-  echo "runBehindTor=off" | sudo tee -a /home/joinmarket/joinin.conf
+  echo "runBehindTor=off" | tee -a /home/joinmarket/joinin.conf
 fi
 
 torTest=$(curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s \
@@ -313,32 +311,32 @@ then
   apt install -y dirmngr apt-transport-https
   echo 
   echo "# Adding KEYS deb.torproject.org "
-  torKeyAvailable=$(sudo gpg --list-keys | grep -c \
+  torKeyAvailable=$(gpg --list-keys | grep -c \
   "A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89")
   echo "torKeyAvailable=${torKeyAvailable}"
   if [ ${torKeyAvailable} -eq 0 ]; then
     # https://support.torproject.org/apt/tor-deb-repo/
     wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import
-    gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | sudo apt-key add -
+    gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -
     echo "OK"
   else
     echo "# Tor key is available"
   fi
   echo "# Adding Tor Sources to sources.list"
-  torSourceListAvailable=$(sudo cat /etc/apt/sources.list | grep -c \
+  torSourceListAvailable=$(cat /etc/apt/sources.list | grep -c \
   'https://deb.torproject.org/torproject.org')
   echo "torSourceListAvailable=${torSourceListAvailable}"  
   if [ ${torSourceListAvailable} -eq 0 ]; then
     echo "Adding TOR sources ..."
     if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "buster" ]||[ "${baseImage}" = "dietpi" ]; then
-      echo "deb https://deb.torproject.org/torproject.org buster main" | sudo tee -a /etc/apt/sources.list
-      echo "deb-src https://deb.torproject.org/torproject.org buster main" | sudo tee -a /etc/apt/sources.list
+      echo "deb https://deb.torproject.org/torproject.org buster main" | tee -a /etc/apt/sources.list
+      echo "deb-src https://deb.torproject.org/torproject.org buster main" | tee -a /etc/apt/sources.list
     elif [ "${baseImage}" = "bionic" ]; then
-      echo "deb https://deb.torproject.org/torproject.org bionic main" | sudo tee -a /etc/apt/sources.list
-      echo "deb-src https://deb.torproject.org/torproject.org bionic main" | sudo tee -a /etc/apt/sources.list
+      echo "deb https://deb.torproject.org/torproject.org bionic main" | tee -a /etc/apt/sources.list
+      echo "deb-src https://deb.torproject.org/torproject.org bionic main" | tee -a /etc/apt/sources.list
     elif [ "${baseImage}" = "focal" ]; then
-      echo "deb https://deb.torproject.org/torproject.org focal main" | sudo tee -a /etc/apt/sources.list
-      echo "deb-src https://deb.torproject.org/torproject.org focal main" | sudo tee -a /etc/apt/sources.list    
+      echo "deb https://deb.torproject.org/torproject.org focal main" | tee -a /etc/apt/sources.list
+      echo "deb-src https://deb.torproject.org/torproject.org focal main" | tee -a /etc/apt/sources.list    
     fi
     echo "OK"
   else
@@ -391,18 +389,18 @@ apt install -y torsocks tor-arm
 # Tor config
 # torrc
 if ! grep -Eq "^DataDirectory" /etc/tor/torrc; then
-  echo "DataDirectory /var/lib/tor" | sudo tee -a /etc/tor/torrc
+  echo "DataDirectory /var/lib/tor" | tee -a /etc/tor/torrc
 fi
 if ! grep -Eq "^ControlPort 9051" /etc/tor/torrc; then
-  echo "ControlPort 9051" | sudo tee -a /etc/tor/torrc
+  echo "ControlPort 9051" | tee -a /etc/tor/torrc
 fi
 if ! grep -Eq "^CookieAuthentication 1" /etc/tor/torrc; then
-  echo "CookieAuthentication 1" | sudo tee -a /etc/tor/torrc
+  echo "CookieAuthentication 1" | tee -a /etc/tor/torrc
 fi
-sudo sed -i "s:^CookieAuthFile*:#CookieAuthFile:g" /etc/tor/torrc
+sed -i "s:^CookieAuthFile*:#CookieAuthFile:g" /etc/tor/torrc
 # torsocks.conf
 if ! grep -Eq "^AllowOutboundLocalhost 1" /etc/tor/torsocks.conf; then          
-  echo "AllowOutboundLocalhost 1" | sudo tee -a /etc/tor/torsocks.conf
+  echo "AllowOutboundLocalhost 1" | tee -a /etc/tor/torsocks.conf
 fi
 # add the joinmarket user to the tor group
 usermod -a -G debian-tor joinmarket
@@ -433,21 +431,21 @@ if [ $old_kernel -gt 0 ]; then
   update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
 fi
 echo "# enabling the firewall"
-sudo ufw --force enable
+ufw --force enable
 systemctl enable ufw
 ufw status
 
 # make folder for authorized keys 
 sudo -u joinmarket mkdir -p /home/joinmarket/.ssh
-sudo chmod -R 700 /home/joinmarket/.ssh
+chmod -R 700 /home/joinmarket/.ssh
 
 # install a command-line fuzzy finder (https://github.com/junegunn/fzf)
-sudo apt -y install fzf
-sudo bash -c "echo 'source /usr/share/doc/fzf/examples/key-bindings.bash' >> \
+apt -y install fzf
+bash -c "echo 'source /usr/share/doc/fzf/examples/key-bindings.bash' >> \
 /home/joinmarket/.bashrc"
 
 # install tmux
-sudo apt -y install tmux
+apt -y install tmux
 
 echo 
 echo "#############"
@@ -469,8 +467,49 @@ if [ -z \"\$TMUX\" ]; then
 fi
 " | sudo -u joinmarket tee -a /home/joinmarket/.bashrc
 
-echo "# THE BASE IMAGE IS READY "
+echo "# Install bootstrap.service"
+echo "
+# boostrap.service
+# based on https://github.com/rootzoll/raspiblitz/blob/v1.6/home.admin/assets/bootstrap.service
+# /etc/systemd/system/bootstrap.service
+
+[Unit]
+Description=Execute on every startup before everything else
+After=network.target
+
+[Service]
+User=root
+Group=root
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/home/admin/_bootstrap.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+" | tee /etc/systemd/system/bootstrap.service
+systemctl enable bootstrap
+
 echo 
-echo "# look through / save this output and continue with:"
-echo "# 'sudo su - joinmarket'"
+echo "######################"
+echo "# Install JoinMarket #"
+echo "######################"
+echo 
+sudo -u joinmarket  /home/joinmarket/install.joinmarket.sh install
+
 echo
+echo "###########################"
+echo "# The Base Image is ready #"
+echo "###########################"
+echo 
+echo "Look through / save this output and continue with:"
+echo "'su - joinmarket'"
+echo
+echo "To make an SDcard image safe to share"
+echo "use: 'prepare.release.sh'"
+echo
+echo "the ssh login credentials are until the first login:"
+echo "user:joinmarket"
+echo "password:joininbox"
+echo 
