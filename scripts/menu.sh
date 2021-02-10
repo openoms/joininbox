@@ -8,8 +8,8 @@ source /home/joinmarket/_functions.sh
 HEIGHT=25
 WIDTH=57
 CHOICE_HEIGHT=21
-BACKTITLE="JoininBox GUI $currentJBtag"
-TITLE="JoininBox $currentJBtag"
+BACKTITLE="JoininBox GUI $currentJBtag network:$network IP:$localip"
+TITLE="JoininBox $currentJBtag $network"
 MENU="
 Choose from the options:"
 OPTIONS=()

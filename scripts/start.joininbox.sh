@@ -107,3 +107,28 @@ elif [ "$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -cv /)" -eq 1 ]; th
   echo "# Using it as default"
   sed -i "s#^defaultWallet=.*#defaultWallet=$onlyWallet#g" /home/joinmarket/joinin.conf
 fi
+
+# add default value to joinin config if needed
+if ! grep -Eq "^network=" /home/joinmarket/joinin.conf; then
+  echo "network=unknown" >> /home/joinmarket/joinin.conf
+fi
+isMainnet=$(grep -c "network = mainnet" < /home/joinmarket/.joinmarket/joinmarket.cfg)
+isSignet=$(grep -c "network = signet" < /home/joinmarket/.joinmarket/joinmarket.cfg)
+isTestnet=$(grep -c "network = testnet" < /home/joinmarket/.joinmarket/joinmarket.cfg)
+if [ $isMainnet -gt 0 ];then
+  sed -i "s#^network=.*#network=mainnet#g" /home/joinmarket/joinin.conf
+elif [ $isSignet -gt 0 ];then
+  sed -i "s#^network=.*#network=signet#g" /home/joinmarket/joinin.conf
+elif [ $isTestnet -gt 0 ];then
+  sed -i "s#^network=.*#network=testnet#g" /home/joinmarket/joinin.conf
+else
+  sed -i "s#^network=.*#network=unknownt#g" /home/joinmarket/joinin.conf
+fi
+
+# add default value to joinin config if needed
+if ! grep -Eq "^localip=" /home/joinmarket/joinin.conf; then
+  echo "localip=unknown" >> /home/joinmarket/joinin.conf
+fi
+localip=$(ip addr | grep 'state UP' -A2 | grep -Ev 'docker0|veth' | \
+grep 'eth0\|wlan0\|enp0' | tail -n1 | awk '{print $2}' | cut -f1 -d'/')
+sed -i "s#^localip=.*#localip=$localip#g" /home/joinmarket/joinin.conf
