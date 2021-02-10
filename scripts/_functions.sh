@@ -164,6 +164,7 @@ function YGuptime() {
 # installJoinMarket [update|testPR <PRnumber>|commit]
 function installJoinMarket() {
   source /home/joinmarket/joinin.conf
+  cpu=$(uname -m)
   cd /home/joinmarket
   # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
   echo "# Installing ARM specific dependencies to run the QT GUI"

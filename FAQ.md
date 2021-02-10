@@ -313,9 +313,10 @@ To copy the ssh pubkey from the Ubuntu image run in the RASPIFIRM directory:
     apt update
     apt install sudo wget
     apt upgrade
-    reboot
+    shutdown now # reboot does not work (kernel update)
     ``` 
 #### Install Joininbox
+* Boot the RPi again by replugging the power cord
 * Connect with ssh 
     ```bash
     ssh root@rpi4-20201112

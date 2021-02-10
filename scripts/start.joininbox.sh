@@ -6,14 +6,6 @@ if [ -f /home/joinmarket/joinin.conf ]; then
   touch /home/joinmarket/joinin.conf
 fi
 
-# identify cpu architecture
-cpuEntry=$(grep -c "cpu" < /home/joinmarket/joinin.conf)
-if [ "$cpuEntry" -eq 0 ]; then
-  cpu=$(sudo uname -m)
-  echo "# cpu=${cpu}"
-  echo "cpu=$cpu" >> /home/joinmarket/joinin.conf
-fi
-
 #############
 # FIRST RUN #
 #############
@@ -25,13 +17,18 @@ if [ "$runningEnvEntry" -eq 0 ]; then
   else
     runningEnv="standalone"
     setupStep=0
-    # set ssh passwords on the first run
-    sudo /home/joinmarket/set.password.sh || exit 1
-    sudo sed -i  "s#setupStep=.*#setupStep=100#g" /home/joinmarket/joinin.conf
-  fi  
+  fi
+  echo "setupStep=$setupStep" >> /home/joinmarket/joinin.conf  
   echo "runningEnv=$runningEnv" >> /home/joinmarket/joinin.conf
-  echo "setupStep=$setupStep" >> /home/joinmarket/joinin.conf
   echo "# running in the environment: $runningEnv"
+
+  # identify cpu architecture
+  cpuEntry=$(grep -c "cpu" < /home/joinmarket/joinin.conf)
+  if [ "$cpuEntry" -eq 0 ]; then
+    cpu=$(uname -m)
+    echo "# cpu=${cpu}"
+    echo "cpu=$cpu" >> /home/joinmarket/joinin.conf
+  fi
 
   # make sure Tor path is known
   DirEntry=$(grep -c "HiddenServiceDir" < /home/joinmarket/joinin.conf)
@@ -51,9 +48,12 @@ if [ "$runningEnvEntry" -eq 0 ]; then
 
   # check if JoinMarket is installed
   /home/joinmarket/install.joinmarket.sh install
-  
-  # open the config menu on first start if standalone
+
+  # change the ssh password and open the config menu if standalone
   if [ "$runningEnv" = "standalone" ]; then
+    # set ssh passwords on the first run
+    sudo /home/joinmarket/set.password.sh || exit 1
+    sudo sed -i  "s#setupStep=.*#setupStep=100#g" /home/joinmarket/joinin.conf
     /home/joinmarket/menu.config.sh
   fi
 fi
