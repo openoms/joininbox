@@ -11,11 +11,12 @@
 - [Using the 2.13" WaveShare e-ink display](#using-the-213-waveshare-e-ink-display)
 - [Compile Tor for the RPi Zero (armv6l)](#compile-tor-for-the-rpi-zero-armv6l)
 - [Build the SDcard image](#build-the-sdcard-image)
-  - [Boot Tails: https://tails.boum.org/](#boot-tails-httpstailsboumorg)
+  - [Boot Ubuntu Live from USB: https://releases.ubuntu.com/focal/ubuntu-20.04.2-desktop-amd64.iso](#boot-ubuntu-live-from-usb-httpsreleasesubuntucomfocalubuntu-20042-desktop-amd64iso)
   - [Download,verify and flash the base image to the SDcard](#downloadverify-and-flash-the-base-image-to-the-sdcard)
   - [Prepare the base image](#prepare-the-base-image)
   - [Install Joininbox](#install-joininbox)
   - [Prepare the SDcard release](#prepare-the-sdcard-release)
+  - [Sign the image](#sign-the-image)
 ### SSH through Tor from Linux
 On a RaspiBlitz
 * since v1.4 there is a script to create a hidden service on your blitz:  
@@ -257,24 +258,52 @@ https://github.com/21isenough/LightningATM/blob/master/displays/waveshare2in13.p
 https://2019.www.torproject.org/docs/debian#source
 
 ### Build the SDcard image
-
-#### Boot Tails: https://tails.boum.org/
+* Check out: https://github.com/rootzoll/raspiblitz/blob/v1.6/FAQ.md#what-is-the-process-of-creating-a-new-sd-card-image-release
+#### Boot Ubuntu Live from USB: https://releases.ubuntu.com/focal/ubuntu-20.04.2-desktop-amd64.iso
+* Connect to a secure WiFi (hardware switch on) or LAN
 #### Download,verify and flash the base image to the SDcard 
 * Image: https://raspi.debian.net/verified/20201112_raspi_4.img.xz
 * Signature: https://raspi.debian.net/verified/20201112_raspi_4.xz.sha256.asc
 
     ```bash
-    gpg --receive-key 60B3093D96108E5CB97142EFE2F63B4353F45989
+    gpg --receive-key E2F63B4353F45989
     gpg --verify 20201112_raspi_4.xz.sha256.asc
+        gpg: Signature made Thu 12 Nov 2020 17:40:03 GMT
+        gpg:                using EDDSA key 60B3093D96108E5CB97142EFE2F63B4353F45989
+        gpg: Good signature from "Gunnar Wolf <gwolf@gwolf.org>" [unknown]
+        gpg:                 aka "Gunnar Eyal Wolf Iszaevich <gwolf@iiec.unam.mx>" [unknown]
+        gpg:                 aka "Gunnar Wolf <gwolf@debian.org>" [unknown]
+        gpg: Note: This key has expired!
+        Primary key fingerprint: 4D14 0506 53A4 02D7 3687  049D 2404 C954 6E14 5360
+            Subkey fingerprint: 60B3 093D 9610 8E5C B971  42EF E2F6 3B43 53F4 5989
+        gpg: WARNING: not a detached signature; file '20201112_raspi_4.xz.sha256' was NOT verified!
+    cat 20201112_raspi_4.xz.sha256.asc
+        -----BEGIN PGP SIGNED MESSAGE-----
+        Hash: SHA256
+
+        56d6e5c674fb89be07ed160807d0b166cc3713d8c32c47ff61fbc94f39452373  20201112_raspi_4.img.xz
+        -----BEGIN PGP SIGNATURE-----
+
+        iHUEARYIAB0WIQRgswk9lhCOXLlxQu/i9jtDU/RZiQUCX61zcwAKCRDi9jtDU/RZ
+        ieP+AQCpUvxsiswIpHTRzxw1/3QlfI4wxgL8BVMixwp/37xBOQD/eDzqxyRVhkjX
+        ywV0nAAEMJestu2TQHAufqPBfwCrxQY=
+        =s/jY
+        -----END PGP SIGNATURE-----
+    sha256sum 20201112_raspi_4.img.xz 
+        56d6e5c674fb89be07ed160807d0b166cc3713d8c32c47ff61fbc94f39452373  20201112_raspi_4.img.xz
     ```
 
-* Flash it to the SDcard with Balena Etcher: https://www.balena.io/etcher/
+* Connect SD card reader with a 8GB SD card
+* In the file manager open context on the .img.xz file, select `Open With Disk Image Writer` and write the image to the SDcard.
 #### Prepare the base image
 
-* before the first boot edit the `sysconf.txt` on the RASPIFIRM partition to be able to ssh remotely - needs an authorized ssh pubkey. Get it from the Tails terminal with:  
-`cat .ssh/id_rsa.pub`
-
-* Boot the RPi and connect with ssh. Find the IP on the router's dashboard if using the hostname does not work.
+* Before the first boot edit the `sysconf.txt` on the RASPIFIRM partition to be able to ssh remotely - needs an authorized ssh pubkey.  
+To copy the ssh pubkey from the Ubuntu image run in the RASPIFIRM directory:
+    ```bash
+    echo "root_authorized_key=$(cat ~/.ssh/id_rsa.pub)" | tee -a sysconf.txt
+    ```
+    The `sysconf.txt` will reset after boot and moves the ssh pubkey to `/root/.ssh/authorized_keys`
+* Boot the RPi and connect with ssh (use the hostname, `arp -a` or check router))
     ```bash
     ssh root@rpi4-20201112
     ```
@@ -287,7 +316,7 @@ https://2019.www.torproject.org/docs/debian#source
     reboot
     ``` 
 #### Install Joininbox
-* Connect with ssh
+* Connect with ssh 
     ```bash
     ssh root@rpi4-20201112
     ```
@@ -300,9 +329,32 @@ https://2019.www.torproject.org/docs/debian#source
   # run
   sudo bash build_joininbox.sh
   ```
-
+* Monitor/Check outputs for warnings/errors - install LCD
 #### Prepare the SDcard release
  * Make the SDcard image safe to share by removing unique infos like ssh pubkeys and network identifiers:  
      ```bash
     /home/joinmarket/prepare.release.sh
     ```
+* Disconnect WiFi/LAN on build laptop (hardware switch off) and shutdown
+* Remove Ubuntu LIVE USB stick and cut power from the RaspberryPi
+#### Sign the image
+* Connect USB stick with latest TailsOS (make it stay offline)
+* Power on the Build Laptop (press F12 for boot menu)
+* Connect USB stick with GPG signing keys - decrypt drive if needed
+* Open Terminal and cd into directory of USB Stick under /media/amnesia
+* Run gpg --import ./sub.key, check and exit
+* Disconnect USB stick with GPG keys
+* Take the SD card from the RaspberryPi and connect with an external SD card reader to the laptop
+* Click on boot volume once in the file manger
+* Connect the NTFS USB stick, open in file manager and delete old files
+* Open Terminal and cd into directory of NTFS USB stick under /media/amnesia
+* Run df to check on the SD card device name (boot - ignore last partition number)
+* dd if=/dev/[sdcarddevice] | gzip > ./raspiblitz-vX.X-YEAR-MONTH-DAY.img.gz
+* When finished you should see that more then 7GB were copied
+* Then run shasum -a 256 *.gz > sha256.txt
+* Sign with gpg --output raspiblitz-vX.X-YEAR-MONTH-DAY.img.gz.sig --detach-sign *.gz
+* Shutdown build computer
+* Connect the NTFS USB stick to MacOS (it is just read-only)
+* Run tests on the new image
+* Upload the new image to the Download Server - put sig-file next to it
+* Copy SHA256-String into GitHub README and update the download link
