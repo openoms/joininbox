@@ -10,6 +10,12 @@
 - [Sample bitcoin.conf for a remote node accepting RPC connections through LAN](#sample-bitcoinconf-for-a-remote-node-accepting-rpc-connections-through-lan)
 - [Using the 2.13" WaveShare e-ink display](#using-the-213-waveshare-e-ink-display)
 - [Compile Tor for the RPi Zero (armv6l)](#compile-tor-for-the-rpi-zero-armv6l)
+- [Build the SDcard image](#build-the-sdcard-image)
+  - [Boot Tails: https://tails.boum.org/](#boot-tails-httpstailsboumorg)
+  - [Download,verify and flash the base image to the SDcard](#downloadverify-and-flash-the-base-image-to-the-sdcard)
+  - [Prepare the base image](#prepare-the-base-image)
+  - [Install Joininbox](#install-joininbox)
+  - [Prepare the SDcard release](#prepare-the-sdcard-release)
 ### SSH through Tor from Linux
 On a RaspiBlitz
 * since v1.4 there is a script to create a hidden service on your blitz:  
@@ -249,3 +255,54 @@ https://github.com/21isenough/LightningATM/blob/master/displays/waveshare2in13.p
 ### Compile Tor for the RPi Zero (armv6l)
 
 https://2019.www.torproject.org/docs/debian#source
+
+### Build the SDcard image
+
+#### Boot Tails: https://tails.boum.org/
+#### Download,verify and flash the base image to the SDcard 
+* Image: https://raspi.debian.net/verified/20201112_raspi_4.img.xz
+* Signature: https://raspi.debian.net/verified/20201112_raspi_4.xz.sha256.asc
+
+    ```bash
+    gpg --receive-key 60B3093D96108E5CB97142EFE2F63B4353F45989
+    gpg --verify 20201112_raspi_4.xz.sha256.asc
+    ```
+
+* Flash it to the SDcard with Balena Etcher: https://www.balena.io/etcher/
+#### Prepare the base image
+
+* before the first boot edit the `sysconf.txt` on the RASPIFIRM partition to be able to ssh remotely - needs an authorized ssh pubkey. Get it from the Tails terminal with:  
+`cat .ssh/id_rsa.pub`
+
+* Boot the RPi and connect with ssh. Find the IP on the router's dashboard if using the hostname does not work.
+    ```bash
+    ssh root@rpi4-20201112
+    ```
+
+* install basic dependencies, upgrade and reboot
+    ```bash
+    apt update
+    apt install sudo wget
+    apt upgrade
+    reboot
+    ``` 
+#### Install Joininbox
+* Connect with ssh
+    ```bash
+    ssh root@rpi4-20201112
+    ```
+* Download and run the build script
+  ```bash 
+  # download
+  wget https://raw.githubusercontent.com/openoms/joininbox/master/build_joininbox.sh
+  # inspect the script
+  cat build_joininbox.sh
+  # run
+  sudo bash build_joininbox.sh
+  ```
+
+#### Prepare the SDcard release
+ * Make the SDcard image safe to share by removing unique infos like ssh pubkeys and network identifiers:  
+     ```bash
+    /home/joinmarket/prepare.release.sh
+    ```

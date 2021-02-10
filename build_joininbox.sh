@@ -507,7 +507,7 @@ echo "Look through / save this output and continue with:"
 echo "'su - joinmarket'"
 echo
 echo "To make an SDcard image safe to share"
-echo "use: 'prepare.release.sh'"
+echo "use: '/home/joinmarket/prepare.release.sh'"
 echo
 echo "the ssh login credentials are until the first login:"
 echo "user:joinmarket"
