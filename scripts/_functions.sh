@@ -192,7 +192,7 @@ function installJoinMarket() {
     echo "# Updating to the latest commit in:"
     echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver"
   else
-    JMVersion="v0.8.0"
+    JMVersion="v0.8.1"
     sudo -u joinmarket git reset --hard $JMVersion
   fi
 
