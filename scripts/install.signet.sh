@@ -138,9 +138,6 @@ rpcpassword=$randomRPCpass
 
 onlynet=onion
 proxy=127.0.0.1:9050
-
-[signet] 
-wallet=wallet.dat
 EOF
 
 # /etc/systemd/system/signetd.service
@@ -177,8 +174,9 @@ if [ $(alias | grep -c signet) -eq 0 ];then
 fi
 
 sudo systemctl start signetd
-# create signet wallet
-/home/joinmarket/bitcoin/bitcoin-cli -signet createwallet wallet.dat
+
+echo "# create wallet.dat for signet"
+sudo -u joinmarket /home/joinmarket/bitcoin/bitcoin-cli -signet createwallet wallet.dat
 
 echo
 echo "Installed $(/home/joinmarket/bitcoin/bitcoind --version | grep version)"
