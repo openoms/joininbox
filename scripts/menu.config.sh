@@ -7,7 +7,7 @@ source /home/joinmarket/_functions.sh
 HEIGHT=10
 WIDTH=58
 CHOICE_HEIGHT=20
-TITLE="Tools"
+TITLE="Configuration options"
 MENU=""
 OPTIONS=()
 BACKTITLE="JoininBox GUI"
