@@ -28,7 +28,7 @@ OPTIONS+=(\
   "" ""
   OFFERS "Watch the Order Book locally" \
   "" "" 
-  CONFIG "Edit the joinmarket.cfg" \
+  CONFIG "Connection and joinmarket.cfg settings" \
   TOOLS "Extra helper functions and Boltzmann"
   UPDATE "Update JoininBox or JoinMarket" \
   "" "" 
@@ -100,7 +100,7 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       /home/joinmarket/menu.sh
       ;;
   CONFIG)
-      /home/joinmarket/install.joinmarket.sh config
+      /home/joinmarket/menu.config.sh
       echo "Returning to the menu..."
       sleep 1
       /home/joinmarket/menu.sh

@@ -52,11 +52,9 @@ if [ "$runningEnvEntry" -eq 0 ]; then
   # check if JoinMarket is installed
   /home/joinmarket/install.joinmarket.sh install
   
-  # connect to remote node on first start if standalone
+  # open the config menu on first start if standalone
   if [ "$runningEnv" = "standalone" ]; then
-    /home/joinmarket/menu.bitcoinrpc.sh
-    # run config after install
-    /home/joinmarket/install.joinmarket.sh config
+    /home/joinmarket/menu.config.sh
   fi
 fi
 
@@ -73,7 +71,6 @@ if [ "$runningEnv" = "raspiblitz" ] && [ "$setupStep" -eq 0 ]; then
   echo "# filled the bitcoin RPC password (PASSWORD_B)"
   sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/g" /home/joinmarket/.joinmarket/joinmarket.cfg
   echo "# using the bitcoind wallet: wallet.dat"
-  setIRCtoTor
   # setup finished
   sudo sed -i  "s#setupStep=.*#setupStep=100#g" /home/joinmarket/joinin.conf
 fi

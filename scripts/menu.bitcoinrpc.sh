@@ -2,6 +2,10 @@
 
 source /home/joinmarket/_functions.sh
 
+# check connectedRemoteNode var in joinin.conf
+if ! grep -Eq "^connectedRemoteNode=" /home/joinmarket/joinin.conf; then
+  echo "connectedRemoteNode=off" >> /home/joinmarket/joinin.conf
+fi
 clear
 
 generateJMconfig
@@ -63,6 +67,7 @@ echo
 python /home/joinmarket/set.bitcoinrpc.py --rpc_user=$rpc_user --rpc_pass=$rpc_pass --rpc_host=$rpc_host --rpc_port=$rpc_port
 echo
 echo "# The bitcoinRPC connection settings are set in the joinmarket.cfg"
+sed -i "s#^connectedRemoteNode=.*#connectedRemoteNode=on#g" /home/joinmarket/joinin.conf
 echo 
 echo "Press ENTER to continue"
 read key

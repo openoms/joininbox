@@ -24,8 +24,8 @@ function getTXID {
 }
 
 # BASIC MENU INFO
-HEIGHT=8
-WIDTH=53
+HEIGHT=7
+WIDTH=54
 CHOICE_HEIGHT=20
 TITLE="Tools"
 MENU=""
@@ -34,7 +34,6 @@ BACKTITLE="JoininBox GUI"
 
 # Basic Options
 OPTIONS+=(\
-  CONNECT "Connect to a remote bitcoin node"\
   BOLTZMANN "Analyze the entropy of a transaction"\
 )
 
@@ -47,12 +46,6 @@ CHOICE=$(dialog --clear \
                 2>&1 >/dev/tty)
 
 case $CHOICE in
-  CONNECT)
-    /home/joinmarket/menu.bitcoinrpc.sh
-    echo         
-    echo "Press ENTER to return to the menu..."
-    read key
-    ;;
   BOLTZMANN)
     installBoltzmann
     getTXID
