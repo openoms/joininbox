@@ -9,8 +9,8 @@ fi
 #############
 # FIRST RUN #
 #############
-runningEnvEntry=$(grep -c "runningEnv" < /home/joinmarket/joinin.conf)
-if [ "$runningEnvEntry" -eq 0 ]; then
+setupStepEntry=$(grep -c "setupStep" < /home/joinmarket/joinin.conf)
+if [ "$setupStepEntry" -eq 0 ]; then
   if [ -f "/mnt/hdd/raspiblitz.conf" ] ; then
     runningEnv="raspiblitz"
     setupStep=0
@@ -18,8 +18,11 @@ if [ "$runningEnvEntry" -eq 0 ]; then
     runningEnv="standalone"
     setupStep=0
   fi
-  echo "setupStep=$setupStep" >> /home/joinmarket/joinin.conf  
-  echo "runningEnv=$runningEnv" >> /home/joinmarket/joinin.conf
+  echo "setupStep=$setupStep" >> /home/joinmarket/joinin.conf
+  runningEnvEntry=$(grep -c "runningEnv" < /home/joinmarket/joinin.conf)
+  if [ "$runningEnvEntry" -eq 0 ]; then  
+    echo "runningEnv=$runningEnv" >> /home/joinmarket/joinin.conf
+  fi
   echo "# running in the environment: $runningEnv"
 
   # identify cpu architecture
@@ -53,6 +56,7 @@ if [ "$runningEnvEntry" -eq 0 ]; then
   if [ "$runningEnv" = "standalone" ]; then
     # set ssh passwords on the first run
     sudo /home/joinmarket/set.password.sh || exit 1
+    generateJMconfig
     sudo sed -i  "s#setupStep=.*#setupStep=100#g" /home/joinmarket/joinin.conf
     /home/joinmarket/menu.config.sh
   fi
@@ -122,7 +126,7 @@ elif [ $isSignet -gt 0 ];then
 elif [ $isTestnet -gt 0 ];then
   sed -i "s#^network=.*#network=testnet#g" /home/joinmarket/joinin.conf
 else
-  sed -i "s#^network=.*#network=unknownt#g" /home/joinmarket/joinin.conf
+  sed -i "s#^network=.*#network=unknown#g" /home/joinmarket/joinin.conf
 fi
 
 # add default value to joinin config if needed
