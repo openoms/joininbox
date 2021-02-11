@@ -24,21 +24,24 @@ newPassword=$1
 # if no password given by parameter - ask by dialog
 if [ ${#newPassword} -eq 0 ]; then
   # ask user for new password A (first time)
-  DIALOGRC=.dialogrc dialog --backtitle "JoininBox - Password Change"\
+  DIALOGRC=.dialogrc dialog \
+  --backtitle "JoininBox - Password Change"\
   --title "JoininBox - Password Change"\
   --insecure --passwordbox "
 Set a new password for the users:
-  'joinmarket' and 'root'
-(use at least 8 characters)" 11 40 2>$_temp
+'joinmarket' and 'root' (use at least 8 characters)" 10 56 2>$_temp
   
   # get user input
   password1=$( cat $_temp )
   shred $_temp
   
   # ask user for new password A (second time)
-  DIALOGRC=.dialogrc dialog --backtitle "JoininBox - Password Change"\
+  DIALOGRC=.dialogrc dialog \
+  --backtitle "JoininBox - Password Change"\
   --insecure \
-  --passwordbox "Re-enter the password:\n(This is the new password to login via SSH)" 9 56 2>$_temp
+  --passwordbox "
+Re-enter the password:
+(This is the new password to login via SSH)" 10 56 2>$_temp
   
   # get user input
   password2=$( cat $_temp )
@@ -86,7 +89,8 @@ if [ "$(compgen -u | grep -c pi)" -gt 0 ]; then
 fi
 
 sleep 1
-DIALOGRC=.dialogrc dialog --backtitle "JoininBox - Password Change" \
+DIALOGRC=.dialogrc dialog \
+--backtitle "JoininBox - Password Change" \
 --msgbox "OK - changed the password for the users:
   'joinmarket', 'root' $piUser" 6 45
 
