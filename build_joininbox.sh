@@ -107,10 +107,11 @@ if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "dietpi" ]||\
   locale-gen
   export LANGUAGE=en_US.UTF-8
   export LANG=en_US.UTF-8
-  export LC_ALL=en_US.UTF-8
+  # export LC_ALL=en_US.UTF-8
   update-locale
   # https://github.com/rootzoll/raspiblitz/issues/684
   sed -i "s/^    SendEnv LANG LC.*/#   SendEnv LANG LC_*/g" /etc/ssh/ssh_config
+  # only on RaspberryOS
   # remove unnecessary files
   rm -rf /home/pi/MagPi
   # https://www.reddit.com/r/linux/comments/lbu0t1/microsoft_repo_installed_on_all_raspberry_pis/
@@ -220,7 +221,7 @@ echo "	endscript" >> ./rsyslog
 echo "}" >> ./rsyslog
 mv ./rsyslog /etc/logrotate.d/rsyslog
 chown root:root /etc/logrotate.d/rsyslog
-aptservice rsyslog restart
+service rsyslog restart
 
 echo 
 echo "###############################"
