@@ -297,10 +297,15 @@ https://2019.www.torproject.org/docs/debian#source
 * In the file manager open context on the .img.xz file, select `Open With Disk Image Writer` and write the image to the SDcard.
 #### Prepare the base image
 
-* Before the first boot edit the `sysconf.txt` on the RASPIFIRM partition to be able to ssh remotely - needs an authorized ssh pubkey.  
-To copy the ssh pubkey from the Ubuntu image run in the RASPIFIRM directory:
+* Before the first boot edit the `sysconf.txt` on the `RASPIFIRM` partition to be able to ssh remotely - needs an authorized ssh pubkey.
+* Generate ssk keys on Ubuntu with:
     ```bash
-    echo "root_authorized_key=$(cat ~/.ssh/id_rsa.pub)" | tee -a sysconf.txt
+    ssh-keygen -t rsa -b 4096
+    ```
+
+* Copy the ssh pubkey from the Ubuntu image to the `sysconf.txt` the `RASPIFIRM` directory:
+    ```bash
+    echo "root_authorized_key=$(cat ~/.ssh/id_rsa.pub)" | tee -a /home/ubuntu/RASPIFIRM/sysconf.txt
     ```
     The `sysconf.txt` will reset after boot and moves the ssh pubkey to `/root/.ssh/authorized_keys`
 * Boot the RPi and connect with ssh (use the hostname, `arp -a` or check router))
@@ -308,19 +313,19 @@ To copy the ssh pubkey from the Ubuntu image run in the RASPIFIRM directory:
     ssh root@rpi4-20201112
     ```
 
-* install basic dependencies, upgrade and reboot
+* apt update, upgrade and reboot
     ```bash
     apt update
-    apt install sudo wget
     apt upgrade
-    shutdown now # reboot does not work (kernel update)
+    reboot
     ``` 
-#### Install Joininbox
-* Boot the RPi again by replugging the power cord
-* Connect with ssh 
+
+* log in again and install basic dependencies
     ```bash
     ssh root@rpi4-20201112
+    apt install sudo wget
     ```
+#### Install Joininbox
 * Download and run the build script
   ```bash 
   # download
