@@ -303,26 +303,22 @@ https://2019.www.torproject.org/docs/debian#source
     ssh-keygen -t rsa -b 4096
     ```
 
-* Copy the ssh pubkey from the Ubuntu image to the `sysconf.txt` the `RASPIFIRM` directory:
+* Copy the ssh pubkey from the Ubuntu image to the `sysconf.txt` the `RASPIFIRM` directory (make sure it is mounted):
     ```bash
     echo "root_authorized_key=$(cat ~/.ssh/id_rsa.pub)" | tee -a /media/ubuntu/RASPIFIRM/sysconf.txt
     ```
+* Check with:
+    ```bash
+    cat /media/ubuntu/RASPIFIRM/sysconf.txt
+    ```   
     The `sysconf.txt` will reset after boot and moves the ssh pubkey to `/root/.ssh/authorized_keys`
 * Boot the RPi and connect with ssh (use the hostname, `arp -a` or check router))
     ```bash
     ssh root@rpi4-20210210
     ```
-
-* apt update, upgrade and reboot
+* Install basic dependencies
     ```bash
     apt update
-    apt upgrade
-    reboot
-    ``` 
-
-* log in again and install basic dependencies
-    ```bash
-    ssh root@rpi4-20210210
     apt install sudo wget
     ```
 #### Install Joininbox
@@ -335,7 +331,7 @@ https://2019.www.torproject.org/docs/debian#source
   # run
   sudo bash build_joininbox.sh
   ```
-* Monitor/Check outputs for warnings/errors - install LCD
+* Monitor/Check outputs for warnings/errors
 #### Prepare the SDcard release
  * Make the SDcard image safe to share by removing unique infos like ssh pubkeys and network identifiers:  
      ```bash
@@ -344,23 +340,21 @@ https://2019.www.torproject.org/docs/debian#source
 * Disconnect WiFi/LAN on build laptop (hardware switch off) and shutdown
 * Remove Ubuntu LIVE USB stick and cut power from the RaspberryPi
 #### Sign the image
-* Connect USB stick with latest TailsOS (make it stay offline)
+* Connect USB stick with [Tails](https://tails.boum.org/) (make it stay offline)
 * Power on the Build Laptop (press F12 for boot menu)
 * Connect USB stick with GPG signing keys - decrypt drive if needed
 * Open Terminal and cd into directory of USB Stick under /media/amnesia
-* Run gpg --import ./sub.key, check and exit
+* Run gpg --import backupkey.gpg, check and exit
 * Disconnect USB stick with GPG keys
 * Take the SD card from the RaspberryPi and connect with an external SD card reader to the laptop
 * Click on boot volume once in the file manger
-* Connect the NTFS USB stick, open in file manager and delete old files
-* Open Terminal and cd into directory of NTFS USB stick under /media/amnesia
+* Connect another USB stick, open in file manager and delete old files
+* Open Terminal and cd into directory of USB stick under /media/amnesia
 * Run df to check on the SD card device name (boot - ignore last partition number)
-* dd if=/dev/[sdcarddevice] | gzip > ./raspiblitz-vX.X-YEAR-MONTH-DAY.img.gz
+* dd if=/dev/[sdcarddevice] | gzip > ./joininbox-vX.X>X-YEAR-MONTH-DAY.img.gz
 * When finished you should see that more then 7GB were copied
 * Then run shasum -a 256 *.gz > sha256.txt
-* Sign with gpg --output raspiblitz-vX.X-YEAR-MONTH-DAY.img.gz.sig --detach-sign *.gz
+* Sign with gpg --output joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.sig --detach-sign *.gz
 * Shutdown build computer
-* Connect the NTFS USB stick to MacOS (it is just read-only)
-* Run tests on the new image
-* Upload the new image to the Download Server - put sig-file next to it
+* Upload the new image to the release files - put sig-file next to it
 * Copy SHA256-String into GitHub README and update the download link

@@ -290,8 +290,6 @@ fi
 
 echo "# create the joinin.conf"
 sudo -u joinmarket touch /home/joinmarket/joinin.conf
-echo "cpu=$cpu" >> /home/joinmarket/joinin.conf
-echo "runningEnv=standalone" >> /home/joinmarket/joinin.conf
 
 echo 
 echo "#######"
