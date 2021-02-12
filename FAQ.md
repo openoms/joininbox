@@ -262,13 +262,13 @@ https://2019.www.torproject.org/docs/debian#source
 #### Boot Ubuntu Live from USB: https://releases.ubuntu.com/focal/ubuntu-20.04.2-desktop-amd64.iso
 * Connect to a secure WiFi (hardware switch on) or LAN
 #### Download,verify and flash the base image to the SDcard 
-* Image: https://raspi.debian.net/verified/20201112_raspi_4.img.xz
-* Signature: https://raspi.debian.net/verified/20201112_raspi_4.xz.sha256.asc
+* Image: https://raspi.debian.net/verified/20210210_raspi_4_buster.img.xz
+* Signature: https://raspi.debian.net/verified/20210210_raspi_4_buster.xz.sha256.asc
 
     ```bash
     gpg --receive-key E2F63B4353F45989
-    gpg --verify 20201112_raspi_4.xz.sha256.asc
-        gpg: Signature made Thu 12 Nov 2020 17:40:03 GMT
+    gpg --verify 20210210_raspi_4_buster.xz.sha256.asc 
+        gpg: Signature made Wed 10 Feb 2021 20:22:05 GMT
         gpg:                using EDDSA key 60B3093D96108E5CB97142EFE2F63B4353F45989
         gpg: Good signature from "Gunnar Wolf <gwolf@gwolf.org>" [unknown]
         gpg:                 aka "Gunnar Eyal Wolf Iszaevich <gwolf@iiec.unam.mx>" [unknown]
@@ -276,21 +276,21 @@ https://2019.www.torproject.org/docs/debian#source
         gpg: Note: This key has expired!
         Primary key fingerprint: 4D14 0506 53A4 02D7 3687  049D 2404 C954 6E14 5360
             Subkey fingerprint: 60B3 093D 9610 8E5C B971  42EF E2F6 3B43 53F4 5989
-        gpg: WARNING: not a detached signature; file '20201112_raspi_4.xz.sha256' was NOT verified!
-    cat 20201112_raspi_4.xz.sha256.asc
+    cat 20210210_raspi_4_buster.xz.sha256.asc 
         -----BEGIN PGP SIGNED MESSAGE-----
         Hash: SHA256
 
-        56d6e5c674fb89be07ed160807d0b166cc3713d8c32c47ff61fbc94f39452373  20201112_raspi_4.img.xz
+        425f02915439d92ae13c889cb1e17378076d716e5e37fc557470646a95ccf43c  20210210_raspi_4_buster.img.xz
         -----BEGIN PGP SIGNATURE-----
 
-        iHUEARYIAB0WIQRgswk9lhCOXLlxQu/i9jtDU/RZiQUCX61zcwAKCRDi9jtDU/RZ
-        ieP+AQCpUvxsiswIpHTRzxw1/3QlfI4wxgL8BVMixwp/37xBOQD/eDzqxyRVhkjX
-        ywV0nAAEMJestu2TQHAufqPBfwCrxQY=
-        =s/jY
+        iHUEARYIAB0WIQRgswk9lhCOXLlxQu/i9jtDU/RZiQUCYCRAbQAKCRDi9jtDU/RZ
+        iX+qAPwMniKYC9fKqAUyYTHf58CWrAeQKczjkwBsgp9bi29zAQEAmXHd/TVZ/x07
+        Q4HVd6s4IAEj0H+jkGdMZujtO7sYqg8=
+        =ZUv1
         -----END PGP SIGNATURE-----
-    sha256sum 20201112_raspi_4.img.xz 
-        56d6e5c674fb89be07ed160807d0b166cc3713d8c32c47ff61fbc94f39452373  20201112_raspi_4.img.xz
+
+    sha256sum 20201112_raspi_4.img.xz
+        425f02915439d92ae13c889cb1e17378076d716e5e37fc557470646a95ccf43c  220210210_raspi_4_buster.img.xz
     ```
 
 * Connect SD card reader with a 8GB SD card
@@ -305,12 +305,12 @@ https://2019.www.torproject.org/docs/debian#source
 
 * Copy the ssh pubkey from the Ubuntu image to the `sysconf.txt` the `RASPIFIRM` directory:
     ```bash
-    echo "root_authorized_key=$(cat ~/.ssh/id_rsa.pub)" | tee -a /home/ubuntu/RASPIFIRM/sysconf.txt
+    echo "root_authorized_key=$(cat ~/.ssh/id_rsa.pub)" | tee -a /media/ubuntu/RASPIFIRM/sysconf.txt
     ```
     The `sysconf.txt` will reset after boot and moves the ssh pubkey to `/root/.ssh/authorized_keys`
 * Boot the RPi and connect with ssh (use the hostname, `arp -a` or check router))
     ```bash
-    ssh root@rpi4-20201112
+    ssh root@rpi4-20210210
     ```
 
 * apt update, upgrade and reboot
@@ -322,7 +322,7 @@ https://2019.www.torproject.org/docs/debian#source
 
 * log in again and install basic dependencies
     ```bash
-    ssh root@rpi4-20201112
+    ssh root@rpi4-20210210
     apt install sudo wget
     ```
 #### Install Joininbox
