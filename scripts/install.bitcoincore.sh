@@ -121,16 +121,17 @@ function downloadBitcoinCore() {
 function installBitcoinCore() {
   downloadBitcoinCore
 
-  installed=$(/home/joinmarket/bitcoin/bitcoind --version | grep "${bitcoinVersion}" -c)
-  if [ ${installed} -lt 1 ]; then
+  if [ -f /home/joinmarket/bitcoin/bitcoind ];then
+    installedVersion=$(/home/joinmarket/bitcoin/bitcoind --version | grep version)
+    echo "${installedVersion} is already installed"
+  else
     echo "# Installing Bitcoin Core v${bitcoinVersion}"
     sudo -u joinmarket tar -xvf ${binaryName}
     sudo -u joinmarket mkdir -p /home/joinmarket/bitcoin
-    sudo install -m 0755 -o root -g root -t /home/joinmarket/bitcoin bitcoin-${bitcoinVersion}/bin/*
-  else
-    echo "# Bitcoin Core v${bitcoinVersion} is already installed"
+    sudo install -m 0755 -o root -g root -t /home/joinmarket/bitcoin bitcoin-${bitcoinVersion}/bin/*  
   fi
 
+  installed=$(/home/joinmarket/bitcoin/bitcoind --version | grep "${bitcoinVersion}" -c)
   if [ ${installed} -lt 1 ]; then
     echo
     echo "!!! BUILD FAILED --> Was not able to install bitcoind version(${bitcoinVersion})"
