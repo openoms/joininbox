@@ -350,8 +350,8 @@ https://2019.www.torproject.org/docs/debian#source
 * Click on boot volume once in the file manger
 * Connect another USB stick, open in file manager and delete old files
 * Open Terminal and cd into directory of USB stick under /media/amnesia
-* Run df to check on the SD card device name (boot - ignore last partition number)
-* dd if=/dev/[sdcarddevice] | gzip > ./joininbox-vX.X>X-YEAR-MONTH-DAY.img.gz
+* Run lsblk to check on the SD card device name (ignore last partition number)
+* dd if=/dev/[sdcarddevice] | gzip > ./joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz
 * When finished you should see that more then 7GB were copied
 * Then run shasum -a 256 *.gz > sha256.txt
 * Sign with gpg --output joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.sig --detach-sign *.gz
