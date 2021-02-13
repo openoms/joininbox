@@ -3,8 +3,8 @@
 # Concise instructions on setting up Joinmarket for testing on signet
 # https://gist.github.com/AdamISZ/325716a66c7be7dd3fc4acdfce449fb1
 
-# installBitcoinCore
-function installBitcoinCoreSignet() {
+# downloadBitcoinCore
+function downloadBitcoinCore() {
 # set version
 # https://bitcoincore.org/en/download/
 bitcoinVersion="0.21.0"
@@ -32,10 +32,11 @@ sudo -u joinmarket mkdir /home/joinmarket/download 2>/dev/null
 cd /home/joinmarket/download || exit 1 
 
 # download, check and import signer key
-sudo -u joinmarket wget https://bitcoin.org/laanwj-releases.asc
-if [ ! -f "./laanwj-releases.asc" ]
-then
-  echo "# !!! FAIL !!! Download laanwj-releases.asc not success."
+if [ ! -f "./laanwj-releases.asc" ];then
+  sudo -u joinmarket wget https://bitcoin.org/laanwj-releases.asc
+fi
+if [ ! -f "./laanwj-releases.asc" ];then
+  echo "# !!! FAIL !!! Could not download laanwj-releases.asc"
   exit 1
 fi
 gpg ./laanwj-releases.asc
@@ -50,7 +51,9 @@ fi
 gpg --import ./laanwj-releases.asc
 
 # download signed binary sha256 hash sum file and check
-sudo -u joinmarket wget https://bitcoin.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS.asc
+if [ ! -f "./bitcoin-core-${bitcoinVersion}/SHA256SUMS.asc" ];then
+  sudo -u joinmarket wget https://bitcoin.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS.asc
+fi
 verifyResult=$(gpg --verify SHA256SUMS.asc 2>&1)
 goodSignature=$(echo ${verifyResult} | grep 'Good signature' -c)
 echo "# goodSignature(${goodSignature})"
@@ -109,7 +112,10 @@ else
   echo "# ****************************************"
   echo
 fi
+}
 
+function installSignet() {
+downloadBitcoinCore
 echo "# Stopping signetd"
 sudo systemctl stop signetd
 echo
@@ -212,14 +218,15 @@ fi
 source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
-if [ "$1" = "on" ]||[ "$1" = "signet" ]; then
-  installBitcoinCoreSignet
+if [ "$1" = "signetOn" ]; then
+  downloadBitcoinCore
+  installSignet
   if [ $connectedRemoteNode = "on" ];then
     backupJMconf
   fi
   generateJMconfig 
   setJMconfigToSignet
-elif [ "$1" = "off" ]||[ "$1" = "mainnet" ]; then
+elif [ "$1" = "signetOff" ]; then
   if [ -f "/etc/systemd/system/signetd.service" ];then
     sudo systemctl stop signetd
     sudo systemctl disable signetd
@@ -233,4 +240,6 @@ elif [ "$1" = "off" ]||[ "$1" = "mainnet" ]; then
     echo "# Signet is not set in joinmarket.cfg, leaving settings in place"
   fi
   generateJMconfig
+elif [ "$1" = "downloadCoreOnly" ]; then
+  downloadBitcoinCore
 fi

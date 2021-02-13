@@ -44,14 +44,14 @@ case $CHOICE in
     read key
     ;;
   CONNECT)
-    /home/joinmarket/install.signet.sh off
+    /home/joinmarket/install.bitcoincore.sh signetOff
     /home/joinmarket/menu.bitcoinrpc.sh
     echo         
     echo "Press ENTER to return to the menu..."
     read key
     ;;
   SIGNET)
-    /home/joinmarket/install.signet.sh on
+    /home/joinmarket/install.bitcoincore.sh signetOn
     echo         
     echo "Press ENTER to return to the menu..."
     read key

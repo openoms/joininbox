@@ -494,11 +494,18 @@ WantedBy=multi-user.target
 systemctl enable bootstrap
 
 echo 
+echo "#########################"
+echo "# Download Bitcoin Core #"
+echo "#########################"
+echo 
+sudo -u joinmarket /home/joinmarket/install.bitcoincore.sh downloadCoreOnly
+
+echo 
 echo "######################"
 echo "# Install JoinMarket #"
 echo "######################"
 echo 
-sudo -u joinmarket  /home/joinmarket/install.joinmarket.sh install
+sudo -u joinmarket /home/joinmarket/install.joinmarket.sh install
 
 echo
 echo "###########################"
