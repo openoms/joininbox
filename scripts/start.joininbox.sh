@@ -2,93 +2,101 @@
 
 echo "# starting JoininBox ..."
 
-if [ -f /home/joinmarket/joinin.conf ]; then
+if [ ! -f /home/joinmarket/joinin.conf ];then
   touch /home/joinmarket/joinin.conf
 fi
+
+source /home/joinmarket/_functions.sh
 
 #############
 # FIRST RUN #
 #############
+
 setupStepEntry=$(grep -c "setupStep" < /home/joinmarket/joinin.conf)
-if [ "$setupStepEntry" -eq 0 ]; then
-  if [ -f "/mnt/hdd/raspiblitz.conf" ] ; then
-    runningEnv="raspiblitz"
-    setupStep=0
-  else
-    runningEnv="standalone"
-    setupStep=0
-  fi
-  echo "setupStep=$setupStep" >> /home/joinmarket/joinin.conf
-  runningEnvEntry=$(grep -c "runningEnv" < /home/joinmarket/joinin.conf)
-  if [ "$runningEnvEntry" -eq 0 ]; then  
+if [ "$setupStepEntry" -eq 0 ];then
+  echo "setupStep=0" >> /home/joinmarket/joinin.conf
+fi
+
+source /home/joinmarket/joinin.conf
+if [ "$setupStep" -lt 100 ];then
+  
+  # identify running env
+  runningEnvEntry=$(grep -c "runningEnv" < /home/joinmarket/joinin.conf)  
+  if [ "$runningEnvEntry" -eq 0 ];then  
+    if [ -f "/mnt/hdd/raspiblitz.conf" ];then
+      runningEnv="raspiblitz"
+    else
+      runningEnv="standalone"
+    fi
     echo "runningEnv=$runningEnv" >> /home/joinmarket/joinin.conf
+    sed -i  "s#setupStep=.*#setupStep=1#g" /home/joinmarket/joinin.conf
   fi
   echo "# running in the environment: $runningEnv"
 
   # identify cpu architecture
   cpuEntry=$(grep -c "cpu" < /home/joinmarket/joinin.conf)
-  if [ "$cpuEntry" -eq 0 ]; then
+  if [ "$cpuEntry" -eq 0 ];then
     cpu=$(uname -m)
-    echo "# cpu=${cpu}"
     echo "cpu=$cpu" >> /home/joinmarket/joinin.conf
+    sed -i  "s#setupStep=.*#setupStep=2#g" /home/joinmarket/joinin.conf
   fi
+  echo "# cpu=${cpu}"
 
   # make sure Tor path is known
   DirEntry=$(grep -c "HiddenServiceDir" < /home/joinmarket/joinin.conf)
-  if [ "$DirEntry" -eq 0 ]; then
-    if [ -d "/mnt/hdd/tor" ] ; then
+  if [ "$DirEntry" -eq 0 ];then
+    if [ -d "/mnt/hdd/tor" ];then
       HiddenServiceDir="/mnt/hdd/tor"
     else
       HiddenServiceDir="/var/lib/tor"
     fi  
-  echo "HiddenServiceDir=$HiddenServiceDir" >> /home/joinmarket/joinin.conf
+    echo "HiddenServiceDir=$HiddenServiceDir" >> /home/joinmarket/joinin.conf
+    sed -i  "s#setupStep=.*#setupStep=3#g" /home/joinmarket/joinin.conf
   fi
 
   # check for dialog
-  if [ "$(dialog | grep -c "ComeOn Dialog!")" -eq 0 ]; then
+  if [ "$(dialog | grep -c "ComeOn Dialog!")" -eq 0 ];then
     sudo apt install dialog
+    sed -i  "s#setupStep=.*#setupStep=4#g" /home/joinmarket/joinin.conf
   fi
 
   # check if JoinMarket is installed
   /home/joinmarket/install.joinmarket.sh install
+  sed -i  "s#setupStep=.*#setupStep=5#g" /home/joinmarket/joinin.conf
 
   # change the ssh password and open the config menu if standalone
-  if [ "$runningEnv" = "standalone" ]; then
+  if [ "$runningEnv" = "standalone" ];then
     # set ssh passwords on the first run
     sudo /home/joinmarket/set.password.sh || exit 1
     generateJMconfig
     sudo sed -i  "s#setupStep=.*#setupStep=100#g" /home/joinmarket/joinin.conf
     /home/joinmarket/menu.config.sh
+  elif [ "$runningEnv" = "raspiblitz" ];then
+    generateJMconfig
+    echo
+    echo "# editing the joinmarket.cfg"
+    sed -i "s/^rpc_user =.*/rpc_user = raspibolt/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    PASSWORD_B=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+    sed -i "s/^rpc_password =.*/rpc_password = $PASSWORD_B/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    echo "# filled the bitcoin RPC password (PASSWORD_B)"
+    sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    echo "# using the bitcoind wallet: wallet.dat"
+    # setup finished
+    sed -i  "s#setupStep=.*#setupStep=100#g" /home/joinmarket/joinin.conf
   fi
-fi
-
-source /home/joinmarket/_functions.sh
-source /home/joinmarket/joinin.conf
-
-if [ "$runningEnv" = "raspiblitz" ] && [ "$setupStep" -eq 0 ]; then
-  generateJMconfig
-  echo
-  echo "# editing the joinmarket.cfg"
-  sed -i "s/^rpc_user =.*/rpc_user = raspibolt/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-  PASSWORD_B=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
-  sed -i "s/^rpc_password =.*/rpc_password = $PASSWORD_B/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-  echo "# filled the bitcoin RPC password (PASSWORD_B)"
-  sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-  echo "# using the bitcoind wallet: wallet.dat"
-  # setup finished
-  sudo sed -i  "s#setupStep=.*#setupStep=100#g" /home/joinmarket/joinin.conf
 fi
 
 #############
 # EVERY RUN #
 #############
+
 # check bitcoind RPC setting
 # add default value to joinin config if needed
-if ! grep -Eq "^RPCoverTor=" /home/joinmarket/joinin.conf; then
+if ! grep -Eq "^RPCoverTor=" /home/joinmarket/joinin.conf;then
   echo "RPCoverTor=off" >> /home/joinmarket/joinin.conf
 fi
 # check if bitcoin RPC connection is over Tor
-if grep -Eq "^rpc_host = .*.onion" /home/joinmarket/.joinmarket/joinmarket.cfg; then 
+if grep -Eq "^rpc_host = .*.onion" /home/joinmarket/.joinmarket/joinmarket.cfg;then 
   echo "# RPC over Tor is on"
   sed -i "s/^RPCoverTor=.*/RPCoverTor=on/g" /home/joinmarket/joinin.conf
 else
@@ -98,14 +106,14 @@ fi
 
 # check if there is only one joinmarket wallet and make default
 # add default value to joinin config if needed
-if ! grep -Eq "^defaultWallet=" /home/joinmarket/joinin.conf; then
+if ! grep -Eq "^defaultWallet=" /home/joinmarket/joinin.conf;then
   echo "defaultWallet=off" >> /home/joinmarket/joinin.conf
 fi
-if [ "$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -cv /)" -gt 1 ]; then
+if [ "$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -cv /)" -gt 1 ];then
   echo "# Found more than one wallet file"
   echo "# Setting defaultWallet to off"
   sed -i "s#^defaultWallet=.*#defaultWallet=off#g" /home/joinmarket/joinin.conf
-elif [ "$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -cv /)" -eq 1 ]; then
+elif [ "$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -cv /)" -eq 1 ];then
   onlyWallet=$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -v /)
   echo "# Found only one wallet file: $onlyWallet"
   echo "# Using it as default"
@@ -113,7 +121,7 @@ elif [ "$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -cv /)" -eq 1 ]; th
 fi
 
 # add default value to joinin config if needed
-if ! grep -Eq "^network=" /home/joinmarket/joinin.conf; then
+if ! grep -Eq "^network=" /home/joinmarket/joinin.conf;then
   echo "network=unknown" >> /home/joinmarket/joinin.conf
 fi
 isMainnet=$(grep -c "network = mainnet" < /home/joinmarket/.joinmarket/joinmarket.cfg)
@@ -130,7 +138,7 @@ else
 fi
 
 # add default value to joinin config if needed
-if ! grep -Eq "^localip=" /home/joinmarket/joinin.conf; then
+if ! grep -Eq "^localip=" /home/joinmarket/joinin.conf;then
   echo "localip=unknown" >> /home/joinmarket/joinin.conf
 fi
 localip=$(ip addr | grep 'state UP' -A2 | grep -Ev 'docker0|veth' | \

@@ -3,16 +3,21 @@
 
 # command info
 if [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
- echo "script to set a passwords for the users 'joinmarket', 'root' (and 'pi')"
- echo "sudo set.password.sh [?newpassword] "
- echo "or just as a password enter dialog (result as file)"
- exit 1
+  echo "script to set a passwords for the users 'joinmarket', 'root' (and 'pi')"
+  echo "sudo set.password.sh [?newpassword] "
+  echo "or just as a password enter dialog (result as file)"
+  exit 1
 fi
 
 # check if sudo
 if [ "$EUID" -ne 0 ]
   then echo "Please run as root (with sudo)"
   exit
+fi
+
+piUserPresent=$(compgen -u | grep -c pi)
+if [ "$piUserPresent" -gt 0 ]; then
+  piUser="and 'pi'"
 fi
 
 # mktemp 
@@ -24,24 +29,26 @@ newPassword=$1
 # if no password given by parameter - ask by dialog
 if [ ${#newPassword} -eq 0 ]; then
   # ask user for new password A (first time)
-  DIALOGRC=.dialogrc dialog \
+  DIALOGRC=/home/joinmarket/.dialogrc dialog\
   --backtitle "JoininBox - Password Change"\
   --title "JoininBox - Password Change"\
   --insecure --passwordbox "
 Set a new password for the users:
-'joinmarket' and 'root' (use at least 8 characters)" 10 56 2>$_temp
+'joinmarket' and 'root' $piUser
+use at least 8 characters" 11 56 2>$_temp
   
   # get user input
   password1=$( cat $_temp )
   shred $_temp
   
   # ask user for new password A (second time)
-  DIALOGRC=.dialogrc dialog \
+  DIALOGRC=/home/joinmarket/.dialogrc dialog \
   --backtitle "JoininBox - Password Change"\
-  --insecure \
-  --passwordbox "
-Re-enter the password:
-(This is the new password to login via SSH)" 10 56 2>$_temp
+  --title "Confirm Password Change"\
+  --insecure --passwordbox "
+Re-enter the new password:
+(This will be required to login via SSH)
+  " 11 56 2>$_temp
   
   # get user input
   password2=$( cat $_temp )
@@ -83,15 +90,13 @@ fi
 echo "joinmarket:$newPassword" | sudo chpasswd
 echo "root:$newPassword" | sudo chpasswd
 # change password for 'pi' if present
-if [ "$(compgen -u | grep -c pi)" -gt 0 ]; then
+if [ "$piUserPresent" -gt 0 ]; then
   echo "pi:$newPassword" | sudo chpasswd
-  piUser=" and 'pi'"
 fi
 
 sleep 1
-DIALOGRC=.dialogrc dialog \
+DIALOGRC=/home/joinmarket/.dialogrc dialog \
 --backtitle "JoininBox - Password Change" \
 --msgbox "OK - changed the password for the users:
   'joinmarket', 'root' $piUser" 6 45
 
-exit 0
