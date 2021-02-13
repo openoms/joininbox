@@ -42,6 +42,21 @@ if [ "$setupStep" -lt 100 ];then
   fi
   echo "# cpu=${cpu}"
 
+  # check Tor
+  torEntry=$(grep -c "runBehindTor" < /home/joinmarket/joinin.conf)
+  if [ "$torEntry" -eq 0 ];then
+    torTest=$(curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s \
+    https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
+    if [ "$torTest" = "Congratulations. This browser is configured to use Tor." ]
+    then
+      runBehindTor=on
+    else
+      runBehindTor=off
+    fi
+    echo "runBehindTor=$runBehindTor" >> /home/joinmarket/joinin.conf
+    echo "# runBehindTor=$runBehindTor"
+  fi
+
   # make sure Tor path is known
   DirEntry=$(grep -c "HiddenServiceDir" < /home/joinmarket/joinin.conf)
   if [ "$DirEntry" -eq 0 ];then
