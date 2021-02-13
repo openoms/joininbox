@@ -208,7 +208,7 @@ sed -i "s/^rpc_port =.*/rpc_port = 38332/g" /home/joinmarket/.joinmarket/joinmar
 # network
 sed -i "s/^network =.*/network = signet/g" /home/joinmarket/.joinmarket/joinmarket.cfg
 # minimum_makers
-sed -i "s/^minimum_makers =.*/minimum_makers = 2/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+sed -i "s/^minimum_makers =.*/minimum_makers = 1/g" /home/joinmarket/.joinmarket/joinmarket.cfg
 }
 
 # check connectedRemoteNode var in joinin.conf
