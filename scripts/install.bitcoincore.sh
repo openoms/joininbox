@@ -208,9 +208,11 @@ WantedBy=multi-user.target
   echo "# Monitor the signet bitcoind with: tail -f ~/.bitcoin/signet/debug.log"
   echo
 
-  sleep 10
-  echo "# create wallet.dat for signet"
-  sudo -u joinmarket /home/joinmarket/bitcoin/bitcoin-cli -signet createwallet wallet.dat
+  if [ ! -f /home/joinmarket/.bitcoin/signet/wallets/wallet.dat/wallet.dat ];then
+    echo "# Create wallet.dat for signet ..."
+    sleep 10
+    sudo -u joinmarket /home/joinmarket/bitcoin/bitcoin-cli -signet createwallet wallet.dat
+  fi
 }
 
 setJMconfigToSignet() {
