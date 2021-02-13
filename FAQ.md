@@ -289,8 +289,8 @@ https://2019.www.torproject.org/docs/debian#source
         =ZUv1
         -----END PGP SIGNATURE-----
 
-    sha256sum 20201112_raspi_4.img.xz
-        425f02915439d92ae13c889cb1e17378076d716e5e37fc557470646a95ccf43c  220210210_raspi_4_buster.img.xz
+    sha256sum 20210210_raspi_4_buster.img.xz 
+        425f02915439d92ae13c889cb1e17378076d716e5e37fc557470646a95ccf43c  20210210_raspi_4_buster.img.xz
     ```
 
 * Connect SD card reader with a 8GB SD card
