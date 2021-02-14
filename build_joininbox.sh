@@ -471,29 +471,6 @@ if [ -z \"\$TMUX\" ]; then
 fi
 " | sudo -u joinmarket tee -a /home/joinmarket/.bashrc
 
-echo "# Install bootstrap.service"
-echo "
-# boostrap.service
-# based on https://github.com/rootzoll/raspiblitz/blob/v1.6/home.admin/assets/bootstrap.service
-# /etc/systemd/system/bootstrap.service
-
-[Unit]
-Description=Execute on every startup before everything else
-After=network.target
-
-[Service]
-User=root
-Group=root
-Type=oneshot
-RemainAfterExit=true
-ExecStart=/home/admin/_bootstrap.sh
-StandardOutput=journal
-StandardError=journal
-
-[Install]
-WantedBy=multi-user.target
-" | tee /etc/systemd/system/bootstrap.service
-systemctl enable bootstrap
 
 echo 
 echo "#########################"

@@ -13,7 +13,7 @@ echo "# OK"
 # SSH Pubkeys (make unique for every sd card image install)
 echo
 echo "# Deleting SSH Pub keys ..."
-echo "they will get recreated on fresh bootup, by the bootstrap.service"
+echo "# Will be recreated on reboot"
 sudo rm /etc/ssh/ssh_host_*
 echo "# OK"
 
