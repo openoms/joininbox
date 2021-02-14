@@ -12,7 +12,7 @@ generateJMconfig
 
 function displayHelp {
 echo "# See how to prepare a remote node to accept the JoinMarket connection:"
-echo "# https://github.com/openoms/joininbox/blob/master/prepare_remote_node.md#prepare-a-remote-node-to-accept-the-joinmarket-connection"  
+echo "# https://github.com/openoms/joininbox/blob/master/prepare_remote_node.md"  
 }
 
 function inputRPC {
@@ -69,5 +69,3 @@ echo
 echo "# The bitcoinRPC connection settings are set in the joinmarket.cfg"
 sed -i "s#^connectedRemoteNode=.*#connectedRemoteNode=on#g" /home/joinmarket/joinin.conf
 echo 
-echo "Press ENTER to continue"
-read key

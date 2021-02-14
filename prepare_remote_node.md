@@ -107,81 +107,82 @@ Alternatively proceed manually:
 
 Fill in the `Tor_Hidden_Service.onion` to the `rpc_host` in the `joinmarket.cfg`
 
+### Connect via the CONFIG menu in JoininBox:
+* Username: `raspibolt `
+* Password: `passwordB` or `sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-`
+* Host: `LAN_IP_OF_THE_NODE` or `sudo cat /mnt/hdd/tor/bitcoinrpc/hostname`  
+* Port: `8332`
 ---
 ## RoninDojo
 
 ### Enable the bitcoind wallet 
-Copy the two lines as one command to the ssh terminal:
-```bash
-$ sed -i 's/  -disablewallet=.*$/  -disablewallet=0\
-  -wallet=wallet.dat/' ~/dojo/docker/my-dojo/bitcoin/restart.sh
-```
+* Copy the two lines as one command to the ssh terminal
+  ```bash
+  $ sed -i 's/  -disablewallet=.*$/  -disablewallet=0\
+    -wallet=wallet.dat/' ~/dojo/docker/my-dojo/bitcoin/restart.sh
+  ```
 
-Alternatively edit manually:  
+* Alternatively edit manually  
 `$ nano ~/dojo/docker/my-dojo/bitcoin/restart.sh`  
-and modify:
-```bash
-  -disablewallet=1
-```
-to
-```bash
-  -disablewallet=0
-```
-
-and add within the brackets:
-```bash
-  -wallet=wallet.dat
-```
+modify:
+  ```bash
+    -disablewallet=1
+  ```
+  to:
+  ```bash
+    -disablewallet=0
+  ```
+  add within the brackets:
+  ```bash
+    -wallet=wallet.dat
+  ```
 
 ### LAN connection
 
-Edit the bitcoind container settings: 
-
+* Edit the bitcoind container settings  
 `$ nano ~/dojo/docker/my-dojo/conf/docker-bitcoind.conf`
 
-Set the following: 
-```bash
-# should be already on
-BITCOIND_RPC_EXTERNAL=on   
-# the RoninDojo_IP is the LAN IP address of your RoninDojo
-BITCOIND_RPC_EXTERNAL_IP=RoninDojo_IP
-```
+* Set the following: 
+  ```bash
+  # should be already on
+  BITCOIND_RPC_EXTERNAL=on   
+  # the RoninDojo_IP is the LAN IP address of your RoninDojo
+  BITCOIND_RPC_EXTERNAL_IP=RoninDojo_IP
+  ```
 
-Open the firewall to allow the RPC connection from LAN  
+* Open the firewall to allow the RPC connection from LAN  
 (edit to your local subnet - in the example here 192.168.1.X):  
 `$ sudo ufw allow from 192.168.1.0/24 to any port 28256`
 
-Take note: Dojo uses the port 28256 instead of the deafult 8332.
+* Note that Dojo uses the port 28256 instead of the deafult 8332.
 
 ### Tor connection
-Create a Hidden Service to forward the bitcoin RPC port:
+* Create a Hidden Service to forward the bitcoin RPC port
 
-Edit the torrc:  
+* Edit the torrc  
 `$ sudo nano /etc/tor/torrc`  
 
-Add:
-```bash
-HiddenServiceDir /var/lib/tor/bitcoinrpc/
-HiddenServiceVersion 3
-HiddenServicePort 8332 127.0.0.1:28256
-```
-Restart Tor:  
+* Add:
+  ```bash
+  HiddenServiceDir /var/lib/tor/bitcoinrpc/
+  HiddenServiceVersion 3
+  HiddenServicePort 8332 127.0.0.1:28256
+  ```
+* Restart Tor  
 `$ sudo systemctl restart tor`
 
-Show the .onion service address:  
+* Show the .onion service address  
 `$ sudo cat /var/lib/tor/bitcoinrpc/hostname`
 
-
-### Recompile the Docker containers (takes time)
-
+* Recompile the Docker containers (takes time)  
 `$ cd ~/dojo/docker/my-dojo && ./dojo.sh upgrade --nolog`
 
 ### Get the Credentials
 Fill the connection settings from the `5 Credentials` -> `6 Bitcoind` menu:  
-Username: RoninDojo  
-Password: [RPC Password]  
-Host: [RoninDojo_IP or `sudo cat /var/lib/tor/bitcoinrpc/hostname`]  
-Port: [28256 for LAN or 8332 for the .onion service] 
+* RPC username: `RoninDojo`
+* RPC password: `RPC Password`  
+* Host: `RoninDojo_IP` or `sudo cat /var/lib/tor/bitcoinrpc/hostname`
+* Port: `28256` for LAN or `8332` for the .onion service
 
 ---
 Remember to use `torify` with the python scripts when connecting remotely through Tor (applied automatically in the JoininBox)
