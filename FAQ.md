@@ -353,11 +353,18 @@ https://2019.www.torproject.org/docs/debian#source
 * Run `lsblk` to check on the SD card device name (ignore last partition number)
 * Clone the SDcard:   
   `dd if=/dev/[sdcarddevice] | gzip > ./joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz`
-* When finished you should see that more then 7GB were copied
+* When finished you should see that more than 7GB was copied.
 * Create sha256sum:  
-  `shasum -a 256 *.gz > sha256.txt`
-* Sign with:  
-  `gpg --output joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.sig --detach-sign *.gz`
+  `sha256sum *.gz > sha256.txt`
+* Sign:  
+  `gpg --detach-sign --armor *.gz`  
+  `gpg --clear-sign *.txt`
+* Check the files:
+  ```bash
+  ls
+    joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz      sha256.txt
+    joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.asc  sha256.txt.asc
+  ```
 * Shutdown the build computer
 * Upload the new image to server - put the .sig file and sha256sum.txt next to it
 * Copy the sha256sum to GitHub README and update the download link
