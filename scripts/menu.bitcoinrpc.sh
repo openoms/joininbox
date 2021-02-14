@@ -24,7 +24,7 @@ read rpc_pass
 echo "Type or paste the LAN IP or .onion address of the remote node:"
 read rpc_host
 echo "Input the RPC port (8332 by default):"
-read rpc_port 
+read rpc_port
 }
 
 function checkRPC {
@@ -38,6 +38,18 @@ $tor curl -sS --data-binary \
 '{"jsonrpc": "1.0", "id":"# Connected to bitcoinRPC successfully", "method": "getblockcount", "params": [] }' \
 http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port
 } 
+
+function createWallet {
+tor=""
+if [ $(echo $rpc_host | grep -c .onion) -gt 0 ]; then
+  tor="torify"
+  echo "# Connecting over Tor..."
+  echo
+fi
+$tor curl -sS --data-binary \
+'{"jsonrpc": "1.0", "id":"# Created the remote wallet", "method": "createwallet", "params": ["joininbox"] }' \
+http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port
+}
 
 displayHelp
 inputRPC
@@ -64,7 +76,10 @@ echo "# Connected to bitcoinRPC successfully"
 echo
 echo "# Blockheight on the connected node: $(checkRPC 2>/dev/null|grep "result"|cut -d":" -f2|cut -d"," -f1)"
 echo
-python /home/joinmarket/set.bitcoinrpc.py --rpc_user=$rpc_user --rpc_pass=$rpc_pass --rpc_host=$rpc_host --rpc_port=$rpc_port
+echo "# Setting a watch only wallet for the remote Bitcoin Core named 'joininbox'"
+createWallet
+echo
+python /home/joinmarket/set.bitcoinrpc.py --rpc_user=$rpc_user --rpc_pass=$rpc_pass --rpc_host=$rpc_host --rpc_port=$rpc_port --rpc_wallet=joininbox
 echo
 echo "# The bitcoinRPC connection settings are set in the joinmarket.cfg"
 sed -i "s#^connectedRemoteNode=.*#connectedRemoteNode=on#g" /home/joinmarket/joinin.conf

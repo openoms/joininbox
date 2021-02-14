@@ -9,12 +9,13 @@ A pruned node with the **bitcoind wallet enabled** will do and txindex is not re
   - [Enable the bitcoind wallet](#enable-the-bitcoind-wallet)
   - [LAN connection](#lan-connection)
   - [Tor connection](#tor-connection)
+  - [CONFIG -> CONNECT in JoininBox](#config---connect-in-joininbox)
 - [RoninDojo](#ronindojo)
   - [Enable the bitcoind wallet](#enable-the-bitcoind-wallet-1)
   - [LAN connection](#lan-connection-1)
   - [Tor connection](#tor-connection-1)
   - [Recompile the Docker containers (takes time)](#recompile-the-docker-containers-takes-time)
-  - [Get the Credentials](#get-the-credentials)
+  - [CONFIG -> CONNECT in JoininBox](#config---connect-in-joininbox-1)
 - [Resources](#resources)
 ## RaspiBlitz
 
@@ -31,13 +32,6 @@ To set up manually:
     ```
     disablewallet=0
     ```
-* Specify the wallet to be used:
-    ```
-    main.wallet=wallet.dat
-    ```
-    The default setting in JoininBox is to use the `wallet.dat`.   
-    It needs to specified in the `bitcoin.conf` because otherwise when other applications (like Specter) add bitcoind wallets JoinMarket would stop working.
-
 * Restart bitcoind:  
 `$ sudo systemctl restart bitcoind`
 ### LAN connection
@@ -107,19 +101,19 @@ Alternatively proceed manually:
 
 Fill in the `Tor_Hidden_Service.onion` to the `rpc_host` in the `joinmarket.cfg`
 
-### Connect via the CONFIG menu in JoininBox:
+### CONFIG -> CONNECT in JoininBox
 * Username: `raspibolt `
 * Password: `passwordB` or `sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-`
 * Host: `LAN_IP_OF_THE_NODE` or `sudo cat /mnt/hdd/tor/bitcoinrpc/hostname`  
 * Port: `8332`
+  
 ---
 ## RoninDojo
 
 ### Enable the bitcoind wallet 
-* Copy the two lines as one command to the ssh terminal
+* Run in the RoninDojo ssh terminal:
   ```bash
-  $ sed -i 's/  -disablewallet=.*$/  -disablewallet=0\
-    -wallet=wallet.dat/' ~/dojo/docker/my-dojo/bitcoin/restart.sh
+  $ sed -i 's/  -disablewallet=.*$/  -disablewallet=0/' ~/dojo/docker/my-dojo/bitcoin/restart.sh
   ```
 
 * Alternatively edit manually  
@@ -132,11 +126,6 @@ modify:
   ```bash
     -disablewallet=0
   ```
-  add within the brackets:
-  ```bash
-    -wallet=wallet.dat
-  ```
-
 ### LAN connection
 
 * Edit the bitcoind container settings  
@@ -154,7 +143,7 @@ modify:
 (edit to your local subnet - in the example here 192.168.1.X):  
 `$ sudo ufw allow from 192.168.1.0/24 to any port 28256`
 
-* Note that Dojo uses the port 28256 instead of the deafult 8332.
+* Note that Dojo uses the port 28256 instead of the default 8332.
 
 ### Tor connection
 * Create a Hidden Service to forward the bitcoin RPC port
@@ -174,25 +163,26 @@ modify:
 * Show the .onion service address  
 `$ sudo cat /var/lib/tor/bitcoinrpc/hostname`
 
-* Recompile the Docker containers (takes time)  
+### Recompile the Docker containers (takes time)  
 `$ cd ~/dojo/docker/my-dojo && ./dojo.sh upgrade --nolog`
 
-### Get the Credentials
-Fill the connection settings from the `5 Credentials` -> `6 Bitcoind` menu:  
+### CONFIG -> CONNECT in JoininBox
+Fill the connection settings from the `5 Credentials` -> `6 Bitcoind` menu of RoninDojo:  
 * RPC username: `RoninDojo`
 * RPC password: `RPC Password`  
 * Host: `RoninDojo_IP` or `sudo cat /var/lib/tor/bitcoinrpc/hostname`
 * Port: `28256` for LAN or `8332` for the .onion service
 
 ---
-Remember to use `torify` with the python scripts when connecting remotely through Tor (applied automatically in the JoininBox)
 
-Example:  
-`torify wallet-tool.py wallet.jmdat`
-
-also need to [allow Tor to connect to localhost](FAQ.md#allow-tor-to-connect-to-localhost)
 ## Resources
 
 * [JoinMarket on the RaspiBlitz guide](https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/README.md)
 
 * [Connect JoinMarket running on a Linux desktop to a remote node](https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/joinmarket_desktop_to_blitz.md)
+
+* Note about the Tor connection (applied automatically in the JoininBox):
+Remember to use `torify` with the python scripts when connecting remotely through Tor  
+Example:  
+`torify wallet-tool.py wallet.jmdat`  
+also need to [allow Tor to connect to localhost](FAQ.md#allow-tor-to-connect-to-localhost)

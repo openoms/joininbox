@@ -11,10 +11,10 @@ def main():
     print(description)
 
     try:
-      opts, args = getopt.getopt(sys.argv[1:], "rphc", ["rpc_user=","rpc_pass=","rpc_host=","rpc_port="])
+      opts, args = getopt.getopt(sys.argv[1:], "rphcw", ["rpc_user=","rpc_pass=","rpc_host=","rpc_port=","rpc_wallet="])
     except getopt.GetoptError:
       print('# Usage:')
-      print('python /home/joinmarket/set.bitcoinrpc.py --rpc_user=$rpc_user --rpc_pass=$rpc_pass --rpc_host=$rpc_host --rpc_port=$rpc_port')
+      print('python /home/joinmarket/set.bitcoinrpc.py --rpc_user=$rpc_user --rpc_pass=$rpc_pass --rpc_host=$rpc_host --rpc_port=$rpc_port --rpc_wallet=$rpc_wallet')
       sys.exit(2)
 
     for opt, arg in opts:
@@ -26,6 +26,8 @@ def main():
             rpc_host = arg
         elif opt in ('-c','--rpc_port'):
             rpc_port = arg
+        elif opt in ('-w','--rpc_wallet'):
+            rpc_wallet_file = arg            
         else:
             assert False, "unhandled option"
     
@@ -36,6 +38,7 @@ def main():
     config.set('BLOCKCHAIN','rpc_password',rpc_password)
     config.set('BLOCKCHAIN','rpc_host',rpc_host)
     config.set('BLOCKCHAIN','rpc_port',rpc_port)
+    config.set('BLOCKCHAIN','rpc_wallet_file',rpc_wallet_file)
 
     with open('/home/joinmarket/.joinmarket/joinmarket.cfg', 'w') as configfile:
         config.write(configfile)
