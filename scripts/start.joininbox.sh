@@ -83,6 +83,12 @@ if [ "$setupStep" -lt 100 ];then
   if [ "$runningEnv" = "standalone" ];then
     # set ssh passwords on the first run
     sudo /home/joinmarket/set.password.sh || exit 1
+    sed -i  "s#setupStep=.*#setupStep=6#g" /home/joinmarket/joinin.conf
+    # expand SDcard partition on ARM
+    if [ ${cpu} != "x86_64" ]; then
+      do_expand_rootfs
+      sed -i  "s#setupStep=.*#setupStep=7#g" /home/joinmarket/joinin.conf
+    fi
     generateJMconfig
     sudo sed -i  "s#setupStep=.*#setupStep=100#g" /home/joinmarket/joinin.conf
     /home/joinmarket/menu.config.sh
