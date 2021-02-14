@@ -228,10 +228,15 @@ function installJoinMarket() {
 
 # copyJoininboxScripts
 function copyJoininboxScripts() {
+  source /home/joinmarket/joinin.conf
   echo "# Copying the scripts in place"
   sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/*.* /home/joinmarket/
   sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
   sudo -u joinmarket chmod +x /home/joinmarket/*.sh
+  if [ $runningEnv = "standalone" ];then
+    sudo -u joinmarket cp -r /home/joinmarket/joininbox/scripts/standalone /home/joinmarket/
+    sudo -u joinmarket chmod +x /home/joinmarket/standalone/*.sh
+  fi
 }
 
 # updateJoininBox <reset|commit>

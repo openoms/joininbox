@@ -274,6 +274,8 @@ sudo -u joinmarket git clone -b ${wantedBranch} https://github.com/${githubUser}
 sudo -u joinmarket cp ./joininbox/scripts/* /home/joinmarket/
 sudo -u joinmarket cp ./joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
 chmod +x /home/joinmarket/*.sh
+sudo -u joinmarket cp -r ./joininbox/scripts/standalone /home/joinmarket/
+chmod +x /home/joinmarket/standalone/*.sh
 
 echo "# set the default password 'joininbox' for the users 'pi', \
 'joinmarket' and 'root'"
@@ -515,8 +517,8 @@ echo
 echo "Look through / save this output and continue with:"
 echo "'su - joinmarket'"
 echo
-echo "To make an SDcard image safe to share"
-echo "use: '/home/joinmarket/prepare.release.sh'"
+echo "To make an SDcard image safe to share use:"
+echo "'/home/joinmarket/standalone/prepare.release.sh'"
 echo
 echo "the ssh login credentials are until the first login:"
 echo "user:joinmarket"

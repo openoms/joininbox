@@ -343,18 +343,21 @@ https://2019.www.torproject.org/docs/debian#source
 * Connect USB stick with [Tails](https://tails.boum.org/) (make it stay offline)
 * Power on the Build Laptop (press F12 for boot menu)
 * Connect USB stick with GPG signing keys - decrypt drive if needed
-* Open Terminal and cd into directory of USB Stick under /media/amnesia
-* Run gpg --import backupkey.gpg, check and exit
+* Open Terminal and cd into directory of USB Stick under `/media/amnesia`
+* Run `gpg --import backupkey.gpg`, check and exit
 * Disconnect USB stick with GPG keys
 * Take the SD card from the RaspberryPi and connect with an external SD card reader to the laptop
 * Click on boot volume once in the file manger
 * Connect another USB stick, open in file manager and delete old files
-* Open Terminal and cd into directory of USB stick under /media/amnesia
-* Run lsblk to check on the SD card device name (ignore last partition number)
-* dd if=/dev/[sdcarddevice] | gzip > ./joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz
+* Open Terminal and cd into directory of USB stick under `/media/amnesia`
+* Run `lsblk` to check on the SD card device name (ignore last partition number)
+* Clone the SDcard:   
+  `dd if=/dev/[sdcarddevice] | gzip > ./joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz`
 * When finished you should see that more then 7GB were copied
-* Then run shasum -a 256 *.gz > sha256.txt
-* Sign with gpg --output joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.sig --detach-sign *.gz
-* Shutdown build computer
-* Upload the new image to the release files - put sig-file next to it
-* Copy SHA256-String into GitHub README and update the download link
+* Create sha256sum:  
+  `shasum -a 256 *.gz > sha256.txt`
+* Sign with:  
+  `gpg --output joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.sig --detach-sign *.gz`
+* Shutdown the build computer
+* Upload the new image to server - put the .sig file and sha256sum.txt next to it
+* Copy the sha256sum to GitHub README and update the download link
