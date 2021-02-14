@@ -265,6 +265,8 @@ function updateJoininBox() {
     if [ $LOCAL = $REMOTE ]; then
       echo "# You are up-to-date on version" $TAG
       echo
+      copyJoininboxScripts
+      echo
       echo "Press ENTER to return to the menu"
       read key
       exit 0
