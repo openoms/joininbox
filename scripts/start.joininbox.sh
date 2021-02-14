@@ -86,7 +86,8 @@ if [ "$setupStep" -lt 100 ];then
     sed -i  "s#setupStep=.*#setupStep=6#g" /home/joinmarket/joinin.conf
     # expand SDcard partition on ARM
     if [ ${cpu} != "x86_64" ]; then
-      do_expand_rootfs
+      chmod +x /home/joinmarket/joininbox/scripts/standalone/expand.rootfs.sh
+      sudo /home/joinmarket/joininbox/scripts/standalone/expand.rootfs.sh
       sed -i  "s#setupStep=.*#setupStep=7#g" /home/joinmarket/joinin.conf
     fi
     generateJMconfig
