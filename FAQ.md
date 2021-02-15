@@ -1,10 +1,12 @@
 <!-- omit in toc -->
 # Frequently Asked Questions and Notes
+- [Public JoinMarket Order Book links](#public-joinmarket-order-book-links)
+- [Signet links](#signet-links)
+- [Log in through SSH using a hardware wallet](#log-in-through-ssh-using-a-hardware-wallet)
 - [SSH through Tor from Linux](#ssh-through-tor-from-linux)
 - [Allow Tor to connect to localhost](#allow-tor-to-connect-to-localhost)
 - [Set up Armbian on the Hardkernel Odroid XU4](#set-up-armbian-on-the-hardkernel-odroid-xu4)
 - [Download and verify Raspbian SDcard image for a Raspberry Pi](#download-and-verify-raspbian-sdcard-image-for-a-raspberry-pi)
-- [Log in through SSH using a hardware wallet](#log-in-through-ssh-using-a-hardware-wallet)
 - [Error when connecting to a full node remotely through Tor](#error-when-connecting-to-a-full-node-remotely-through-tor)
 - [Nuke the joinmarket user and the /home/joinmarket folder](#nuke-the-joinmarket-user-and-the-homejoinmarket-folder)
 - [Sample bitcoin.conf for a remote node accepting RPC connections through LAN](#sample-bitcoinconf-for-a-remote-node-accepting-rpc-connections-through-lan)
@@ -17,6 +19,36 @@
   - [Install Joininbox](#install-joininbox)
   - [Prepare the SDcard release](#prepare-the-sdcard-release)
   - [Sign the image](#sign-the-image)
+  - [Verify the downloaded the image](#verify-the-downloaded-the-image)
+
+### Public JoinMarket Order Book links
+
+* <https://nixbitcoin.org/obwatcher/>  
+* <https://ttbit.mine.bz/orderbook>
+
+### Signet links
+
+* Faucet (free signet coins): https://signet.bc-2.jp
+* Block Explorer: <https://explorer.bc-2.jp>  
+* JoinMarket Order Book: <http://gopnmsknawlntb4qpyav3q5ejvvk6p74a7y5xotmph4v64wl3wicscad.onion>
+* [Concise instructions on setting up Joinmarket for testing on signet](https://gist.github.com/AdamISZ/325716a66c7be7dd3fc4acdfce449fb1)
+* <https://en.bitcoin.it/wiki/Signet>
+
+### Log in through SSH using a hardware wallet
+
+* See the official pages for:
+    * [Trezor](https://wiki.trezor.io/Apps:SSH_agent)
+    * [Ledger](https://support.ledger.com/hc/en-us/articles/115005200649)
+
+* Linux client for [TREZOR One](https://trezor.io/), [TREZOR Model T](https://trezor.io/), [Keepkey](https://www.keepkey.com/), and [Ledger Nano S](https://www.ledgerwallet.com/products/ledger-nano-s):
+    * [github.com/romanz/trezor-agent](https://github.com/romanz/trezor-agent/blob/master/doc/README-SSH.md)
+
+* Windows client for Trezor and Keepkey:
+    * <https://github.com/martin-lizner/trezor-ssh-agent>
+
+* paste the generated SSH pubkey to:  
+`$ nano /home/joinmarket/.ssh/authorized_keys`
+
 ### SSH through Tor from Linux
 On a RaspiBlitz
 * since v1.4 there is a script to create a hidden service on your blitz:  
@@ -128,21 +160,6 @@ Read more on [how to gain ssh access here](https://www.raspberrypi.org/documenta
 `pi@LAN_IP_ADDRESS`  
 The default password is: `raspberry`
 
-### Log in through SSH using a hardware wallet
-
-* See the official pages for:
-    * [Trezor](https://wiki.trezor.io/Apps:SSH_agent)
-    * [Ledger](https://support.ledger.com/hc/en-us/articles/115005200649)
-
-* Linux client for [TREZOR One](https://trezor.io/), [TREZOR Model T](https://trezor.io/), [Keepkey](https://www.keepkey.com/), and [Ledger Nano S](https://www.ledgerwallet.com/products/ledger-nano-s):
-    * [github.com/romanz/trezor-agent](https://github.com/romanz/trezor-agent/blob/master/doc/README-SSH.md)
-
-* Windows client for Trezor and Keepkey:
-    * <https://github.com/martin-lizner/trezor-ssh-agent>
-
-* paste the generated SSH pubkey to:  
-`$ nano /home/joinmarket/.ssh/authorized_keys`
-
 ### Error when connecting to a full node remotely through Tor
 * Getting the error:
     ```
@@ -152,7 +169,7 @@ The default password is: `raspberry`
     `torify wallet-tool.py wallet.jmdat`
 
 ### Nuke the joinmarket user and the /home/joinmarket folder
-`sudo userdel -r joinmarket`
+`sudo userdel -rf joinmarket`
 
 ### Sample bitcoin.conf for a remote node accepting RPC connections through LAN
 ```
@@ -258,13 +275,19 @@ https://github.com/21isenough/LightningATM/blob/master/displays/waveshare2in13.p
 https://2019.www.torproject.org/docs/debian#source
 
 ### Build the SDcard image
-* Check out: https://github.com/rootzoll/raspiblitz/blob/v1.6/FAQ.md#what-is-the-process-of-creating-a-new-sd-card-image-release
+* Partially based on: https://github.com/rootzoll/raspiblitz/blob/v1.6/FAQ.md#what-is-the-process-of-creating-a-new-sd-card-image-release
 #### Boot Ubuntu Live from USB: https://releases.ubuntu.com/focal/ubuntu-20.04.2-desktop-amd64.iso
 * Connect to a secure WiFi (hardware switch on) or LAN
 #### Download,verify and flash the base image to the SDcard 
-* Image: https://raspi.debian.net/verified/20210210_raspi_4_buster.img.xz
-* Signature: https://raspi.debian.net/verified/20210210_raspi_4_buster.xz.sha256.asc
-
+* Download the base image  
+    ```bash
+    wget https://raspi.debian.net/verified/20210210_raspi_4_buster.img.xz
+    ```
+* Download the signature  
+    ```bash
+    wget https://raspi.debian.net/verified/20210210_raspi_4_buster.xz.sha256.asc
+    ```
+* Verify
     ```bash
     gpg --receive-key E2F63B4353F45989
     gpg --verify 20210210_raspi_4_buster.xz.sha256.asc 
@@ -276,25 +299,18 @@ https://2019.www.torproject.org/docs/debian#source
         gpg: Note: This key has expired!
         Primary key fingerprint: 4D14 0506 53A4 02D7 3687  049D 2404 C954 6E14 5360
             Subkey fingerprint: 60B3 093D 9610 8E5C B971  42EF E2F6 3B43 53F4 5989
-    cat 20210210_raspi_4_buster.xz.sha256.asc 
-        -----BEGIN PGP SIGNED MESSAGE-----
-        Hash: SHA256
-
-        425f02915439d92ae13c889cb1e17378076d716e5e37fc557470646a95ccf43c  20210210_raspi_4_buster.img.xz
-        -----BEGIN PGP SIGNATURE-----
-
-        iHUEARYIAB0WIQRgswk9lhCOXLlxQu/i9jtDU/RZiQUCYCRAbQAKCRDi9jtDU/RZ
-        iX+qAPwMniKYC9fKqAUyYTHf58CWrAeQKczjkwBsgp9bi29zAQEAmXHd/TVZ/x07
-        Q4HVd6s4IAEj0H+jkGdMZujtO7sYqg8=
-        =ZUv1
-        -----END PGP SIGNATURE-----
-
-    sha256sum 20210210_raspi_4_buster.img.xz 
-        425f02915439d92ae13c889cb1e17378076d716e5e37fc557470646a95ccf43c  20210210_raspi_4_buster.img.xz
+    sha256sum --check 20201112_raspi_4.xz.sha256.asc
+        20201112_raspi_4.img.xz: OK
+        sha256sum: WARNING: 10 lines are improperly formatted
     ```
 
-* Connect SD card reader with a 8GB SD card
-* In the file manager open context on the .img.xz file, select `Open With Disk Image Writer` and write the image to the SDcard.
+* Connect SDcard reader with a 8GB SDcard
+* In the file manager open context on the .img.xz file, select `Open With Disk Image Writer` and write the image to the SDcard.  
+  or use the CLI:  
+    look up the SDcard device with `lsblk`
+    ```bash
+    $ xzcat 20210210_raspi_4_buster.img.xz | sudo dd of=/dev/{SDcard} bs=64k oflag=dsync status=progress
+    ```
 #### Prepare the base image
 
 * Before the first boot edit the `sysconf.txt` on the `RASPIFIRM` partition to be able to ssh remotely - needs an authorized ssh pubkey.
@@ -302,7 +318,6 @@ https://2019.www.torproject.org/docs/debian#source
     ```bash
     ssh-keygen -t rsa -b 4096
     ```
-
 * Copy the ssh pubkey from the Ubuntu image to the `sysconf.txt` the `RASPIFIRM` directory (make sure it is mounted):
     ```bash
     echo "root_authorized_key=$(cat ~/.ssh/id_rsa.pub)" | tee -a /media/ubuntu/RASPIFIRM/sysconf.txt
@@ -355,16 +370,45 @@ https://2019.www.torproject.org/docs/debian#source
   `dd if=/dev/[sdcarddevice] | gzip > ./joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz`
 * When finished you should see that more than 7GB was copied.
 * Create sha256sum:  
-  `sha256sum *.gz > sha256.txt`
+  `sha256sum *.gz > joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.sha256`
 * Sign:  
-  `gpg --detach-sign --armor *.gz`  
-  `gpg --clear-sign *.txt`
+  `gpg ----detach-sign --armor *.sha256`
 * Check the files:
   ```bash
   ls
-    joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz      sha256.txt
-    joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.asc  sha256.txt.asc
+    joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz
+    joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.sha256
+    joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.sha256.asc
   ```
 * Shutdown the build computer
 * Upload the new image to server - put the .sig file and sha256sum.txt next to it
 * Copy the sha256sum to GitHub README and update the download link
+
+### Verify the downloaded the image
+  * Import the signing pubkey: 
+    ```bash
+    curl https://keybase.io/oms/pgp_keys.asc | gpg --import 
+    ```
+* verify the signature of the sha256 hash:
+    ```bash
+    gpg --verify joininbox-v0.2.0-2021-02-14.img.gz.sha256.asc 
+    ```
+    Result (`Good signature`) :
+    ```
+    gpg: assuming signed data in 'joininbox-v0.2.0-2021-02-14.img.gz.sha256'
+    gpg: Signature made Sun 14 Feb 2021 23:03:42 GMT
+    gpg:                using RSA key 13C688DB5B9C745DE4D2E4545BFB77609B081B65
+    gpg: Good signature from "openoms <oms@tuta.io>" [unknown]
+    gpg: WARNING: This key is not certified with a trusted signature!
+    gpg:          There is no indication that the signature belongs to the owner.
+    Primary key fingerprint: 13C6 88DB 5B9C 745D E4D2  E454 5BFB 7760 9B08 1B6
+    ```
+
+* compare the sha256 hash to the hash of the image file
+    ```bash        
+    shasum --check joininbox-v0.2.0-2021-02-14.img.gz.sha256
+    ```
+    Result (`OK`) :
+    ```
+    joininbox-v0.2.0-2021-02-14.img.gz: OK
+    ```
