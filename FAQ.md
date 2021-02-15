@@ -283,13 +283,15 @@ https://2019.www.torproject.org/docs/debian#source
     ```bash
     wget https://raspi.debian.net/verified/20210210_raspi_4_buster.img.xz
     ```
-* Download the signature  
+* Download the PGP signed sha256 hash 
     ```bash
     wget https://raspi.debian.net/verified/20210210_raspi_4_buster.xz.sha256.asc
     ```
 * Verify
     ```bash
+    # download the signing pubkey
     gpg --receive-key E2F63B4353F45989
+    # verify the PGP signed sha256 hash
     gpg --verify 20210210_raspi_4_buster.xz.sha256.asc 
         gpg: Signature made Wed 10 Feb 2021 20:22:05 GMT
         gpg:                using EDDSA key 60B3093D96108E5CB97142EFE2F63B4353F45989
@@ -299,18 +301,14 @@ https://2019.www.torproject.org/docs/debian#source
         gpg: Note: This key has expired!
         Primary key fingerprint: 4D14 0506 53A4 02D7 3687  049D 2404 C954 6E14 5360
             Subkey fingerprint: 60B3 093D 9610 8E5C B971  42EF E2F6 3B43 53F4 5989
-    sha256sum --check 20201112_raspi_4.xz.sha256.asc
+    # compare the hash to the hash of the image file
+    sha256sum --check 20210210_raspi_4_buster.xz.sha256.asc
         20201112_raspi_4.img.xz: OK
         sha256sum: WARNING: 10 lines are improperly formatted
     ```
 
 * Connect SDcard reader with a 8GB SDcard
-* In the file manager open context on the .img.xz file, select `Open With Disk Image Writer` and write the image to the SDcard.  
-  or use the CLI:  
-    look up the SDcard device with `lsblk`
-    ```bash
-    $ xzcat 20210210_raspi_4_buster.img.xz | sudo dd of=/dev/{SDcard} bs=64k oflag=dsync status=progress
-    ```
+* In the file manager open context on the .img.xz file, select `Open With Disk Image Writer` and write the image to the SDcard.
 #### Prepare the base image
 
 * Before the first boot edit the `sysconf.txt` on the `RASPIFIRM` partition to be able to ssh remotely - needs an authorized ssh pubkey.
@@ -327,7 +325,7 @@ https://2019.www.torproject.org/docs/debian#source
     cat /media/ubuntu/RASPIFIRM/sysconf.txt
     ```   
     The `sysconf.txt` will reset after boot and moves the ssh pubkey to `/root/.ssh/authorized_keys`
-* Boot the RPi and connect with ssh (use the hostname, `arp -a` or check router))
+* Place the SDcard in the RPi, boot up and connect with ssh (use the hostname, `arp -a` or check router))
     ```bash
     ssh root@rpi4-20210210
     ```
@@ -350,7 +348,7 @@ https://2019.www.torproject.org/docs/debian#source
 #### Prepare the SDcard release
  * Make the SDcard image safe to share by removing unique infos like ssh pubkeys and network identifiers:  
      ```bash
-    /home/joinmarket/prepare.release.sh
+    /home/joinmarket/standalone/prepare.release.sh
     ```
 * Disconnect WiFi/LAN on build laptop (hardware switch off) and shutdown
 * Remove Ubuntu LIVE USB stick and cut power from the RaspberryPi
@@ -367,12 +365,12 @@ https://2019.www.torproject.org/docs/debian#source
 * Open Terminal and cd into directory of USB stick under `/media/amnesia`
 * Run `lsblk` to check on the SD card device name (ignore last partition number)
 * Clone the SDcard:   
-  `dd if=/dev/[sdcarddevice] | gzip > ./joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz`
+  `dd if=/dev/[sdcarddevice] | gzip > joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz`
 * When finished you should see that more than 7GB was copied.
-* Create sha256sum:  
+* Create sha256 hash of the image:  
   `sha256sum *.gz > joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.sha256`
-* Sign:  
-  `gpg ----detach-sign --armor *.sha256`
+* Sign the sha256 hash file:  
+  `gpg --detach-sign --armor *.sha256`
 * Check the files:
   ```bash
   ls
@@ -385,30 +383,30 @@ https://2019.www.torproject.org/docs/debian#source
 * Copy the sha256sum to GitHub README and update the download link
 
 ### Verify the downloaded the image
-  * Import the signing pubkey: 
+* Import the signing pubkey: 
     ```bash
     curl https://keybase.io/oms/pgp_keys.asc | gpg --import 
     ```
-* verify the signature of the sha256 hash:
+* Verify the signature of the sha256 hash:
     ```bash
-    gpg --verify joininbox-v0.2.0-2021-02-14.img.gz.sha256.asc 
+    gpg --verify joininbox-v0.2.0-2021-02-15.img.gz.sha256.asc 
     ```
     Result (`Good signature`) :
     ```
-    gpg: assuming signed data in 'joininbox-v0.2.0-2021-02-14.img.gz.sha256'
-    gpg: Signature made Sun 14 Feb 2021 23:03:42 GMT
+    gpg: assuming signed data in 'joininbox-v0.2.0-2021-02-15.img.gz.sha256'
+    gpg: Signature made Mon 15 Feb 2021 14:16:56 GMT
     gpg:                using RSA key 13C688DB5B9C745DE4D2E4545BFB77609B081B65
     gpg: Good signature from "openoms <oms@tuta.io>" [unknown]
     gpg: WARNING: This key is not certified with a trusted signature!
     gpg:          There is no indication that the signature belongs to the owner.
-    Primary key fingerprint: 13C6 88DB 5B9C 745D E4D2  E454 5BFB 7760 9B08 1B6
+    Primary key fingerprint: 13C6 88DB 5B9C 745D E4D2  E454 5BFB 7760 9B08 1B65
     ```
 
 * compare the sha256 hash to the hash of the image file
     ```bash        
-    shasum --check joininbox-v0.2.0-2021-02-14.img.gz.sha256
+    shasum -c joininbox-v0.2.0-2021-02-15.img.gz.sha256
     ```
     Result (`OK`) :
     ```
-    joininbox-v0.2.0-2021-02-14.img.gz: OK
+    joininbox-v0.2.0-2021-02-15.img.gz: OK
     ```
