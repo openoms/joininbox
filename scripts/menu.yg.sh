@@ -21,7 +21,7 @@ BACKTITLE="JoininBox GUI"
 # Basic Options
 OPTIONS+=(\
   MAKER "Run the Yield Generator" \
-  YGCONF "Configure the Yield Generator" \
+  JMCONF "YG settings in the joinmarket.cfg" \
   YGLIST "List the past YG activity" \
   NICKNAME "Show the last used counterparty name" \
   SERVICE "Monitor the YG service (INFO)" \
@@ -60,10 +60,11 @@ case $CHOICE in
             sleep 1
             /home/joinmarket/menu.yg.sh
             ;;
-        YGCONF)
-            /home/joinmarket/set.conf.sh /home/joinmarket/joinmarket-clientserver/scripts/yg-privacyenhanced.py
-            echo "# returning to the menu..."
-            /home/joinmarket/menu.yg.sh        
+        JMCONF)
+            /home/joinmarket/install.joinmarket.sh config
+            echo "Returning to the menu..."
+            sleep 1
+            /home/joinmarket/menu.yg.sh
             ;;
         YGLIST)
             dialog \
