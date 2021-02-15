@@ -13,11 +13,11 @@ OPTIONS=()
 BACKTITLE="JoininBox GUI"
 
 # Basic Options
-OPTIONS+=(\
-  JMCONF "Edit the joinmarket.cfg manually" \
-  RESET "Reset the joinmarket.cfg to the defaults"
-  CONNECT "Connect to a remote bitcoin node on mainnet"\
+OPTIONS+=(
+  JMCONF "Edit the joinmarket.cfg manually"
+  CONNECT "Connect to a remote bitcoin node on mainnet"
   SIGNET "Switch to signet with a local Bitcoin Core"
+  RESET "Reset the joinmarket.cfg to the defaults"
 )
 
 CHOICE=$(dialog --clear \
