@@ -33,16 +33,49 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 
 ### Required Hardware
 * RaspberryPi 4 ([alternatively any other computer running a Debian Linux flavour](#tested-environments))
-* 32 Gb SDcard
+* Power supply (5V 3A and above recommended)
+* Heatsink case
+* 16 Gb SDcard
 * (USB SSD to run a pruned bitcoin node locally)
-### Set up JoininBox on Linux
 
+### Set up with an SDcard image
+
+* Find the links to the prebuilt image in the [releases](https://github.com/openoms/joininbox/releases)
+* [Verify the downloaded image](FAQ.md#verify-the-downloaded-the-image)
+* Write to the SDcard with [Balena Etcher](https://www.balena.io/etcher/)
+* Assemble the RaspberryPi and connect with a LAN cable to the internet
+* Make sure that your laptop and the RPi are on the same local network
+* Boot by connecting the power cable
+* Open a terminal ([OSX](https://www.youtube.com/watch?v=5XgBd6rjuDQ)/[Win10](https://www.howtogeek.com/336775/how-to-enable-and-use-windows-10s-built-in-ssh-commands/)) and connect with ssh.  
+  Use the hostname of the latest SDcard image (`rpi4-20210210`) or to find the IP address to connect to:  
+  * scan with the [AngryIP Scanner](https://angryip.org/)
+  * use `sudo arp -a` or
+  * check the router interface 
+
+  `ssh joinmarket@rpi4-20210210` → use the password: `joininbox`
+* after the first loging will be prompted to change the password to access Joininbox
+
+  ![password change](/images/password.change.png)
+
+* next will be presented with the CONFIG menu to
+  * Edit the joinmarket.cfg manually
+  * Connect to  a remote bitcoin node on mainnet
+  * Try JoinMarket on signet
+  
+  ![config menu](/images/menu.config.png)
+
+* Continuing with one of the options or exiting will get you to the main JoininBox menu where you can start using JoinMarket
+   
+   ![menu](/images/menu.png)
+
+* Find [more info on the usage](#more-info) and [community help](#forums) at the end of this readme
+### Set up JoininBox on Linux
 #### Tested environments
   * Debian Buster X86_64 desktop
-  * [Raspberry Pi 4 running 64bit Debian Buster](https://github.com/openoms/joininbox/blob/master/FAQ.md#build-the-sdcard-image)
-  * [Hardkernel Odroid XU4 running 32bit Armbian Buster](https://github.com/openoms/joininbox/blob/master/FAQ.md#set-up-armbian-on-the-hardkernel-odroid-xu4)
+  * [Raspberry Pi 4 running 64bit Debian Buster](FAQ.md#build-the-sdcard-image)
+  * [Hardkernel Odroid XU4 running 32bit Armbian Buster](FAQ.md#set-up-armbian-on-the-hardkernel-odroid-xu4)
   * Hardkernel Odroid C4 running 64bit Armbian Focal and Buster
-  * Raspberry Pi Zero, [3 and 4 running RaspberryOS](https://github.com/openoms/joininbox/blob/master/FAQ.md#download-and-verify-raspbian-sdcard-image-for-a-raspberry-pi) (32bit Buster)
+  * Raspberry Pi Zero, [3 and 4 running RaspberryOS](FAQ.md#download-and-verify-raspbian-sdcard-image-for-a-raspberry-pi) (32bit Buster)
 
 #### Install JoininBox
 * Start as the `root` user or change with:  

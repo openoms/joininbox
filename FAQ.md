@@ -19,7 +19,7 @@
   - [Install Joininbox](#install-joininbox)
   - [Prepare the SDcard release](#prepare-the-sdcard-release)
   - [Sign the image](#sign-the-image)
-  - [Verify the downloaded the image](#verify-the-downloaded-the-image)
+- [Verify the downloaded the image](#verify-the-downloaded-the-image)
 
 ### Public JoinMarket Order Book links
 
