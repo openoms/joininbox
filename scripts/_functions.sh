@@ -313,6 +313,16 @@ function generateJMconfig() {
   setIRCtoTor
   # set strict permission to joinmarket.cfg
   sudo chmod 600 /home/joinmarket/.joinmarket/joinmarket.cfg || exit 1
+  if [ -f "/mnt/hdd/bitcoin/bitcoin.conf" ];then
+    echo
+    echo "# editing the joinmarket.cfg with the local bitcoin RPC settings."
+    sed -i "s/^rpc_user =.*/rpc_user = raspibolt/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    PASSWORD_B=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+    sed -i "s/^rpc_password =.*/rpc_password = $PASSWORD_B/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    echo "# filled the bitcoin RPC password (PASSWORD_B)"
+    sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    echo "# using the bitcoind wallet: wallet.dat"
+  fi
  }
 
 #backupJMconf

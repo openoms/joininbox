@@ -79,7 +79,7 @@ if [ "$setupStep" -lt 100 ];then
   /home/joinmarket/install.joinmarket.sh install
   sed -i  "s#setupStep=.*#setupStep=5#g" /home/joinmarket/joinin.conf
 
-  # change the ssh password and open the config menu if standalone
+  # change the ssh password if standalone
   if [ "$runningEnv" = "standalone" ];then
     # set ssh passwords on the first run
     sudo /home/joinmarket/set.password.sh
@@ -89,21 +89,13 @@ if [ "$setupStep" -lt 100 ];then
       sudo /home/joinmarket/standalone/expand.rootfs.sh
       sed -i  "s#setupStep=.*#setupStep=7#g" /home/joinmarket/joinin.conf
     fi
-    generateJMconfig
-    sudo sed -i  "s#setupStep=.*#setupStep=100#g" /home/joinmarket/joinin.conf
+  fi
+  generateJMconfig
+  # setup finished
+  sudo sed -i  "s#setupStep=.*#setupStep=100#g" /home/joinmarket/joinin.conf
+  # open the config menu if standalone
+  if [ "$runningEnv" = "standalone" ];then
     /home/joinmarket/menu.config.sh
-  elif [ "$runningEnv" = "raspiblitz" ];then
-    generateJMconfig
-    echo
-    echo "# editing the joinmarket.cfg"
-    sed -i "s/^rpc_user =.*/rpc_user = raspibolt/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    PASSWORD_B=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
-    sed -i "s/^rpc_password =.*/rpc_password = $PASSWORD_B/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    echo "# filled the bitcoin RPC password (PASSWORD_B)"
-    sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    echo "# using the bitcoind wallet: wallet.dat"
-    # setup finished
-    sed -i  "s#setupStep=.*#setupStep=100#g" /home/joinmarket/joinin.conf
   fi
 fi
 
