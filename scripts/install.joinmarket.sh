@@ -16,7 +16,7 @@ if [ "$1" = "config" ]; then
   dialog \
   --title "Configure JoinMarket" \
   --exit-label "Continue to edit the joinmarket.cfg" \
-  --textbox "info.conf.txt" 21 102
+  --textbox "/home/joinmarket/info.conf.txt" 45 101
   # edit joinmarket.cfg
   /home/joinmarket/set.conf.sh /home/joinmarket/.joinmarket/joinmarket.cfg
   exit 0

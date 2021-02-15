@@ -1,4 +1,4 @@
-Use CONNECT or SIGNET in the CONFIG menu to edit these setting automatically:
+Use CONNECT or SIGNET in the CONFIG menu to edit these settings automatically:
 
 [BLOCKCHAIN]
 # options: bitcoin-rpc, regtest
@@ -10,8 +10,8 @@ rpc_user = RPC_USERNAME_OF_THE_CONNECTED_NODE (as in the bitcoin.conf)
 rpc_password = RPC_PASSWORD_OF_THE_CONNECTED_NODE (as in the bitcoin.conf)
 rpc_wallet = fill a wallet name from Bitcoin Core ('bitcoin-cli listwallets')
 
-The Yield Generator is to be set in the joinmarket.cfg since JoinMarket v0.8.1.
-Use the RESET option in the CONFIG menu to return to defaults options:
+The Yield Generator is configured in the joinmarket.cfg since JoinMarket v0.8.1.
+Use the RESET option in the CONFIG menu to return to the defaults options:
 
 [YIELDGENERATOR]
 # [string, 'reloffer' or 'absoffer'], which fee type to actually use
