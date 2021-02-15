@@ -29,7 +29,7 @@ fi
 
 echo 
 echo "###############################"
-echo "# JOININBOX BUILD SCRIPT v0.3 #"
+echo "# JOININBOX BUILD SCRIPT v0.2 #"
 echo "###############################"
 echo 
 
