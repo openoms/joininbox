@@ -34,7 +34,9 @@
 ### Signet links
 
 * Faucet (free signet coins): https://signet.bc-2.jp
-* Block Explorer: <https://explorer.bc-2.jp>  
+* Block Explorer:
+    * esplora: <https://explorer.bc-2.jp>  
+    * mempool.space: <https://mempool.space/signet>
 * JoinMarket Order Book: <http://gopnmsknawlntb4qpyav3q5ejvvk6p74a7y5xotmph4v64wl3wicscad.onion>
 * [Concise instructions on setting up Joinmarket for testing on signet](https://gist.github.com/AdamISZ/325716a66c7be7dd3fc4acdfce449fb1)
 * <https://en.bitcoin.it/wiki/Signet>
