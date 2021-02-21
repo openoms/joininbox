@@ -27,19 +27,24 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 * Try signet locally
 * Connect remotely to a
   * RaspiBlitz over LAN or Tor
-  * RoninDojo over LAN or Tor
+  * RoninDojo over LAN or Tor  
 * Run locally as part of the RaspiBlitz SERVICES
 * (Soon: run a pruned node locally on JoininBox)
+  
+**The addresses, transactions and balances of JoinMarket can be seen in the watch-only wallet of the connected node.**
+  * use your own or trusted node
+  * to protect privacy in case of physical access use disk encryption
 
 ### Required Hardware
 * RaspberryPi 4 ([alternatively any other computer running a Debian Linux flavour](#tested-environments))
 * Power supply (5V 3A and above recommended)
 * Heatsink case
-* 16 Gb SDcard
-* (USB SSD to run a pruned bitcoin node locally)
+* 16GB SDcard (minimum)
+* [(USB SSD to run a pruned bitcoin node locally)](FAQ.md#usb-ssd-recommendation)  
+  
+**JoininBox operates on the minimum viable hardware under the assumption that the seed (and passphrase) of the wallets used is safely backed up and can be recovered fully**
 
 ### Set up with an SDcard image
-
 * Find the links to the prebuilt image in the [releases](https://github.com/openoms/joininbox/releases)
 * [Verify the downloaded image](FAQ.md#verify-the-downloaded-the-image)
 * Write to the SDcard with [Balena Etcher](https://www.balena.io/etcher/)

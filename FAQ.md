@@ -20,6 +20,11 @@
   - [Prepare the SDcard release](#prepare-the-sdcard-release)
   - [Sign the image](#sign-the-image)
 - [Verify the downloaded the image](#verify-the-downloaded-the-image)
+- [Wallet recovery](#wallet-recovery)
+    - [on JoininBox](#on-joininbox)
+    - [on the remote node](#on-the-remote-node)
+- [USB SSD recommendation](#usb-ssd-recommendation)
+
 
 ### Public JoinMarket Order Book links
 
@@ -410,3 +415,42 @@ https://2019.www.torproject.org/docs/debian#source
     ```
     joininbox-v0.2.0-2021-02-15.img.gz: OK
     ```
+
+
+## Wallet recovery
+
+JoinMarket docs:
+* https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/docs/USAGE.md#portability
+* https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/docs/USAGE.md#recover
+
+#### on JoininBox
+* Connect the remote bitcoind with `CONFIG` -> `CONNECT` menu so it checks if the connection is successful. It will also set the remote watch-only wallet in bitcoind to "joininbox" so will need to rescan that after recovering an old wallet with previously used addresses.
+
+* When using the CLI and connecting to the remote node over Tor, you will need to use the script with the torify prefix like:  
+`torify python3 wallet-tool.py --recoversync -g 20 ~/.joinmarket/wallets/wallet.jmdat`
+
+#### on the remote node
+
+* the wallet defined as
+`rpc_wallet =`
+in the joinmarket.cfg is the wallet which is used as watch only in the remote bitcoind.
+You need to run rescanblockchain on that wallet in bitcoind after importing the joinmarket wallet.
+* The wallet is set in the joinmarket.cfg (by default called `joininbox` should show up when you run:  
+`bitcoin-cli listwallets`
+
+* To rescan on the node run (https://developer.bitcoin.org/reference/rpc/rescanblockchain.html?highlight=rescanblockchain):  
+`bitcoin-cli -rpcwallet=joininbox rescanblockchain 477120`  
+Rescanning fom the first SegWit block is sufficient for the default SegWit wallets.
+
+* Monitor progress (on a RaspiBlitz):  
+`sudo tail -fn 100 /mnt/hdd/bitcoin/debug.log`
+
+Once the rescan is finished you balances should appear in the `INFO` menu (`wallet-tool.py`)
+## USB SSD recommendation
+
+**JoininBox operates on the minimum viable hardware under the assumption that the seed (and passphrase) of the wallets used is safely backed up and can be recovered fully**
+* The above warning is especially true for SDcard as they fail often, use a good quality one.
+* If using an external USB drive I recommend using a Sandisk Extreme Pro 128GB USB SSD:
+https://twitter.com/openoms/status/1362486943301459968
+* a good alternative is a USB connector and internal SSD as in the [RaspiBlitz shopping list](https://github.com/rootzoll/raspiblitz#package-standard-around-250-usd). Pay attention to choose a compatible SATA-USB adapter since that is a common problem with the Raspberry Pi 4.
+* Cheap USB drives are very likely to fail after weeks of heavy usage: https://github.com/rootzoll/raspiblitz/issues/924
