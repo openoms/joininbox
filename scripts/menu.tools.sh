@@ -24,7 +24,7 @@ function getTXID {
 }
 
 # BASIC MENU INFO
-HEIGHT=7
+HEIGHT=8
 WIDTH=54
 CHOICE_HEIGHT=20
 TITLE="Tools"
@@ -35,6 +35,7 @@ BACKTITLE="JoininBox GUI"
 # Basic Options
 OPTIONS+=(\
   BOLTZMANN "Analyze the entropy of a transaction"\
+  CUSTOMRPC "Run a custom bitcoin RPC with curl"
 )
 
 CHOICE=$(dialog --clear \
@@ -54,4 +55,18 @@ case $CHOICE in
     echo "Press ENTER to return to the menu..."
     read key
     ;;
+  CUSTOMRPC)
+    echo "***DANGER ZONE***"
+    echo "# See the options at https://developer.bitcoin.org/reference/rpc/"
+    echo
+    getRPC
+    echo
+    echo "# Input which method (command) to use"
+    read method
+    echo "# Input the parameter(s) (optional)"
+    read params
+    customRPC "# custom RPC" "$method" "$params" 
+    echo            
+    echo "Press ENTER to return to the menu..."
+    read key
 esac
