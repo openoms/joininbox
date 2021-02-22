@@ -6,9 +6,9 @@ source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
-HEIGHT=11
+HEIGHT=12
 WIDTH=52
-CHOICE_HEIGHT=20
+CHOICE_HEIGHT=21
 TITLE="Wallet management options"
 BACKTITLE="Wallet management options"
 MENU=""
@@ -21,6 +21,7 @@ OPTIONS+=(\
   IMPORT "Copy wallet(s) from a remote node"\
   RECOVER "Restore a wallet from the seed" \
   UNLOCK "Remove the lockfiles"
+  RESCAN "Rescan the Bitcoin Core wallet"
 )
 
 CHOICE=$(dialog --clear \
@@ -42,7 +43,7 @@ case $CHOICE in
       else
         python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
       fi
-      echo ""
+      echo
       echo "Press ENTER to return to the menu"
       read key
       ;;
@@ -50,7 +51,7 @@ case $CHOICE in
       # wallet
       chooseWallet
       /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) "history -v 4"
-      echo ""
+      echo
       echo "Press ENTER to return to the menu"
       read key
       ;;
@@ -62,7 +63,7 @@ case $CHOICE in
       ;;
   RECOVER)
       clear
-      echo ""
+      echo
       . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
       if [ "${RPCoverTor}" = "on" ];then 
         torify python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py recover
@@ -74,12 +75,32 @@ case $CHOICE in
       read key
       ;;
   UNLOCK)
-      echo "Removing the wallet lockfiles with the command:
-rm ~/.joinmarket/wallets/.*.lock"
+      echo "Removing the wallet lockfiles with the command:"
+      echo "rm ~/.joinmarket/wallets/.*.lock"
       rm ~/.joinmarket/wallets/.*.lock
       # for old version <v0.6.3
       rm ~/.joinmarket/wallets/*.lock 2>/dev/null
       echo ""
+      echo "Press ENTER to return to the menu"
+      read key
+      ;;
+  RESCAN)
+      getRPC
+      echo
+      echo "# Making sure the set $rpc_wallet wallet is present in bitcoind"
+      echo
+      customRPC "# Create wallet in bitcoind" "createwallet" "$rpc_wallet"
+      echo
+      echo "# Making sure the set $rpc_wallet wallet is loaded in bitcoind"
+      echo
+      customRPC "# Load wallet in bitcoind" "loadwallet" "$rpc_wallet"      
+      echo
+      echo "# Input the blockheight to scan from (first SegWit block: 477120):"
+      read blockheight
+      customRPC "# Rescan wallet in bitcoind" "rescanblockchain" "$blockheight"
+      echo
+      echo "# Monitor the progress in the logs of the connected bitcoind"
+      echo
       echo "Press ENTER to return to the menu"
       read key
       ;;

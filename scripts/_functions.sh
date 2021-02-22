@@ -391,3 +391,44 @@ deb-src https://deb.torproject.org/torproject.org tor-nightly-master-$distro mai
   fi
 }
 
+# getRPC - reads the RPC settings from the joinmarket.cfg
+function getRPC {
+  echo "# Reading the bitcoind RPC settings from the joinmarket.cfg"
+  cfgPath="/home/joinmarket/.joinmarket/joinmarket.cfg"
+  rpc_user="$(awk '/rpc_user / {print $3}' < $cfgPath)"
+  rpc_pass="$(awk '/rpc_password / {print $3}' < $cfgPath)"
+  rpc_host="$(awk '/rpc_host / {print $3}' < $cfgPath)"
+  rpc_port="$(awk '/rpc_port / {print $3}' < $cfgPath)"
+  rpc_wallet="$(awk '/rpc_wallet_file / {print $3}' < $cfgPath)"
+  # echo "$rpc_user $rpc_pass $rpc_host $rpc_port $rpc_wallet"
+}
+
+# customRPCstr - sends a custom RPC command
+# $1=id $2=method $3=string params
+function customRPC {
+  tor=""
+  if [ $(echo $rpc_host | grep -c .onion) -gt 0 ]; then
+    tor="torify"
+    echo "# Connecting over Tor..."
+    echo
+  fi
+  echo "# Using the RPC command:"
+  is_int () { test "$@" -eq "$@" 2> /dev/null; }
+  if is_int "$3" ||[ ${#3} -eq 0 ]; then
+    echo "$tor curl -sS --data-binary\
+ '{\"jsonrpc\": \"1.0\", \"id\":\"$1\", \"method\": \"$2\", \"params\": [$3] }'\
+ http://$rpc_user:rpc_pass(redacted)@rpc_host(redacted):$rpc_port"
+    echo
+    $tor curl -sS --data-binary \
+    '{"jsonrpc": "1.0", "id":"'"$1"'", "method": "'"$2"'", "params": ['"$3"'] }' \
+    http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port | jq .
+  else
+    echo "$tor curl -sS --data-binary\
+ '{\"jsonrpc\": \"1.0\", \"id\":\"$1\", \"method\": \"$2\", \"params\": [\"$3\"] }'\
+ http://$rpc_user:rpc_pass(redacted)@rpc_host(redacted):$rpc_port"
+    echo
+    $tor curl -sS --data-binary \
+    '{"jsonrpc": "1.0", "id":"'"$1"'", "method": "'"$2"'", "params": ["'"$3"'"] }' \
+    http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port | jq .
+  fi
+}

@@ -418,7 +418,6 @@ https://2019.www.torproject.org/docs/debian#source
     joininbox-v0.2.0-2021-02-15.img.gz: OK
     ```
 
-
 ## Wallet recovery
 
 JoinMarket docs:
@@ -433,6 +432,7 @@ JoinMarket docs:
 
 #### on the remote node
 
+* Use the menu option `WALLET` -> `RESCAN` or follow manually
 * the wallet defined as
 `rpc_wallet =`
 in the joinmarket.cfg is the wallet which is used as watch only in the remote bitcoind.
@@ -445,8 +445,7 @@ You need to run rescanblockchain on that wallet in bitcoind after importing the 
 Rescanning fom the first SegWit block is sufficient for the default SegWit wallets.
 
 * Monitor progress (on a RaspiBlitz):  
-`sudo tail -fn 100 /mnt/hdd/bitcoin/debug.log`
-
+`sudo tail -fn 100 /mnt/hdd/bitcoin/debug.log`  
 Once the rescan is finished you balances should appear in the `INFO` menu (`wallet-tool.py`)
 ## USB SSD recommendation
 
