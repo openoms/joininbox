@@ -8,7 +8,7 @@ source /home/joinmarket/_functions.sh
 checkRPCwallet
 
 # BASIC MENU INFO
-HEIGHT=12
+HEIGHT=13
 WIDTH=52
 CHOICE_HEIGHT=21
 TITLE="Wallet management options"
@@ -24,6 +24,7 @@ OPTIONS+=(\
   RECOVER "Restore a wallet from the seed" \
   UNLOCK "Remove the lockfiles"
   RESCAN "Rescan the Bitcoin Core wallet"
+  XPUBS "Show the master public keys"
 )
 
 CHOICE=$(dialog --clear \
@@ -98,4 +99,15 @@ case $CHOICE in
       echo "Press ENTER to return to the menu"
       read key
       ;;
+  XPUBS)
+      checkRPCwallet
+      # wallet
+      chooseWallet
+      /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)"|grep mixdepth|sed -n '1~2p'|awk '{print $1,$2,$3}'
+      echo
+      echo "Import the master public keys to Specter Desktop or Electrum to create watch only wallets."
+      echo
+      echo "Press ENTER to return to the menu..."
+      read key
+      /home/joinmarket/menu.sh
 esac
