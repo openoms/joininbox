@@ -40,21 +40,24 @@ case $CHOICE in
     echo            
     echo "Press ENTER to return to the menu..."
     read key
+    /home/joinmarket/standalone/menu.specter.sh
     ;;
  INFO)
     /home/joinmarket/standalone/install.specter.sh menu
     echo            
     echo "Press ENTER to return to the menu..."
     read key
+    /home/joinmarket/standalone/menu.specter.sh
     ;;
   UPDATE)
     /home/joinmarket/standalone/install.specter.sh update
     echo            
     echo "Press ENTER to return to the menu..."
     read key
+    /home/joinmarket/standalone/menu.specter.sh
     ;;
   REMOVE)
-    home/joinmarket/standalone/install.specter.sh off
+    /home/joinmarket/standalone/install.specter.sh off
     echo         
     echo "Press ENTER to return to the menu..."
     read key

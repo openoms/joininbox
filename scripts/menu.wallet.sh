@@ -87,8 +87,6 @@ case $CHOICE in
       read key
       ;;
   RESCAN)
-      getRPC
-      echo
       checkRPCwallet
       echo
       echo "# Input the blockheight to scan from (first SegWit block: 477120):"

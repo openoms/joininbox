@@ -62,8 +62,6 @@ case $CHOICE in
     echo "***DANGER ZONE***"
     echo "# See the options at https://developer.bitcoin.org/reference/rpc/"
     echo
-    getRPC
-    echo
     echo "# Input which method (command) to use"
     read method
     echo "# Input the parameter(s) (optional)"

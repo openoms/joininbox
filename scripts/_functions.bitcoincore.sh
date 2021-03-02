@@ -258,7 +258,9 @@ function getRPC {
   rpc_host="$(awk '/rpc_host / {print $3}' < $JMcfgPath)"
   rpc_port="$(awk '/rpc_port / {print $3}' < $JMcfgPath)"
   rpc_wallet="$(awk '/rpc_wallet_file / {print $3}' < $JMcfgPath)"
-  # echo "$rpc_user $rpc_pass $rpc_host $rpc_port $rpc_wallet"
+  if [ ${#1} -gt 0 ]&&[ $1 = print ];then
+    echo "$rpc_user $rpc_pass $rpc_host $rpc_port $rpc_wallet"
+  fi
 }
 
 # checkRPCwallet <wallet>

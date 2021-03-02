@@ -12,11 +12,13 @@ if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
  exit 1
 fi
 
+echo "# install.specter.sh $1"
+
+source /home/joinmarket/_functions.sh
 source /home/joinmarket/joinin.conf
-echo "# tools.specter.sh $1"
 
 function createSpecterConfig() {
-    echo "#    --> creating App-config"
+    echo "# Creating /home/specter/.specter/config.json"
     source /home/joinmarket/_functions.sh
     if [ "${runBehindTor}" = "on" ];then
       proxy="socks5h://localhost:9050"
@@ -29,7 +31,7 @@ function createSpecterConfig() {
     if [ $network = mainnet ];then
       dir="/home/bitcoin/.bitcoin"
     elif [ $network = signet ];then
-      dir="/home/bitcoin/.bitcoin"
+      dir="/home/joinmarket/.bitcoin"
     elif [ $network = testnet ];then
       dir="/home/bitcoin/.bitcoin"
     fi
@@ -39,9 +41,9 @@ function createSpecterConfig() {
         "autodetect": false,
         "datadir": "$dir",
         "user": "$rpc_user",
-        "password": "$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c12)",
+        "password": "$rpc_pass",
         "port": "$rpc_port",
-        "host": "rpc_host",
+        "host": "$rpc_host",
         "protocol": "http"
     },
     "auth": "rpcpasswordaspin",
@@ -76,7 +78,7 @@ if [ "$1" = "status" ]; then
 
   if [ "${specter}" = "on" ]; then
 
-    echo "configured=1"
+    echo "# configured=1"
 
     # get network info
     #localip=$(ip addr | grep 'state UP' -A2 | egrep -v 'docker0|veth' | grep 'eth0\|wlan0\|enp0' | tail -n1 | awk '{print $2}' | cut -f1 -d'/')
@@ -104,10 +106,8 @@ fi
 if [ "$1" = "menu" ]; then
 
   # get status
-  echo "# collecting status info ... (please wait)"
+  echo "# Collecting status info ... (please wait)"
   source <(sudo /home/joinmarket/standalone/install.specter.sh status)
-  echo "# toraddress: ${toraddress}"
-  clear
   echo "
 ######################################
 # Specter Desktop connection details #
@@ -138,12 +138,12 @@ fi
 
 # switch on
 if [ "$1" = "1" ] || [ "$1" = "on" ]; then
-  echo "#    --> INSTALL Cryptoadvance Specter ***"
+  echo "# Install Specter Desktop"
 
     isInstalled=$(sudo ls /etc/systemd/system/specter.service 2>/dev/null | grep -c 'specter.service' || /bin/true)
   if [ ${isInstalled} -eq 0 ]; then
 
-    echo "#    --> Installing prerequisites"
+    echo "# Installing prerequisites"
     sudo apt update
     sudo apt install -y libusb-1.0.0-dev libudev-dev virtualenv libffi-dev
 
@@ -161,14 +161,14 @@ if [ "$1" = "1" ] || [ "$1" = "on" ]; then
     # activating Authentication here ...
     createSpecterConfig
 
-    echo "#    --> creating a virtualenv"
+    echo "# Creating a virtualenv"
     sudo -u specter virtualenv --python=python3 /home/specter/.env
 
-    echo "#    --> pip-installing specter"
+    echo "# pip-installing specter"
     sudo -u specter /home/specter/.env/bin/python3 -m pip install --upgrade cryptoadvance.specter==$pinnedVersion
     
     # Mandatory as the camera doesn't work without https
-    echo "#    --> Creating self-signed certificate"
+    echo "# Creating self-signed certificate"
     openssl req -x509 -newkey rsa:4096 -nodes -out /tmp/cert.pem -keyout /tmp/key.pem -days 365 -subj "/C=US/ST=Nooneknows/L=Springfield/O=Dis/CN=www.fakeurl.com"
     sudo mv /tmp/cert.pem /home/specter/.specter
     sudo chown -R specter:specter /home/specter/.specter/cert.pem
@@ -176,12 +176,12 @@ if [ "$1" = "1" ] || [ "$1" = "on" ]; then
     sudo chown -R specter:specter /home/specter/.specter/key.pem
 
     # open firewall
-    echo "#    --> Updating Firewall"
+    echo "# Updating Firewall"
     sudo ufw allow 25441 comment 'specter'
     sudo ufw --force enable
     echo ""
 
-    echo "#    --> Installing udev-rules for hardware-wallets"
+    echo "# Installing udev-rules for hardware-wallets"
     
     # Ledger
     cat > /home/joinmarket/20-hw1.rules <<EOF
@@ -263,7 +263,7 @@ EOF
     sudo usermod -aG plugdev specter
 
     # install service
-    echo "#    --> Install specter systemd service"
+    echo "# Install specter systemd service"
     cat > /home/joinmarket/specter.service <<EOF
 # systemd unit for Cryptoadvance Specter
 
@@ -288,10 +288,9 @@ EOF
 
     sudo mv /home/joinmarket/specter.service /etc/systemd/system/specter.service
     sudo systemctl enable specter
-
-    echo "#    --> OK - the specter service is now enabled and started"
+    echo "# OK - the specter service is now enabled and started"
   else 
-    echo "#    --> specter already installed."
+    echo "# specter already installed."
     createSpecterConfig
   fi
 
@@ -307,7 +306,7 @@ EOF
   fi
 
   sudo systemctl start specter
-
+  /home/joinmarket/standalone/install.specter.sh menu
   exit 0
 fi
 
@@ -325,46 +324,46 @@ if [ "$1" = "0" ] || [ "$1" = "off" ]; then
   isInstalled=$(sudo ls /etc/systemd/system/specter.service 2>/dev/null | grep -c 'specter.service')
   if [ ${isInstalled} -eq 1 ]; then
 
-    echo "#    --> REMOVING Cryptoadvance Specter"
+    echo "# Removing Specter Desktop"
     sudo systemctl stop specter
     sudo systemctl disable specter
     sudo rm /etc/systemd/system/specter.service
     sudo -u specter /home/specter/.env/bin/python3 -m pip uninstall --yes cryptoadvance.specter
 
     if whiptail --defaultno --yesno "Do you want to delete all Data related to specter? This includes also Bitcoin-Core-Wallets managed by specter?" 0 0; then
-      echo "#    --> Removing wallets in core"
-      $customRPC listwallets | jq -r .[] | tail -n +2
-      for i in $($customRPC listwallets | jq -r .[] | tail -n +2) 
+      echo "# Removing wallets in core"
+      customRPC "#listwallets" "listwallets" | tail -n +2
+      for i in $(customRPC "#listwallets" "listwallets" | tail -n +2) 
       do  
-	name=$(echo $i | cut -d"/" -f2)
-       	$customRPC unloadwallet specter/$name 
+	      name=$(echo $i | cut -d"/" -f2)
+       	customRPC "#unloadwallet" "unloadwallet2 "specter/$name"
       done
-      echo "#    --> Removing the  /home/store/app-data/.specter"
+      echo "# Removing the  /home/store/app-data/.specter"
       sudo rm -rf  /home/store/app-data/.specter
-      echo "#    --> Removing the specter user and home directory "
+      echo "# Removing the specter user and home directory "
       sudo userdel -rf specter
     else
-      echo "#    --> Removing the specter user and home directory"
-      echo "#    -->  /home/store/app-data/.specter is preserved"
+      echo "# Removing the specter user and home directory"
+      echo "# /home/store/app-data/.specter is preserved"
       sudo userdel -rf specter
     fi
 
-    echo "#    --> OK Specter removed."
+    echo "# OK Specter removed."
   else 
-    echo "#    --> Specter is not installed."
+    echo "# Specter is not installed."
   fi
   exit 0
 fi
 
 # update
 if [ "$1" = "update" ]; then
-  echo "#    --> UPDATING Specter"
+  echo "# Updating Specter"
   sudo -u specter /home/specter/.env/bin/python3 -m pip install --upgrade cryptoadvance.specter
-  echo "#    --> Updated to the latest in https://pypi.org/project/cryptoadvance.specter/#history ***"
-  echo "#    --> Restarting the specter.service"
+  echo "# Updated to the latest in https://pypi.org/project/cryptoadvance.specter/#history ***"
+  echo "# Restarting the specter.service"
   sudo systemctl restart specter
   exit 0
 fi
 
-echo "error='unknown parameter'"
+echo "# error='unknown parameter'"
 exit 1

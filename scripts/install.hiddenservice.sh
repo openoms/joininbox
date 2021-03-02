@@ -27,10 +27,10 @@ if [ "$1" == "off" ]; then
   sudo sed -i "/# Hidden Service for ${service}/,/^\s*$/{d}" /etc/tor/torrc
 
   # remove double empty lines
-  sudo cp /etc/tor/torrc /mnt/hdd/temp/tmp
-  sudo chmod 777 /mnt/hdd/temp/tmp
-  sudo awk 'NF > 0 {blank=0} NF == 0 {blank++} blank < 2' /etc/tor/torrc > /mnt/hdd/temp/tmp
-  sudo mv /mnt/hdd/temp/tmp /etc/tor/torrc
+  sudo cp /etc/tor/torrc /home/joinmarket/tmp
+  sudo chmod 777 /home/joinmarket/tmp
+  sudo awk 'NF > 0 {blank=0} NF == 0 {blank++} blank < 2' /etc/tor/torrc > /home/joinmarket/tmp
+  sudo mv /home/joinmarket/tmp /etc/tor/torrc
   sudo chmod 644 /etc/tor/torrc
   sudo chown bitcoin:bitcoin /etc/tor/torrc
 
