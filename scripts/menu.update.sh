@@ -14,12 +14,11 @@ OPTIONS=()
 BACKTITLE="JoininBox GUI"
 
 # Basic Options
-OPTIONS+=(\
-  JOININBOX "Update the JoininBox scripts and menu" \
-  JOINMARKET "Update/reinstall JoinMarket to $(grep JMVersion= < ~/_functions.sh | cut -d '"' -f 2)" \
-  ADVANCED "Advanced update options" \
-)
-
+OPTIONS+=(
+  JOININBOX "Update the JoininBox scripts and menu"
+  JOINMARKET "Update/reinstall JoinMarket to $(grep JMVersion= < ~/_functions.sh | cut -d '"' -f 2)"
+  ADVANCED "Advanced update options"
+  )
 CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
                 --title "$TITLE" \

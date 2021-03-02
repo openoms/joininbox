@@ -15,114 +15,9 @@ fi
 source /home/joinmarket/joinin.conf
 echo "# tools.specter.sh $1"
 
-# get status key/values
-if [ "$1" = "status" ]; then
-
-  if [ "${specter}" = "on" ]; then
-
-    echo "configured=1"
-
-    # get network info
-    #localip=$(ip addr | grep 'state UP' -A2 | egrep -v 'docker0|veth' | grep 'eth0\|wlan0\|enp0' | tail -n1 | awk '{print $2}' | cut -f1 -d'/')
-    toraddress=$(sudo cat /home/joinmarket/tor/specter/hostname 2>/dev/null)
-    fingerprint=$(openssl x509 -in /home/specter/.specter/cert.pem -fingerprint -noout | cut -d"=" -f2)
-    echo "localip='${localip}'"
-    echo "toraddress='${toraddress}'"
-    echo "fingerprint='${fingerprint}'"
-
-    # check for error
-    serviceFailed=$(sudo systemctl status specter | grep -c 'inactive (dead)')
-    if [ "${serviceFailed}" = "1" ]; then
-      echo "error='Service Failed'"
-      exit 1
-    fi
-
-  else
-    echo "configured=0"
-  fi
-  
-  exit 0
-fi
-
-# show info menu
-if [ "$1" = "menu" ]; then
-
-  # get status
-  echo "# collecting status info ... (please wait)"
-  source <(sudo /home/joinmarket/config.scripts/bonus.specter.sh status)
-  echo "# toraddress: ${toraddress}"
-
-  if [ "${runBehindTor}" = "on" ] && [ ${#toraddress} -gt 0 ]; then
-
-    # TOR
-    whiptail --title " Cryptoadvance Specter " --msgbox "Open in your local web browser & accept self-signed cert:
-https://${localip}:25441
-
-SHA1 Thumb/Fingerprint:
-${fingerprint}
-
-Login with the Pin being Password B. If you have connected to a different Bitcoin RPC Endpoint, the Pin is the configured RPCPassword.
-
-Hidden Service address for TOR Browser (QR see LCD):
-https://${toraddress}
-Unfortunately the camera is currently not usable via Tor, though.
-" 18 74
-  else
-
-    # IP + Domain
-    whiptail --title " Cryptoadvance Specter " --msgbox "Open in your local web browser & accept self-signed cert:
-https://${localip}:25441
-
-SHA1 Thumb/Fingerprint:
-${fingerprint}
-
-Login with the PIN being Password B. If you have connected to a different Bitcoin RPC Endpoint, the PIN is the configured RPCPassword.\n
-Activate TOR to access the web block explorer from outside your local network.
-" 15 74
-  fi
-
-  echo "# please wait ..."
-  exit 0
-fi
-
-# add default value to raspi config if needed
-if ! grep -Eq "^specter=" /home/joinmarket/joinin.conf; then
-  echo "specter=off" >> /home/joinmarket/joinin.conf
-fi
-
-# blockfilterindex
-# add blockfilterindex with default value (0) to bitcoin.conf if missing
-if ! grep -Eq "^blockfilterindex=.*" /home/joinmarket/bitcoin/bitcoin.conf; then
-  echo "blockfilterindex=0" | sudo tee -a /home/joinmarket/bitcoin/bitcoin.conf >/dev/null
-fi
-# set variable ${blockfilterindex}
-source <(grep -E "^blockfilterindex=.*" /home/joinmarket/bitcoin/bitcoin.conf)
-
-# switch on
-if [ "$1" = "1" ] || [ "$1" = "on" ]; then
-  echo "#    --> INSTALL Cryptoadvance Specter ***"
-
-  isInstalled=$(sudo ls /etc/systemd/system/specter.service 2>/dev/null | grep -c 'specter.service' || /bin/true)
-  if [ ${isInstalled} -eq 0 ]; then
-
-    echo "#    --> Installing prerequisites"
-    sudo apt update
-    sudo apt install -y libusb-1.0.0-dev libudev-dev virtualenv libffi-dev
-
-    sudo adduser --disabled-password --gecos "" specter
-
-    # store data on the disk
-    sudo mkdir -p /home/joinmarket/app-data/.specter 2>/dev/null
-    # move old Specter data to app-data (except .env)
-    sudo mv -f /home/bitcoin/.specter/* /home/joinmarket/app-data/.specter/ 2>/dev/null
-    sudo rm -rf /home/bitcoin/.specter 2>/dev/null
-    # symlink to specter user
-    sudo chown -R specter:specter /home/joinmarket/app-data/.specter
-    sudo ln -s /home/joinmarket/app-data/.specter /home/specter/ 2>/dev/null
-    sudo chown -R specter:specter /home/specter/.specter
-
-    # activating Authentication here ...
+function createSpecterConfig() {
     echo "#    --> creating App-config"
+    source /home/joinmarket/_functions.sh
     if [ "${runBehindTor}" = "on" ];then
       proxy="socks5h://localhost:9050"
       torOnly="true"
@@ -130,15 +25,23 @@ if [ "$1" = "1" ] || [ "$1" = "on" ]; then
       proxy=""
       torOnly="false"
     fi
+    getRPC
+    if [ $network = mainnet ];then
+      dir="/home/bitcoin/.bitcoin"
+    elif [ $network = signet ];then
+      dir="/home/bitcoin/.bitcoin"
+    elif [ $network = testnet ];then
+      dir="/home/bitcoin/.bitcoin"
+    fi
     cat > /home/joinmarket/config.json <<EOF
 {
     "rpc": {
-        "autodetect": true,
-        "datadir": "/home/bitcoin/.bitcoin",
-        "user": "",
-        "password": "",
-        "port": "",
-        "host": "localhost",
+        "autodetect": false,
+        "datadir": "$dir",
+        "user": "$rpc_user",
+        "password": "$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c12)",
+        "port": "$rpc_port",
+        "host": "rpc_host",
         "protocol": "http"
     },
     "auth": "rpcpasswordaspin",
@@ -163,6 +66,100 @@ if [ "$1" = "1" ] || [ "$1" = "on" ]; then
 EOF
     sudo mv /home/joinmarket/config.json /home/specter/.specter/config.json
     sudo chown -R specter:specter /home/specter/.specter
+}
+if [ "$1" = "config" ]; then
+  createSpecterConfig
+fi
+
+# get status key/values
+if [ "$1" = "status" ]; then
+
+  if [ "${specter}" = "on" ]; then
+
+    echo "configured=1"
+
+    # get network info
+    #localip=$(ip addr | grep 'state UP' -A2 | egrep -v 'docker0|veth' | grep 'eth0\|wlan0\|enp0' | tail -n1 | awk '{print $2}' | cut -f1 -d'/')
+    toraddress=$(sudo cat $HiddenServiceDir/specter/hostname 2>/dev/null)
+    fingerprint=$(openssl x509 -in /home/specter/.specter/cert.pem -fingerprint -noout | cut -d"=" -f2)
+    echo "localip='${localip}'"
+    echo "toraddress='${toraddress}'"
+    echo "fingerprint='${fingerprint}'"
+
+    # check for error
+    serviceFailed=$(sudo systemctl status specter | grep -c 'inactive (dead)')
+    if [ "${serviceFailed}" = "1" ]; then
+      echo "error='Service Failed'"
+      exit 1
+    fi
+
+  else
+    echo "configured=0"
+  fi
+  
+  exit 0
+fi
+
+# show info menu
+if [ "$1" = "menu" ]; then
+
+  # get status
+  echo "# collecting status info ... (please wait)"
+  source <(sudo /home/joinmarket/standalone/install.specter.sh status)
+  echo "# toraddress: ${toraddress}"
+  clear
+  echo "
+######################################
+# Specter Desktop connection details #
+######################################
+
+Open in your local web browser & accept the self-signed certificate:
+https://${localip}:25441
+
+SHA1 Thumb/Fingerprint:
+${fingerprint}
+
+Login with the password:
+$(jq -r '.rpc.password' /home/specter/.specter/config.json)"
+  
+  if [ "${runBehindTor}" = "on" ] && [ ${#toraddress} -gt 0 ]; then
+    echo "
+Hidden Service address for the Tor Browser:
+https://${toraddress}
+Unfortunately the camera is currently not usable via Tor."
+  fi
+  exit 0
+fi
+
+# add default value to config if needed
+if ! grep -Eq "^specter=" /home/joinmarket/joinin.conf; then
+  echo "specter=off" >> /home/joinmarket/joinin.conf
+fi
+
+# switch on
+if [ "$1" = "1" ] || [ "$1" = "on" ]; then
+  echo "#    --> INSTALL Cryptoadvance Specter ***"
+
+    isInstalled=$(sudo ls /etc/systemd/system/specter.service 2>/dev/null | grep -c 'specter.service' || /bin/true)
+  if [ ${isInstalled} -eq 0 ]; then
+
+    echo "#    --> Installing prerequisites"
+    sudo apt update
+    sudo apt install -y libusb-1.0.0-dev libudev-dev virtualenv libffi-dev
+
+    addUserStore
+
+    sudo adduser --disabled-password --gecos "" specter
+
+    # store data with the store user
+    sudo mkdir -p /home/store/app-data/.specter 2>/dev/null
+    # symlink to specter user
+    sudo chown -R specter:specter  /home/store/app-data/.specter
+    sudo ln -s  /home/store/app-data/.specter /home/specter/ 2>/dev/null
+    sudo chown -R specter:specter /home/specter/.specter
+
+    # activating Authentication here ...
+    createSpecterConfig
 
     echo "#    --> creating a virtualenv"
     sudo -u specter virtualenv --python=python3 /home/specter/.env
@@ -295,9 +292,10 @@ EOF
     echo "#    --> OK - the specter service is now enabled and started"
   else 
     echo "#    --> specter already installed."
+    createSpecterConfig
   fi
 
-  # setting value in raspi blitz config
+  # setting value in  config
   sudo sed -i "s/^specter=.*/specter=on/g" /home/joinmarket/joinin.conf
   
   # Hidden Service for SERVICE if Tor is active
@@ -305,25 +303,10 @@ EOF
   if [ "${runBehindTor}" = "on" ]; then
     # make sure to keep in sync with internet.tor.sh script
     # port 25441 is HTTPS with self-signed cert - specter only makes sense to be served over HTTPS
-    /home/joinmarket/config.scripts/internet.hiddenservice.sh specter 443 25441
+    /home/joinmarket/install.hiddenservice.sh specter 443 25441
   fi
 
-  # blockfilterindex on
-  if [ "${blockfilterindex}" = "0" ]; then
-    sudo sed -i "s/^blockfilterindex=.*/blockfilterindex=1/g" /home/joinmarket/bitcoin/bitcoin.conf
-    echo "# switching blockfilterindex=1"
-    isBitcoinRunning=$(sudo systemctl is-active ${network}d | grep -c "^active")
-    if [ ${isBitcoinRunning} -eq 1 ]; then
-      echo "# ${network}d is running - so restarting"
-      sudo systemctl restart ${network}d
-    else
-      echo "# ${network}d is not running - so NOT restarting"
-    fi
-    echo "# The indexing takes ~10h on an RPi4 with SSD"
-    echo "# check with: sudo cat /home/joinmarket/bitcoin/debug.log | grep filter"
-  else
-    echo "# blockfilterindex is already active"
-  fi
+  sudo systemctl start specter
 
   exit 0
 fi
@@ -331,12 +314,12 @@ fi
 # switch off
 if [ "$1" = "0" ] || [ "$1" = "off" ]; then
 
-  # setting value in raspi blitz config
+  # setting value in  config
   sudo sed -i "s/^specter=.*/specter=off/g" /home/joinmarket/joinin.conf
 
   # Hidden Service if Tor is active
   if [ "${runBehindTor}" = "on" ]; then
-    /home/joinmarket/config.scripts/internet.hiddenservice.sh off specter
+    /home/joinmarket/install.hiddenservice.sh off specter
   fi
 
   isInstalled=$(sudo ls /etc/systemd/system/specter.service 2>/dev/null | grep -c 'specter.service')
@@ -350,32 +333,20 @@ if [ "$1" = "0" ] || [ "$1" = "off" ]; then
 
     if whiptail --defaultno --yesno "Do you want to delete all Data related to specter? This includes also Bitcoin-Core-Wallets managed by specter?" 0 0; then
       echo "#    --> Removing wallets in core"
-      ${network}-cli listwallets | jq -r .[] | tail -n +2
-      for i in $(${network}-cli listwallets | jq -r .[] | tail -n +2) 
+      $customRPC listwallets | jq -r .[] | tail -n +2
+      for i in $($customRPC listwallets | jq -r .[] | tail -n +2) 
       do  
 	name=$(echo $i | cut -d"/" -f2)
-       	${network}-cli unloadwallet specter/$name 
+       	$customRPC unloadwallet specter/$name 
       done
-      echo "#    --> Removing the /home/joinmarket/app-data/.specter"
-      sudo rm -rf /home/joinmarket/app-data/.specter
+      echo "#    --> Removing the  /home/store/app-data/.specter"
+      sudo rm -rf  /home/store/app-data/.specter
       echo "#    --> Removing the specter user and home directory "
       sudo userdel -rf specter
-      echo "#     --> Removing blockfilterindex"
-      echo "# changing config ..."
-      sudo systemctl stop ${network}d
-      sudo sed -i "s/^blockfilterindex=.*/blockfilterindex=0/g" /home/joinmarket/bitcoin/bitcoin.conf
-      echo "# deleting blockfilterindex ..."
-      sudo rm -r /home/joinmarket/bitcoin/indexes/blockfilter
-      echo "# restarting ${network}d ..."
-      sudo systemctl restart ${network}d
     else
       echo "#    --> Removing the specter user and home directory"
-      echo "#    --> /home/joinmarket/app-data/.specter is preserved on the disk"
+      echo "#    -->  /home/store/app-data/.specter is preserved"
       sudo userdel -rf specter
-      echo "#     --> Switch off the blockfilterindex"
-      sudo sed -i "s/^blockfilterindex=.*/blockfilterindex=0/g" /home/joinmarket/bitcoin/bitcoin.conf
-      echo "# restarting ${network}d ..."
-      sudo systemctl restart ${network}d
     fi
 
     echo "#    --> OK Specter removed."

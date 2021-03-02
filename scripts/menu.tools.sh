@@ -24,8 +24,8 @@ function getTXID {
 }
 
 # BASIC MENU INFO
-HEIGHT=8
-WIDTH=54
+HEIGHT=9
+WIDTH=55
 CHOICE_HEIGHT=20
 TITLE="Tools"
 MENU=""
@@ -33,10 +33,13 @@ OPTIONS=()
 BACKTITLE="JoininBox GUI"
 
 # Basic Options
-OPTIONS+=(\
-  BOLTZMANN "Analyze the entropy of a transaction"\
-  CUSTOMRPC "Run a custom bitcoin RPC with curl"
-)
+if [ "${runningEnv}" = standalone ]; then
+  OPTIONS+=(
+    SPECTER "Specter Desktop options")
+fi
+OPTIONS+=(
+    CUSTOMRPC "Run a custom bitcoin RPC with curl"
+    BOLTZMANN "Analyze the entropy of a transaction")
 
 CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
@@ -69,4 +72,8 @@ case $CHOICE in
     echo            
     echo "Press ENTER to return to the menu..."
     read key
+    ;;
+  SPECTER)
+    /home/joinmarket/standalone/menu.specter.sh
+    ;;
 esac
