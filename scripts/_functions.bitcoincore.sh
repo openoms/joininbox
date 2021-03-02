@@ -246,8 +246,8 @@ Will tail the bitcoin $network logfile from:
 
 $logFilePath
 
-Press CTRL+C to exit and return to the menu." 10 54
-  sudo tail $logFilePath
+Press CTRL+C to exit and type 'menu' for the GUI." 10 54
+  sudo tail -fn1000 $logFilePath
 }
 
 # getRPC - reads the RPC settings from the joinmarket.cfg

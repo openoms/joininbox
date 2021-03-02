@@ -88,6 +88,8 @@ case $CHOICE in
     ;;
   LOCAL)
     connectLocalNode $network
+    sudo systemctl start bitcoind
+    showBitcoinLogs
     echo         
     echo "Press ENTER to return to the menu..."
     read key

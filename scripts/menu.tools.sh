@@ -24,7 +24,7 @@ function getTXID {
 }
 
 # BASIC MENU INFO
-HEIGHT=9
+HEIGHT=10
 WIDTH=55
 CHOICE_HEIGHT=20
 TITLE="Tools"
@@ -39,7 +39,8 @@ if [ "${runningEnv}" = standalone ]; then
 fi
 OPTIONS+=(
     CUSTOMRPC "Run a custom bitcoin RPC with curl"
-    BOLTZMANN "Analyze the entropy of a transaction")
+    BOLTZMANN "Analyze the entropy of a transaction"
+    LOGS "Show the bitcoind logs on $network")
 
 CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
@@ -73,5 +74,8 @@ case $CHOICE in
     ;;
   SPECTER)
     /home/joinmarket/standalone/menu.specter.sh
+    ;;
+  LOGS)
+    showBitcoinLogs
     ;;
 esac
