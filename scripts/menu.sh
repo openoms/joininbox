@@ -29,7 +29,7 @@ OPTIONS+=(\
   OFFERS "Watch the Order Book locally" \
   "" "" 
   CONFIG "Connection and joinmarket.cfg settings" \
-  TOOLS "Extra helper functions and Boltzmann"
+  TOOLS "Extra helper functions and services"
   UPDATE "Update JoininBox or JoinMarket" \
   "" "" 
   X "Exit to the Command Line" \
@@ -47,6 +47,7 @@ CHOICE=$(dialog --clear \
 
 case $CHOICE in
   INFO)
+      checkRPCwallet
       # wallet
       chooseWallet
       # mixdepth
@@ -57,7 +58,7 @@ case $CHOICE in
 Enter a number between 0 to 4 to limit the visible mixdepths
 Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       openMenuIfCancelled $?
-      /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)" nooption "$(cat $mixdepth)"
+      /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)" nomethod "$(cat $mixdepth)"
       echo ""
       echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
       echo ""

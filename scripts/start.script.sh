@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if [ ${#1} -eq 0 ]||[ $1 = "-h" ]||[ $1 = "--help" ];then
+  echo "# Usage:"
+  echo "start.script.sh [script] [wallet] [method|nomethod] [mixdepth|nomixdepth]\
+ [makercount|nomakercount] <amount|PSBT> <address> <nickname>"
+  echo "# Applies 'torify' automatically"
+fi
+
 source /home/joinmarket/_functions.sh
 
 script="$1"
@@ -14,13 +21,13 @@ if [ ${#wallet} -eq 0 ] || [ ${wallet} == "" ]; then
   exit 1
 fi
 
-option="$3"
-if [ ${#option} -eq 0 ] || [ ${option} = "nooption" ]; then
-  option=""
+method="$3"
+if [ ${#method} -eq 0 ] || [ ${method} = "nomethod" ]; then
+  method=""
 fi
 
 mixdepth="$4"
-if [ ${#mixdepth} -eq 0 ]; then
+if [ ${#mixdepth} -eq 0 ] || [ ${mixdepth} = "nomixdepth" ]; then
   mixdepth=""
 else
   mixdepth="-m$4"
@@ -61,10 +68,10 @@ clear
 # display 
 echo "Running the command:
 $tor python $script.py \
-$makercount $mixdepth $(echo $wallet | sed "s#$walletPath##g") $option \
+$makercount $mixdepth $(echo $wallet | sed "s#$walletPath##g") $method \
 $amount $address $nickname
 "
 # run
 . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
 $tor python ~/joinmarket-clientserver/scripts/$script.py \
-$makercount $mixdepth $wallet $option $amount $address $nickname
+$makercount $mixdepth $wallet $method $amount $address $nickname

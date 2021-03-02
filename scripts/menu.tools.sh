@@ -24,8 +24,8 @@ function getTXID {
 }
 
 # BASIC MENU INFO
-HEIGHT=8
-WIDTH=54
+HEIGHT=10
+WIDTH=55
 CHOICE_HEIGHT=20
 TITLE="Tools"
 MENU=""
@@ -33,10 +33,14 @@ OPTIONS=()
 BACKTITLE="JoininBox GUI"
 
 # Basic Options
-OPTIONS+=(\
-  BOLTZMANN "Analyze the entropy of a transaction"\
-  CUSTOMRPC "Run a custom bitcoin RPC with curl"
-)
+if [ "${runningEnv}" = standalone ]; then
+  OPTIONS+=(
+    SPECTER "Specter Desktop options")
+fi
+OPTIONS+=(
+    CUSTOMRPC "Run a custom bitcoin RPC with curl"
+    BOLTZMANN "Analyze the entropy of a transaction"
+    LOGS "Show the bitcoind logs on $network")
 
 CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
@@ -59,8 +63,6 @@ case $CHOICE in
     echo "***DANGER ZONE***"
     echo "# See the options at https://developer.bitcoin.org/reference/rpc/"
     echo
-    getRPC
-    echo
     echo "# Input which method (command) to use"
     read method
     echo "# Input the parameter(s) (optional)"
@@ -69,4 +71,11 @@ case $CHOICE in
     echo            
     echo "Press ENTER to return to the menu..."
     read key
+    ;;
+  SPECTER)
+    /home/joinmarket/standalone/menu.specter.sh
+    ;;
+  LOGS)
+    showBitcoinLogs
+    ;;
 esac

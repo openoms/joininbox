@@ -1,13 +1,23 @@
 #!/bin/bash
 
+source /home/joinmarket/joinin.conf
+
 # paths
 walletPath="/home/joinmarket/.joinmarket/wallets/"
+JMcfgPath="/home/joinmarket/.joinmarket/joinmarket.cfg"
+joininConfPath="/home/joinmarket/joinin.conf"
 
 # versions
 currentJBcommit=$(cd /home/joinmarket/joininbox; git describe --tags)
 currentJBtag=$(cd ~/joininbox; git tag | sort -V | tail -1)
 currentJMversion=$(cd /home/joinmarket/joinmarket-clientserver 2>/dev/null; \
 git describe --tags 2>/dev/null)
+
+# functions
+source /home/joinmarket/_functions.bitcoincore.sh
+if [ "${runningEnv}" = standalone ]; then
+  source /home/joinmarket/standalone/_functions.standalone.sh
+fi
 
 function openMenuIfCancelled() {
   pressed=$1
@@ -71,7 +81,6 @@ function passwordToFile() {
 }
 
 function chooseWallet() {
-source /home/joinmarket/joinin.conf
   wallet=$(mktemp 2>/dev/null)
   if [ "$defaultWallet" = "off" ]; then
     wallet=$(mktemp 2>/dev/null)
@@ -86,8 +95,7 @@ source /home/joinmarket/joinin.conf
 
 function stopYG() {
   # stop the background process (equivalent to CTRL+C)
-  # use wallet from joinin.conf
-  source /home/joinmarket/joinin.conf
+  # use the YGwallet from joinin.conf
   pkill -sigint -f "python yg-privacyenhanced.py $YGwallet --wallet-password-stdin"
   # pgrep python | xargs kill -sigint             
   # remove the service
@@ -97,9 +105,9 @@ function stopYG() {
   # sudo systemctl list-units --type=service
   sudo systemctl reset-failed
   # make sure the lock file is deleted 
-  rm -f ~/.joinmarket/wallets/.$wallet.lock
+  rm -f ~/.joinmarket/wallets/.$YGwallet.lock
   # for old version <v0.6.3
-  rm -f ~/.joinmarket/wallets/$wallet.lock 2>/dev/null
+  rm -f ~/.joinmarket/wallets/$YGwallet.lock 2>/dev/null
   echo "# Stopped the Yield Generator background service"
 }
 
@@ -155,7 +163,6 @@ function feereport() {
 
 function YGuptime() {
   # puts the Yield Generator uptime to $JMUptime
-  source /home/joinmarket/joinin.conf
   JMpid=$(pgrep -f "python yg-privacyenhanced.py $YGwallet --wallet-password-stdin" 2>/dev/null | head -1)
   JMUptimeInSeconds=$(ps -p $JMpid -oetime= 2>/dev/null | tr '-' ':' | awk -F: '{ total=0; m=1; } { for (i=0; i < NF; i++) {total += $(NF-i)*m; m *= i >= 2 ? 24 : 60 }} {print total}')
   JMUptime=$(printf '%dd:%dh:%dm\n' $((JMUptimeInSeconds/86400)) $((JMUptimeInSeconds%86400/3600)) $((JMUptimeInSeconds%3600/60)))
@@ -163,7 +170,6 @@ function YGuptime() {
 
 # installJoinMarket [update|testPR <PRnumber>|commit]
 function installJoinMarket() {
-  source /home/joinmarket/joinin.conf
   cpu=$(uname -m)
   cd /home/joinmarket
   # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
@@ -228,7 +234,6 @@ function installJoinMarket() {
 
 # copyJoininboxScripts
 function copyJoininboxScripts() {
-  source /home/joinmarket/joinin.conf
   echo "# Copying the scripts in place"
   sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/*.* /home/joinmarket/
   sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
@@ -283,16 +288,15 @@ function updateJoininBox() {
 }
 
 function setIRCtoTor() {
-  source /home/joinmarket/joinin.conf
   if [ "${runBehindTor}" = "on" ]; then
-    sed -i "s/^host = irc.darkscience.net/#host = irc.darkscience.net/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    sed -i "s/^#host = darksci3bfoka7tw.onion/host = darksci3bfoka7tw.onion/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    sed -i "s/^host = irc.hackint.org/#host = irc.hackint.org/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    sed -i "s/^#host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion/host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    sed -i "s/^socks5 = false/#socks5 = false/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    sed -i "s/^#socks5 = true/socks5 = true/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    sed -i "s/^#port = 6667/port = 6667/g" /home/joinmarket/.joinmarket/joinmarket.cfg
-    sed -i "s/^#usessl = false/usessl = false/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    sed -i "s/^host = irc.darkscience.net/#host = irc.darkscience.net/g" $JMcfgPath
+    sed -i "s/^#host = darksci3bfoka7tw.onion/host = darksci3bfoka7tw.onion/g" $JMcfgPath
+    sed -i "s/^host = irc.hackint.org/#host = irc.hackint.org/g" $JMcfgPath
+    sed -i "s/^#host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion/host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion/g" $JMcfgPath
+    sed -i "s/^socks5 = false/#socks5 = false/g" $JMcfgPath
+    sed -i "s/^#socks5 = true/socks5 = true/g" $JMcfgPath
+    sed -i "s/^#port = 6667/port = 6667/g" $JMcfgPath
+    sed -i "s/^#usessl = false/usessl = false/g" $JMcfgPath
     echo "# Edited the joinmarket.cfg to communicate over Tor only."
   else
     echo "# Tor is not active, will communicate with IRC servers via clearnet"
@@ -300,7 +304,7 @@ function setIRCtoTor() {
 }
 
 function generateJMconfig() {
-  if [ ! -f "/home/joinmarket/.joinmarket/joinmarket.cfg" ] ; then
+  if [ ! -f "$JMcfgPath" ] ; then
     echo "# Generating joinmarket.cfg with default settings"
     echo
     . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
@@ -312,26 +316,26 @@ function generateJMconfig() {
   fi
   setIRCtoTor
   # set strict permission to joinmarket.cfg
-  sudo chmod 600 /home/joinmarket/.joinmarket/joinmarket.cfg || exit 1
+  sudo chmod 600 $JMcfgPath || exit 1
   if [ -f "/mnt/hdd/bitcoin/bitcoin.conf" ];then
     echo
     echo "# editing the joinmarket.cfg with the local bitcoin RPC settings."
-    sed -i "s/^rpc_user =.*/rpc_user = raspibolt/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    sed -i "s/^rpc_user =.*/rpc_user = raspibolt/g" $JMcfgPath
     PASSWORD_B=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
-    sed -i "s/^rpc_password =.*/rpc_password = $PASSWORD_B/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    sed -i "s/^rpc_password =.*/rpc_password = $PASSWORD_B/g" $JMcfgPath
     echo "# filled the bitcoin RPC password (PASSWORD_B)"
-    sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/g" /home/joinmarket/.joinmarket/joinmarket.cfg
+    sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/g" $JMcfgPath
     echo "# using the bitcoind wallet: wallet.dat"
   fi
  }
 
 #backupJMconf
 function backupJMconf() {
-  if [ -f "/home/joinmarket/.joinmarket/joinmarket.cfg" ] ; then
+  if [ -f "$JMcfgPath" ] ; then
     now=$(date +"%Y_%m_%d_%H%M%S")
     echo "# Moving the joinmarket.cfg to the filename joinmarket.cfg.backup$now"
-    mv /home/joinmarket/.joinmarket/joinmarket.cfg \
-    /home/joinmarket/.joinmarket/joinmarket.cfg.backup$now
+    mv $JMcfgPath \
+    $JMcfgPath.backup$now
     echo
   else
     echo "# The joinmarket.cfg is not present"
@@ -363,7 +367,6 @@ deb-src https://deb.torproject.org/torproject.org tor-nightly-master-$distro mai
   fi
   echo "# Running apt update"
   sudo apt update
-  source /home/joinmarket/joinin.conf
   if [ ${cpu} = "x86_64" ]; then
     echo "# CPU is x86_64 - updating to the latest alpha binary"
     sudo apt install -y tor
@@ -391,44 +394,20 @@ deb-src https://deb.torproject.org/torproject.org tor-nightly-master-$distro mai
   fi
 }
 
-# getRPC - reads the RPC settings from the joinmarket.cfg
-function getRPC {
-  echo "# Reading the bitcoind RPC settings from the joinmarket.cfg"
-  cfgPath="/home/joinmarket/.joinmarket/joinmarket.cfg"
-  rpc_user="$(awk '/rpc_user / {print $3}' < $cfgPath)"
-  rpc_pass="$(awk '/rpc_password / {print $3}' < $cfgPath)"
-  rpc_host="$(awk '/rpc_host / {print $3}' < $cfgPath)"
-  rpc_port="$(awk '/rpc_port / {print $3}' < $cfgPath)"
-  rpc_wallet="$(awk '/rpc_wallet_file / {print $3}' < $cfgPath)"
-  # echo "$rpc_user $rpc_pass $rpc_host $rpc_port $rpc_wallet"
-}
-
-# customRPCstr - sends a custom RPC command
-# $1=id $2=method $3=string params
-function customRPC {
-  tor=""
-  if [ $(echo $rpc_host | grep -c .onion) -gt 0 ]; then
-    tor="torify"
-    echo "# Connecting over Tor..."
-    echo
-  fi
-  echo "# Using the RPC command:"
-  is_int () { test "$@" -eq "$@" 2> /dev/null; }
-  if is_int "$3" ||[ ${#3} -eq 0 ]; then
-    echo "$tor curl -sS --data-binary\
- '{\"jsonrpc\": \"1.0\", \"id\":\"$1\", \"method\": \"$2\", \"params\": [$3] }'\
- http://$rpc_user:rpc_pass(redacted)@rpc_host(redacted):$rpc_port"
-    echo
-    $tor curl -sS --data-binary \
-    '{"jsonrpc": "1.0", "id":"'"$1"'", "method": "'"$2"'", "params": ['"$3"'] }' \
-    http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port | jq .
-  else
-    echo "$tor curl -sS --data-binary\
- '{\"jsonrpc\": \"1.0\", \"id\":\"$1\", \"method\": \"$2\", \"params\": [\"$3\"] }'\
- http://$rpc_user:rpc_pass(redacted)@rpc_host(redacted):$rpc_port"
-    echo
-    $tor curl -sS --data-binary \
-    '{"jsonrpc": "1.0", "id":"'"$1"'", "method": "'"$2"'", "params": ["'"$3"'"] }' \
-    http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port | jq .
-  fi
+# https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/docs/USAGE.md#co-signing-a-psbt
+function signPSBT() {
+  chooseWallet
+  clear
+  echo
+  echo "# Notes on usage:"
+  echo "https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/docs/USAGE.md#co-signing-a-psbt"
+  echo
+  echo "# Once signed the transaction will be presented ready for broadcast."
+  echo "# DO NOT BROADCAST here for lightning channel opens"
+  echo "# Paste the PSBT to be signed and press ENTER:"
+  read PSBT
+  /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)" signpsbt nomixdepth nomakercount "$PSBT"
+  echo
+  echo "Press ENTER to return to the menu..."
+  read key
 }

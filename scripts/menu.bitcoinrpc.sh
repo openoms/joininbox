@@ -3,8 +3,8 @@
 source /home/joinmarket/_functions.sh
 
 # check connectedRemoteNode var in joinin.conf
-if ! grep -Eq "^connectedRemoteNode=" /home/joinmarket/joinin.conf; then
-  echo "connectedRemoteNode=off" >> /home/joinmarket/joinin.conf
+if ! grep -Eq "^connectedRemoteNode=" $joininConfPath; then
+  echo "connectedRemoteNode=off" >> $joininConfPath
 fi
 clear
 
@@ -65,21 +65,10 @@ echo
 echo "# Blockheight on the connected node: $(checkRPC 2>/dev/null|grep "result"|cut -d":" -f2|cut -d"," -f1)"
 echo
 rpc_wallet=joininbox
-walletFound=$(customRPC "# Check wallet" "listwallets" 2>$connectionOutput | grep -c "$rpc_wallet")
-while [ $walletFound -eq 0 ]; do
-  echo "# Setting a watch only wallet for the remote Bitcoin Core named $rpc_wallet"
-  customRPC "# Create the bitcoind wallet" "createwallet" "$rpc_wallet"
-  echo
-  walletFound=$(customRPC "# Check wallet" "listwallets" 2>$connectionOutput | grep -c "$rpc_wallet")
-  while [ $walletFound -eq 0 ]; do
-    echo "# Making sure the set $rpc_wallet wallet is loaded in bitcoind"
-    echo
-    customRPC "# Load wallet in bitcoind" "loadwallet" "$rpc_wallet"
-    walletFound=$(customRPC "# Check wallet" "listwallets" 2>$connectionOutput | grep -c "$rpc_wallet")
-  done
-done
-python /home/joinmarket/set.bitcoinrpc.py --rpc_user=$rpc_user --rpc_pass=$rpc_pass --rpc_host=$rpc_host --rpc_port=$rpc_port --rpc_wallet=$rpc_wallet
+checkRPCwallet $rpc_wallet
+python /home/joinmarket/set.bitcoinrpc.py --network=mainnet --rpc_user=$rpc_user\
+ --rpc_pass=$rpc_pass --rpc_host=$rpc_host --rpc_port=$rpc_port --rpc_wallet=$rpc_wallet
 echo
 echo "# The bitcoinRPC connection settings are set in the joinmarket.cfg"
-sed -i "s#^connectedRemoteNode=.*#connectedRemoteNode=on#g" /home/joinmarket/joinin.conf
+sed -i "s#^connectedRemoteNode=.*#connectedRemoteNode=on#g" $joininConfPath
 echo 

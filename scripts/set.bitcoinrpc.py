@@ -11,14 +11,16 @@ def main():
     print(description)
 
     try:
-      opts, args = getopt.getopt(sys.argv[1:], "rphcw", ["rpc_user=","rpc_pass=","rpc_host=","rpc_port=","rpc_wallet="])
+      opts, args = getopt.getopt(sys.argv[1:], "nrphcw", ["network=","rpc_user=","rpc_pass=","rpc_host=","rpc_port=","rpc_wallet="])
     except getopt.GetoptError:
       print('# Usage:')
-      print('python /home/joinmarket/set.bitcoinrpc.py --rpc_user=$rpc_user --rpc_pass=$rpc_pass --rpc_host=$rpc_host --rpc_port=$rpc_port --rpc_wallet=$rpc_wallet')
+      print('python /home/joinmarket/set.bitcoinrpc.py --network=$network --rpc_user=$rpc_user --rpc_pass=$rpc_pass --rpc_host=$rpc_host --rpc_port=$rpc_port --rpc_wallet=$rpc_wallet')
       sys.exit(2)
 
     for opt, arg in opts:
-        if opt in ('-r','--rpc_user'):
+        if opt in ('-n','--network'):
+            network = arg        
+        elif opt in ('-r','--rpc_user'):
             rpc_user = arg
         elif opt in ('-p','--rpc_pass'):
             rpc_password = arg
@@ -33,7 +35,7 @@ def main():
     
     config = configparser.ConfigParser(strict=False, comment_prefixes='/', allow_no_value=True)
     config.read('/home/joinmarket/.joinmarket/joinmarket.cfg')
-    
+    config.set('BLOCKCHAIN','network',network)    
     config.set('BLOCKCHAIN','rpc_user',rpc_user)
     config.set('BLOCKCHAIN','rpc_password',rpc_password)
     config.set('BLOCKCHAIN','rpc_host',rpc_host)

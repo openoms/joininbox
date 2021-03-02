@@ -1,13 +1,14 @@
 #!/bin/bash
-
-# add default value to joinin config if needed
-if ! grep -Eq "^YGwallet=" /home/joinmarket/joinin.conf; then
-  echo "YGwallet=nil" >> /home/joinmarket/joinin.conf
-fi
-
 # YG menu options
+
 source /home/joinmarket/_functions.sh
 source /home/joinmarket/joinin.conf
+
+# add default value to joinin config if needed
+if ! grep -Eq "^YGwallet=" $joininConfPath; then
+  echo "YGwallet=nil" >> $joininConfPath
+fi
+
 
 # BASIC MENU INFO
 HEIGHT=13
@@ -43,7 +44,7 @@ case $CHOICE in
             # wallet
             chooseWallet
             # save wallet in conf
-            sudo sed -i "s#^YGwallet=.*#YGwallet=$(cat $wallet)#g" /home/joinmarket/joinin.conf
+            sudo sed -i "s#^YGwallet=.*#YGwallet=$(cat $wallet)#g" $joininConfPath
             # get password
             passwordToFile
             echo "Using the wallet: $(cat $wallet)"
