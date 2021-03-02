@@ -293,6 +293,7 @@ function checkRPCwallet {
 # customRPC - sends a custom RPC command
 # $1=id $2=method $3=string params
 function customRPC {
+  getRPC
   tor=""
   if [ $(echo $rpc_host | grep -c .onion) -gt 0 ]; then
     tor="torify"
