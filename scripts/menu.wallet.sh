@@ -5,6 +5,8 @@
 source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
+checkRPCwallet
+
 # BASIC MENU INFO
 HEIGHT=12
 WIDTH=52
@@ -87,13 +89,7 @@ case $CHOICE in
   RESCAN)
       getRPC
       echo
-      echo "# Making sure the set $rpc_wallet wallet is present in bitcoind"
-      echo
-      customRPC "# Create wallet in bitcoind" "createwallet" "$rpc_wallet"
-      echo
-      echo "# Making sure the set $rpc_wallet wallet is loaded in bitcoind"
-      echo
-      customRPC "# Load wallet in bitcoind" "loadwallet" "$rpc_wallet"      
+      checkRPCwallet
       echo
       echo "# Input the blockheight to scan from (first SegWit block: 477120):"
       read blockheight
