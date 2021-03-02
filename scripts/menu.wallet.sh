@@ -8,7 +8,7 @@ source /home/joinmarket/_functions.sh
 checkRPCwallet
 
 # BASIC MENU INFO
-HEIGHT=13
+HEIGHT=14
 WIDTH=52
 CHOICE_HEIGHT=21
 TITLE="Wallet management options"
@@ -17,14 +17,15 @@ MENU=""
 OPTIONS=()
 
 # Basic Options
-OPTIONS+=(\
-  GEN "Generate a new wallet" \
-  HISTORY "Show all past transactions" \
-  IMPORT "Copy wallet(s) from a remote node"\
-  RECOVER "Restore a wallet from the seed" \
+OPTIONS+=(
+  GEN "Generate a new wallet"
+  HISTORY "Show all past transactions"
+  IMPORT "Copy wallet(s) from a remote node"
+  RECOVER "Restore a wallet from the seed"
   UNLOCK "Remove the lockfiles"
   RESCAN "Rescan the Bitcoin Core wallet"
   XPUBS "Show the master public keys"
+  PSBT "Sign an externally prepared PSBT"
 )
 
 CHOICE=$(dialog --clear \
@@ -88,7 +89,6 @@ case $CHOICE in
       read key
       ;;
   RESCAN)
-      checkRPCwallet
       echo
       echo "# Input the blockheight to scan from (first SegWit block: 477120):"
       read blockheight
@@ -96,18 +96,26 @@ case $CHOICE in
       echo
       echo "# Monitor the progress in the logs of the connected bitcoind"
       echo
+      showBitcoinLogs
       echo "Press ENTER to return to the menu"
       read key
       ;;
   XPUBS)
-      checkRPCwallet
       # wallet
       chooseWallet
-      /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)"|grep mixdepth|sed -n '1~2p'|awk '{print $1,$2,$3}'
+      clear
+      echo
+      echo "The 5 master public keys correspond to the 5 mixdepths (accounts) of the JoinMarket wallet."
+      echo
+      /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)"|grep mixdepth|sed -n '1~2p'|awk '{print $3}'
       echo
       echo "Import the master public keys to Specter Desktop or Electrum to create watch only wallets."
       echo
       echo "Press ENTER to return to the menu..."
       read key
       /home/joinmarket/menu.sh
+      ;;
+  PSBT)
+      signPSBT
+      ;;
 esac

@@ -394,9 +394,20 @@ deb-src https://deb.torproject.org/torproject.org tor-nightly-master-$distro mai
   fi
 }
 
+# https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/docs/USAGE.md#co-signing-a-psbt
 function signPSBT() {
   chooseWallet
-  echo "# Paste the PSBT to be signed:"
+  clear
+  echo
+  echo "# Notes on usage:"
+  echo "https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/docs/USAGE.md#co-signing-a-psbt"
+  echo
+  echo "# Once signed the transaction will be presented ready for broadcast."
+  echo "# DO NOT BROADCAST here for lightning channel opens"
+  echo "# Paste the PSBT to be signed and press ENTER:"
   read PSBT
-  /home/joinmarket/start.script.sh wallet.tool $wallet signpsbt nomixdepth nomakercount $PSBT
+  /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)" signpsbt nomixdepth nomakercount "$PSBT"
+  echo
+  echo "Press ENTER to return to the menu..."
+  read key
 }

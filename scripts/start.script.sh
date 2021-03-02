@@ -27,7 +27,7 @@ if [ ${#method} -eq 0 ] || [ ${method} = "nomethod" ]; then
 fi
 
 mixdepth="$4"
-if [ ${#mixdepth} -eq 0 ] || [ ${makercount} = "nomixdepth" ]; then
+if [ ${#mixdepth} -eq 0 ] || [ ${mixdepth} = "nomixdepth" ]; then
   mixdepth=""
 else
   mixdepth="-m$4"
