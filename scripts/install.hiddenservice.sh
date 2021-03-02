@@ -94,7 +94,7 @@ HiddenServiceVersion 3
 HiddenServicePort $toPort 127.0.0.1:$fromPort" | sudo tee -a /etc/tor/torrc
 
   # remove double empty lines  
-  awk 'NF > 0 {blank=0} NF == 0 {blank++} blank < 2' /etc/tor/torrc | sudo tee /mnt/hdd/temp/tmp >/dev/null && sudo mv /mnt/hdd/temp/tmp /etc/tor/torrc
+  awk 'NF > 0 {blank=0} NF == 0 {blank++} blank < 2' /etc/tor/torrc | sudo tee /home/joinmarket/tmp >/dev/null && sudo mv /home/joinmarket/tmp /etc/tor/torrc
 
   # check and insert second port pair
   if [ ${#toPort2} -gt 0 ]; then
