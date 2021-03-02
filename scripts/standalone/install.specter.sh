@@ -2,7 +2,7 @@
 # based on https://github.com/rootzoll/raspiblitz/blob/v1.6/home.admin/config.scripts/bonus.cryptoadvance-specter.sh
 # https://github.com/cryptoadvance/specter-desktop  
 
-pinnedVersion="1.2.1"
+pinnedVersion="1.2.2"
 
 # command info
 if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
@@ -336,7 +336,7 @@ if [ "$1" = "0" ] || [ "$1" = "off" ]; then
       for i in $(customRPC "#listwallets" "listwallets" | tail -n +2) 
       do  
 	      name=$(echo $i | cut -d"/" -f2)
-       	customRPC "#unloadwallet" "unloadwallet2 "specter/$name"
+       	customRPC "#unloadwallet" "unloadwallet" "specter/$name"
       done
       echo "# Removing the  /home/store/app-data/.specter"
       sudo rm -rf  /home/store/app-data/.specter
@@ -359,7 +359,7 @@ fi
 if [ "$1" = "update" ]; then
   echo "# Updating Specter"
   sudo -u specter /home/specter/.env/bin/python3 -m pip install --upgrade cryptoadvance.specter
-  echo "# Updated to the latest in https://pypi.org/project/cryptoadvance.specter/#history ***"
+  echo "# Updated to the latest in https://pypi.org/project/cryptoadvance.specter/#history"
   echo "# Restarting the specter.service"
   sudo systemctl restart specter
   exit 0
