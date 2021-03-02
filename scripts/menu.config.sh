@@ -3,9 +3,21 @@
 source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
+if [ "${runningEnv}" = standalone ]; then
+  source /home/joinmarket/standalone/_functions.standalone.sh
+  network=mainnet
+elif [ "${runningEnv}" = raspiblitz ];then
+  source /mnt/hdd/raspiblitz.conf
+  if [ $network = bitcoin ];then
+    network=${chain}net
+  else
+    network=unsupported
+  fi
+fi
+
 # BASIC MENU INFO
-HEIGHT=10
-WIDTH=58
+HEIGHT=12
+WIDTH=64
 CHOICE_HEIGHT=20
 TITLE="Configuration options"
 MENU=""
@@ -16,9 +28,15 @@ BACKTITLE="JoininBox GUI"
 OPTIONS+=(
   JMCONF "Edit the joinmarket.cfg manually"
   CONNECT "Connect to a remote bitcoin node on mainnet"
-  SIGNET "Switch to signet with a local Bitcoin Core"
-  RESET "Reset the joinmarket.cfg to the defaults"
-)
+  SIGNET "Switch to signet with a local Bitcoin Core")
+if [ "${runningEnv}" = standalone ]; then
+  OPTIONS+=(PRUNED "Start a pruned node locally from prunednode.today")
+fi
+if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
+  OPTIONS+=(LOCAL "Connect to the local Bitcoin Core on $network")
+fi
+
+OPTIONS+=(RESET "Reset the joinmarket.cfg to the defaults")
 
 CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
@@ -37,7 +55,7 @@ case $CHOICE in
     ;;
   RESET)
     echo "# Removing the joinmarket.cfg"
-    rm -f /home/joinmarket/.joinmarket/joinmarket.cfg
+    rm -f $JMcfgPath
     generateJMconfig
     echo         
     echo "Press ENTER to return to the menu..."
@@ -52,6 +70,24 @@ case $CHOICE in
     ;;
   SIGNET)
     /home/joinmarket/install.bitcoincore.sh signetOn
+    echo         
+    echo "Press ENTER to return to the menu..."
+    read key
+    ;;
+  PRUNED)
+    /home/joinmarket/install.bitcoincore.sh signetOff
+    installBitcoinCoreStandalone
+    echo
+    downloadSnapShot
+    installMainnet
+    connectLocalNode
+    showBitcoinLogs
+    echo         
+    echo "Press ENTER to return to the menu..."
+    read key
+    ;;
+  LOCAL)
+    connectLocalNode $network
     echo         
     echo "Press ENTER to return to the menu..."
     read key
