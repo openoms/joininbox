@@ -34,5 +34,15 @@ function qtgui() {
   /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python /home/joinmarket/joinmarket-clientserver/scripts/joinmarket-qt.py
 }
 
+# command: qr [string]
+# shows a QR code from the string
+function qr() {
+  if [ ${#$1} -eq 0 ]; then
+    echo "# Error='missing string'"
+  fi
+  qrencode -t ANSIUTF8 "${$1}"
+  echo "(To shrink QR code: MacOS press CMD- / Linux press CTRL-)"
+}
+
 alias signet-cli="/home/joinmarket/bitcoin/bitcoin-cli -signet"
 alias signetd="/home/joinmarket/bitcoin/bitcoind -signet"

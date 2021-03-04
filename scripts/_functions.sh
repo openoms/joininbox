@@ -116,15 +116,6 @@ function stopYG() {
   echo "# Stopped the Yield Generator background service"
 }
 
-function QRinTerminal() {
-  datastring=$1
-  if [ ${#datastring} -eq 0 ]; then
-    echo "# Error='missing string'"
-  fi
-  qrencode -t ANSI256 "${datastring}"
-  echo "(To shrink QR code: MacOS press CMD- / Linux press CTRL-)"
-}
-
 function feereport() {
   # puts the fees earned as a Maker into variables
   INPUT=/home/joinmarket/.joinmarket/logs/yigen-statement.csv

@@ -23,8 +23,17 @@ function getTXID {
   openMenuIfCancelled $?
 }
 
+function getQRstring {
+  QRstring=$(mktemp 2>/dev/null)
+  dialog --backtitle "Display a QR code from any text" \
+  --title "Enter any text" \
+  --inputbox "
+  Enter the text to be shown as a QR code" 9 71 2> "$QRstring"
+  openMenuIfCancelled $?
+}
+
 # BASIC MENU INFO
-HEIGHT=10
+HEIGHT=11
 WIDTH=55
 CHOICE_HEIGHT=20
 TITLE="Tools"
@@ -38,6 +47,7 @@ if [ "${runningEnv}" = standalone ]; then
     SPECTER "Specter Desktop options")
 fi
 OPTIONS+=(
+    QR "Display a QR code from any text"
     CUSTOMRPC "Run a custom bitcoin RPC with curl"
     BOLTZMANN "Analyze the entropy of a transaction"
     LOGS "Show the bitcoind logs on $network")
@@ -53,6 +63,22 @@ CHOICE=$(dialog --clear \
                 2>&1 >/dev/tty)
 
 case $CHOICE in
+  QR)
+    getQRstring
+    datastring=$(cat $QRstring)
+    echo
+    echo "Displaying the text:"
+    echo "$datastring"
+    echo
+    if [ ${#datastring} -eq 0 ]; then
+      echo "# Error='missing string'"
+    fi
+    qrencode -t ANSIUTF8 "${datastring}"
+    echo "(To shrink QR code: MacOS press CMD- / Linux press CTRL-)"
+    echo            
+    echo "Press ENTER to return to the menu..."
+    read key
+    ;;
   BOLTZMANN)
     installBoltzmann
     getTXID
