@@ -85,6 +85,7 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       ;;
   WALLET)
       /home/joinmarket/menu.wallet.sh
+      waitKeyOnExit1 $?
       /home/joinmarket/menu.sh          
       ;;
   QTGUI)
@@ -93,6 +94,7 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       ;;
   MAKER)
       /home/joinmarket/menu.yg.sh
+      waitKeyOnExit1 $?
       /home/joinmarket/menu.sh           
       ;;
   SEND)
@@ -111,6 +113,7 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
       ;;
   PAYJOIN)
       /home/joinmarket/menu.payjoin.sh
+      waitKeyOnExit1 $?
       /home/joinmarket/menu.sh
       ;;
   OFFERS)

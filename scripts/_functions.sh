@@ -49,6 +49,13 @@ function errorOnInstall() {
   fi
 }
 
+function waitKeyOnExit1() {
+  if [ "$1" -gt 0 ]; then
+      echo "# Press ENTER to return to the menu."
+      read key
+  fi
+}
+
 function passwordToFile() {
   # write password into a file (to be shredded)
   # get password
