@@ -9,7 +9,7 @@ joininConfPath="/home/joinmarket/joinin.conf"
 
 # versions
 currentJBcommit=$(cd /home/joinmarket/joininbox; git describe --tags)
-currentJBtag=$(cd ~/joininbox; git tag | sort -V | tail -1)
+currentJBtag=$(cd /home/joinmarket/joininbox; git tag | sort -V | tail -1)
 currentJMversion=$(cd /home/joinmarket/joinmarket-clientserver 2>/dev/null; \
 git describe --tags 2>/dev/null)
 

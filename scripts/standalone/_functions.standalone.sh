@@ -133,7 +133,7 @@ function installBitcoinCoreStandalone() {
     sudo -u bitcoin mkdir -p /home/bitcoin/.bitcoin
     randomRPCpass=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c20)
     cat > /home/joinmarket/bitcoin.conf <<EOF
-# bitcoind configuration
+# bitcoind configuration for mainnet
 
 # Connection settings
 rpcuser=joininbox

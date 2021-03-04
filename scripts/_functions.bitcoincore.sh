@@ -138,9 +138,9 @@ function installBitcoinCore() {
   # bitcoin.conf
   if [ ! -f /home/joinmarket/.bitcoin/bitcoin.conf ];then
     mkdir -p /home/joinmarket/.bitcoin
-    randomRPCpass=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c20)
+    randomRPCpass=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c8)
     cat > /home/joinmarket/.bitcoin/bitcoin.conf <<EOF
-# bitcoind configuration
+# bitcoind configuration for signet
 
 # Connection settings
 rpcuser=joinmarket
@@ -218,8 +218,8 @@ setJMconfigToSignet() {
   # rpc_user
   sed -i "s/^rpc_user =.*/rpc_user = joinmarket/g" $JMcfgPath
   # rpc_password
-  PASSWORD_B=$(sudo cat /home/joinmarket/.bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
-  sed -i "s/^rpc_password =.*/rpc_password = $PASSWORD_B/g" $JMcfgPath
+  RPCpassword=$(sudo cat /home/joinmarket/.bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+  sed -i "s/^rpc_password =.*/rpc_password = $RPCpassword/g" $JMcfgPath
   # rpc_wallet_file
   sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/g" $JMcfgPath
   echo "# using the bitcoind wallet: wallet.dat"
