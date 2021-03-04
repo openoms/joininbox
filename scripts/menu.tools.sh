@@ -33,7 +33,7 @@ function getQRstring {
 }
 
 # BASIC MENU INFO
-HEIGHT=12
+HEIGHT=13
 WIDTH=55
 CHOICE_HEIGHT=20
 TITLE="Tools"
@@ -48,6 +48,7 @@ if [ "${runningEnv}" = standalone ]; then
 fi
 OPTIONS+=(
     QR "Display a QR code from any text"
+    DOCS "Show a link to the documentation"
     CUSTOMRPC "Run a custom bitcoin RPC with curl"
     BOLTZMANN "Analyze the entropy of a transaction"
     PASSWORD "Change the ssh password"
@@ -67,6 +68,7 @@ case $CHOICE in
   QR)
     getQRstring
     datastring=$(cat $QRstring)
+    clear
     echo
     echo "Displaying the text:"
     echo "$datastring"
@@ -76,6 +78,18 @@ case $CHOICE in
     fi
     qrencode -t ANSIUTF8 "${datastring}"
     echo "(To shrink QR code: MacOS press CMD- / Linux press CTRL-)"
+    echo            
+    echo "Press ENTER to return to the menu..."
+    read key
+    ;;
+  DOCS)
+    datastring="https://github.com/openoms/joininbox#more-info"
+    clear
+    echo
+    echo "Find a collection of written documentation and links to videos at:"
+    echo "$datastring"
+    echo
+    qrencode -t ANSIUTF8 "${datastring}"
     echo            
     echo "Press ENTER to return to the menu..."
     read key
