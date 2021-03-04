@@ -109,13 +109,21 @@ the default password is: `joininbox` - will be prompted to change it on the firs
 * [Video demonstration](https://www.youtube.com/watch?v=uGHRjilMhwY) / [slides](https://keybase.pub/oms/slides/RaspiBlitz_Tech_DeepDive/Running_JoinMarket_on_the_RaspiBlitz.pdf) of running JoinMarket with JoininBox on the RaspiBlitz 
 * How to [prepare a remote node to accept the JoinMarket connection](prepare_remote_node.md)
 * [Frequently Asked Questions and notes](FAQ.md)
-* [JoinMarket on the RaspiBlitz guide](https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/README.md)
-* [Connect JoinMarket running on a Linux desktop to a remote node](https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/joinmarket_desktop_to_blitz.md)
-* Instructions on how to [build the JoininBox](build_joininbox.md) step-by-step manually
 
+## About JoinMarket
+
+* [JoinMarket documentation](https://github.com/JoinMarket-Org/joinmarket-clientserver/tree/master/docs)
+* [Recommendations for users](https://joinmarket.me/blog/blog/the-445-btc-gridchain-case/index.html#recommendations) on [waxwing's blog](https://joinmarket.me/category/waxwings-blog.html)
+* [JoinMarket on the RaspiBlitz guide](https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/README.md)
+* [JoinMarket on Ubuntu](https://www.youtube.com/watch?v=zTCC86IUzWo) video by [K3tan](https://twitter.com/_k3tan)
+* [Connect JoinMarket running on a Linux desktop to a remote node](https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/joinmarket_desktop_to_blitz.md)
 ## Forums
 
-* Telegram: https://t.me/joinmarketorg  
+* Telegram: <https://t.me/joinmarketorg>
 * IRC: #joinmarket on Freenode  
-* Reddit: https://www.reddit.com/r/joinmarket/  
-* Keybase: https://keybase.io/team/raspiblitz#joinmarket
+* Reddit: <https://www.reddit.com/r/joinmarket/>
+* Keybase: <https://keybase.io/team/raspiblitz#joinmarket>
+
+## Donations
+* To waxwing for JoinMarket: <https://joinmarket.me/donations/>
+* To openoms for JoininBox: <https://tips.diynodes.com>
