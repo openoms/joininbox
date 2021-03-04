@@ -1,12 +1,13 @@
 #!/bin/bash
 
 source /home/joinmarket/joinin.conf
+source /home/joinmarket/_functions.sh
 
 script="$1"
 wallet="$2"
 
-echo ""
-echo "Making sure $script not running"
+echo
+echo "# Making sure $script not running"
 sudo systemctl stop $script
 sudo systemctl disable $script
 
@@ -16,7 +17,7 @@ if [ $script == "yg-privacyenhanced" ]; then
   # make sure the lock file is deleted 
   rm -f ~/.joinmarket/wallets/.$wallet.lock
   # for old version <v0.6.3
-  rm -f ~/.joinmarket/wallets/$wallet.lock 2>/dev/null
+  rm -f ~/.joinmarket/wallets/$wallet.lock
 fi
 
 if [ ${RPCoverTor} = "on" ];then 
@@ -25,12 +26,13 @@ else
   tor=""
 fi
 
-startScript="cat /home/joinmarket/.pw | $tor python $script.py $wallet \
+startScript="cat /dev/shm/.pw | $tor python $script.py $wallet \
 --wallet-password-stdin"
 # display
-echo "
-Running the command with systemd:
-$tor python $script.py $(echo $wallet | sed "s#$walletPath##g")"
+walletFileName="${wallet//$walletPath/ }"
+echo
+echo "# Running the command with systemd:"
+echo " $tor python $script.py $walletFileName"
 
 echo "
 [Unit]
@@ -51,17 +53,17 @@ Restart=no
 WantedBy=multi-user.target
 " | sudo tee /etc/systemd/system/$script.service 1>/dev/null
 
-echo "
-Starting the systemd service: $script
-"
+echo
+echo "# Starting the systemd service: $script"
+echo
 
 sudo systemctl enable $script
 sudo systemctl start $script
 
-echo "
-Shredding the password once used...
-"
+echo
+echo "# Shredding the password once used..."
+echo
 
 sleep 5
 # delete password once used
-shred -uvz /home/joinmarket/.pw
+shred -uvz /dev/shm/.pw

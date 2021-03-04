@@ -70,22 +70,22 @@ function passwordToFile() {
   pressed=$?
   case $pressed in
     0)
-      touch /home/joinmarket/.pw
-      chmod 600 /home/joinmarket/.pw
-      tee /home/joinmarket/.pw 1>/dev/null < "$data"
+      touch /dev/shm/.pw
+      chmod 600 /dev/shm/.pw
+      tee /dev/shm/.pw 1>/dev/null < "$data"
       shred "$data"
       ;;
     1)
       shred "$data"
       shred "$wallet"
-      rm -f .pw
+      shred -uvz /dev/shm/.pw
       echo "# Cancelled"
       exit 1
       ;;
     255)
       shred "$data"
       shred "$wallet"
-      rm -f .pw
+      shred -uvz /dev/shm/.pw
       [ -s "$data" ] &&  cat "$data" || echo "# ESC pressed."
       exit 1
       ;;
