@@ -31,6 +31,8 @@ OPTIONS+=(
 CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
                 --title "$TITLE" \
+                --ok-label "Select" \
+                --cancel-label "Back" \
                 --menu "$MENU" \
                 $HEIGHT $WIDTH $CHOICE_HEIGHT \
                 "${OPTIONS[@]}" \

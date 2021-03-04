@@ -5,7 +5,7 @@ source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
-HEIGHT=25
+HEIGHT=23
 WIDTH=57
 CHOICE_HEIGHT=21
 BACKTITLE="JoininBox GUI $currentJBtag network:$network IP:$localip"
@@ -31,15 +31,13 @@ OPTIONS+=(\
   CONFIG "Connection and joinmarket.cfg settings" \
   TOOLS "Extra helper functions and services"
   UPDATE "Update JoininBox or JoinMarket" \
-  "" "" 
-  X "Exit to the Command Line" \
-  #CONNECT "Connect to a remote bitcoind" \
-  #TUMBLER "Run the Tumbler to mix quickly" \
 )
 
 CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
                 --title "$TITLE" \
+                --ok-label "Select" \
+                --cancel-label "Exit" \
                 --menu "$MENU" \
                 $HEIGHT $WIDTH $CHOICE_HEIGHT \
                 "${OPTIONS[@]}" \
@@ -113,8 +111,8 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
   UPDATE)
       /home/joinmarket/menu.update.sh
       /home/joinmarket/menu.sh
-      ;;
-  X)
+      ;;            
+    *)
       clear
       echo "
 ***************************
@@ -123,9 +121,7 @@ Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
 Notes on usage:
 https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/README.md
 
-To open JoininBox menu use: menu
-To exit to the RaspiBlitz menu use: exit
+To open the JoininBox menu use: menu
+To exit from the terminal type: exit
 "
-      exit 0
-      ;;            
-esac
+      esac
