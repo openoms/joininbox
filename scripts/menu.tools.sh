@@ -33,7 +33,7 @@ function getQRstring {
 }
 
 # BASIC MENU INFO
-HEIGHT=11
+HEIGHT=12
 WIDTH=55
 CHOICE_HEIGHT=20
 TITLE="Tools"
@@ -50,6 +50,7 @@ OPTIONS+=(
     QR "Display a QR code from any text"
     CUSTOMRPC "Run a custom bitcoin RPC with curl"
     BOLTZMANN "Analyze the entropy of a transaction"
+    PASSWORD "Change the ssh password"
     LOGS "Show the bitcoind logs on $network")
 
 CHOICE=$(dialog --clear \
@@ -102,6 +103,9 @@ case $CHOICE in
     ;;
   SPECTER)
     /home/joinmarket/standalone/menu.specter.sh
+    ;;
+  PASSWORD)
+    sudo /home/joinmarket/set.password.sh
     ;;
   LOGS)
     showBitcoinLogs
