@@ -40,8 +40,13 @@ function qr() {
   if [ ${#$1} -eq 0 ]; then
     echo "# Error='missing string'"
   fi
+  echo
+  echo "Displaying the text:"
+  echo "$1"
+  echo
   qrencode -t ANSIUTF8 "${$1}"
   echo "(To shrink QR code: MacOS press CMD- / Linux press CTRL-)"
+  echo
 }
 
 alias signet-cli="/home/joinmarket/bitcoin/bitcoin-cli -signet"
