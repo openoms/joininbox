@@ -108,25 +108,26 @@ if [ "$1" = "menu" ]; then
   # get status
   echo "# Collecting status info ... (please wait)"
   source <(sudo /home/joinmarket/standalone/install.specter.sh status)
-  echo "
-######################################
-# Specter Desktop connection details #
-######################################
 
-Open in your local web browser & accept the self-signed certificate:
-https://${localip}:25441
-
-SHA1 Thumb/Fingerprint:
-${fingerprint}
-
-Login with the password:
-$(jq -r '.rpc.password' /home/specter/.specter/config.json)"
-  
+  echo "######################################"
+  echo "# Specter Desktop connection details #"
+  echo "######################################"
+  echo
+  echo "Open in your local web browser & accept the self-signed certificate:"
+  echo "https://${localip}:25441"
+  qrencode -t ANSIUTF8 "https://${localip}:25441"
+  echo
+  echo "SHA1 Thumb/Fingerprint:"
+  echo "${fingerprint}"
+  echo
+  echo "Login with the password:"
+  echo "$(jq -r '.rpc.password' /home/specter/.specter/config.json)"
+  echo
   if [ "${runBehindTor}" = "on" ] && [ ${#toraddress} -gt 0 ]; then
-    echo "
-Hidden Service address for the Tor Browser:
-https://${toraddress}
-Unfortunately the camera is currently not usable via Tor."
+    echo "Hidden Service address for the Tor Browser:"
+    echo "https://${toraddress}"
+    echo "Unfortunately the camera is currently not usable via Tor."
+    qrencode -t ANSIUTF8 "https://${localip}:25441"
   fi
   exit 0
 fi

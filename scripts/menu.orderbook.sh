@@ -15,11 +15,13 @@ function showOrderBookAddress() {
   if [ "$running" -gt 0 ]; then  
     TOR_ADDRESS=$(sudo cat "$HiddenServiceDir"/ob-watcher/hostname)
     clear
-    echo ""
+    echo 
     echo "The local Order Book instance is running"
-    echo ""
-    echo "Visit the address in the Tor Browser:"
+    echo 
+    echo "Visit the address in the Tor Browser (shown as a QR code also):"
     echo "$TOR_ADDRESS"
+    echo
+    qrencode -t ANSIUTF8 "$TOR_ADDRESS"
   else
     startOrderBook
   fi
