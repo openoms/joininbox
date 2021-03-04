@@ -49,7 +49,7 @@ case $CHOICE in
       # wallet
       chooseWallet
       # mixdepth
-      mixdepth=$(mktemp 2>/dev/null)
+      mixdepth=$(mktemp -p /dev/shm/)
       dialog --backtitle "Choose a mixdepth" \
       --title "Choose a mixdepth" \
       --inputbox "

@@ -43,7 +43,7 @@ displayHelp
 inputRPC
 echo "# Checking the remote RPC connection with curl..."
 echo
-connectionOutput=$(mktemp 2>/dev/null)
+connectionOutput=$(mktemp -p /dev/shm/)
 connectionSuccess=$(checkRPC 2>$connectionOutput | grep -c "bitcoinRPC")
 while [ $connectionSuccess -eq 0 ]; do
   echo

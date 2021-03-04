@@ -7,7 +7,7 @@ else
   echo "Opening $editScript"
 fi
 # temp conf
-conf=$(mktemp 2>/dev/null)
+conf=$(mktemp -p /dev/shm/)
 # trap it
 trap 'rm -f $conf' 0 1 2 5 15
 dialog \

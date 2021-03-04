@@ -7,7 +7,7 @@ source /home/joinmarket/_functions.sh
 chooseWallet
 
 # mixdepth
-mixdepth=$(mktemp 2>/dev/null)
+mixdepth=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose a mixdepth to send from" \
 --title "Choose a mixdepth to send from" \
 --inputbox "
@@ -15,7 +15,7 @@ Enter a number between 0 to 4 to choose the mixdepth" 9 60 2> "$mixdepth"
 openMenuIfCancelled $?
 
 # makercount
-makercount=$(mktemp 2>/dev/null)
+makercount=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose the makercount" \
 --title "Choose the makercount" \
 --inputbox "
@@ -36,7 +36,7 @@ else
 fi
 
 # amount
-amount=$(mktemp 2>/dev/null)
+amount=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose the amount" \
 --title "Choose the amount" \
 --inputbox "
@@ -45,7 +45,7 @@ Use 0 to sweep the mixdepth without a change output" 10 60 2> "$amount"
 openMenuIfCancelled $?
 
 # txfee
-txfee=$(mktemp 2>/dev/null)
+txfee=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose the miner fee" \
 --title "Choose the miner fee" \
 --inputbox "
@@ -62,7 +62,7 @@ else
 fi
 
 # address
-address=$(mktemp 2>/dev/null)
+address=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose the address" \
 --title "Choose the address" \
 --inputbox "

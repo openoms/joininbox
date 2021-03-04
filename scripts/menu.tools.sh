@@ -15,7 +15,7 @@ function installBoltzmann {
 }
 
 function getTXID {
-  txid=$(mktemp 2>/dev/null)
+  txid=$(mktemp -p /dev/shm/)
   dialog --backtitle "Enter a TXID" \
   --title "Enter a TXID" \
   --inputbox "
@@ -24,7 +24,7 @@ function getTXID {
 }
 
 function getQRstring {
-  QRstring=$(mktemp 2>/dev/null)
+  QRstring=$(mktemp -p /dev/shm/)
   dialog --backtitle "Display a QR code from any text" \
   --title "Enter any text" \
   --inputbox "

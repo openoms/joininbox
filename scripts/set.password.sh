@@ -20,8 +20,8 @@ if [ "$piUserPresent" -gt 0 ]; then
   piUser="and 'pi'"
 fi
 
-# mktemp 
-_temp="./dialog.$$"
+# mktemp in the RAM
+_temp="$(mktemp -p /dev/shm/)"
 
 # 1. parameter [?newpassword]
 newPassword=$1

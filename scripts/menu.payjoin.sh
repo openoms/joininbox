@@ -9,7 +9,7 @@ function receivePayJoin() {
 chooseWallet
 
 # mixdepth
-mixdepth=$(mktemp 2>/dev/null)
+mixdepth=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose a mixdepth to receive to" \
 --title "Choose a mixdepth to receive to" \
 --inputbox "
@@ -18,7 +18,7 @@ Enter a number between 0 to 4 to choose the mixdepth
 openMenuIfCancelled $?
 
 # amount
-amount=$(mktemp 2>/dev/null)
+amount=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose the amount" \
 --title "Choose the amount" \
 --inputbox "
@@ -76,7 +76,7 @@ function sendPayJoin() {
 chooseWallet
 
 # mixdepth
-mixdepth=$(mktemp 2>/dev/null)
+mixdepth=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose a mixdepth to send from" \
 --title "Choose a mixdepth to send from" \
 --inputbox "
@@ -84,7 +84,7 @@ Enter a number between 0 to 4 to choose the mixdepth" 9 60 2> $mixdepth
 openMenuIfCancelled $?
 
 # receiveURI
-receiveURI=$(mktemp 2>/dev/null)
+receiveURI=$(mktemp -p /dev/shm/)
 dialog --backtitle "Receive URI" \
 --title "Receive URI" \
 --inputbox "

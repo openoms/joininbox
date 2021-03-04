@@ -272,7 +272,7 @@ function checkRPCwallet {
     rpc_wallet=$1
   fi
   echo "# Making sure the set $rpc_wallet wallet is present in bitcoind"
-  connectionOutput=$(mktemp 2>/dev/null)
+  connectionOutput=$(mktemp -p /dev/shm/)
   walletFound=$(customRPC "# Check wallet" "listwallets" 2>$connectionOutput | grep -c "$rpc_wallet")
   if [ $walletFound -eq 0 ]; then
     echo "# Setting a watch only wallet for the remote Bitcoin Core named $rpc_wallet"

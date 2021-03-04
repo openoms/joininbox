@@ -52,7 +52,7 @@ function errorOnInstall() {
 function passwordToFile() {
   # write password into a file (to be shredded)
   # get password
-  data=$(mktemp 2>/dev/null)
+  data=$(mktemp -p /dev/shm/)
   # trap it
   trap 'rm -f $data' 0 1 2 5 15
   dialog --backtitle "Enter password" \
@@ -86,9 +86,9 @@ function passwordToFile() {
 }
 
 function chooseWallet() {
-  wallet=$(mktemp 2>/dev/null)
+  wallet=$(mktemp -p /dev/shm/)
   if [ "$defaultWallet" = "off" ]; then
-    wallet=$(mktemp 2>/dev/null)
+    wallet=$(mktemp -p /dev/shm/)
     dialog --backtitle "Choose a wallet by typing the full name of the file" \
     --title "Choose a wallet by typing the full name of the file" \
     --fselect "$walletPath" 10 60 2> "$wallet"
