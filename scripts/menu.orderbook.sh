@@ -11,23 +11,28 @@ sudo systemctl disable ob-watcher 2>/dev/null
 }
 
 function showOrderBookAddress() {
-running=$(ps $(pidof python) | grep -c "python ob-watcher.py")
-if [ "$running" -gt 0 ]; then  
-  TOR_ADDRESS=$(sudo cat "$HiddenServiceDir"/ob-watcher/hostname)
-  clear
-  echo ""
-  echo "The local Order Book instance is running"
-  echo ""
-  echo "Visit the address in the Tor Browser:"
-  echo "$TOR_ADDRESS"
-else
-  startOrderBook
-fi 
+  running=$(ps $(pidof python) | grep -c "python ob-watcher.py")
+  if [ "$running" -gt 0 ]; then  
+    TOR_ADDRESS=$(sudo cat "$HiddenServiceDir"/ob-watcher/hostname)
+    clear
+    echo ""
+    echo "The local Order Book instance is running"
+    echo ""
+    echo "Visit the address in the Tor Browser:"
+    echo "$TOR_ADDRESS"
+  else
+    startOrderBook
+  fi
 }
 
 function startOrderBook() {
-stopOrderBook
-echo "
+  stopOrderBook
+  activateJMvenv
+  if [ "$(pip list | grep -c matplotlib)" -eq 0 ];then
+    echo "# Installing optional dependencies"
+    pip install matplotlib
+  fi
+  echo "
 [Unit]
 Description=ob-watcher
 
@@ -46,20 +51,20 @@ Restart=no
 [Install]
 WantedBy=multi-user.target
 " | sudo tee /etc/systemd/system/ob-watcher.service 1>/dev/null
-sudo systemctl enable ob-watcher 2>/dev/null
-sudo systemctl start ob-watcher
+  sudo systemctl enable ob-watcher 2>/dev/null
+  sudo systemctl start ob-watcher
 
-# create the Hidden Service
-/home/joinmarket/install.hiddenservice.sh ob-watcher 80 62601
+  # create the Hidden Service
+  /home/joinmarket/install.hiddenservice.sh ob-watcher 80 62601
 
-echo ""
-echo "# Started watching the Order Book in the background"
-echo ""
-echo "# Showing the systemd status ..."
-sleep 3
-dialog \
---title "Monitoring the ob-watcher - press CTRL+C to exit"  \
---prgbox "sudo journalctl -fn20 -u ob-watcher" 30 200
+  echo
+  echo "# Started watching the Order Book in the background"
+  echo
+  echo "# Showing the systemd status ..."
+  sleep 3
+  dialog \
+  --title "Monitoring the ob-watcher - press CTRL+C to exit"  \
+  --prgbox "sudo journalctl -fn20 -u ob-watcher" 30 200
 }
 
 # BASIC MENU INFO

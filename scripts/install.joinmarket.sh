@@ -30,6 +30,14 @@ if [ "$1" = "install" ]; then
     echo
     installJoinMarket  
     errorOnInstall $?
+    echo "# Check for optional dependencies: matplotlib and scipy"
+    activateJMvenv
+    if [ "$(pip list | grep -c matplotlib)" -eq 0 ];then
+      pip install matplotlib
+    fi
+    if [ "$(pip list | grep -c scipy)" -eq 0 ];then
+      pip install scipy
+    fi
   else
     echo
     echo "# JoinMarket $currentJMversion is installed"

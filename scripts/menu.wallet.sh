@@ -54,6 +54,11 @@ case $CHOICE in
       read key
       ;;
   HISTORY)
+      activateJMvenv
+      if [ "$(pip list | grep -c scipy)" -eq 0 ];then
+        echo "# Installing optional dependencies"
+        pip install scipy
+      fi
       # wallet
       chooseWallet
       /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) "history -v 4"
