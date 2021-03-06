@@ -45,42 +45,8 @@ CHOICE=$(dialog --clear \
 
 case $CHOICE in
   INFO)
-      checkRPCwallet
-      # wallet
-      chooseWallet
-      # mixdepth
-      mixdepth=$(mktemp -p /dev/shm/)
-      dialog --backtitle "Choose a mixdepth" \
-      --title "Choose a mixdepth" \
-      --inputbox "
-Enter a number between 0 to 4 to limit the visible mixdepths
-Leave the box empty to show the addresses in all five" 10 64 2> $mixdepth
-      openMenuIfCancelled $?
-      # cache wallet data
-      walletData=$(mktemp -p /dev/shm/)
-      clear
-      /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)" nomethod "$(cat $mixdepth)" 2>&1 | tee $walletData
-      firstNewAddress=$(cat "$walletData" | grep "0.00000000	new" | sed -n 1p | awk '{print $2}')
-      echo
-      if [ ${#firstNewAddress} -eq 0 ]; then
-        echo "# Error: missing address data"
-        echo
-        echo "# Type 'menu' to return"
-        echo
-        exit 1
-      fi
-      # display data
-      cat "$walletData"
-      echo
-      echo "Fund the wallet on the first 'new' address to get started (displayed as a QR code also):"
-      echo "$firstNewAddress"
-      echo
-      qrencode -t ANSIUTF8 "${firstNewAddress}"
-      echo
-      shred $wallet $mixdepth $walletData
-      sudo rm -f /dev/shm/*
-      echo "Press ENTER to return to the menu..."
-      read key
+      /home/joinmarket/menu.info.sh
+      waitKeyOnExit1 $?  
       /home/joinmarket/menu.sh
       ;;
   WALLET)

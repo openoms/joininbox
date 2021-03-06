@@ -107,8 +107,6 @@ function chooseWallet() {
       echo "# Make sure to type the full filename of the wallet."
       echo "# eg.: wallet.jmdat"
       echo
-      echo "# Type 'menu' to return"
-      echo
       exit 1
     else
       echo "# OK - the wallet file is present."
