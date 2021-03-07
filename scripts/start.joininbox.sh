@@ -71,7 +71,7 @@ if [ "$setupStep" -lt 100 ];then
 
   # check for dialog
   if [ "$(dialog | grep -c "ComeOn Dialog!")" -eq 0 ];then
-    sudo apt install dialog
+    sudo apt install -y dialog
     sed -i  "s#setupStep=.*#setupStep=4#g" $joininConfPath
   fi
 
@@ -157,3 +157,8 @@ fi
 localip=$(ip addr | grep 'state UP' -A2 | grep -Ev 'docker0|veth' | \
 grep 'eth0\|wlan0\|enp0' | tail -n1 | awk '{print $2}' | cut -f1 -d'/')
 sed -i "s#^localip=.*#localip=$localip#g" $joininConfPath
+
+# check for qrencode
+if [ "$(qrencode -V 2>&1 | grep -c "not found")" -gt 0 ];then
+  sudo apt install -y qrencode
+fi

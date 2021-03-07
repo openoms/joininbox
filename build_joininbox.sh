@@ -28,9 +28,9 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 echo 
-echo "###############################"
-echo "# JOININBOX BUILD SCRIPT v0.2 #"
-echo "###############################"
+echo "################################"
+echo "# JOININBOX BUILD SCRIPT v0.2.1 #"
+echo "################################"
 echo 
 
 echo "# Check the command options"
@@ -257,6 +257,8 @@ apt install -y netcat
 apt-get install -y psmisc
 # dialog
 apt install -y dialog
+# qrencode
+apt install qrencode
 apt-get clean
 apt-get -y autoremove
 

@@ -16,6 +16,7 @@ function moveSignetData() {
 }
 
 function makeEncryptedFolder(){
+  # TODO
   # make encrypted file
 
   # mount to /mnt/encrypted/
@@ -123,14 +124,13 @@ function installBitcoinCoreStandalone() {
       sudo rm /home/store/app-data/.bitcoin/bitcoin.conf
     fi
   fi
-  # not a symlink, delete
-  sudo rm -rf /home/bitcoin/.bitcoin
-  #echo "# moving to /home/store/app-data/"
-  #sudo mv /home/joinmarket/.bitcoin /home/store/app-data/
+
   echo "# symlink to /home/bitcoin/"
+  sudo rm -rf /home/bitcoin/.bitcoin # not a symlink, delete
+  sudo mkdir -p /home/store/app-data/.bitcoin
   sudo ln -s /home/store/app-data/.bitcoin /home/bitcoin/
+
   if [ ! -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
-    sudo -u bitcoin mkdir -p /home/bitcoin/.bitcoin
     randomRPCpass=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c20)
     cat > /home/joinmarket/bitcoin.conf <<EOF
 # bitcoind configuration for mainnet
