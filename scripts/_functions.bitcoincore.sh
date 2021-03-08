@@ -232,6 +232,11 @@ setJMconfigToSignet() {
 }
 
 function showBitcoinLogs() {
+  if [ $#1 -eq 0 ];then
+    lines=""
+  else
+    lines="-n $1"
+  fi
   if [ $network = mainnet ];then
     logFilePath="/home/bitcoin/.bitcoin/debug.log"
   elif [ $network = signet ];then
@@ -245,7 +250,7 @@ Will tail the bitcoin $network logfile from:
 $logFilePath
 
 Press CTRL+C to exit and type 'menu' for the GUI." 10 54
-  sudo tail -fn1000 $logFilePath
+  sudo tail -f $lines $logFilePath
 }
 
 # getRPC - reads the RPC settings from the joinmarket.cfg
@@ -303,19 +308,19 @@ function customRPC {
   if is_int "$3" ||[ ${#3} -eq 0 ]; then
     echo "$tor curl -sS --data-binary\
  '{\"jsonrpc\": \"1.0\", \"id\":\"$1\", \"method\": \"$2\", \"params\": [$3] }'\
- http://$rpc_user:rpc_pass(redacted)@rpc_host(redacted):$rpc_port"
+ http://$rpc_user:rpc_pass(redacted)@rpc_host(redacted):$rpc_port/wallet/$rpc_wallet"
     echo
     $tor curl -sS --data-binary \
     '{"jsonrpc": "1.0", "id":"'"$1"'", "method": "'"$2"'", "params": ['"$3"'] }' \
-    http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port | jq .
+    http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/wallet/$rpc_wallet  | jq .
   else
     echo "$tor curl -sS --data-binary\
  '{\"jsonrpc\": \"1.0\", \"id\":\"$1\", \"method\": \"$2\", \"params\": [\"$3\"] }'\
- http://$rpc_user:rpc_pass(redacted)@rpc_host(redacted):$rpc_port"
+ http://$rpc_user:rpc_pass(redacted)@rpc_host(redacted):$rpc_port/wallet/$rpc_wallet"
     echo
     $tor curl -sS --data-binary \
     '{"jsonrpc": "1.0", "id":"'"$1"'", "method": "'"$2"'", "params": ["'"$3"'"] }' \
-    http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port | jq .
+    http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/wallet/$rpc_wallet | jq .
   fi
 }
 

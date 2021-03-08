@@ -96,14 +96,16 @@ case $CHOICE in
       read key
       ;;
   RESCAN)
+      checkRPCwallet
       echo
       echo "# Input the blockheight to scan from (first SegWit block: 477120):"
       read blockheight
+      echo "# Can exit the command with CTRL+C, the rescan will continue in the background"
       customRPC "# Rescan wallet in bitcoind" "rescanblockchain" "$blockheight"
       echo
       echo "# Monitor the progress in the logs of the connected bitcoind"
       echo
-      showBitcoinLogs
+      showBitcoinLogs 30
       echo "Press ENTER to return to the menu"
       read key
       ;;
