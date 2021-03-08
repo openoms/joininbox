@@ -1,9 +1,13 @@
 #!/bin/bash
 
 function addUserStore() {
-  echo "# Adding the user: store"
-  sudo adduser --disabled-password --gecos "" store
-  sudo -u store mkdir /home/store/app-data
+  if [ ! -d /home/store/app-data ];then
+    echo "# Adding the user: store"
+    sudo adduser --disabled-password --gecos "" store
+    sudo -u store mkdir /home/store/app-data
+  else
+    echo "# The folder /home/store/app-data is present already"
+  fi 
 }
 
 function moveSignetData() {
@@ -184,9 +188,7 @@ WantedBy=multi-user.target
   echo "# OK - the bitcoind.service is now enabled"
 
   # add aliases
-  if [ $(alias | grep -c bitcoin) -eq 0 ];then 
-    alias bitcoin-cli="sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli"
-    alias bitcoind="sudo -u bitcoin /home/bitcoin/bitcoin/bitcoind"
+  if [ $(alias | grep -c "sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli") -eq 0 ];then 
     sudo bash -c "echo 'alias bitcoin-cli=\"sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli\"' >> /home/joinmarket/_commands.sh"
     sudo bash -c "echo 'alias bitcoind=\"sudo -u bitcoin /home/bitcoin/bitcoin/bitcoind\"' >> /home/joinmarket/_commands.sh"
   fi

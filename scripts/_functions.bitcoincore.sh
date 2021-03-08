@@ -192,8 +192,6 @@ WantedBy=multi-user.target
 
   # add aliases
   if [ $(alias | grep -c signet) -eq 0 ];then 
-    alias signet-cli="/home/joinmarket/bitcoin/bitcoin-cli -signet"
-    alias signetd="/home/joinmarket/bitcoin/bitcoind -signet"
     sudo bash -c "echo 'alias signet-cli=\"/home/joinmarket/bitcoin/bitcoin-cli -signet\"' >> /home/joinmarket/_commands.sh"
     sudo bash -c "echo 'alias signetd=\"/home/joinmarket/bitcoin/bitcoind -signet\"' >> /home/joinmarket/_commands.sh"
   fi
