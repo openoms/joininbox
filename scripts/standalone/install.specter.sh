@@ -127,7 +127,7 @@ if [ "$1" = "menu" ]; then
     echo "Hidden Service address for the Tor Browser:"
     echo "https://${toraddress}"
     echo "Unfortunately the camera is currently not usable via Tor."
-    qrencode -t ANSIUTF8 "https://${localip}:25441"
+    qrencode -t ANSIUTF8 "https://${toraddress}"
   fi
   exit 0
 fi
