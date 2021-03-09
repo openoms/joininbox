@@ -232,10 +232,12 @@ setJMconfigToSignet() {
 }
 
 function showBitcoinLogs() {
-  if [ $#1 -eq 0 ];then
+  if [ $# -eq 0 ];then
     lines=""
+    echo "# Show the default number of lines"
   else
     lines="-n $1"
+    echo "# Show $lines number of lines"
   fi
   if [ $network = mainnet ];then
     logFilePath="/home/bitcoin/.bitcoin/debug.log"

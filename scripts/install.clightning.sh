@@ -105,11 +105,12 @@ if [ "$1" = on ];then
   sudo ln -s $APPDATADIR/.lightning${NODENUMBER} /home/${LIGHTNINGUSER}/
   echo "# Create /home/${LIGHTNINGUSER}/.lightning${NODENUMBER}/config"
   echo "
-# c-lightningd configuration for $NETWORK
+# lightningd${NODENUMBER} configuration for $NETWORK
 
-log-level=debug
 network=$NETWORK
 announce-addr=127.0.0.1:9736${NODENUMBER}
+log-file=cl${NODENUMBER}.log
+log-level=debug
 
 # Tor settings
 proxy=127.0.0.1:9050
@@ -164,6 +165,7 @@ alias cl${NODENUMBER}=\"sudo -u ${LIGHTNINGUSER} /usr/local/bin/lightning-cli\"
   echo "# Monitor the lightningd${NODENUMBER} with:"
   echo "# 'sudo journalctl -fu lightningd${NODENUMBER}'"
   echo "# 'sudo systemctl status lightningd${NODENUMBER}'"
+  echo "# logs: 'tail -f /home/${LIGHTNINGUSER}/.lightning${NODENUMBER}/${NETWORK}/cl${NODENUMBER}.log'"
   echo "# Use: 'lightning-cli${NODENUMBER} help' for the command line options"
   echo
 fi
