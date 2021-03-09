@@ -2,16 +2,17 @@
 
 source /home/joinmarket/joinin.conf
 
-# paths
-walletPath="/home/joinmarket/.joinmarket/wallets/"
-JMcfgPath="/home/joinmarket/.joinmarket/joinmarket.cfg"
-joininConfPath="/home/joinmarket/joinin.conf"
-
 # versions
+testedJMversion="v0.8.2"
 currentJBcommit=$(cd /home/joinmarket/joininbox; git describe --tags)
 currentJBtag=$(cd /home/joinmarket/joininbox; git tag | sort -V | tail -1)
 currentJMversion=$(cd /home/joinmarket/joinmarket-clientserver 2>/dev/null; \
 git describe --tags 2>/dev/null)
+
+# paths
+walletPath="/home/joinmarket/.joinmarket/wallets/"
+JMcfgPath="/home/joinmarket/.joinmarket/joinmarket.cfg"
+joininConfPath="/home/joinmarket/joinin.conf"
 
 # functions
 source /home/joinmarket/_functions.bitcoincore.sh
@@ -214,8 +215,7 @@ function installJoinMarket() {
     echo "# Updating to the latest commit in:"
     echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver"
   else
-    JMVersion="v0.8.1"
-    sudo -u joinmarket git reset --hard $JMVersion
+    sudo -u joinmarket git reset --hard $testedJMversion
   fi
 
   # do not stop at installing debian dependencies
@@ -244,7 +244,9 @@ function installJoinMarket() {
     # build the Qt GUI
     sudo -u joinmarket ./install.sh --with-qt
   fi
-  echo "# installed JoinMarket $JMVersion"
+  currentJMversion=$(cd /home/joinmarket/joinmarket-clientserver 2>/dev/null; \
+    git describe --tags 2>/dev/null)
+  echo "# installed JoinMarket $currentJMversion"
 }
 
 # copyJoininboxScripts
