@@ -133,7 +133,8 @@ User=${LIGHTNINGUSER}
 Group=${LIGHTNINGUSER}
 Type=simple
 Environment=PATH=\$PATH:$BITCOINDIR 
-ExecStart=/usr/local/bin/lightningd --lightning-dir="/home/${LIGHTNINGUSER}/.lightning${NODENUMBER}/"
+ExecStart=/usr/local/bin/lightningd \
+  --lightning-dir="/home/${LIGHTNINGUSER}/.lightning${NODENUMBER}/"
 KillMode=process
 Restart=always
 TimeoutSec=120
@@ -150,12 +151,19 @@ WantedBy=multi-user.target
   echo "# OK - the lightningd${NODENUMBER}.service is now enabled and started"
   echo
   echo "# Adding aliases"
-  echo "
+  if [ $(grep -c "sudo -u ${LIGHTNINGUSER} $BITCOINDIR/bitcoin-cli" < /home/joinmarket/_commands.sh ) -eq 0 ];then
+    echo "\
 alias bitcoin-cli=\"sudo -u ${LIGHTNINGUSER} $BITCOINDIR/bitcoin-cli\"
-alias bcli=\"sudo -u ${LIGHTNINGUSER} $BITCOINDIR/bitcoin-cli -network=$NETWORK\"
-
-alias lightning-cli${NODENUMBER}=\"sudo -u ${LIGHTNINGUSER} /usr/local/bin/lightning-cli\"
-alias cl${NODENUMBER}=\"sudo -u ${LIGHTNINGUSER} /usr/local/bin/lightning-cli\"
+alias bcli=\"sudo -u ${LIGHTNINGUSER} $BITCOINDIR/bitcoin-cli -network=$NETWORK\"\
+" | sudo tee -a /home/joinmarket/_commands.sh
+  fi
+  echo "\
+alias lightning-cli${NODENUMBER}=\"sudo -u ${LIGHTNINGUSER} /usr/local/bin/lightning-cli\
+ --conf=/home/${LIGHTNINGUSER}/.lightning${NODENUMBER}/config\
+ --lightning-dir=/home/${LIGHTNINGUSER}/.lightning${NODENUMBER} \"
+alias cl${NODENUMBER}=\"sudo -u ${LIGHTNINGUSER} /usr/local/bin/lightning-cli\
+ --conf=/home/${LIGHTNINGUSER}/.lightning${NODENUMBER}/config\
+ --lightning-dir=/home/${LIGHTNINGUSER}/.lightning${NODENUMBER} \"\
 " | sudo tee -a /home/joinmarket/_commands.sh
 
   echo "# To activate the aliases reopen the terminal or use 'source /home/joinmarket/_commands.sh'"
@@ -175,10 +183,10 @@ if [ "$1" = "off" ];then
   sudo systemctl disable lightningd${NODENUMBER}
   sudo systemctl stop lightningd${NODENUMBER}
   echo "# Removing the aliases"
-  sudo sed -i "s#alias bitcoin-cli=\"sudo -u .* /home/.*/bitcoin/bitcoin-cli\"##g" /home/joinmarket/_commands.sh
-  sudo sed -i "s#alias bcli=\"sudo -u .* /home/.*/bitcoin/bitcoin-cli -network=.*\"##g" /home/joinmarket/_commands.sh
-  sudo sed -i "s#alias lightning-cli${NODENUMBER}=\"sudo -u .* /usr/local/bin/lightning-cli\"##g" /home/joinmarket/_commands.sh
-  sudo sed -i "s#alias cl${NODENUMBER}=\"sudo -u .* /usr/local/bin/lightning-cli\"##g" /home/joinmarket/_commands.sh
+  #sudo sed -i "s#alias bitcoin-cli=\"sudo -u .* /home/${LIGHTNINGUSER}/bitcoin/bitcoin-cli\"##g" /home/joinmarket/_commands.sh
+  #sudo sed -i "s#alias bcli=\"sudo -u .* /home/${LIGHTNINGUSER}/bitcoin/bitcoin-cli -network=$NETWORK\"##g" /home/joinmarket/_commands.sh
+  sudo sed -i "/lightning-cli${NODENUMBER}/d" /home/joinmarket/_commands.sh
+  sudo sed -i "/cl${NODENUMBER}/d" /home/joinmarket/_commands.sh
   if [ "$(echo "$@" | grep -c purge)" -gt 0 ];then
     echo "# Removing the binaries"
     sudo rm -f /usr/local/bin/lightningd
