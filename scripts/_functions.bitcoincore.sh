@@ -271,7 +271,7 @@ function getRPC {
 # checkRPCwallet <wallet>
 function checkRPCwallet {
   getRPC
-  if [ ${#1} -eq 0 ];then
+  if [ $# -eq 0 ];then
     rpc_wallet=$rpc_wallet
   else
     rpc_wallet=$1
@@ -285,7 +285,7 @@ function checkRPCwallet {
     echo
     walletFound=$(customRPC "# Check wallet" "listwallets" 2>$connectionOutput | grep -c "$rpc_wallet")
     if [ $walletFound -eq 0 ]; then
-      echo "# Making sure the set $rpc_wallet wallet is loaded in bitcoind"
+      echo "# Making sure $rpc_wallet wallet is loaded in bitcoind"
       echo
       customRPC "# Load wallet in bitcoind" "loadwallet" "$rpc_wallet"
       walletFound=$(customRPC "# Check wallet" "listwallets" 2>$connectionOutput | grep -c "$rpc_wallet")
@@ -296,30 +296,43 @@ function checkRPCwallet {
 }
 
 # customRPC - sends a custom RPC command
-# $1=id $2=method $3=string params
+# $1=id $2=method $3=string params $4=print
 function customRPC {
   getRPC
+  if [ ${#4} -eq 0 ];then
+    print="no"
+  else
+    print=$4
+  fi
+if [ $print = print ];then
+  echo print
+fi
   tor=""
   if [ $(echo $rpc_host | grep -c .onion) -gt 0 ]; then
     tor="torify"
     echo "# Connecting over Tor..."
     echo
   fi
-  echo "# Using the RPC command:"
   is_int () { test "$@" -eq "$@" 2> /dev/null; }
   if is_int "$3" ||[ ${#3} -eq 0 ]; then
-    echo "$tor curl -sS --data-binary\
+    if [ $print = print ];then
+      echo "# Using the RPC command:"
+      echo "$tor curl -sS --data-binary\
  '{\"jsonrpc\": \"1.0\", \"id\":\"$1\", \"method\": \"$2\", \"params\": [$3] }'\
- http://$rpc_user:rpc_pass(redacted)@rpc_host(redacted):$rpc_port/wallet/$rpc_wallet"
-    echo
+ http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/wallet/$rpc_wallet"
+      echo
+    fi
     $tor curl -sS --data-binary \
     '{"jsonrpc": "1.0", "id":"'"$1"'", "method": "'"$2"'", "params": ['"$3"'] }' \
     http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/wallet/$rpc_wallet  | jq .
   else
-    echo "$tor curl -sS --data-binary\
+    if [ $print = print ];then
+      echo "# Using the RPC command:"
+      echo "$tor curl -sS --data-binary\
  '{\"jsonrpc\": \"1.0\", \"id\":\"$1\", \"method\": \"$2\", \"params\": [\"$3\"] }'\
- http://$rpc_user:rpc_pass(redacted)@rpc_host(redacted):$rpc_port/wallet/$rpc_wallet"
-    echo
+ http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/wallet/$rpc_wallet"
+      echo
+    fi
     $tor curl -sS --data-binary \
     '{"jsonrpc": "1.0", "id":"'"$1"'", "method": "'"$2"'", "params": ["'"$3"'"] }' \
     http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/wallet/$rpc_wallet | jq .
