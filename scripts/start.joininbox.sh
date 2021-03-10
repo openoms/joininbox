@@ -19,75 +19,82 @@ fi
 
 source /home/joinmarket/joinin.conf
 if [ "$setupStep" -lt 100 ];then
+  if [ "$setupStep" -lt 5 ];then
+    # identify running env
+    runningEnvEntry=$(grep -c "runningEnv" < $joininConfPath)  
+    if [ "$runningEnvEntry" -eq 0 ];then  
+      if [ -f "/mnt/hdd/raspiblitz.conf" ];then
+        runningEnv="raspiblitz"
+      else
+        runningEnv="standalone"
+      fi
+      echo "runningEnv=$runningEnv" >> $joininConfPath
+      sed -i  "s#setupStep=.*#setupStep=1#g" $joininConfPath
+    fi
+    echo "# running in the environment: $runningEnv"
   
-  # identify running env
-  runningEnvEntry=$(grep -c "runningEnv" < $joininConfPath)  
-  if [ "$runningEnvEntry" -eq 0 ];then  
-    if [ -f "/mnt/hdd/raspiblitz.conf" ];then
-      runningEnv="raspiblitz"
-    else
-      runningEnv="standalone"
+    # identify cpu architecture
+    cpuEntry=$(grep -c "cpu" < $joininConfPath)
+    if [ "$cpuEntry" -eq 0 ];then
+      cpu=$(uname -m)
+      echo "cpu=$cpu" >> $joininConfPath
+      sed -i  "s#setupStep=.*#setupStep=2#g" $joininConfPath
     fi
-    echo "runningEnv=$runningEnv" >> $joininConfPath
-    sed -i  "s#setupStep=.*#setupStep=1#g" $joininConfPath
-  fi
-  echo "# running in the environment: $runningEnv"
-
-  # identify cpu architecture
-  cpuEntry=$(grep -c "cpu" < $joininConfPath)
-  if [ "$cpuEntry" -eq 0 ];then
-    cpu=$(uname -m)
-    echo "cpu=$cpu" >> $joininConfPath
-    sed -i  "s#setupStep=.*#setupStep=2#g" $joininConfPath
-  fi
-  echo "# cpu=${cpu}"
-
-  # check Tor
-  torEntry=$(grep -c "runBehindTor" < $joininConfPath)
-  if [ "$torEntry" -eq 0 ];then
-    torTest=$(curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s \
-    https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
-    if [ "$torTest" = "Congratulations. This browser is configured to use Tor." ]
-    then
-      runBehindTor=on
-    else
-      runBehindTor=off
+    echo "# cpu=${cpu}"
+  
+    # check Tor
+    torEntry=$(grep -c "runBehindTor" < $joininConfPath)
+    if [ "$torEntry" -eq 0 ];then
+      torTest=$(curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s \
+      https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
+      if [ "$torTest" = "Congratulations. This browser is configured to use Tor." ]
+      then
+        runBehindTor=on
+      else
+        runBehindTor=off
+        echo
+        echo "# WARNING: Tor is not functional"
+        echo "# Press ENTER to continue without Tor or CTRL+C to cancel and try checking again with 'menu'"
+        read key
+      fi
+      echo "runBehindTor=$runBehindTor" >> $joininConfPath
+      echo "# runBehindTor=$runBehindTor"
     fi
-    echo "runBehindTor=$runBehindTor" >> $joininConfPath
-    echo "# runBehindTor=$runBehindTor"
+  
+    # make sure Tor path is known
+    DirEntry=$(grep -c "HiddenServiceDir" < $joininConfPath)
+    if [ "$DirEntry" -eq 0 ];then
+      if [ -d "/mnt/hdd/tor" ];then
+        HiddenServiceDir="/mnt/hdd/tor"
+      else
+        HiddenServiceDir="/var/lib/tor"
+      fi  
+      echo "HiddenServiceDir=$HiddenServiceDir" >> $joininConfPath
+      sed -i  "s#setupStep=.*#setupStep=3#g" $joininConfPath
+    fi
+
+    # check for dialog
+    if [ "$(dialog | grep -c "ComeOn Dialog!")" -eq 0 ];then
+      sudo apt install -y dialog
+      sed -i  "s#setupStep=.*#setupStep=4#g" $joininConfPath
+    fi
+
+    # check if JoinMarket is installed
+    /home/joinmarket/install.joinmarket.sh install
+    sed -i  "s#setupStep=.*#setupStep=5#g" $joininConfPath
   fi
-
-  # make sure Tor path is known
-  DirEntry=$(grep -c "HiddenServiceDir" < $joininConfPath)
-  if [ "$DirEntry" -eq 0 ];then
-    if [ -d "/mnt/hdd/tor" ];then
-      HiddenServiceDir="/mnt/hdd/tor"
-    else
-      HiddenServiceDir="/var/lib/tor"
-    fi  
-    echo "HiddenServiceDir=$HiddenServiceDir" >> $joininConfPath
-    sed -i  "s#setupStep=.*#setupStep=3#g" $joininConfPath
-  fi
-
-  # check for dialog
-  if [ "$(dialog | grep -c "ComeOn Dialog!")" -eq 0 ];then
-    sudo apt install -y dialog
-    sed -i  "s#setupStep=.*#setupStep=4#g" $joininConfPath
-  fi
-
-  # check if JoinMarket is installed
-  /home/joinmarket/install.joinmarket.sh install
-  sed -i  "s#setupStep=.*#setupStep=5#g" $joininConfPath
-
   # change the ssh password if standalone
   if [ "$runningEnv" = "standalone" ];then
-    # set ssh passwords on the first run
-    sudo /home/joinmarket/set.password.sh
-    sed -i  "s#setupStep=.*#setupStep=6#g" $joininConfPath
-    # expand SDcard partition on ARM
-    if [ ${cpu} != "x86_64" ]; then
+    source /home/joinmarket/joinin.conf
+    if [ "$setupStep" -lt 6 ];then
+      # set ssh passwords on the first run
+      sudo /home/joinmarket/set.password.sh
+      sed -i  "s#setupStep=.*#setupStep=6#g" $joininConfPath
+    fi
+    source /home/joinmarket/joinin.conf
+    if [ "$setupStep" -lt 7 ]&&[ ${cpu} != "x86_64" ];then
+      # expand SDcard partition on ARM
       sudo /home/joinmarket/standalone/expand.rootfs.sh
-      sed -i  "s#setupStep=.*#setupStep=7#g" $joininConfPath
     fi
   fi
   generateJMconfig
