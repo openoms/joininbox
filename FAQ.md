@@ -286,15 +286,15 @@ https://2019.www.torproject.org/docs/debian#source
 #### Boot Ubuntu Live from USB: https://releases.ubuntu.com/focal/ubuntu-20.04.2-desktop-amd64.iso
 * Connect to a secure WiFi (hardware switch on) or LAN
 #### Download,verify and flash the base image to the SDcard 
-* Download the base image  
+* Download the base image:
     ```bash
     wget https://raspi.debian.net/verified/20210210_raspi_4_buster.img.xz
     ```
-* Download the PGP signed sha256 hash 
+* Download the PGP signed sha256 hash:
     ```bash
     wget https://raspi.debian.net/verified/20210210_raspi_4_buster.xz.sha256.asc
     ```
-* Verify
+* Verify:
     ```bash
     # download the signing pubkey
     gpg --receive-key E2F63B4353F45989
@@ -314,7 +314,7 @@ https://2019.www.torproject.org/docs/debian#source
         sha256sum: WARNING: 10 lines are improperly formatted
     ```
 
-* Connect SDcard reader with a 8GB SDcard
+* Connect an SDcard reader with a 8GB SDcard.
 * In the file manager open context on the .img.xz file, select `Open With Disk Image Writer` and write the image to the SDcard.
 #### Prepare the base image
 
@@ -364,10 +364,10 @@ https://2019.www.torproject.org/docs/debian#source
 * Power on the Build Laptop (press F12 for boot menu)
 * Connect USB stick with GPG signing keys - decrypt drive if needed
 * Open Terminal and cd into directory of USB Stick under `/media/amnesia`
-* Run `gpg --import backupkey.gpg`, check and exit
+* Run `gpg --import backupsecretkey.gpg`, check and exit
 * Disconnect USB stick with GPG keys
 * Take the SD card from the RaspberryPi and connect with an external SD card reader to the laptop
-* Click on boot volume once in the file manger
+* Click on the RASPIFIRM volume once in the file manager to mount it
 * Connect another USB stick, open in file manager and delete old files
 * Open Terminal and cd into directory of USB stick under `/media/amnesia`
 * Run `lsblk` to check on the SD card device name (ignore last partition number)
