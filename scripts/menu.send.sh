@@ -66,7 +66,7 @@ address=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose the address" \
 --title "Choose the address" \
 --inputbox "
-Paste the destination address" 9 60 2> "$address"
+Paste the destination address" 9 69 2> "$address"
 openMenuIfCancelled $?
 
 if [ "${RPCoverTor}" = "on" ]; then 
@@ -90,7 +90,7 @@ $(cat "$address")
 
 $makercountMessage.
 
-Miner fee: $txfeeMessage" 18 60
+Miner fee: $txfeeMessage" 18 67
 
 # make decison
 pressed=$?

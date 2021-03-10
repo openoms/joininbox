@@ -35,15 +35,15 @@ function cacheAndShowQR() {
 HEIGHT=9
 WIDTH=52
 CHOICE_HEIGHT=21
-TITLE="Wallet management options"
-BACKTITLE="Wallet management options"
+TITLE="Info menu options"
+BACKTITLE="Info menu options"
 MENU=""
 OPTIONS=()
 
 # Basic Options
 OPTIONS+=(
   m0 "Show the first mixdepth to deposit to"
-  m4 "Show the content of all mixdepths"
+  ALL "Show the content of all mixdepths"
   DOCS "Link to the documentation"
 )
 
@@ -68,14 +68,14 @@ case $CHOICE in
     echo "Press ENTER to return to the menu"
     read key
     ;;
-  m4)
+  ALL)
     checkRPCwallet
     # wallet
     chooseWallet
     /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)"
-    echo ""
+    echo
     echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
-    echo ""
+    echo
     echo "Press ENTER to return to the menu..."
     read key
     /home/joinmarket/menu.sh
