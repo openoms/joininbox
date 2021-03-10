@@ -29,6 +29,12 @@ echo "# Deleting local WIFI conf ..."
 sudo rm /boot/wpa_supplicant.conf 2>/dev/null
 echo "# OK"
 
+echo
+echo "# Deleting the joinin.conf ..."
+echo "# Will be recreated when the menu is next run."
+sudo rm /home/joinmarket/joinin.conf 2>/dev/null
+echo "# OK"
+
 echo 
 echo "# Will shutdown now."
 echo "# Wait until the SBC LEDs show no activity anymore."
