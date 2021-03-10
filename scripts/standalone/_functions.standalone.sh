@@ -15,6 +15,7 @@ function moveSignetData() {
     sudo systemctl stop signetd
     sudo mv /home/joinmarket/.bitcoin /home/store/app-data/
     sudo ln -s /home/store/app-data/.bitcoin /home/bitcoin/
+    sudo chown -R joinmarket:joinmarket /home/joinmarket/.bitcoin/
     sudo systemctl start signetd
   fi
 }
@@ -136,7 +137,7 @@ function installBitcoinCoreStandalone() {
 
   if [ ! -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
     randomRPCpass=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c20)
-    cat > /home/joinmarket/bitcoin.conf <<EOF
+    echo "
 # bitcoind configuration for mainnet
 
 # Connection settings
@@ -149,8 +150,7 @@ fallbackfee=0.0002
 
 onlynet=onion
 proxy=127.0.0.1:9050
-EOF
-    sudo mv /home/joinmarket/bitcoin.conf /home/bitcoin/.bitcoin/bitcoin.conf 
+" | sudo tee /home/bitcoin/.bitcoin/bitcoin.conf 
   else
     echo "# /home/bitcoin/.bitcoin/bitcoin.conf is present"
   fi

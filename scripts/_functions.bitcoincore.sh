@@ -164,6 +164,8 @@ function removeSignetdService() {
 }
 
 function installSignet() {
+  # fix permissions
+  sudo chown -R joinmarket:joinmarket /home/joinmarket/.bitcoin/
   removeSignetdService
     # /etc/systemd/system/signetd.service
   echo "
@@ -214,10 +216,11 @@ WantedBy=multi-user.target
 setJMconfigToSignet() {
   echo "# editing the joinmarket.cfg"
   # rpc_user
-  sed -i "s/^rpc_user =.*/rpc_user = joinmarket/g" $JMcfgPath
+  RPCUSERSIGNET=$(sudo cat /home/joinmarket/.bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
+  sed -i "s/^rpc_user =.*/rpc_user = $RPCUSERSIGNET/g" $JMcfgPath
   # rpc_password
-  RPCpassword=$(sudo cat /home/joinmarket/.bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
-  sed -i "s/^rpc_password =.*/rpc_password = $RPCpassword/g" $JMcfgPath
+  RPCPWSIGNET=$(sudo cat /home/joinmarket/.bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+  sed -i "s/^rpc_password =.*/rpc_password = $RPCPWSIGNET/g" $JMcfgPath
   # rpc_wallet_file
   sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/g" $JMcfgPath
   echo "# using the bitcoind wallet: wallet.dat"
@@ -354,7 +357,7 @@ function connectLocalNode() {
   fi
   rpc_wallet="wallet.dat"
   if [ $runningEnv = raspiblitz ];then
-    rpc_user="raspibolt"
+    rpc_user=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
     rpc_pass=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf|grep rpcpassword|cut -c 13-)
   elif [ $runningEnv = standalone ];then
     rpc_user=$(sudo cat /home/bitcoin/.bitcoin/bitcoin.conf|grep rpcuser|cut -c 9-)
