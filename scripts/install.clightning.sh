@@ -1,11 +1,20 @@
 #!/bin/bash
 # https://lightning.readthedocs.io/
 
+# https://github.com/ElementsProject/lightning/releases
+CLVERSION=v0.9.3
+
+# help
+if [ $# -eq 0 ]||[ "$1" = "-h" ]||[ "$1" = "--help" ];then
+  echo "script to install C-lightning"
+  echo "the default version is: $CLVERSION"
+  echo "install.clightning.sh [on<nodenumber>|update<version>|commit|testPR<PRnumber>|off<nodenumber><purge>]"
+  exit 1
+fi
+
 # vars
 source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
-# https://github.com/ElementsProject/lightning/releases
-CLVERSION=v0.9.3
 TORGROUP="debian-tor"
 # run with the same user as bitcoin for bitcoin-cli access
 if [ $network = signet ];then
@@ -20,7 +29,12 @@ else
     BITCOINDIR="/usr/local/bin/"
   fi
 fi
-if [ $network = mainnet ]; then
+if [ ${#2} -eq 0 ]||[ $2 = purge ]||[ "$1" = update ]||[ "$1" = commit ]||[ "$1" = testPR ];then
+  NODENUMBER=""
+else
+  NODENUMBER="$2"
+fi
+if [ $network = mainnet ];then
   NETWORK=bitcoin
 else
   NETWORK=$network
@@ -31,30 +45,20 @@ else
     APPDATADIR="/mnt/hdd/app-data"
   fi
 fi
-
-# help
-if [ $# -eq 0 ]||[ "$1" = "-h" ]||[ "$1" = "--help" ];then
-  echo "script to install C-lightning $CLVERSION"
-  echo "install.clightning.sh [on<number>|off<number><purge>]"
-  echo
-  echo "NETWORK = $NETWORK"
-  echo "LIGHTNINGUSER=$LIGHTNINGUSER"
-  echo "TORGROUP=$TORGROUP"
-  echo "BITCOINDIR=$BITCOINDIR"
-  exit 1
-fi
+echo
+echo "NODENUMBER=$NODENUMBER"
+echo "NETWORK = $NETWORK"
+echo "LIGHTNINGUSER=$LIGHTNINGUSER"
+echo "TORGROUP=$TORGROUP"
+echo "BITCOINDIR=$BITCOINDIR"
+echo "APPDATADIR=$APPDATADIR"
 echo
 echo "# Running the command: 'install.clightning.sh $*'"
-NODENUMBER="$2"
-if [ ${#NODENUMBER} -eq 0 ] || [ $2 = purge ]; then
-  NODENUMBER=""
-fi
+echo "# Press ENTER to continue or CTRL+C to exit"
+read key
 
-if [ "$1" = on ];then
-  if [ -f /usr/local/bin/lightningd ];then
-    installedVersion=$(sudo -u ${LIGHTNINGUSER} /usr/local/bin/lightningd --version)
-    echo "# C-lightning ${installedVersion} is already installed"
-  else
+if [ "$1" = on ]||[ "$1" = update ]||[ "$1" = commit ]||[ "$1" = testPR ];then
+  if [ ! -f /usr/local/bin/lightningd ]||[ "$1" = update ]||[ "$1" = commit ]||[ "$1" = testPR ];then
     # dependencies
     echo "# apt update"
     echo
@@ -69,23 +73,62 @@ if [ "$1" = on ];then
 
     # download and compile from source
     cd /home/${LIGHTNINGUSER} || exit 1
+    if [ "$1" = "update" ] || [ "$1" = "testPR" ] || [ "$1" = "commit" ]; then
+      echo
+      echo "# Deleting the old source code"
+      echo
+      sudo rm -rf lightning
+    fi
+    echo
     echo "# Cloning https://github.com/ElementsProject/lightning.git"
     echo
     sudo -u ${LIGHTNINGUSER} git clone https://github.com/ElementsProject/lightning.git
     cd lightning || exit 1
-    sudo -u ${LIGHTNINGUSER} git reset --hard $CLVERSION
+    
+    if [ "$1" = "testPR" ]; then
+      PRnumber=$2 || exit 1
+      echo
+      echo "# Using the PR:"
+      echo "# https://github.com/ElementsProject/lightning/pull/$PRnumber"
+      echo
+      sudo -u ${LIGHTNINGUSER} git fetch origin pull/$PRnumber/head:pr$PRnumber || exit 1
+      sudo -u ${LIGHTNINGUSER} git checkout pr$PRnumber || exit 1
+      echo "# Building with EXPERIMENTAL_FEATURES enabled"
+      sudo -u ${LIGHTNINGUSER} ./configure --enable-experimental-features
+    elif [ "$1" = "commit" ]; then
+      echo
+      echo "# Updating to the latest commit in:"
+      echo "# https://github.com/ElementsProject/lightning"
+      echo
+      echo "# Building with EXPERIMENTAL_FEATURES enabled"
+      sudo -u ${LIGHTNINGUSER} ./configure --enable-experimental-features
+    else
+      if [ "$1" = "update" ]; then
+        CLVERSION=$2
+        echo "# Updating to the version $CLVERSION"
+      fi
+      sudo -u ${LIGHTNINGUSER} git reset --hard $CLVERSION
+      sudo -u ${LIGHTNINGUSER} ./configure
+    fi
+
+    currentCLversion=$(cd /home/${LIGHTNINGUSER}/lightning 2>/dev/null; \
+    git describe --tags 2>/dev/null)
     sudo -u ${LIGHTNINGUSER} ./configure
     echo
-    echo "# Building from source"
+    echo "# Building from source C-lightning $currentCLversion"
     echo
     sudo -u ${LIGHTNINGUSER} make
+    echo
+    echo "# Built C-lightning $currentCLversion"
     echo
     echo "# Install to /usr/local/bin/"
     echo
     sudo make install || exit 1
-    
     # clean up
     # cd .. && rm -rf lightning
+  else
+    installedVersion=$(sudo -u ${LIGHTNINGUSER} /usr/local/bin/lightningd --version)
+    echo "# C-lightning ${installedVersion} is already installed"
   fi
 
   # config
@@ -104,7 +147,8 @@ if [ "$1" = on ];then
   sudo mkdir -p $APPDATADIR/.lightning${NODENUMBER}
   sudo ln -s $APPDATADIR/.lightning${NODENUMBER} /home/${LIGHTNINGUSER}/
   echo "# Create /home/${LIGHTNINGUSER}/.lightning${NODENUMBER}/config"
-  echo "
+  if [ ! -f /home/${LIGHTNINGUSER}/.lightning${NODENUMBER}/config ];then
+    echo "
 # lightningd${NODENUMBER} configuration for $NETWORK
 
 network=$NETWORK
@@ -118,6 +162,9 @@ bind-addr=127.0.0.1:9736${NODENUMBER}
 addr=statictor:127.0.0.1:9051
 always-use-proxy=true
 " | sudo tee /home/${LIGHTNINGUSER}/.lightning${NODENUMBER}/config
+  else
+    echo "# The file /home/${LIGHTNINGUSER}/.lightning${NODENUMBER}/config is already present"
+  fi
   sudo chown -R ${LIGHTNINGUSER}:${LIGHTNINGUSER} $APPDATADIR/.lightning${NODENUMBER}
   sudo chown -R ${LIGHTNINGUSER}:${LIGHTNINGUSER} /home/${LIGHTNINGUSER}/  
 
@@ -168,7 +215,7 @@ alias cl${NODENUMBER}=\"sudo -u ${LIGHTNINGUSER} /usr/local/bin/lightning-cli\
 
   echo "# To activate the aliases reopen the terminal or use 'source /home/joinmarket/_commands.sh'"
   echo
-  echo "# Installed C-lightning $(sudo -u ${LIGHTNINGUSER} /usr/local/bin/lightningd --version)"
+  echo "# The installed C-lightning version is: $(sudo -u ${LIGHTNINGUSER} /usr/local/bin/lightningd --version)"
   echo 
   echo "# Monitor the lightningd${NODENUMBER} with:"
   echo "# 'sudo journalctl -fu lightningd${NODENUMBER}'"
