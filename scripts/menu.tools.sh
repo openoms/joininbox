@@ -49,9 +49,11 @@ fi
 OPTIONS+=(
     QR "Display a QR code from any text"
     CUSTOMRPC "Run a custom bitcoin RPC with curl"
-    BOLTZMANN "Analyze the entropy of a transaction"
-    PASSWORD "Change the ssh password"
-    LOGS "Show the bitcoind logs on $network")
+    BOLTZMANN "Analyze the entropy of a transaction")
+if [ "${runningEnv}" != mynode ]; then
+    OPTIONS+=(PASSWORD "Change the ssh password")
+fi
+OPTIONS+=(LOGS "Show the bitcoind logs on $network")
 
 CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \

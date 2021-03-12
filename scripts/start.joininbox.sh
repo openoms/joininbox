@@ -25,6 +25,8 @@ if [ "$setupStep" -lt 100 ];then
     if [ "$runningEnvEntry" -eq 0 ];then  
       if [ -f "/mnt/hdd/raspiblitz.conf" ];then
         runningEnv="raspiblitz"
+      elif [ -f "/usr/share/mynode/mynode_config.sh" ];then
+        runningEnv="mynode"
       else
         runningEnv="standalone"
       fi
