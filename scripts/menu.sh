@@ -31,7 +31,7 @@ OPTIONS+=(\
   CONFIG "Connection and joinmarket.cfg settings" \
   TOOLS "Extra helper functions and services")
 if [ "${runningEnv}" != mynode ]; then
-  UPDATE "Update JoininBox or JoinMarket")
+  OPTIONS+=(UPDATE "Update JoininBox or JoinMarket")
 fi
 
 CHOICE=$(dialog --clear \
