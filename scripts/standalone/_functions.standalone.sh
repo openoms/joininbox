@@ -84,15 +84,19 @@ function downloadSnapShot() {
   echo "# Exract and copy to /home/store/app-data/.bitcoin"
   addUserStore
   sudo mkdir -p /home/store/app-data/.bitcoin
+  echo "# Make sure bitcoind is not running"
+  sudo systemctl stop bitcoind
   if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
     echo "# Back up bitcoin.conf"
     sudo -u bitcoin mv /home/bitcoin/.bitcoin/bitcoin.conf \
     /home/bitcoin/.bitcoin/bitcoin.conf.backup
   fi
+  echo "# Check unzip"
+  sudo apt install -y unzip
   sudo unzip -o $downloadFileName -d /home/store/app-data/.bitcoin
   if [ -f /home/bitcoin/.bitcoin/bitcoin.conf.backup ];then
     echo "# Restore bitcoin.conf"
-    sudo -u bitcoin mv /home/bitcoin/.bitcoin/bitcoin.conf.backup \
+    sudo -u bitcoin mv -f /home/bitcoin/.bitcoin/bitcoin.conf.backup \
     /home/bitcoin/.bitcoin/bitcoin.conf
   fi
   echo "# Making sure user: bitcoin exists"
