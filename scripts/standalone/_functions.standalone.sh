@@ -101,7 +101,6 @@ function downloadSnapShot() {
 }
 
 function installBitcoinCoreStandalone() {
-  source /home/joinmarket/_functions.bitcoincore.sh
   downloadBitcoinCore
 
   if [ -f /home/bitcoin/bitcoin/bitcoind ];then
@@ -111,11 +110,14 @@ function installBitcoinCoreStandalone() {
     echo "# Adding the user: bitcoin"
     sudo adduser --disabled-password --gecos "" bitcoin
     echo "# Installing Bitcoin Core v${bitcoinVersion}"
-    sudo -u bitcoin tar -xvf ${binaryName}
     sudo -u bitcoin mkdir -p /home/bitcoin/bitcoin
-    sudo install -m 0755 -o root -g root -t /home/bitcoin/bitcoin bitcoin-${bitcoinVersion}/bin/*  
+    cd /home/joinmarket/download/bitcoin-${bitcoinVersion}/bin/ || exit 1
+    sudo install -m 0755 -o root -g root -t /home/bitcoin/bitcoin ./*
   fi
-
+  if [ "$(grep -c "/home/bitcoin/bitcoin" < /etc/profile)" -eq 0 ];then
+    echo "# Add /home/bitcoin/bitcoin to global PATH"
+    echo "PATH=/home/bitcoin/bitcoin:$PATH" | sudo tee -a /etc/profile
+  fi
   installed=$(/home/bitcoin/bitcoin/bitcoind --version | grep "${bitcoinVersion}" -c)
   if [ ${installed} -lt 1 ]; then
     echo

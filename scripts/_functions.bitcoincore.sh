@@ -62,7 +62,7 @@ function downloadBitcoinCore() {
     echo
     echo "# !!! BUILD FAILED --> PGP Verify not OK / signature(${goodSignature}) verify(${correctKey})"
     echo "# Deleting the mismatched file"
-    rm -f SHA256SUMS.asc 
+    rm -f SHA256SUMS.asc
     exit 1
   else
     echo
@@ -105,12 +105,17 @@ function downloadBitcoinCore() {
     echo "# !!! FAIL !!! Downloaded BITCOIN BINARY not matching SHA256 checksum: ${bitcoinSHA256}"
     echo "# Deleting the corrupt file"
     rm -f ${binaryName}
+    echo "# Deleting the previously downloaded bitcoin-${bitcoinVersion} directory"
+    sudo rm -rf /home/joinmarket/download/bitcoin-${bitcoinVersion} 
     exit 1
   else
     echo
     echo "# ****************************************"
     echo "# OK --> VERIFIED BITCOIN CHECKSUM CORRECT"
     echo "# ****************************************"
+    echo
+    echo "# Extracting to /home/joinmarket/download/bitcoin-${bitcoinVersion}"
+    sudo -u joinmarket tar -xvf ${binaryName}
     echo
   fi
 }
@@ -123,11 +128,14 @@ function installBitcoinCore() {
     echo "${installedVersion} is already installed"
   else
     echo "# Installing Bitcoin Core v${bitcoinVersion}"
-    sudo -u joinmarket tar -xvf ${binaryName}
     sudo -u joinmarket mkdir -p /home/joinmarket/bitcoin
-    sudo install -m 0755 -o root -g root -t /home/joinmarket/bitcoin bitcoin-${bitcoinVersion}/bin/*  
+    cd /home/joinmarket/download/bitcoin-${bitcoinVersion}/bin/ || exit 1
+    sudo install -m 0755 -o root -g root -t /home/joinmarket/bitcoin ./*
   fi
-
+  if [ "$(grep -c "/home/joinmarket/bitcoin" < /home/joinmarket/.profile)" -eq 0 ];then
+    echo "# Add /home/joinmarket/bitcoin to the local PATH"
+    echo "PATH=/home/joinmarket/bitcoin:$PATH" | sudo tee -a /home/joinmarket/.profile
+  fi
   installed=$(/home/joinmarket/bitcoin/bitcoind --version | grep "${bitcoinVersion}" -c)
   if [ ${installed} -lt 1 ]; then
     echo
