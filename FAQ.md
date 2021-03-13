@@ -285,54 +285,58 @@ https://2019.www.torproject.org/docs/debian#source
 * Partially based on: https://github.com/rootzoll/raspiblitz/blob/v1.6/FAQ.md#what-is-the-process-of-creating-a-new-sd-card-image-release
 #### Boot Ubuntu Live from USB: https://releases.ubuntu.com/focal/ubuntu-20.04.2-desktop-amd64.iso
 * Connect to a secure WiFi (hardware switch on) or LAN
-#### Download,verify and flash the base image to the SDcard 
-* Download the base image:
-    ```bash
+#### Download and verify the base image
+* Open a terminal
+* Paste the following commands (see the comments for the explanations and an example output)
+    ```bash  
+    # Download the base image:
     wget https://raspi.debian.net/verified/20210210_raspi_4_buster.img.xz
-    ```
-* Download the PGP signed sha256 hash:
-    ```bash
+
+    # Download the PGP signed sha256 hash
     wget https://raspi.debian.net/verified/20210210_raspi_4_buster.xz.sha256.asc
-    ```
-* Verify:
-    ```bash
+
+    # Verify:
     # download the signing pubkey
     gpg --receive-key E2F63B4353F45989
     # verify the PGP signed sha256 hash
-    gpg --verify 20210210_raspi_4_buster.xz.sha256.asc 
-        gpg: Signature made Wed 10 Feb 2021 20:22:05 GMT
-        gpg:                using EDDSA key 60B3093D96108E5CB97142EFE2F63B4353F45989
-        gpg: Good signature from "Gunnar Wolf <gwolf@gwolf.org>" [unknown]
-        gpg:                 aka "Gunnar Eyal Wolf Iszaevich <gwolf@iiec.unam.mx>" [unknown]
-        gpg:                 aka "Gunnar Wolf <gwolf@debian.org>" [unknown]
-        gpg: Note: This key has expired!
-        Primary key fingerprint: 4D14 0506 53A4 02D7 3687  049D 2404 C954 6E14 5360
-            Subkey fingerprint: 60B3 093D 9610 8E5C B971  42EF E2F6 3B43 53F4 5989
+    gpg --verify 20210210_raspi_4_buster.xz.sha256.asc
+    # Look for the output 'Good signature':
+    # gpg: Signature made Wed 10 Feb 2021 20:22:05 GMT
+    # gpg:                using EDDSA key 60B3093D96108E5CB97142EFE2F63B4353F45989
+    # gpg: Good signature from "Gunnar Wolf <gwolf@gwolf.org>" [unknown]
+    # gpg:                 aka "Gunnar Eyal Wolf Iszaevich <gwolf@iiec.unam.mx>" [unknown]
+    # gpg:                 aka "Gunnar Wolf <gwolf@debian.org>" [unknown]
+    # gpg: Note: This key has expired!
+    # Primary key fingerprint: 4D14 0506 53A4 02D7 3687  049D 2404 C954 6E14 5360
+    #     Subkey fingerprint: 60B3 093D 9610 8E5C B971  42EF E2F6 3B43 53F4 5989
+
     # compare the hash to the hash of the image file
     sha256sum --check 20210210_raspi_4_buster.xz.sha256.asc
-        20201112_raspi_4.img.xz: OK
-        sha256sum: WARNING: 10 lines are improperly formatted
+    # Look for the output 'OK':
+    # 20201112_raspi_4.img.xz: OK
+    # sha256sum: WARNING: 10 lines are improperly formatted
     ```
-
+#### Flash the base image to the SDcard
 * Connect an SDcard reader with a 8GB SDcard.
-* In the file manager open context on the .img.xz file, select `Open With Disk Image Writer` and write the image to the SDcard.
+* In the file manager open the context menu (right click) on the `.img.xz` file.
+* Select the option `Open With Disk Image Writer`.
+* Write the image to the SDcard.
 #### Prepare the base image
 
 * Before the first boot edit the `sysconf.txt` on the `RASPIFIRM` partition to be able to ssh remotely - needs an authorized ssh pubkey.
-* Generate ssk keys on Ubuntu with:
+* Generate ssh keys on Ubuntu with (keep selecting the defaults with ENTER):
     ```bash
     ssh-keygen -t rsa -b 4096
     ```
+* Click on the RASPIFIRM volume once in the file manager to mount it
 * Copy the ssh pubkey from the Ubuntu image to the `sysconf.txt` the `RASPIFIRM` directory (make sure it is mounted):
     ```bash
     echo "root_authorized_key=$(cat ~/.ssh/id_rsa.pub)" | tee -a /media/ubuntu/RASPIFIRM/sysconf.txt
-    ```
-* Check with:
-    ```bash
+    # Check with:
     cat /media/ubuntu/RASPIFIRM/sysconf.txt
     ```   
     The `sysconf.txt` will reset after boot and moves the ssh pubkey to `/root/.ssh/authorized_keys`
-* Place the SDcard in the RPi, boot up and connect with ssh (use the hostname, `arp -a` or check router))
+* Place the SDcard in the RPi, boot up and connect with ssh (use the hostname, `arp -a` or check the router)
     ```bash
     ssh root@rpi4-20210210
     ```
@@ -359,8 +363,8 @@ https://2019.www.torproject.org/docs/debian#source
     ```
 * Disconnect WiFi/LAN on build laptop (hardware switch off) and shutdown
 * Remove Ubuntu LIVE USB stick and cut power from the RaspberryPi
-#### Sign the image
-* Connect USB stick with [Tails](https://tails.boum.org/) (make it stay offline)
+#### Sign the image on an airgapped computer
+* Connect USB stick with [Tails](https://tails.boum.org/) (stay offline)
 * Power on the Build Laptop (press F12 for boot menu)
 * Connect USB stick with GPG signing keys - decrypt drive if needed
 * Open Terminal and cd into directory of USB Stick under `/media/amnesia`
@@ -390,34 +394,33 @@ https://2019.www.torproject.org/docs/debian#source
 * Copy the sha256sum to GitHub README and update the download link
 
 ### Verify the downloaded the image
-* Import the signing pubkey: 
-    ```bash
-    curl https://keybase.io/oms/pgp_keys.asc | gpg --import 
+* Open a terminal in the directory with the downloaded files
     ```
-* Verify the signature of the sha256 hash:
-    ```bash
-    gpg --verify joininbox-v0.2.0-2021-02-15.img.gz.sha256.asc 
+    joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz
+    joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.sha256
+    joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.sha256.asc
     ```
-    Result (`Good signature`) :
-    ```
-    gpg: assuming signed data in 'joininbox-v0.2.0-2021-02-15.img.gz.sha256'
-    gpg: Signature made Mon 15 Feb 2021 14:16:56 GMT
-    gpg:                using RSA key 13C688DB5B9C745DE4D2E4545BFB77609B081B65
-    gpg: Good signature from "openoms <oms@tuta.io>" [unknown]
-    gpg: WARNING: This key is not certified with a trusted signature!
-    gpg:          There is no indication that the signature belongs to the owner.
-    Primary key fingerprint: 13C6 88DB 5B9C 745D E4D2  E454 5BFB 7760 9B08 1B65
-    ```
-
-* compare the sha256 hash to the hash of the image file
-    ```bash        
-    shasum -c joininbox-v0.2.0-2021-02-15.img.gz.sha256
-    ```
-    Result (`OK`) :
-    ```
-    joininbox-v0.2.0-2021-02-15.img.gz: OK
-    ```
-
+* Paste the following commands (see the comments for the explanations and an example output)
+  ```bash
+  # Import the signing pubkey: 
+  curl https://keybase.io/oms/pgp_keys.asc | gpg --import 
+  
+  # Verify the signature of the sha256 hash:
+  gpg --verify *.asc 
+  # Look for the output 'Good signature':
+  # gpg: assuming signed data in 'joininbox-v0.2.0-2021-02-15.img.gz.sha256'
+  # gpg: Signature made Mon 15 Feb 2021 14:16:56 GMT
+  # gpg:                using RSA key 13C688DB5B9C745DE4D2E4545BFB77609B081B65
+  # gpg: Good signature from "openoms <oms@tuta.io>" [unknown]
+  # gpg: WARNING: This key is not certified with a trusted signature!
+  # gpg:          There is no indication that the signature belongs to the owner.
+  # Primary key fingerprint: 13C6 88DB 5B9C 745D E4D2  E454 5BFB 7760 9B08 1B65
+  
+  # Compare the sha256 hash to the hash of the image file
+  shasum -c *.sha256
+  # Look for the output 'OK' :
+  # joininbox-v0.2.0-2021-02-15.img.gz: OK
+  ```
 ## Wallet recovery
 
 JoinMarket docs:
