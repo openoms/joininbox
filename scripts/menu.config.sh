@@ -16,7 +16,7 @@ elif [ "${runningEnv}" = raspiblitz ];then
 fi
 
 # BASIC MENU INFO
-HEIGHT=12
+HEIGHT=10
 WIDTH=64
 CHOICE_HEIGHT=20
 TITLE="Configuration options"
@@ -31,9 +31,13 @@ OPTIONS+=(
   SIGNET "Switch to signet with a local Bitcoin Core")
 if [ "${runningEnv}" = standalone ]; then
   OPTIONS+=(PRUNED "Start a pruned node locally from prunednode.today")
+  HEIGHT=$((HEIGHT+1))
+  CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
 fi
 if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
   OPTIONS+=(LOCAL "Connect to the local Bitcoin Core on $network")
+  HEIGHT=$((HEIGHT+1))
+  CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
 fi
 
 OPTIONS+=(RESET "Reset the joinmarket.cfg to the defaults")
@@ -77,7 +81,6 @@ case $CHOICE in
     read key
     ;;
   PRUNED)
-    /home/joinmarket/install.bitcoincore.sh signetOff
     installBitcoinCoreStandalone
     echo
     downloadSnapShot

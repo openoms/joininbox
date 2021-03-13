@@ -33,7 +33,7 @@ function getQRstring {
 }
 
 # BASIC MENU INFO
-HEIGHT=12
+HEIGHT=11
 WIDTH=55
 CHOICE_HEIGHT=20
 TITLE="Tools"
@@ -45,6 +45,8 @@ BACKTITLE="JoininBox GUI"
 if [ "${runningEnv}" = standalone ]; then
   OPTIONS+=(
     SPECTER "Specter Desktop options")
+  HEIGHT=$((HEIGHT+1))
+  CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
 fi
 OPTIONS+=(
     QR "Display a QR code from any text"
