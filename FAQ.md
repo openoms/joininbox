@@ -394,6 +394,7 @@ https://2019.www.torproject.org/docs/debian#source
 * Copy the sha256sum to GitHub README and update the download link
 
 ### Verify the downloaded the image
+#### Linux instructions
 * Open a terminal in the directory with the downloaded files
     ```
     joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz
@@ -421,6 +422,18 @@ https://2019.www.torproject.org/docs/debian#source
   # Look for the output 'OK' :
   # joininbox-v0.2.0-2021-02-15.img.gz: OK
   ```
+#### Windows instructions
+* Download and open the PGP verification software for Windows from <https://www.gpg4win.org> 
+* Verify the `joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.sha256` file
+* The signature is in the file:  
+  `joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.sha256.asc `
+* The signing PGP key is: <https://keybase.io/oms/pgp_keys.asc>
+* Display the sha256 hash from the `joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.sha256` file with Notepad or use the command `more`:  
+  `C:\> more *.sha256`
+* Get the sha256 hash of the image file with the built-in tool `certutil`:  
+`C:\> certUtil -hashfile C:\joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz SHA256`
+* Compare the two hashes to ensure the authenticity and integrity of the downloaded image.
+
 ## Wallet recovery
 
 JoinMarket docs:
