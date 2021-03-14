@@ -184,6 +184,13 @@ function YGuptime() {
   JMUptime=$(printf '%dd:%dh:%dm\n' $((JMUptimeInSeconds/86400)) $((JMUptimeInSeconds%86400/3600)) $((JMUptimeInSeconds%3600/60)))
 }
 
+function YGnickname() {
+  # Retrieves nickname from the latest NickServ message in the newest logfile
+  newest_log=$(ls -td /home/joinmarket/.joinmarket/logs/* | grep J5 | head -n 1)
+  name=$(grep NickServ $newest_log | tail -1 | awk '{print $9}')
+  echo $name
+}
+
 # installJoinMarket [update|testPR <PRnumber>|commit]
 function installJoinMarket() {
   cpu=$(uname -m)

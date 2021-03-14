@@ -77,7 +77,7 @@ case $CHOICE in
             /home/joinmarket/menu.yg.sh
             ;;
         NICKNAME)
-            name=$(ls -t /home/joinmarket/.joinmarket/logs | grep J5 | head -n 1 | cut -c -16)
+            name=$(YGnickname)
             whiptail \
             --title "Counterparty name"  \
             --msgbox "The last used counterparty name for the Order Book:\n
