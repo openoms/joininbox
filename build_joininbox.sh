@@ -28,9 +28,9 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 echo 
-echo "#################################"
-echo "# JOININBOX BUILD SCRIPT v0.3.0 #"
-echo "#################################"
+echo "##########################"
+echo "# JOININBOX BUILD SCRIPT #"
+echo "##########################"
 echo 
 
 echo "# Check the command options"
@@ -259,6 +259,8 @@ apt-get install -y psmisc
 apt install -y dialog
 # qrencode
 apt install -y qrencode
+# unzip for the pruned node snapshot
+apt install -y unzip
 apt-get clean
 apt-get -y autoremove
 
