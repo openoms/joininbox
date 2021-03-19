@@ -1,38 +1,38 @@
 <!-- omit in toc -->
-# Frequently Asked Questions and Notes
-- [Public JoinMarket Order Book links](#public-joinmarket-order-book-links)
-- [Signet links](#signet-links)
-- [Log in through SSH using a hardware wallet](#log-in-through-ssh-using-a-hardware-wallet)
-- [SSH through Tor from Linux](#ssh-through-tor-from-linux)
-- [Allow Tor to connect to localhost](#allow-tor-to-connect-to-localhost)
-- [Set up Armbian on the Hardkernel Odroid XU4](#set-up-armbian-on-the-hardkernel-odroid-xu4)
-- [Download and verify Raspbian SDcard image for a Raspberry Pi](#download-and-verify-raspbian-sdcard-image-for-a-raspberry-pi)
-- [Error when connecting to a full node remotely through Tor](#error-when-connecting-to-a-full-node-remotely-through-tor)
-- [Nuke the joinmarket user and the /home/joinmarket folder](#nuke-the-joinmarket-user-and-the-homejoinmarket-folder)
-- [Sample bitcoin.conf for a remote node accepting RPC connections through LAN](#sample-bitcoinconf-for-a-remote-node-accepting-rpc-connections-through-lan)
-- [Using the 2.13" WaveShare e-ink display](#using-the-213-waveshare-e-ink-display)
-- [Compile Tor for the RPi Zero (armv6l)](#compile-tor-for-the-rpi-zero-armv6l)
-- [Build the SDcard image](#build-the-sdcard-image)
-  - [Boot Ubuntu Live from USB: https://releases.ubuntu.com/focal/ubuntu-20.04.2-desktop-amd64.iso](#boot-ubuntu-live-from-usb-httpsreleasesubuntucomfocalubuntu-20042-desktop-amd64iso)
-  - [Download,verify and flash the base image to the SDcard](#downloadverify-and-flash-the-base-image-to-the-sdcard)
-  - [Prepare the base image](#prepare-the-base-image)
-  - [Install Joininbox](#install-joininbox)
-  - [Prepare the SDcard release](#prepare-the-sdcard-release)
-  - [Sign the image](#sign-the-image)
-- [Verify the downloaded the image](#verify-the-downloaded-the-image)
+# [Frequently Asked Questions and Notes](#frequently-asked-questions-and-notes)
+  - [Public JoinMarket Order Book links](#public-joinmarket-order-book-links)
+  - [Signet links](#signet-links)
+  - [Log in through SSH using a hardware wallet](#log-in-through-ssh-using-a-hardware-wallet)
+  - [SSH through Tor from Linux](#ssh-through-tor-from-linux)
+  - [Allow Tor to connect to localhost](#allow-tor-to-connect-to-localhost)
+  - [Set up Armbian on the Hardkernel Odroid XU4](#set-up-armbian-on-the-hardkernel-odroid-xu4)
+  - [Download and verify Raspbian SDcard image for a Raspberry Pi](#download-and-verify-raspbian-sdcard-image-for-a-raspberry-pi)
+  - [Error when connecting to a full node remotely through Tor](#error-when-connecting-to-a-full-node-remotely-through-tor)
+  - [Nuke the joinmarket user and the /home/joinmarket folder](#nuke-the-joinmarket-user-and-the-homejoinmarket-folder)
+  - [Sample bitcoin.conf for a remote node accepting RPC connections through LAN](#sample-bitcoinconf-for-a-remote-node-accepting-rpc-connections-through-lan)
+  - [Using the 2.13" WaveShare e-ink display](#using-the-213-waveshare-e-ink-display)
+  - [Compile Tor for the RPi Zero (armv6l)](#compile-tor-for-the-rpi-zero-armv6l)
+  - [Build the SDcard image](#build-the-sdcard-image)
+    - [Boot Ubuntu Live from USB: https://releases.ubuntu.com/focal/ubuntu-20.04.2-desktop-amd64.iso](#boot-ubuntu-live-from-usb-httpsreleasesubuntucomfocalubuntu-20042-desktop-amd64iso)
+    - [Download and verify the base image](#download-and-verify-the-base-image)
+    - [Flash the base image to the SDcard](#flash-the-base-image-to-the-sdcard)
+    - [Prepare the base image](#prepare-the-base-image)
+    - [Install Joininbox](#install-joininbox)
+    - [Prepare the SDcard release](#prepare-the-sdcard-release)
+    - [Sign the image on an airgapped computer](#sign-the-image-on-an-airgapped-computer)
+  - [Verify the downloaded the image](#verify-the-downloaded-the-image)
+    - [Linux instructions](#linux-instructions)
+    - [Windows instructions](#windows-instructions)
 - [Wallet recovery](#wallet-recovery)
     - [on JoininBox](#on-joininbox)
     - [on the remote node](#on-the-remote-node)
 - [USB SSD recommendation](#usb-ssd-recommendation)
-
-
+- [Pruned node notes](#pruned-node-notes)
 ### Public JoinMarket Order Book links
-
 * <https://nixbitcoin.org/obwatcher/>  
 * <https://ttbit.mine.bz/orderbook>
 
 ### Signet links
-
 * Faucet (free signet coins): https://signet.bc-2.jp
 * Block Explorer:
     * esplora: <https://explorer.bc-2.jp>  
@@ -42,17 +42,13 @@
 * <https://en.bitcoin.it/wiki/Signet>
 
 ### Log in through SSH using a hardware wallet
-
 * See the official pages for:
     * [Trezor](https://wiki.trezor.io/Apps:SSH_agent)
     * [Ledger](https://support.ledger.com/hc/en-us/articles/115005200649)
-
 * Linux client for [TREZOR One](https://trezor.io/), [TREZOR Model T](https://trezor.io/), [Keepkey](https://www.keepkey.com/), and [Ledger Nano S](https://www.ledgerwallet.com/products/ledger-nano-s):
     * [github.com/romanz/trezor-agent](https://github.com/romanz/trezor-agent/blob/master/doc/README-SSH.md)
-
 * Windows client for Trezor and Keepkey:
     * <https://github.com/martin-lizner/trezor-ssh-agent>
-
 * paste the generated SSH pubkey to:  
 `$ nano /home/joinmarket/.ssh/authorized_keys`
 
@@ -62,7 +58,6 @@ On a RaspiBlitz
 `./config.scripts/internet.hiddenservice.sh ssh 22 22`  
 * get the Hidden Service address to connect to with:  
 `sudo cat /mnt/hdd/tor/ssh/hostname`  
-
 On the Debian based Linux Desktop (Ubuntu, Debian, MX Linux etc.)
 * needs Tor running on your desktop:  
 `sudo apt install tor`
@@ -87,7 +82,6 @@ Use `ssh` with `torify`  on the desktop (needs Tor installed):
 `torify ssh admin@HiddenServiceAddress.onion`
 
 ### Allow Tor to connect to localhost
-
 * To solve the error when running `$ torify python yg-privacyenhanced.py wallet.jmdat`
     ```
     [INFO]  starting yield generator
@@ -143,7 +137,6 @@ https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authe
  Keep pressing [ENTER] to use the default user information.
 
 ### Download and verify Raspbian SDcard image for a Raspberry Pi
-
 To be able to open the JoinMarket-QT GUI on the dekstop from the RPI
 need to use the Raspberry Pi OS (32-bit) with desktop inage
 
@@ -278,7 +271,6 @@ https://github.com/waveshare/e-Paper/blob/master/RaspberryPi%26JetsonNano/python
 https://github.com/21isenough/LightningATM/blob/master/displays/waveshare2in13.py  
 
 ### Compile Tor for the RPi Zero (armv6l)
-
 https://2019.www.torproject.org/docs/debian#source
 
 ### Build the SDcard image
@@ -422,6 +414,7 @@ https://2019.www.torproject.org/docs/debian#source
   # Look for the output 'OK' :
   # joininbox-v0.2.0-2021-02-15.img.gz: OK
   ```
+
 #### Windows instructions
 * Download and open the PGP verification software for Windows from <https://www.gpg4win.org> 
 * Verify the `joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.sha256` file
@@ -435,7 +428,6 @@ https://2019.www.torproject.org/docs/debian#source
 * Compare the two hashes to ensure the authenticity and integrity of the downloaded image.
 
 ## Wallet recovery
-
 JoinMarket docs:
 * https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/docs/USAGE.md#portability
 * https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/docs/USAGE.md#recover
@@ -447,7 +439,6 @@ JoinMarket docs:
 `torify python3 wallet-tool.py --recoversync -g 20 ~/.joinmarket/wallets/wallet.jmdat`
 
 #### on the remote node
-
 * Use the menu option `WALLET` -> `RESCAN` or follow manually
 * the wallet defined as
 `rpc_wallet =`
@@ -464,10 +455,21 @@ Rescanning fom the first SegWit block is sufficient for the default SegWit walle
 `sudo tail -fn 100 /mnt/hdd/bitcoin/debug.log`  
 Once the rescan is finished you balances should appear in the `INFO` menu (`wallet-tool.py`)
 ## USB SSD recommendation
-
 **JoininBox operates on the minimum viable hardware under the assumption that the seed (and passphrase) of the wallets used is safely backed up and can be recovered fully**
 * The above warning is especially true for SDcard as they fail often, use a good quality one.
 * If using an external USB drive I recommend using a Sandisk Extreme Pro 128GB USB SSD:
 https://twitter.com/openoms/status/1362486943301459968
 * a good alternative is a USB connector and internal SSD as in the [RaspiBlitz shopping list](https://github.com/rootzoll/raspiblitz#package-standard-around-250-usd). Pay attention to choose a compatible SATA-USB adapter since that is a common problem with the Raspberry Pi 4.
 * Cheap USB drives are very likely to fail after weeks of heavy usage: https://github.com/rootzoll/raspiblitz/issues/924
+
+## Pruned node notes
+It is only recommended to create a new wallet on a pruned node.
+Importing an old wallet is not possible without downloading the whole blockchain again (would be too slow and unreliable when using an SDcard only).
+
+To recover a wallet one will need to connect to a node without pruning switched on and rescan there.
+When the funds are recovered they can be sent to the addresses created with a new wallet started on a pruned node.
+
+Alternatively there could be a larger >400 GB storage connected and mounted on the standalone JoininBox with the `.bitcoin` directory containing the `blocks` and `chainstate` symlinked to `/home/store/app-data/` and owned by the `bitcoin` user.
+
+More info:
+https://bitcoin.stackexchange.com/questions/99681/how-can-i-import-a-private-key-into-a-pruned-node/99853#99853
