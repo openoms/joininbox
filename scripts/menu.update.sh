@@ -15,10 +15,10 @@ BACKTITLE="JoininBox GUI"
 
 # Basic Options
 OPTIONS+=(
-  JOININBOX "Update the JoininBox scripts and menu"
+  JOININBOX  "Update the JoininBox scripts and menu"
   JOINMARKET "Update/reinstall JoinMarket to $(grep testedJMversion= < ~/_functions.sh | cut -d '"' -f 2)"
-  ADVANCED "Advanced update options"
-  )
+  ADVANCED   "Advanced update options")
+
 CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
                 --title "$TITLE" \
@@ -35,15 +35,12 @@ case $CHOICE in
       errorOnInstall $?
       echo
       echo "Press ENTER to return to the menu"
-      read key
-      ;;
+      read key;;
   JOINMARKET)
       /home/joinmarket/install.joinmarket.sh update
       echo
       echo "Press ENTER to return to the menu"
-      read key
-      ;;
+      read key;;
   ADVANCED)
-      /home/joinmarket/menu.update.advanced.sh
-      ;;
+      /home/joinmarket/menu.update.advanced.sh;;
 esac
