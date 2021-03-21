@@ -20,14 +20,16 @@ if [ "$runningEnv" = "standalone" ]&&[ "$setupStep" -lt 100 ];then
   sudo sed -i  "s#setupStep=.*#setupStep=100#g" $joininConfPath
 
   # BASIC MENU INFO
-  HEIGHT=13
+  HEIGHT=15
   WIDTH=64
-  CHOICE_HEIGHT=20
+  CHOICE_HEIGHT=24
   TITLE="Startup options"
   MENU="
-Welcome to JoininBox $currentJBcommit!"
+  Welcome to JoininBox $currentJBcommit!
+  Choose from the options:"
   OPTIONS=()
   BACKTITLE="JoininBox GUI"
+  CANCELLABEL="Main menu"
 
   OPTIONS+=(
       CONNECT "Connect to a remote bitcoin node on mainnet"
@@ -54,6 +56,7 @@ else
   MENU=""
   OPTIONS=()
   BACKTITLE="JoininBox GUI"
+  CANCELLABEL="Back"
 
   # Basic Options
   OPTIONS+=(
@@ -85,7 +88,7 @@ CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
                 --title "$TITLE" \
                 --ok-label "Select" \
-                --cancel-label "Back" \
+                --cancel-label "$CANCELLABEL" \
                 --menu "$MENU" \
                 $HEIGHT $WIDTH $CHOICE_HEIGHT \
                 "${OPTIONS[@]}" \
