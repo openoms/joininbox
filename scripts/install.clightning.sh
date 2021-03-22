@@ -47,7 +47,7 @@ fi
 
 echo
 echo "NODENUMBER=$NODENUMBER"
-echo "NETWORK = $NETWORK"
+echo "NETWORK=$NETWORK"
 echo "LIGHTNINGUSER=$LIGHTNINGUSER"
 echo "TORGROUP=$TORGROUP"
 echo "BITCOINDIR=$BITCOINDIR"
@@ -134,12 +134,7 @@ if [ "$1" = on ]||[ "$1" = update ]||[ "$1" = commit ]||[ "$1" = testPR ];then
   # config
   echo "# Make sure ${LIGHTNINGUSER} is in the ${TORGROUP} group"
   sudo usermod -a -G ${TORGROUP} ${LIGHTNINGUSER}
-  if [ $runningEnv = standalone ];then
-    addUserStore
-    APPDATADIR="/home/store/app-data"
-  elif [ $runningEnv = raspiblitz ];then
-    APPDATADIR="/mnt/hdd/app-data"
-  fi
+
   echo "# Store the lightning data in $APPDATADIR/.lightning${NODENUMBER}"
   echo "# Symlink to /home/${LIGHTNINGUSER}/"
   # not a symlink, delete
