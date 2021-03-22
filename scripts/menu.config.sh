@@ -15,38 +15,80 @@ elif [ "${runningEnv}" = raspiblitz ];then
   fi
 fi
 
-# BASIC MENU INFO
-HEIGHT=10
-WIDTH=64
-CHOICE_HEIGHT=20
-TITLE="Configuration options"
-MENU=""
-OPTIONS=()
-BACKTITLE="JoininBox GUI"
+if [ "$runningEnv" = "standalone" ]&&[ "$setupStep" -lt 100 ];then
+  echo "# Open the startup menu on the first start"
+  sudo sed -i  "s#setupStep=.*#setupStep=100#g" $joininConfPath
 
-# Basic Options
-OPTIONS+=(
-  JMCONF "Edit the joinmarket.cfg manually"
-  CONNECT "Connect to a remote bitcoin node on mainnet"
-  SIGNET "Switch to signet with a local Bitcoin Core")
-if [ "${runningEnv}" = standalone ]; then
-  OPTIONS+=(PRUNED "Start a pruned node locally from prunednode.today")
-  HEIGHT=$((HEIGHT+1))
-  CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
-fi
-if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
-  OPTIONS+=(LOCAL "Connect to the local Bitcoin Core on $network")
-  HEIGHT=$((HEIGHT+1))
-  CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
-fi
+  # BASIC MENU INFO
+  HEIGHT=16
+  WIDTH=64
+  CHOICE_HEIGHT=24
+  TITLE="Startup options"
+  MENU="
+  Welcome to JoininBox $currentJBcommit
+  Choose from the options:"
+  OPTIONS=()
+  BACKTITLE="JoininBox GUI"
+  CANCELLABEL="Main menu"
 
-OPTIONS+=(RESET "Reset the joinmarket.cfg to the defaults")
+  OPTIONS+=(
+      CONNECT "Connect to a remote bitcoin node on mainnet"
+      SIGNET  "Start on signet with a local Bitcoin Core"
+      PRUNED  "Start a pruned node from prunednode.today")
+  if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
+    OPTIONS+=(
+      LOCAL   "Connect to the local Bitcoin Core on $network")
+    HEIGHT=$((HEIGHT+1))
+    CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
+  fi
+  OPTIONS+=(
+      "" ""
+      JMCONF  "Edit the joinmarket.cfg manually"
+      "" ""
+      UPDATE  "Update JoininBox or JoinMarket")
+
+else
+  # BASIC MENU INFO
+  HEIGHT=12
+  WIDTH=64
+  CHOICE_HEIGHT=20
+  TITLE="Configuration options"
+  MENU=""
+  OPTIONS=()
+  BACKTITLE="JoininBox GUI"
+  CANCELLABEL="Back"
+
+  # Basic Options
+  OPTIONS+=(
+      JMCONF   "Edit the joinmarket.cfg manually"
+      "" ""
+      CONNECT  "Connect to a remote bitcoin node on mainnet"
+      SIGNET   "Switch to signet with a local Bitcoin Core")
+  if [ "${runningEnv}" = standalone ]; then
+    OPTIONS+=(
+      PRUNED   "Start a pruned node locally from prunednode.today")
+    HEIGHT=$((HEIGHT+1))
+    CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
+  fi
+  if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
+    OPTIONS+=(
+      LOCAL    "Connect to the local Bitcoin Core on $network"
+      "" ""
+      BTCCONF  "Edit the local bitcoin.conf")
+    HEIGHT=$((HEIGHT+3))
+    CHOICE_HEIGHT=$((CHOICE_HEIGHT+3))
+  fi
+
+  OPTIONS+=(
+      "" ""
+      RESET    "Reset the joinmarket.cfg to the defaults")
+fi
 
 CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
                 --title "$TITLE" \
                 --ok-label "Select" \
-                --cancel-label "Back" \
+                --cancel-label "$CANCELLABEL" \
                 --menu "$MENU" \
                 $HEIGHT $WIDTH $CHOICE_HEIGHT \
                 "${OPTIONS[@]}" \
@@ -57,29 +99,25 @@ case $CHOICE in
     /home/joinmarket/install.joinmarket.sh config
     echo "Returning to the menu..."
     sleep 1
-    /home/joinmarket/menu.sh
-    ;;
+    /home/joinmarket/menu.sh;;
   RESET)
     echo "# Removing the joinmarket.cfg"
     rm -f $JMcfgPath
     generateJMconfig
     echo         
     echo "Press ENTER to return to the menu..."
-    read key
-    ;;
+    read key;;
   CONNECT)
     /home/joinmarket/install.bitcoincore.sh signetOff
     /home/joinmarket/menu.bitcoinrpc.sh
     echo         
     echo "Press ENTER to return to the menu..."
-    read key
-    ;;
+    read key;;
   SIGNET)
     /home/joinmarket/install.bitcoincore.sh signetOn
     echo         
     echo "Press ENTER to return to the menu..."
-    read key
-    ;;
+    read key;;
   PRUNED)
     installBitcoinCoreStandalone
     echo
@@ -89,14 +127,24 @@ case $CHOICE in
     showBitcoinLogs
     echo         
     echo "Press ENTER to return to the menu..."
-    read key
-    ;;
+    read key;;
   LOCAL)
     connectLocalNode $network
     sudo systemctl start bitcoind
     showBitcoinLogs
     echo         
     echo "Press ENTER to return to the menu..."
-    read key
-    ;;
+    read key;;
+  BTCCONF)
+    if /home/joinmarket/set.conf.sh "/home/bitcoin/.bitcoin/bitcoin.conf" "bitcoin"
+    then
+      echo "# Restarting bitcoind"
+      sudo systemctl restart bitcoind
+      showBitcoinLogs
+    else
+      echo "# No change made"
+    fi;;
+  UPDATE)
+      /home/joinmarket/menu.update.sh
+      /home/joinmarket/menu.sh;;          
 esac

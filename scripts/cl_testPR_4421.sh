@@ -20,12 +20,13 @@ TORGROUP="debian-tor"
 if [ $network = signet ];then
   LIGHTNINGUSER="joinmarket"
   BITCOINDIR="/home/${LIGHTNINGUSER}/bitcoin"
+  APPDATADIR="/mnt/hdd/app-data"
 else
   LIGHTNINGUSER="bitcoin"
   if [ $runningEnv = standalone ];then
     BITCOINDIR="/home/${LIGHTNINGUSER}/bitcoin"
   elif [ $runningEnv = raspiblitz ];then
-    BITCOINDIR="/usr/local/bin"
+    BITCOINDIR="/usr/local/bin/"
   fi
 fi
 if [ ${#2} -eq 0 ]||[ $2 = purge ]||[ "$1" = update ]||[ "$1" = commit ]||[ "$1" = testPR ];then
@@ -37,17 +38,16 @@ if [ $network = mainnet ];then
   NETWORK=bitcoin
 else
   NETWORK=$network
-fi
-if [ $runningEnv = standalone ];then
+    if [ $runningEnv = standalone ];then
     addUserStore
     APPDATADIR="/home/store/app-data"
-elif [ $runningEnv = raspiblitz ];then
+  elif [ $runningEnv = raspiblitz ];then
     APPDATADIR="/mnt/hdd/app-data"
+  fi
 fi
-
 echo
 echo "NODENUMBER=$NODENUMBER"
-echo "NETWORK=$NETWORK"
+echo "NETWORK = $NETWORK"
 echo "LIGHTNINGUSER=$LIGHTNINGUSER"
 echo "TORGROUP=$TORGROUP"
 echo "BITCOINDIR=$BITCOINDIR"
@@ -93,27 +93,22 @@ if [ "$1" = on ]||[ "$1" = update ]||[ "$1" = commit ]||[ "$1" = testPR ];then
       echo
       sudo -u ${LIGHTNINGUSER} git fetch origin pull/$PRnumber/head:pr$PRnumber || exit 1
       sudo -u ${LIGHTNINGUSER} git checkout pr$PRnumber || exit 1
-      echo "# Building with EXPERIMENTAL_FEATURES enabled"
-      sudo -u ${LIGHTNINGUSER} ./configure --enable-experimental-features
     elif [ "$1" = "commit" ]; then
       echo
       echo "# Updating to the latest commit in:"
       echo "# https://github.com/ElementsProject/lightning"
       echo
-      echo "# Building with EXPERIMENTAL_FEATURES enabled"
-      sudo -u ${LIGHTNINGUSER} ./configure --enable-experimental-features
     else
       if [ "$1" = "update" ]; then
         CLVERSION=$2
         echo "# Updating to the version $CLVERSION"
       fi
       sudo -u ${LIGHTNINGUSER} git reset --hard $CLVERSION
-      sudo -u ${LIGHTNINGUSER} ./configure
     fi
 
     currentCLversion=$(cd /home/${LIGHTNINGUSER}/lightning 2>/dev/null; \
     git describe --tags 2>/dev/null)
-    sudo -u ${LIGHTNINGUSER} ./configure
+    sudo -u ${LIGHTNINGUSER} ./configure --enable-experimental-features
     echo
     echo "# Building from source C-lightning $currentCLversion"
     echo
@@ -134,7 +129,12 @@ if [ "$1" = on ]||[ "$1" = update ]||[ "$1" = commit ]||[ "$1" = testPR ];then
   # config
   echo "# Make sure ${LIGHTNINGUSER} is in the ${TORGROUP} group"
   sudo usermod -a -G ${TORGROUP} ${LIGHTNINGUSER}
-
+  if [ $runningEnv = standalone ];then
+    addUserStore
+    APPDATADIR="/home/store/app-data"
+  elif [ $runningEnv = raspiblitz ];then
+    APPDATADIR="/mnt/hdd/app-data"
+  fi
   echo "# Store the lightning data in $APPDATADIR/.lightning${NODENUMBER}"
   echo "# Symlink to /home/${LIGHTNINGUSER}/"
   # not a symlink, delete
@@ -163,6 +163,39 @@ always-use-proxy=true
   sudo chown -R ${LIGHTNINGUSER}:${LIGHTNINGUSER} $APPDATADIR/.lightning${NODENUMBER}
   sudo chown -R ${LIGHTNINGUSER}:${LIGHTNINGUSER} /home/${LIGHTNINGUSER}/  
 
+# vars
+source /home/joinmarket/joinin.conf
+source /home/joinmarket/_functions.sh
+TORGROUP="debian-tor"
+# run with the same user as bitcoin for bitcoin-cli access
+if [ $network = signet ];then
+  LIGHTNINGUSER="joinmarket"
+  BITCOINDIR="/home/${LIGHTNINGUSER}/bitcoin"
+else
+  LIGHTNINGUSER="bitcoin"
+  if [ $runningEnv = standalone ];then
+    BITCOINDIR="/home/${LIGHTNINGUSER}/bitcoin"
+  elif [ $runningEnv = raspiblitz ];then
+    BITCOINDIR="/usr/local/bin"
+  fi
+fi
+if [ ${#2} -eq 0 ]||[ $2 = purge ]||[ "$1" = update ]||[ "$1" = commit ]||[ "$1" = testPR ];then
+  NODENUMBER=""
+else
+  NODENUMBER="$2"
+fi
+if [ $network = mainnet ];then
+  NETWORK=bitcoin
+else
+  NETWORK=$network
+fi
+if [ $runningEnv = standalone ];then
+    addUserStore
+    APPDATADIR="/home/store/app-data"
+elif [ $runningEnv = raspiblitz ];then
+    APPDATADIR="/mnt/hdd/app-data"
+fi
+
   # systemd service
   sudo systemctl stop lightningd${NODENUMBER}
   echo "# Create /etc/systemd/system/lightningd${NODENUMBER}.service"
@@ -175,7 +208,8 @@ User=${LIGHTNINGUSER}
 Group=${LIGHTNINGUSER}
 Type=simple
 ExecStart=/usr/local/bin/lightningd \
-  --lightning-dir="/home/${LIGHTNINGUSER}/.lightning${NODENUMBER}/"
+  --lightning-dir=\"/home/${LIGHTNINGUSER}/.lightning${NODENUMBER}/\" \
+  --experimental-shutdown-wrong-funding
 KillMode=process
 Restart=always
 TimeoutSec=120
@@ -188,7 +222,7 @@ WantedBy=multi-user.target
 " | sudo tee /etc/systemd/system/lightningd${NODENUMBER}.service
   sudo systemctl daemon-reload
   sudo systemctl enable lightningd${NODENUMBER}
-  sudo systemctl start lightningd${NODENUMBER}
+  sudo systemctl restart lightningd${NODENUMBER}
   echo "# OK - the lightningd${NODENUMBER}.service is now enabled and started"
   echo
   echo "# Adding aliases"

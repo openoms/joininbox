@@ -88,13 +88,19 @@ export LANGUAGE=en_US.UTF-8
 export LANG=en_US.UTF-8
 
 echo "# Expanding the root partition ..."
-do_expand_rootfs
-sed -i "s#setupStep=.*#setupStep=7#g" /home/joinmarket/joinin.conf
-echo 
-echo "# Need to reboot for the filesystem to enlarge"
-echo "# Log in again with ssh and use the new password set"
-echo 
-echo "# Press ENTER to restart ..."  
-read key
-echo 
-sudo shutdown -h -r now
+if [ -f /usr/lib/armbian/armbian-resize-filesystem ];then
+  echo "# Running: 'sudo /usr/lib/armbian/armbian-resize-filesystem start'"
+  sudo /usr/lib/armbian/armbian-resize-filesystem start
+  sed -i "s#setupStep=.*#setupStep=7#g" /home/joinmarket/joinin.conf
+else
+  do_expand_rootfs
+  sed -i "s#setupStep=.*#setupStep=7#g" /home/joinmarket/joinin.conf
+  echo 
+  echo "# Need to reboot for the filesystem to enlarge"
+  echo "# Log in again with ssh and use the new password set"
+  echo 
+  echo "# Press ENTER to restart ..."  
+  read key
+  echo 
+  sudo shutdown -h -r now
+fi

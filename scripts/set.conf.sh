@@ -1,18 +1,22 @@
 #!/bin/bash
 
-editScript="$1"
-if [ ${#editScript} -eq 0 ]; then
-  echo "please specify a file to the edit"
+EDITFILE="$1"
+USER="$2"
+if [ ${#USER} -eq 0 ];then
+  USER=joinmarket
+fi
+if [ ${#EDITFILE} -eq 0 ]; then
+  echo "# Please specify a file to edit"
 else
-  echo "Opening $editScript"
+  echo "Opening $EDITFILE"
 fi
 # temp conf
 conf=$(mktemp -p /dev/shm/)
 # trap it
 trap 'rm -f $conf' 0 1 2 5 15
 dialog \
---title "Editing the $editScript" \
---editbox "$editScript" 200 200 2> "$conf"
+--title "Editing the $EDITFILE" \
+--editbox "$EDITFILE" 200 200 2> "$conf"
 # make decison
 pressed=$?
 case $pressed in
@@ -20,19 +24,20 @@ case $pressed in
     dialog --title "Finished editing" \
     --msgbox "
 Saving to:
-$editScript" 7 56
-    sudo -u joinmarket tee "$editScript" 1>/dev/null < "$conf"
-    shred "$conf";;
+$EDITFILE" 7 56
+    sudo -u $USER tee "$EDITFILE" 1>/dev/null < "$conf"
+    shred "$conf"
+    exit 0;;
   1)
     shred "$conf"
-    DIALOGRC=.dialogrc.onerror dialog --title "Finished editing" \
+    DIALOGRC=/home/joinmarket/.dialogrc.onerror dialog --title "Finished editing" \
     --msgbox "
 Cancelled editing:
-$editScript" 7 56
-    echo "Cancelled"
-    exit 0;;
+$EDITFILE" 7 56
+    echo "# Cancelled"
+    exit 1;;
   255)
     shred "$conf"
     [ -s "$conf" ] &&  cat "$conf" || echo "ESC pressed."
-    exit 0;;
+    exit 1;;
 esac

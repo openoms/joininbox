@@ -45,7 +45,7 @@ function openMenuIfCancelled() {
 
 function errorOnInstall() {
   if [ "$1" -gt 0 ]; then
-    DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
+    DIALOGRC=/home/joinmarket/.dialogrc.onerror dialog --title "Error during install" \
       --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
   fi
 }
