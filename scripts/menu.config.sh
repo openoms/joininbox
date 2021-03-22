@@ -20,12 +20,12 @@ if [ "$runningEnv" = "standalone" ]&&[ "$setupStep" -lt 100 ];then
   sudo sed -i  "s#setupStep=.*#setupStep=100#g" $joininConfPath
 
   # BASIC MENU INFO
-  HEIGHT=15
+  HEIGHT=16
   WIDTH=64
   CHOICE_HEIGHT=24
   TITLE="Startup options"
   MENU="
-  Welcome to JoininBox $currentJBcommit!
+  Welcome to JoininBox $currentJBcommit
   Choose from the options:"
   OPTIONS=()
   BACKTITLE="JoininBox GUI"
