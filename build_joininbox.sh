@@ -244,13 +244,13 @@ apt install -y build-essential
 apt install -y python3-venv python3-dev python3-wheel python3-jinja2 \
 python3-pip
 # make sure /usr/bin/pip exists (and calls pip3 in Debian Buster)
-aptupdate-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 # install ifconfig
 apt install -y net-tools
 # to display hex codes
 apt install -y xxd
 # setuptools needed for Nyx
-aptpip install setuptools
+pip install setuptools
 # netcat
 apt install -y netcat
 # install killall, fuser
