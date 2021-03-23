@@ -7,7 +7,14 @@ LNDVERSION="v0.12.1-beta"
 if [ $# -eq 0 ]||[ "$1" = "-h" ]||[ "$1" = "--help" ];then
   echo "script to install LND"
   echo "the default version is: $LNDVERSION"
-  echo "install.lnd.sh [on<nodenumber>|off<nodenumber><purge>|addNodeToBos<nodenumber>]"
+  echo "install.lnd.sh [on <nodenumber>|off <nodenumber> <purge>"
+  echo "install.lnd.sh [add-node-to-bos <nodenumber>]"
+  echo
+  echo "to use a node with Sphinx-relay"
+  echo "install.lnd.sh [write-sphinx-environment <nodenumber>]"
+  echo
+  echo "to export macaroons & tls.cert:"
+  echo "install.lnd.sh [exportmenu|hexstring|scp|http|btcpay <nodenumber>]"
   exit 1
 fi
 
@@ -193,7 +200,28 @@ alias bcli=\"sudo -u ${LNDUSER} $BITCOINDIR/bitcoin-cli -network=$NETWORK\"\
   echo
 fi
 
-if [ "$1" = addNodeToBos ];then
+if [ "$1" = "off" ];then
+  echo "# Removing the lnd${NODENUMBER}.service"
+  sudo systemctl disable lnd${NODENUMBER}
+  sudo systemctl stop lnd${NODENUMBER}
+  echo "# Removing the aliases"
+  if [ $runningEnv = standalone ];then
+    ALIASFILE="/home/joinmarket/_commands.sh"
+  elif [ $runningEnv = raspiblitz ];then
+    ALIASFILE="/home/admin/_commands.sh"
+  fi
+  sudo sed -i "/lncli${NODENUMBER}/d" $ALIASFILE
+  if [ "$(echo "$@" | grep -c purge)" -gt 0 ];then
+    echo "# Removing the binaries"
+    sudo rm -f /usr/local/bin/lnd
+    sudo rm -f /usr/local/bin/lncli
+  fi
+fi
+
+#######
+# BOS #
+#######
+if [ "$1" = add-node-to-bos ];then
   if [ ${#bos} -gt 0 ] && [ $bos = on ] && \
   [ $(systemctl status lnd${NODENUMBER} | grep -c active) -gt 0 ];then
     # https://github.com/alexbosworth/balanceofsatoshis#using-saved-nodes
@@ -214,20 +242,200 @@ if [ "$1" = addNodeToBos ];then
   fi
 fi
 
-if [ "$1" = "off" ];then
-  echo "# Removing the lnd${NODENUMBER}.service"
-  sudo systemctl disable lnd${NODENUMBER}
-  sudo systemctl stop lnd${NODENUMBER}
-  echo "# Removing the aliases"
-  if [ $runningEnv = standalone ];then
-    ALIASFILE="/home/joinmarket/_commands.sh"
-  elif [ $runningEnv = raspiblitz ];then
-    ALIASFILE="/home/admin/_commands.sh"
+##########
+# SPHINX #
+##########
+if [ "$1" =  write-sphinx-environment ];then
+  # !! all this needs to run (be called as) user: sphinxrelay
+  # get basic data from status
+  source <(/home/admin/config.scripts/bonus.sphinxrelay.sh status)
+  # database config
+  cat /home/sphinxrelay/sphinx-relay/config/config.json | \
+  jq ".production.storage = \"/mnt/hdd/app-data/sphinxrelay/sphinx.db\"" > /home/sphinxrelay/sphinx-relay/config/config.json.tmp
+  mv /home/sphinxrelay/sphinx-relay/config/config.json.tmp /home/sphinxrelay/sphinx-relay/config/config.json
+  # update node ip in config
+  cat /home/sphinxrelay/sphinx-relay/config/app.json | \
+  jq ".production.tls_location = \"/mnt/hdd/app-data/lnd${NODENUMBER}/tls.cert\"" | \
+  jq ".production.macaroon_location = \"/mnt/hdd/app-data/lnd${NODENUMBER}/data/chain/${network}/${chain}net/admin.macaroon\"" | \
+  jq ".production.lnd_log_location = \"/mnt/hdd/lnd${NODENUMBER}/logs/${network}/${chain}net/lnd.log\"" | \
+  jq ".production.node_http_port = \"3300\"" | \
+  jq ".production.public_url = \"${publicURL}\"" > /home/sphinxrelay/sphinx-relay/config/app.json.tmp
+  mv /home/sphinxrelay/sphinx-relay/config/app.json.tmp /home/sphinxrelay/sphinx-relay/config/app.json
+  # prepare production configs (loaded by nodejs app)
+  cp /home/sphinxrelay/sphinx-relay/config/app.json /home/sphinxrelay/sphinx-relay/dist/config/app.json
+  cp /home/sphinxrelay/sphinx-relay/config/config.json /home/sphinxrelay/sphinx-relay/dist/config/config.json
+  echo "# ok - copied fresh config.json & app.json into dist directory"
+  exit 0
+  if [ $(grep -c write-sphinx-environment < /etc/systemd/system/sphinxrelay.service) -eq 0 ];then
+    sudo systemctl stop sphinxrelay
+    echo "
+[Unit]
+Description=SphinxRelay
+Wants=lnd.service
+After=lnd.service
+
+[Service]
+WorkingDirectory=/home/sphinxrelay/sphinx-relay
+ExecStartPre=/home/joinmarket/install.lnd.sh write-sphinx-environment
+ExecStart=env NODE_ENV=production /usr/bin/node dist/app.js
+User=sphinxrelay
+Restart=always
+TimeoutSec=120
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+" | sudo tee /etc/systemd/system/sphinxrelay.service
+    sudo systemctl daemon-reload
+    sudo systemctl start sphinxrelay
+  fi  
+fi
+
+##########
+# EXPORT #
+##########
+if [ "$1" =  exportmenu ]||[ "$1" =  hexstring ]||[ "$1" =  scp ]||\
+   [ "$1" =  http ]||[ "$1" =  btcpay ];then
+  # 1. parameter -> the type of export
+  exportType=$1
+  # interactive choose type of export if not set
+  if [ "$1" = "exportmenu" ]; then
+      OPTIONS=()
+      OPTIONS+=(SCP "SSH Download (Commands)")
+      OPTIONS+=(HTTP "Browserdownload (bit risky)")
+      OPTIONS+=(HEX "Hex-String (Copy+Paste)")   
+      OPTIONS+=(STR "BTCPay Connection String") 
+      CHOICE=$(dialog --clear \
+                  --backtitle "RaspiBlitz" \
+                  --title "Export Macaroons & TLS.cert" \
+                  --menu "How do you want to export?" \
+                  11 50 7 \
+                  "${OPTIONS[@]}" \
+                  2>&1 >/dev/tty)
+      clear
+      case $CHOICE in
+        HEX)
+          exportType='hexstring';;
+        STR)
+          exportType='btcpay';;
+        SCP)
+          exportType='scp';;
+        HTTP)
+          exportType='http';;
+      esac
   fi
-  sudo sed -i "/lncli${NODENUMBER}/d" $ALIASFILE
-  if [ "$(echo "$@" | grep -c purge)" -gt 0 ];then
-    echo "# Removing the binaries"
-    sudo rm -f /usr/local/bin/lnd
-    sudo rm -f /usr/local/bin/lncli
+  # load data from config
+  source /home/admin/raspiblitz.info
+  source /mnt/hdd/raspiblitz.conf
+  # CANCEL
+  if [ ${#exportType} -eq 0 ]; then
+    echo "CANCEL"
+    exit 0
+
+  ########################
+  # HEXSTRING
+  ########################
+  elif [ "${exportType}" = "hexstring" ]; then
+    clear
+    echo "###### HEXSTRING EXPORT ######"
+    echo ""
+    echo "admin.macaroon:"
+    sudo xxd -ps -u -c 1000 /mnt/hdd/lnd${NODENUMBER}/data/chain/${network}/${chain}net/admin.macaroon
+    echo ""
+    echo "invoice.macaroon:"
+    sudo xxd -ps -u -c 1000 /mnt/hdd/lnd${NODENUMBER}/data/chain/${network}/${chain}net/invoice.macaroon
+    echo ""
+    echo "readonly.macaroon:"
+    sudo xxd -ps -u -c 1000 /mnt/hdd/lnd${NODENUMBER}/data/chain/${network}/${chain}net/readonly.macaroon
+    echo ""
+    echo "tls.cert:"
+    sudo xxd -ps -u -c 1000 /mnt/hdd/lnd${NODENUMBER}/tls.cert
+    echo
+
+  ########################
+  # BTCPAY Connection String
+  ########################
+  elif [ "${exportType}" = "btcpay" ]; then
+    # take public IP as default
+    # TODO: IP2TOR --> check if there is a forwarding for LND REST oe ask user to set one up
+    #ip="${publicIP}"
+    ip="127.0.0.1"
+    port="8080"
+    # will overwrite ip & port if IP2TOR tunnel is available
+    source <(sudo /home/admin/config.scripts/blitz.subscriptions.ip2tor.py subscription-by-service LND-REST-API)
+    # bake macaroon that just can create invoices and monitor them
+    macaroon=$(sudo -u admin lncli${NODENUMBER} bakemacaroon address:read address:write info:read invoices:read invoices:write onchain:read)
+    # get certificate thumb
+    certthumb=$(sudo openssl x509 -noout -fingerprint -sha256 -inform pem -in /mnt/hdd/lnd${NODENUMBER}/tls.cert | cut -d "=" -f 2)
+    # construct connection string
+    connectionString="type=lnd-rest;server=https://${ip}:${port}/;macaroon=${macaroon};certthumbprint=${certthumb}"
+    clear
+    echo "###### BTCPAY CONNECTION STRING ######"
+    echo ""
+    echo "${connectionString}"
+    echo ""
+    # add info about outside reachability (type would have a value if IP2TOR tunnel was found)
+    if [ ${#type} -gt 0 ]; then
+      echo "NOTE: You have a IP2TOR connection for LND REST API .. so you can use this connection string also with a external BTCPay server."
+    else
+      echo "IMPORTANT: You can only use this connection string for a BTCPay server running on this RaspiBlitz."
+      echo "If you want to connect from a external BTCPay server activate a IP2TOR tunnel for LND-REST first:"
+      echo "MAIN MENU > SUBSCRIBE > IP2TOR > LND REST API"
+      echo "Then come back and get a new connection string."
+    fi
+    echo
+
+  ###########################
+  # SHH / SCP File Download
+  ###########################
+  elif [ "${exportType}" = "scp" ]; then
+    local_ip=$(ip addr | grep 'state UP' -A2 | egrep -v 'docker0|veth' | grep 'eth0\|wlan0' | tail -n1 | awk '{print $2}' | cut -f1 -d'/')
+    clear
+    echo "###### DOWNLOAD BY SCP ######"
+    echo "Copy, paste and execute these commands in your client terminal to download the files."
+    echo "The password needed during download is your Password A."
+    echo ""
+    echo "Macaroons:"
+    echo "scp bitcoin@${local_ip}:/home/bitcoin/.lnd${NODENUMBER}/data/chain/${network}/${chain}net/\*.macaroon ./"
+    echo ""
+    echo "TLS Certificate:"
+    echo "scp bitcoin@${local_ip}:/home/bitcoin/.lnd${NODENUMBER}/tls.cert ./"
+    echo ""
+
+  ###########################
+  # HTTP File Download
+  ###########################
+  elif [ "${exportType}" = "http" ]; then
+    local_ip=$(ip addr | grep 'state UP' -A2 | egrep -v 'docker0|veth' | grep 'eth0\|wlan0' | tail -n1 | awk '{print $2}' | cut -f1 -d'/')
+    randomPortNumber=$(shuf -i 20000-39999 -n 1)
+    sudo ufw allow from 192.168.0.0/16 to any port ${randomPortNumber} comment 'temp http server'
+    clear
+    echo "###### DOWNLOAD BY HTTP ######"
+    echo ""
+    echo "Open in your browser --> http://${local_ip}:${randomPortNumber}"
+    echo ""
+    echo "You need to be on the same local network - not reachable from outside."
+    echo "In browser click on files or use 'save as' from context menu to download."
+    echo ""
+    echo "Temp HTTP Server is running - use CTRL+C to stop when you are done"
+    echo ""
+    cd 
+    randomFolderName=$(shuf -i 100000000-900000000 -n 1)
+    mkdir ${randomFolderName}
+    sudo cp /home/bitcoin/.lnd${NODENUMBER}/data/chain/${network}/${chain}net/admin.macaroon ./${randomFolderName}/admin.macaroon
+    sudo cp /home/bitcoin/.lnd${NODENUMBER}/data/chain/${network}/${chain}net/readonly.macaroon ./${randomFolderName}/readonly.macaroon
+    sudo cp /home/bitcoin/.lnd${NODENUMBER}/data/chain/${network}/${chain}net/invoice.macaroon ./${randomFolderName}/invoice.macaroon
+    sudo cp /home/bitcoin/.lnd${NODENUMBER}/tls.cert ./${randomFolderName}/tls.cert
+    cd ${randomFolderName}
+    sudo chmod 444 *.*
+    python3 -m http.server ${randomPortNumber} 2>/dev/null
+    sudo ufw delete allow from 192.168.0.0/16 to any port ${randomPortNumber} comment 'temp http server'
+    cd ..
+    sudo rm -r ${randomFolderName}
+    echo "OK - temp HTTP server is stopped."
+  else
+    echo "FAIL: unknown '${exportType}' - run with -h for help"
   fi
 fi
