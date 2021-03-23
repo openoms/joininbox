@@ -7,7 +7,7 @@ LNDVERSION="v0.12.1-beta"
 if [ $# -eq 0 ]||[ "$1" = "-h" ]||[ "$1" = "--help" ];then
   echo "script to install LND"
   echo "the default version is: $LNDVERSION"
-  echo "install.lnd.sh [on<nodenumber>|off<nodenumber><purge>]"
+  echo "install.lnd.sh [on<nodenumber>|off<nodenumber><purge>|addNodeToBos<nodenumber>]"
   exit 1
 fi
 
@@ -191,6 +191,27 @@ alias bcli=\"sudo -u ${LNDUSER} $BITCOINDIR/bitcoin-cli -network=$NETWORK\"\
   echo "# logs: 'sudo tail -f /home/bitcoin/.lnd1/logs/bitcoin/$NETWORK/lnd.log'"
   echo "# Use: 'lncli${NODENUMBER} help' for the command line options"
   echo
+fi
+
+if [ "$1" = addNodeToBos ];then
+  if [ ${#bos} -gt 0 ] && [ $bos = on ] && \
+  [ $(systemctl status lnd${NODENUMBER} | grep -c active) -gt 0 ];then
+    # https://github.com/alexbosworth/balanceofsatoshis#using-saved-nodes
+    sudo -u bos mkdir /home/bos/.bos/lnd${NODENUMBER}
+    CERT=$(sudo base64 /home/${LNDUSER}/.lnd${NODENUMBER}/tls.cert | tr -d '\n')
+    MACAROON=$(sudo base64 /home/${LNDUSER}/.lnd${NODENUMBER}/data/chain/bitcoin/mainnet/admin.macaroon | tr -d '\n')
+    echo "{
+  \"cert\": \"$CERT\",
+  \"macaroon\": \"$MACAROON\",
+  \"socket\": \"localhost:100${NODENUMBER}9\"
+}" | sudo tee /home/bos/.bos/lnd${NODENUMBER}/credentials.json
+    echo "# Added node to bos as: lnd${NODENUMBER}"
+    echo "alias bos${NODENUMBER}=\"sudo -u bos /home/bos/.npm-global/bin/bos --node lnd${NODENUMBER}\"" | tee -a /home/admin/_commands.sh
+    echo "# Added the alias: 'bos${NODENUMBER}'"
+    echo "# Activate with: 'source /home/admin/_commands.sh'"
+    echo "# Example to fund a channel directly:"
+    echo "'bos${NODENUMBER} open <pubkey> --amount <sats>'"
+  fi
 fi
 
 if [ "$1" = "off" ];then
