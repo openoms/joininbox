@@ -156,7 +156,7 @@ function installBitcoinCoreStandalone() {
     fi
   fi
 
-  echo "# symlink to /home/bitcoin/"
+  echo "# symlink /home/store/app-data/.bitcoin to /home/bitcoin/"
   sudo rm -rf /home/bitcoin/.bitcoin # not a symlink, delete
   sudo mkdir -p /home/store/app-data/.bitcoin
   sudo ln -s /home/store/app-data/.bitcoin /home/bitcoin/
