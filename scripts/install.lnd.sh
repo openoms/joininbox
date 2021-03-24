@@ -5,16 +5,20 @@ LNDVERSION="v0.12.1-beta"
 
 # help
 if [ $# -eq 0 ]||[ "$1" = "-h" ]||[ "$1" = "--help" ];then
-  echo "script to install LND"
+  echo 
+  echo "script to install a LND"
+  echo "Do not connect more than 3 instances to a bitcoin node!"
   echo "the default version is: $LNDVERSION"
   echo "install.lnd.sh [on <nodenumber>|off <nodenumber> <purge>"
   echo "install.lnd.sh [add-node-to-bos <nodenumber>]"
   echo
-  echo "to use a node with Sphinx-relay"
-  echo "install.lnd.sh [write-sphinx-environment <nodenumber>]"
-  echo
   echo "to export macaroons & tls.cert:"
   echo "install.lnd.sh [exportmenu|hexstring|scp|http|btcpay <nodenumber>]"
+  echo
+  echo "to use the node with Sphinx will need to install"
+  echo "the Sphinx-relay fresh (no app connected yet) and run:"
+  echo "install.lnd.sh addNodetoSphinx <nodenumber>"
+  echo
   exit 1
 fi
 
@@ -242,30 +246,32 @@ if [ "$1" = add-node-to-bos ];then
   fi
 fi
 
+
 ##########
 # SPHINX #
 ##########
-if [ "$1" =  write-sphinx-environment ];then
-  # !! all this needs to run (be called as) user: sphinxrelay
-  # get basic data from status
-  source <(/home/admin/config.scripts/bonus.sphinxrelay.sh status)
-  # database config
-  cat /home/sphinxrelay/sphinx-relay/config/config.json | \
-  jq ".production.storage = \"/mnt/hdd/app-data/sphinxrelay/sphinx.db\"" > /home/sphinxrelay/sphinx-relay/config/config.json.tmp
-  mv /home/sphinxrelay/sphinx-relay/config/config.json.tmp /home/sphinxrelay/sphinx-relay/config/config.json
-  # update node ip in config
-  cat /home/sphinxrelay/sphinx-relay/config/app.json | \
-  jq ".production.tls_location = \"/mnt/hdd/app-data/lnd${NODENUMBER}/tls.cert\"" | \
-  jq ".production.macaroon_location = \"/mnt/hdd/app-data/lnd${NODENUMBER}/data/chain/${network}/${chain}net/admin.macaroon\"" | \
-  jq ".production.lnd_log_location = \"/mnt/hdd/lnd${NODENUMBER}/logs/${network}/${chain}net/lnd.log\"" | \
-  jq ".production.node_http_port = \"3300\"" | \
-  jq ".production.public_url = \"${publicURL}\"" > /home/sphinxrelay/sphinx-relay/config/app.json.tmp
-  mv /home/sphinxrelay/sphinx-relay/config/app.json.tmp /home/sphinxrelay/sphinx-relay/config/app.json
-  # prepare production configs (loaded by nodejs app)
-  cp /home/sphinxrelay/sphinx-relay/config/app.json /home/sphinxrelay/sphinx-relay/dist/config/app.json
-  cp /home/sphinxrelay/sphinx-relay/config/config.json /home/sphinxrelay/sphinx-relay/dist/config/config.json
-  echo "# ok - copied fresh config.json & app.json into dist directory"
-  exit 0
+if [ $1 = addNodeToSphinx ];then
+function mac_set_perms() {
+  local file_name=${1}  # the file name (e.g. admin.macaroon)
+  local group_name=${2} # the unix group name (e.g. lndadmin)
+  local n=${3:-bitcoin} # the network (e.g. bitcoin or litecoin) defaults to bitcoin
+  local c=${4:-main}    # the chain (e.g. main, test, sim, reg) defaults to main (for mainnet)
+  sudo -u sphinxrelay mkdir /mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}
+  sudo /bin/cp /mnt/hdd/app-data/.lnd${NODENUMBER}/data/chain/"${n}"/"${c}"net/"${file_name}" /mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}/"${file_name}"
+  sudo /bin/chown --silent admin:"${group_name}" /mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}/"${file_name}"
+  sudo /bin/chmod --silent 640 /mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}/"${file_name}"
+}
+
+function copyMacaroons() {
+  echo "#  ensure unix ownerships and permissions"
+  mac_set_perms admin.macaroon lndadmin "${network}" "${chain}"
+  echo "# OK DONE"
+}
+  copyMacaroons
+  sudo cat /home/sphinxrelay/sphinx-relay/connection_string.txt
+  sudo rm  /home/sphinxrelay/sphinx-relay/connection_string.txt
+
+  sudo -u sphinxrelay /home/joinmarket/install.lnd.sh write-sphinx-environment
   if [ $(grep -c write-sphinx-environment < /etc/systemd/system/sphinxrelay.service) -eq 0 ];then
     sudo systemctl stop sphinxrelay
     echo "
@@ -290,7 +296,34 @@ WantedBy=multi-user.target
 " | sudo tee /etc/systemd/system/sphinxrelay.service
     sudo systemctl daemon-reload
     sudo systemctl start sphinxrelay
-  fi  
+  else
+    sudo systemctl restart sphinxrelay
+  fi
+  sudo cat /home/sphinxrelay/sphinx-relay/connection_string.txt
+fi
+
+if [ "$1" =  write-sphinx-environment ];then
+  # !! all this needs to run (be called as) user: sphinxrelay
+  # get basic data from status
+  source <(/home/admin/config.scripts/bonus.sphinxrelay.sh status)
+  # database config
+  cat /home/sphinxrelay/sphinx-relay/config/config.json | \
+  jq ".production.storage = \"/mnt/hdd/app-data/sphinxrelay/sphinx.db\"" > /home/sphinxrelay/sphinx-relay/config/config.json.tmp
+  mv /home/sphinxrelay/sphinx-relay/config/config.json.tmp /home/sphinxrelay/sphinx-relay/config/config.json
+  # update node ip in config
+  cat /home/sphinxrelay/sphinx-relay/config/app.json | \
+  jq ".production.tls_location = \"/mnt/hdd/app-data/.lnd${NODENUMBER}/tls.cert\"" | \
+  jq ".production.macaroon_location = \"/mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}/admin.macaroon\"" | \
+  jq ".production.lnd_log_location = \"/mnt/hdd/.lnd${NODENUMBER}/logs/${network}/${chain}net/lnd.log\"" | \
+  jq ".production.node_http_port = \"3300\"" | \
+  jq ".production.lnd_port = \"100${NODENUMBER}9\"" | \
+  jq ".production.public_url = \"${publicURL}\"" > /home/sphinxrelay/sphinx-relay/config/app.json.tmp
+  mv /home/sphinxrelay/sphinx-relay/config/app.json.tmp /home/sphinxrelay/sphinx-relay/config/app.json
+  # prepare production configs (loaded by nodejs app)
+  cp /home/sphinxrelay/sphinx-relay/config/app.json /home/sphinxrelay/sphinx-relay/dist/config/app.json
+  cp /home/sphinxrelay/sphinx-relay/config/config.json /home/sphinxrelay/sphinx-relay/dist/config/config.json
+  echo "# ok - copied fresh config.json & app.json into dist directory"
+  exit 0
 fi
 
 ##########
@@ -342,16 +375,16 @@ if [ "$1" =  exportmenu ]||[ "$1" =  hexstring ]||[ "$1" =  scp ]||\
     echo "###### HEXSTRING EXPORT ######"
     echo ""
     echo "admin.macaroon:"
-    sudo xxd -ps -u -c 1000 /mnt/hdd/lnd${NODENUMBER}/data/chain/${network}/${chain}net/admin.macaroon
+    sudo xxd -ps -u -c 1000 /mnt/hdd/.lnd${NODENUMBER}/data/chain/${network}/${chain}net/admin.macaroon
     echo ""
     echo "invoice.macaroon:"
-    sudo xxd -ps -u -c 1000 /mnt/hdd/lnd${NODENUMBER}/data/chain/${network}/${chain}net/invoice.macaroon
+    sudo xxd -ps -u -c 1000 /mnt/hdd/.lnd${NODENUMBER}/data/chain/${network}/${chain}net/invoice.macaroon
     echo ""
     echo "readonly.macaroon:"
-    sudo xxd -ps -u -c 1000 /mnt/hdd/lnd${NODENUMBER}/data/chain/${network}/${chain}net/readonly.macaroon
+    sudo xxd -ps -u -c 1000 /mnt/hdd/.lnd${NODENUMBER}/data/chain/${network}/${chain}net/readonly.macaroon
     echo ""
     echo "tls.cert:"
-    sudo xxd -ps -u -c 1000 /mnt/hdd/lnd${NODENUMBER}/tls.cert
+    sudo xxd -ps -u -c 1000 /mnt/hdd/.lnd${NODENUMBER}/tls.cert
     echo
 
   ########################
@@ -368,7 +401,7 @@ if [ "$1" =  exportmenu ]||[ "$1" =  hexstring ]||[ "$1" =  scp ]||\
     # bake macaroon that just can create invoices and monitor them
     macaroon=$(sudo -u admin lncli${NODENUMBER} bakemacaroon address:read address:write info:read invoices:read invoices:write onchain:read)
     # get certificate thumb
-    certthumb=$(sudo openssl x509 -noout -fingerprint -sha256 -inform pem -in /mnt/hdd/lnd${NODENUMBER}/tls.cert | cut -d "=" -f 2)
+    certthumb=$(sudo openssl x509 -noout -fingerprint -sha256 -inform pem -in /mnt/hdd/.lnd${NODENUMBER}/tls.cert | cut -d "=" -f 2)
     # construct connection string
     connectionString="type=lnd-rest;server=https://${ip}:${port}/;macaroon=${macaroon};certthumbprint=${certthumb}"
     clear
