@@ -9,7 +9,8 @@ if [ $# -eq 0 ]||[ "$1" = "-h" ]||[ "$1" = "--help" ];then
   echo "script to install a LND"
   echo "Do not connect more than 3 instances to a bitcoin node!"
   echo "the default version is: $LNDVERSION"
-  echo "install.lnd.sh [on <nodenumber>|off <nodenumber> <purge>"
+  echo "the nodenumber deafults to '1'"
+  echo "install.lnd.sh [on <nodenumber>|off <nodenumber> <purge>]"
   echo "install.lnd.sh [add-node-to-bos <nodenumber>]"
   echo
   echo "to export macaroons & tls.cert:"
@@ -67,11 +68,12 @@ echo "BITCOINDIR=$BITCOINDIR"
 echo "BTCCONFPATH=$BTCCONFPATH"
 echo
 echo "# Running the command: 'install.lnd.sh $*'"
-echo "# Press ENTER to continue or CTRL+C to exit"
-read key
 
 if [ "$1" = on ]||[ "$1" = update ]||[ "$1" = commit ]||[ "$1" = testPR ];then
   if [ ! -f /usr/local/bin/lnd ]||[ "$1" = update ]||[ "$1" = commit ]||[ "$1" = testPR ];then
+    echo "# Press ENTER to continue or CTRL+C to exit"
+    read key
+
     rm -rf lnd.update.${LNDVERSION}.sh
     # download
     wget https://raw.githubusercontent.com/openoms/lightning-node-management/master/lnd.updates/lnd.update.${LNDVERSION}.sh
@@ -228,6 +230,8 @@ fi
 if [ "$1" = add-node-to-bos ];then
   if [ ${#bos} -gt 0 ] && [ $bos = on ] && \
   [ $(systemctl status lnd${NODENUMBER} | grep -c active) -gt 0 ];then
+    echo "# Press ENTER to continue or CTRL+C to exit"
+    read key
     # https://github.com/alexbosworth/balanceofsatoshis#using-saved-nodes
     sudo -u bos mkdir /home/bos/.bos/lnd${NODENUMBER}
     CERT=$(sudo base64 /home/${LNDUSER}/.lnd${NODENUMBER}/tls.cert | tr -d '\n')
@@ -246,11 +250,12 @@ if [ "$1" = add-node-to-bos ];then
   fi
 fi
 
-
 ##########
 # SPHINX #
 ##########
 if [ $1 = addNodeToSphinx ];then
+  echo "# Press ENTER to continue or CTRL+C to exit"
+  read key
 function mac_set_perms() {
   local file_name=${1}  # the file name (e.g. admin.macaroon)
   local group_name=${2} # the unix group name (e.g. lndadmin)
@@ -269,9 +274,15 @@ function copyMacaroons() {
 }
   copyMacaroons
   sudo cat /home/sphinxrelay/sphinx-relay/connection_string.txt
-  sudo rm  /home/sphinxrelay/sphinx-relay/connection_string.txt
+  now=$(date +"%Y_%m_%d_%H%M%S")
+  echo "# Will backup your existing Sphinx database to sphinx.backup${now}.db"
+  echo "Press ENTER to continue or CTRL+C to abort"
+  read key
+  sudo mv /home/sphinxrelay/sphinx-relay/connection_string.txt /home/sphinxrelay/sphinx-relay/connection_string.backup$now.txt
+  sudo mv -f /mnt/hdd/app-data/sphinxrelay/sphinx.db  /mnt/hdd/app-data/sphinxrelay/sphinx.backup${now}.db
 
-  sudo -u sphinxrelay /home/joinmarket/install.lnd.sh write-sphinx-environment
+  sudo chmod +x $HOME/install.lnd.sh
+  sudo -u sphinxrelay $HOME/install.lnd.sh write-sphinx-environment
   if [ $(grep -c write-sphinx-environment < /etc/systemd/system/sphinxrelay.service) -eq 0 ];then
     sudo systemctl stop sphinxrelay
     echo "
@@ -282,7 +293,7 @@ After=lnd.service
 
 [Service]
 WorkingDirectory=/home/sphinxrelay/sphinx-relay
-ExecStartPre=/home/joinmarket/install.lnd.sh write-sphinx-environment
+ExecStartPre=$HOME/install.lnd.sh write-sphinx-environment
 ExecStart=env NODE_ENV=production /usr/bin/node dist/app.js
 User=sphinxrelay
 Restart=always
@@ -299,6 +310,8 @@ WantedBy=multi-user.target
   else
     sudo systemctl restart sphinxrelay
   fi
+  sleep 10
+
   sudo cat /home/sphinxrelay/sphinx-relay/connection_string.txt
 fi
 
