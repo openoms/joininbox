@@ -270,6 +270,8 @@ function mac_set_perms() {
 function copyMacaroons() {
   echo "#  ensure unix ownerships and permissions"
   mac_set_perms admin.macaroon lndadmin "${network}" "${chain}"
+  mac_set_perms router.macaroon lndrouter "${network}" "${chain}"
+  mac_set_perms signer.macaroon lndsigner "${network}" "${chain}"
   echo "# OK DONE"
 }
   copyMacaroons
