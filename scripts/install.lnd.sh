@@ -390,16 +390,16 @@ if [ "$1" =  exportmenu ]||[ "$1" =  hexstring ]||[ "$1" =  scp ]||\
     echo "###### HEXSTRING EXPORT ######"
     echo ""
     echo "admin.macaroon:"
-    sudo xxd -ps -u -c 1000 /mnt/hdd/.lnd${NODENUMBER}/data/chain/${network}/${chain}net/admin.macaroon
+    sudo xxd -ps -u -c 1000 /home/bitcoin/.lnd${NODENUMBER}/data/chain/${network}/${chain}net/admin.macaroon
     echo ""
     echo "invoice.macaroon:"
-    sudo xxd -ps -u -c 1000 /mnt/hdd/.lnd${NODENUMBER}/data/chain/${network}/${chain}net/invoice.macaroon
+    sudo xxd -ps -u -c 1000 /home/bitcoin/.lnd${NODENUMBER}/data/chain/${network}/${chain}net/invoice.macaroon
     echo ""
     echo "readonly.macaroon:"
-    sudo xxd -ps -u -c 1000 /mnt/hdd/.lnd${NODENUMBER}/data/chain/${network}/${chain}net/readonly.macaroon
+    sudo xxd -ps -u -c 1000 /home/bitcoin/.lnd${NODENUMBER}/data/chain/${network}/${chain}net/readonly.macaroon
     echo ""
     echo "tls.cert:"
-    sudo xxd -ps -u -c 1000 /mnt/hdd/.lnd${NODENUMBER}/tls.cert
+    sudo xxd -ps -u -c 1000 /home/bitcoin/.lnd${NODENUMBER}/tls.cert
     echo
 
   ########################
