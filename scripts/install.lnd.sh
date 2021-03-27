@@ -9,16 +9,13 @@ if [ $# -eq 0 ]||[ "$1" = "-h" ]||[ "$1" = "--help" ];then
   echo "script to install a LND"
   echo "Do not connect more than 3 instances to a bitcoin node!"
   echo "the default version is: $LNDVERSION"
-  echo "the nodenumber deafults to '1'"
+  echo "the nodenumber defaults to '1'"
+  echo "Usage:"
   echo "install.lnd.sh [on <nodenumber>|off <nodenumber> <purge>]"
-  echo "install.lnd.sh [add-node-to-bos <nodenumber>]"
   echo
-  echo "to export macaroons & tls.cert:"
-  echo "install.lnd.sh [exportmenu|hexstring|scp|http|btcpay <nodenumber>]"
-  echo
-  echo "to use the node with Sphinx will need to install"
-  echo "the Sphinx-relay fresh (no app connected yet) and run:"
-  echo "install.lnd.sh addNodetoSphinx <nodenumber>"
+  echo "to add the node to BoS, ThunderHub, Sphinx or export macaroons & tls.cert:"
+  echo "install.lnd.sh menu"
+  echo "install.lnd.sh [bos|sphinx|thunderhub|hexstring|scp|http|btcpay <nodenumber>]"
   echo
   exit 1
 fi
@@ -224,142 +221,33 @@ if [ "$1" = "off" ];then
   fi
 fi
 
-#######
-# BOS #
-#######
-if [ "$1" = add-node-to-bos ];then
-  if [ ${#bos} -gt 0 ] && [ $bos = on ] && \
-  [ $(systemctl status lnd${NODENUMBER} | grep -c active) -gt 0 ];then
-    echo "# Press ENTER to continue or CTRL+C to exit"
-    read key
-    # https://github.com/alexbosworth/balanceofsatoshis#using-saved-nodes
-    sudo -u bos mkdir /home/bos/.bos/lnd${NODENUMBER}
-    CERT=$(sudo base64 /home/${LNDUSER}/.lnd${NODENUMBER}/tls.cert | tr -d '\n')
-    MACAROON=$(sudo base64 /home/${LNDUSER}/.lnd${NODENUMBER}/data/chain/bitcoin/mainnet/admin.macaroon | tr -d '\n')
-    echo "{
-  \"cert\": \"$CERT\",
-  \"macaroon\": \"$MACAROON\",
-  \"socket\": \"localhost:100${NODENUMBER}9\"
-}" | sudo tee /home/bos/.bos/lnd${NODENUMBER}/credentials.json
-    echo "# Added node to bos as: lnd${NODENUMBER}"
-    echo "alias bos${NODENUMBER}=\"sudo -u bos /home/bos/.npm-global/bin/bos --node lnd${NODENUMBER}\"" | tee -a /home/admin/_commands.sh
-    echo "# Added the alias: 'bos${NODENUMBER}'"
-    echo "# Activate with: 'source /home/admin/_commands.sh'"
-    echo "# Example to fund a channel directly:"
-    echo "'bos${NODENUMBER} open <pubkey> --amount <sats>'"
-  fi
-fi
-
-##########
-# SPHINX #
-##########
-if [ $1 = addNodeToSphinx ];then
-  echo "# Press ENTER to continue or CTRL+C to exit"
-  read key
-function mac_set_perms() {
-  local file_name=${1}  # the file name (e.g. admin.macaroon)
-  local group_name=${2} # the unix group name (e.g. lndadmin)
-  local n=${3:-bitcoin} # the network (e.g. bitcoin or litecoin) defaults to bitcoin
-  local c=${4:-main}    # the chain (e.g. main, test, sim, reg) defaults to main (for mainnet)
-  sudo -u sphinxrelay mkdir /mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}
-  sudo /bin/cp /mnt/hdd/app-data/.lnd${NODENUMBER}/data/chain/"${n}"/"${c}"net/"${file_name}" /mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}/"${file_name}"
-  sudo /bin/chown --silent admin:"${group_name}" /mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}/"${file_name}"
-  sudo /bin/chmod --silent 640 /mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}/"${file_name}"
-}
-
-function copyMacaroons() {
-  echo "#  ensure unix ownerships and permissions"
-  mac_set_perms admin.macaroon lndadmin "${network}" "${chain}"
-  mac_set_perms router.macaroon lndrouter "${network}" "${chain}"
-  mac_set_perms signer.macaroon lndsigner "${network}" "${chain}"
-  echo "# OK DONE"
-}
-  copyMacaroons
-  sudo cat /home/sphinxrelay/sphinx-relay/connection_string.txt
-  now=$(date +"%Y_%m_%d_%H%M%S")
-  echo "# Will backup your existing Sphinx database to sphinx.backup${now}.db"
-  echo "Press ENTER to continue or CTRL+C to abort"
-  read key
-  sudo mv /home/sphinxrelay/sphinx-relay/connection_string.txt /home/sphinxrelay/sphinx-relay/connection_string.backup$now.txt
-  sudo mv -f /mnt/hdd/app-data/sphinxrelay/sphinx.db  /mnt/hdd/app-data/sphinxrelay/sphinx.backup${now}.db
-
-  sudo chmod +x $HOME/install.lnd.sh
-  sudo -u sphinxrelay $HOME/install.lnd.sh write-sphinx-environment
-  if [ $(grep -c write-sphinx-environment < /etc/systemd/system/sphinxrelay.service) -eq 0 ];then
-    sudo systemctl stop sphinxrelay
-    echo "
-[Unit]
-Description=SphinxRelay
-Wants=lnd.service
-After=lnd.service
-
-[Service]
-WorkingDirectory=/home/sphinxrelay/sphinx-relay
-ExecStartPre=$HOME/install.lnd.sh write-sphinx-environment
-ExecStart=env NODE_ENV=production /usr/bin/node dist/app.js
-User=sphinxrelay
-Restart=always
-TimeoutSec=120
-RestartSec=30
-StandardOutput=journal
-StandardError=journal
-
-[Install]
-WantedBy=multi-user.target
-" | sudo tee /etc/systemd/system/sphinxrelay.service
-    sudo systemctl daemon-reload
-    sudo systemctl start sphinxrelay
-  else
-    sudo systemctl restart sphinxrelay
-  fi
-  sleep 10
-
-  sudo cat /home/sphinxrelay/sphinx-relay/connection_string.txt
-fi
-
-if [ "$1" =  write-sphinx-environment ];then
-  # !! all this needs to run (be called as) user: sphinxrelay
-  # get basic data from status
-  source <(/home/admin/config.scripts/bonus.sphinxrelay.sh status)
-  # database config
-  cat /home/sphinxrelay/sphinx-relay/config/config.json | \
-  jq ".production.storage = \"/mnt/hdd/app-data/sphinxrelay/sphinx.db\"" > /home/sphinxrelay/sphinx-relay/config/config.json.tmp
-  mv /home/sphinxrelay/sphinx-relay/config/config.json.tmp /home/sphinxrelay/sphinx-relay/config/config.json
-  # update node ip in config
-  cat /home/sphinxrelay/sphinx-relay/config/app.json | \
-  jq ".production.tls_location = \"/mnt/hdd/app-data/.lnd${NODENUMBER}/tls.cert\"" | \
-  jq ".production.macaroon_location = \"/mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}/admin.macaroon\"" | \
-  jq ".production.lnd_log_location = \"/mnt/hdd/.lnd${NODENUMBER}/logs/${network}/${chain}net/lnd.log\"" | \
-  jq ".production.node_http_port = \"3300\"" | \
-  jq ".production.lnd_port = \"100${NODENUMBER}9\"" | \
-  jq ".production.public_url = \"${publicURL}\"" > /home/sphinxrelay/sphinx-relay/config/app.json.tmp
-  mv /home/sphinxrelay/sphinx-relay/config/app.json.tmp /home/sphinxrelay/sphinx-relay/config/app.json
-  # prepare production configs (loaded by nodejs app)
-  cp /home/sphinxrelay/sphinx-relay/config/app.json /home/sphinxrelay/sphinx-relay/dist/config/app.json
-  cp /home/sphinxrelay/sphinx-relay/config/config.json /home/sphinxrelay/sphinx-relay/dist/config/config.json
-  echo "# ok - copied fresh config.json & app.json into dist directory"
-  exit 0
-fi
-
 ##########
 # EXPORT #
 ##########
-if [ "$1" =  exportmenu ]||[ "$1" =  hexstring ]||[ "$1" =  scp ]||\
-   [ "$1" =  http ]||[ "$1" =  btcpay ];then
+if [ "$1" =  menu ]||[ "$1" =  hexstring ]||[ "$1" =  scp ]||\
+   [ "$1" =  http ]||[ "$1" =  btcpay ]||[ "$1" =  bos ]||\
+   [ "$1" =  thunderhub ]||[ "$1" =  sphinx ];then
   # 1. parameter -> the type of export
   exportType=$1
   # interactive choose type of export if not set
-  if [ "$1" = "exportmenu" ]; then
+  if [ "$1" = "menu" ]; then
       OPTIONS=()
+      OPTIONS+=(THUB "Add lnd${NODENUMBER} to ThunderHub")
+      OPTIONS+=(SPHINX "Set lnd${NODENUMBER} in Sphinx-relay")
+      if [ ${#bos} -gt 0 ] && [ $bos = on ] && \
+      [ $(systemctl status lnd${NODENUMBER} | grep -c active) -gt 0 ];then
+        OPTIONS+=(BOS "Add lnd${NODENUMBER} to Balance of Satoshis") 
+      fi
       OPTIONS+=(SCP "SSH Download (Commands)")
       OPTIONS+=(HTTP "Browserdownload (bit risky)")
       OPTIONS+=(HEX "Hex-String (Copy+Paste)")   
       OPTIONS+=(STR "BTCPay Connection String") 
+
       CHOICE=$(dialog --clear \
                   --backtitle "RaspiBlitz" \
                   --title "Export Macaroons & TLS.cert" \
                   --menu "How do you want to export?" \
-                  11 50 7 \
+                  14 50 8 \
                   "${OPTIONS[@]}" \
                   2>&1 >/dev/tty)
       clear
@@ -372,6 +260,12 @@ if [ "$1" =  exportmenu ]||[ "$1" =  hexstring ]||[ "$1" =  scp ]||\
           exportType='scp';;
         HTTP)
           exportType='http';;
+        THUB)
+          exportType='thunderhub';;
+        BOS)
+          exportType='bos';;
+        SPHINX)
+          exportType='sphinx';;
       esac
   fi
   # load data from config
@@ -483,7 +377,131 @@ if [ "$1" =  exportmenu ]||[ "$1" =  hexstring ]||[ "$1" =  scp ]||\
     cd ..
     sudo rm -r ${randomFolderName}
     echo "OK - temp HTTP server is stopped."
-  else
-    echo "FAIL: unknown '${exportType}' - run with -h for help"
+
+  ##############
+  # THUNDERHUB
+  ##############
+   elif [ "${exportType}" = "thunderhub" ]; then
+    echo "
+  - name: lnd${NODENUMBER}
+    serverUrl: 127.0.0.1:100${NODENUMBER}9
+    macaroon: '$(sudo xxd -ps -u -c 1000 /home/bitcoin/.lnd${NODENUMBER}/data/chain/${network}/${chain}net/admin.macaroon)'
+    certificate: '$(sudo xxd -ps -u -c 1000 /home/bitcoin/.lnd${NODENUMBER}/tls.cert)'
+" | sudo tee -a /mnt/hdd/app-data/thunderhub/thubConfig.yaml
+    sudo systemctl restart tunderhub
+  
+  #######
+  # BOS #
+  #######
+  elif [ "${exportType}" = "bos" ];then
+    echo "# Press ENTER to continue or CTRL+C to exit"
+    read key
+    # https://github.com/alexbosworth/balanceofsatoshis#using-saved-nodes
+    sudo -u bos mkdir /home/bos/.bos/lnd${NODENUMBER}
+    CERT=$(sudo base64 /home/${LNDUSER}/.lnd${NODENUMBER}/tls.cert | tr -d '\n')
+    MACAROON=$(sudo base64 /home/${LNDUSER}/.lnd${NODENUMBER}/data/chain/bitcoin/mainnet/admin.macaroon | tr -d '\n')
+    echo "{
+  \"cert\": \"$CERT\",
+  \"macaroon\": \"$MACAROON\",
+  \"socket\": \"localhost:100${NODENUMBER}9\"
+}" | sudo tee /home/bos/.bos/lnd${NODENUMBER}/credentials.json
+    echo "# Added node to bos as: lnd${NODENUMBER}"
+    echo "alias bos${NODENUMBER}=\"sudo -u bos /home/bos/.npm-global/bin/bos --node lnd${NODENUMBER}\"" | tee -a /home/admin/_commands.sh
+    echo "# Added the alias: 'bos${NODENUMBER}'"
+    echo "# Activate with: 'source /home/admin/_commands.sh'"
+    echo "# Example to fund a channel directly:"
+    echo "'bos${NODENUMBER} open <pubkey> --amount <sats>'"
+
+  ##########
+  # SPHINX #
+  ##########
+  elif [ "${exportType}" = "sphinx" ];then
+    echo "# Press ENTER to continue or CTRL+C to exit"
+    read key
+  function mac_set_perms() {
+    local file_name=${1}  # the file name (e.g. admin.macaroon)
+    local group_name=${2} # the unix group name (e.g. lndadmin)
+    local n=${3:-bitcoin} # the network (e.g. bitcoin or litecoin) defaults to bitcoin
+    local c=${4:-main}    # the chain (e.g. main, test, sim, reg) defaults to main (for mainnet)
+    sudo -u sphinxrelay mkdir /mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}
+    sudo /bin/cp /mnt/hdd/app-data/.lnd${NODENUMBER}/data/chain/"${n}"/"${c}"net/"${file_name}" /mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}/"${file_name}"
+    sudo /bin/chown --silent admin:"${group_name}" /mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}/"${file_name}"
+    sudo /bin/chmod --silent 640 /mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}/"${file_name}"
+  }
+
+  function copyMacaroons() {
+    echo "#  ensure unix ownerships and permissions"
+    mac_set_perms admin.macaroon lndadmin "${network}" "${chain}"
+    mac_set_perms router.macaroon lndrouter "${network}" "${chain}"
+    mac_set_perms signer.macaroon lndsigner "${network}" "${chain}"
+    echo "# OK DONE"
+  }
+    copyMacaroons
+    sudo cat /home/sphinxrelay/sphinx-relay/connection_string.txt
+    now=$(date +"%Y_%m_%d_%H%M%S")
+    echo "# Will backup your existing Sphinx database to sphinx.backup${now}.db"
+    echo "Press ENTER to continue or CTRL+C to abort"
+    read key
+    sudo mv /home/sphinxrelay/sphinx-relay/connection_string.txt /home/sphinxrelay/sphinx-relay/connection_string.backup$now.txt
+    sudo mv -f /mnt/hdd/app-data/sphinxrelay/sphinx.db  /mnt/hdd/app-data/sphinxrelay/sphinx.backup${now}.db
+
+    sudo chmod +x $HOME/install.lnd.sh
+    sudo -u sphinxrelay $HOME/install.lnd.sh write-sphinx-environment
+    if [ $(grep -c write-sphinx-environment < /etc/systemd/system/sphinxrelay.service) -eq 0 ];then
+      sudo systemctl stop sphinxrelay
+      echo "
+[Unit]
+Description=SphinxRelay
+Wants=lnd.service
+After=lnd.service
+
+[Service]
+WorkingDirectory=/home/sphinxrelay/sphinx-relay
+ExecStartPre=$HOME/install.lnd.sh write-sphinx-environment
+ExecStart=env NODE_ENV=production /usr/bin/node dist/app.js
+User=sphinxrelay
+Restart=always
+TimeoutSec=120
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+  " | sudo tee /etc/systemd/system/sphinxrelay.service
+      sudo systemctl daemon-reload
+      sudo systemctl start sphinxrelay
+    else
+      sudo systemctl restart sphinxrelay
+    fi
+    sleep 10
+    sudo cat /home/sphinxrelay/sphinx-relay/connection_string.txt
   fi
+
+else
+  echo "FAIL: unknown '${exportType}' - run with -h for help"
+fi
+
+if [ "$1" =  write-sphinx-environment ];then
+  # !! all this needs to run (be called as) user: sphinxrelay
+  # get basic data from status
+  source <(/home/admin/config.scripts/bonus.sphinxrelay.sh status)
+  # database config
+  cat /home/sphinxrelay/sphinx-relay/config/config.json | \
+  jq ".production.storage = \"/mnt/hdd/app-data/sphinxrelay/sphinx.db\"" > /home/sphinxrelay/sphinx-relay/config/config.json.tmp
+  mv /home/sphinxrelay/sphinx-relay/config/config.json.tmp /home/sphinxrelay/sphinx-relay/config/config.json
+  # update node ip in config
+  cat /home/sphinxrelay/sphinx-relay/config/app.json | \
+  jq ".production.tls_location = \"/mnt/hdd/app-data/.lnd${NODENUMBER}/tls.cert\"" | \
+  jq ".production.macaroon_location = \"/mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}/admin.macaroon\"" | \
+  jq ".production.lnd_log_location = \"/mnt/hdd/.lnd${NODENUMBER}/logs/${network}/${chain}net/lnd.log\"" | \
+  jq ".production.node_http_port = \"3300\"" | \
+  jq ".production.lnd_port = \"100${NODENUMBER}9\"" | \
+  jq ".production.public_url = \"${publicURL}\"" > /home/sphinxrelay/sphinx-relay/config/app.json.tmp
+  mv /home/sphinxrelay/sphinx-relay/config/app.json.tmp /home/sphinxrelay/sphinx-relay/config/app.json
+  # prepare production configs (loaded by nodejs app)
+  cp /home/sphinxrelay/sphinx-relay/config/app.json /home/sphinxrelay/sphinx-relay/dist/config/app.json
+  cp /home/sphinxrelay/sphinx-relay/config/config.json /home/sphinxrelay/sphinx-relay/dist/config/config.json
+  echo "# ok - copied fresh config.json & app.json into dist directory"
+  exit 0
 fi
