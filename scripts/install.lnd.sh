@@ -304,13 +304,13 @@ if [ "$1" =  menu ]||[ "$1" =  hexstring ]||[ "$1" =  scp ]||\
     # TODO: IP2TOR --> check if there is a forwarding for LND REST oe ask user to set one up
     #ip="${publicIP}"
     ip="127.0.0.1"
-    port="8080"
+    port="808${NODENUMBER}"
     # will overwrite ip & port if IP2TOR tunnel is available
     source <(sudo /home/admin/config.scripts/blitz.subscriptions.ip2tor.py subscription-by-service LND-REST-API)
     # bake macaroon that just can create invoices and monitor them
-    macaroon=$(sudo -u admin lncli${NODENUMBER} bakemacaroon address:read address:write info:read invoices:read invoices:write onchain:read)
+    macaroon=$(lncli${NODENUMEBR} bakemacaroon address:read address:write info:read invoices:read invoices:write onchain:read)
     # get certificate thumb
-    certthumb=$(sudo openssl x509 -noout -fingerprint -sha256 -inform pem -in /mnt/hdd/.lnd${NODENUMBER}/tls.cert | cut -d "=" -f 2)
+    certthumb=$(sudo openssl x509 -noout -fingerprint -sha256 -inform pem -in /home/bitcoin/.lnd${NODENUMBER}/tls.cert | cut -d "=" -f 2)
     # construct connection string
     connectionString="type=lnd-rest;server=https://${ip}:${port}/;macaroon=${macaroon};certthumbprint=${certthumb}"
     clear
