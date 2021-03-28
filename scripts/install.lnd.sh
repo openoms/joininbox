@@ -388,7 +388,7 @@ if [ "$1" =  menu ]||[ "$1" =  hexstring ]||[ "$1" =  scp ]||\
     macaroon: '$(sudo xxd -ps -u -c 1000 /home/bitcoin/.lnd${NODENUMBER}/data/chain/${network}/${chain}net/admin.macaroon)'
     certificate: '$(sudo xxd -ps -u -c 1000 /home/bitcoin/.lnd${NODENUMBER}/tls.cert)'
 " | sudo tee -a /mnt/hdd/app-data/thunderhub/thubConfig.yaml
-    sudo systemctl restart tunderhub
+    sudo systemctl restart thunderhub
   
   #######
   # BOS #
