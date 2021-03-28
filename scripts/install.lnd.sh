@@ -67,10 +67,10 @@ echo
 echo "# Running the command: 'install.lnd.sh $*'"
 
 if [ "$1" = on ]||[ "$1" = update ]||[ "$1" = commit ]||[ "$1" = testPR ];then
-  if [ ! -f /usr/local/bin/lnd ]||[ "$1" = update ]||[ "$1" = commit ]||[ "$1" = testPR ];then
-    echo "# Press ENTER to continue or CTRL+C to exit"
-    read key
+  echo "# Press ENTER to continue or CTRL+C to exit"
+  read key
 
+  if [ ! -f /usr/local/bin/lnd ]||[ "$1" = update ]||[ "$1" = commit ]||[ "$1" = testPR ];then
     rm -rf lnd.update.${LNDVERSION}.sh
     # download
     wget https://raw.githubusercontent.com/openoms/lightning-node-management/master/lnd.updates/lnd.update.${LNDVERSION}.sh
@@ -477,9 +477,6 @@ WantedBy=multi-user.target
     sleep 10
     sudo cat /home/sphinxrelay/sphinx-relay/connection_string.txt
   fi
-
-else
-  echo "FAIL: unknown '${exportType}' - run with -h for help"
 fi
 
 if [ "$1" =  write-sphinx-environment ];then
