@@ -423,10 +423,10 @@ if [ "$1" =  menu ]||[ "$1" =  hexstring ]||[ "$1" =  scp ]||\
     local group_name=${2} # the unix group name (e.g. lndadmin)
     local n=${3:-bitcoin} # the network (e.g. bitcoin or litecoin) defaults to bitcoin
     local c=${4:-main}    # the chain (e.g. main, test, sim, reg) defaults to main (for mainnet)
-    sudo -u sphinxrelay mkdir /mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}
-    sudo /bin/cp /mnt/hdd/app-data/.lnd${NODENUMBER}/data/chain/"${n}"/"${c}"net/"${file_name}" /mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}/"${file_name}"
-    sudo /bin/chown --silent admin:"${group_name}" /mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}/"${file_name}"
-    sudo /bin/chmod --silent 640 /mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}/"${file_name}"
+    sudo -u sphinxrelay mkdir /mnt/hdd/app-data/sphinxrelay/lnd${NODENUMBER}
+    sudo /bin/cp /mnt/hdd/app-data/.lnd${NODENUMBER}/data/chain/"${n}"/"${c}"net/"${file_name}" /mnt/hdd/app-data/sphinxrelay/lnd${NODENUMBER}/"${file_name}"
+    sudo /bin/chown --silent admin:"${group_name}" /mnt/hdd/app-data/sphinxrelay/lnd${NODENUMBER}/"${file_name}"
+    sudo /bin/chmod --silent 640 /mnt/hdd/app-data/sphinxrelay/lnd${NODENUMBER}/"${file_name}"
   }
 
   function copyMacaroons() {
@@ -490,7 +490,7 @@ if [ "$1" =  write-sphinx-environment ];then
   # update node ip in config
   cat /home/sphinxrelay/sphinx-relay/config/app.json | \
   jq ".production.tls_location = \"/mnt/hdd/app-data/.lnd${NODENUMBER}/tls.cert\"" | \
-  jq ".production.macaroon_location = \"/mnt/hdd/app-data/sphinxrelay/lnd{NODENUMBER}/admin.macaroon\"" | \
+  jq ".production.macaroon_location = \"/mnt/hdd/app-data/sphinxrelay/lnd${NODENUMBER}/admin.macaroon\"" | \
   jq ".production.lnd_log_location = \"/mnt/hdd/.lnd${NODENUMBER}/logs/${network}/${chain}net/lnd.log\"" | \
   jq ".production.node_http_port = \"3300\"" | \
   jq ".production.lnd_port = \"100${NODENUMBER}9\"" | \
