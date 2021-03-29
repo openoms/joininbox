@@ -243,7 +243,7 @@ if [ "$1" =  menu ]||[ "$1" =  hexstring ]||[ "$1" =  scp ]||\
       OPTIONS+=(HEX "Hex-String (Copy+Paste)")   
       OPTIONS+=(STR "BTCPay Connection String") 
 
-      CHOICE=$(dialog --clear \
+      CHOICE=$(dialog \
                   --backtitle "RaspiBlitz" \
                   --title "Export Macaroons & TLS.cert" \
                   --menu "How do you want to export?" \
@@ -397,7 +397,7 @@ if [ "$1" =  menu ]||[ "$1" =  hexstring ]||[ "$1" =  scp ]||\
     echo "# Press ENTER to continue or CTRL+C to exit"
     read key
     # https://github.com/alexbosworth/balanceofsatoshis#using-saved-nodes
-    sudo -u bos mkdir /home/bos/.bos/lnd${NODENUMBER}
+    sudo -u bos mkdir -p /home/bos/.bos/lnd${NODENUMBER}
     CERT=$(sudo base64 /home/${LNDUSER}/.lnd${NODENUMBER}/tls.cert | tr -d '\n')
     MACAROON=$(sudo base64 /home/${LNDUSER}/.lnd${NODENUMBER}/data/chain/bitcoin/mainnet/admin.macaroon | tr -d '\n')
     echo "{
