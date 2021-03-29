@@ -178,7 +178,8 @@ WantedBy=multi-user.target
   echo "# Adding aliases for $runningEnv"
   if [ $runningEnv = standalone ];then
     if [ $(grep -c "sudo -u ${LNDUSER} $BITCOINDIR/bitcoin-cli" < /home/joinmarket/_commands.sh ) -eq 0 ];then
-        echo "alias bitcoin-cli=\"sudo -u ${LNDUSER} $BITCOINDIR/bitcoin-cli\"
+        echo "
+alias bitcoin-cli=\"sudo -u ${LNDUSER} $BITCOINDIR/bitcoin-cli\"
 alias bcli=\"sudo -u ${LNDUSER} $BITCOINDIR/bitcoin-cli -network=$NETWORK\"\
 " | sudo tee -a /home/joinmarket/_commands.sh
     fi
@@ -186,7 +187,8 @@ alias bcli=\"sudo -u ${LNDUSER} $BITCOINDIR/bitcoin-cli -network=$NETWORK\"\
   elif [ $runningEnv = raspiblitz ];then
     ALIASFILE="/home/admin/_commands.sh"
   fi
-  echo "alias lncli${NODENUMBER}=\"sudo -u ${LNDUSER} /usr/local/bin/lncli\
+  echo "
+alias lncli${NODENUMBER}=\"sudo -u ${LNDUSER} /usr/local/bin/lncli\
  --lnddir=\"/home/${LNDUSER}/.lnd${NODENUMBER}/\"\
  --network=$NETWORK\
  --rpcserver localhost:100${NODENUMBER}9\"" | sudo tee -a $ALIASFILE
@@ -406,7 +408,8 @@ if [ "$1" =  menu ]||[ "$1" =  hexstring ]||[ "$1" =  scp ]||\
   \"socket\": \"localhost:100${NODENUMBER}9\"
 }" | sudo tee /home/bos/.bos/lnd${NODENUMBER}/credentials.json
     echo "# Added node to bos as: lnd${NODENUMBER}"
-    echo "alias bos${NODENUMBER}=\"sudo -u bos /home/bos/.npm-global/bin/bos --node lnd${NODENUMBER}\"" | tee -a /home/admin/_commands.sh
+    echo "
+alias bos${NODENUMBER}=\"sudo -u bos /home/bos/.npm-global/bin/bos --node lnd${NODENUMBER}\"" | tee -a /home/admin/_commands.sh
     echo "# Added the alias: 'bos${NODENUMBER}'"
     echo "# Activate with: 'source /home/admin/_commands.sh'"
     echo "# Example to fund a channel directly:"
