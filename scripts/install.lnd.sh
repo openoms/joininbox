@@ -310,7 +310,11 @@ if [ "$1" =  menu ]||[ "$1" =  hexstring ]||[ "$1" =  scp ]||\
     # will overwrite ip & port if IP2TOR tunnel is available
     source <(sudo /home/admin/config.scripts/blitz.subscriptions.ip2tor.py subscription-by-service LND-REST-API)
     # bake macaroon that just can create invoices and monitor them
-    macaroon=$(lncli${NODENUMEBR} bakemacaroon address:read address:write info:read invoices:read invoices:write onchain:read)
+    macaroon=$(sudo -u ${LNDUSER} /usr/local/bin/lncli\
+      --lnddir=/home/${LNDUSER}/.lnd${NODENUMBER}/\
+      --network=$NETWORK\
+      --rpcserver localhost:100${NODENUMBER}9\
+      bakemacaroon address:read address:write info:read invoices:read invoices:write onchain:read)
     # get certificate thumb
     certthumb=$(sudo openssl x509 -noout -fingerprint -sha256 -inform pem -in /home/bitcoin/.lnd${NODENUMBER}/tls.cert | cut -d "=" -f 2)
     # construct connection string
