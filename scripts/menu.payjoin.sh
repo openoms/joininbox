@@ -42,6 +42,7 @@ $(echo $(cat $wallet) | sed "s#$walletPath##g")
 
 mixdepth: $(cat $mixdepth)
 " 12 55
+
 # make decison
 pressed=$?
 case $pressed in
@@ -91,6 +92,23 @@ dialog --backtitle "Receive URI" \
 Paste the Receive URI to send to" 9 60 2> $receiveURI
 openMenuIfCancelled $?
 
+# txfee
+txfee=$(mktemp -p /dev/shm/)
+dialog --backtitle "Choose the miner fee" \
+--title "Choose the miner fee" \
+--inputbox "
+Enter the miner fee to be used for the transaction in sat/byte
+Leave empty to use the default fee (set in the joinmarket.cfg)" 10 67 2> "$txfee"
+openMenuIfCancelled $?
+varTxfee=$(cat "$txfee")
+if [ ${#varTxfee} -eq 0 ]; then
+  txfeeMessage="default (set in the joinmarket.cfg)"
+  txfeeOption=""
+else
+  txfeeMessage="$varTxfee sat/byte"
+  txfeeOption="--txfee=$((varTxfee * 1000))"
+fi
+
 if [ ${RPCoverTor} = "on" ]; then 
   tor="torify"
 else
@@ -108,7 +126,9 @@ from the wallet:
 $(sed "s#$walletPath##g" < "$wallet")
 
 mixdepth: $(cat "$mixdepth")
-" 13 55
+
+Miner fee: $txfeeMessage
+" 15 55
 # make decison
 pressed=$?
 case $pressed in
@@ -117,11 +137,11 @@ case $pressed in
     echo "Running the command:
 $tor python sendpayment.py -m$(cat "$mixdepth") \
 $(sed "s#$walletPath##g" < "$wallet") \
-$(cat "$receiveURI")
+$(cat "$receiveURI") $txfeeOption
 "
     # run
     $tor python ~/joinmarket-clientserver/scripts/sendpayment.py \
-    -m"$(cat "$mixdepth")" "$(cat "$wallet")" "$(cat "$receiveURI")"
+    -m"$(cat "$mixdepth")" "$(cat "$wallet")" "$(cat "$receiveURI")" $txfeeOption
     ;;
   1)
     echo "Cancelled"
