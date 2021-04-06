@@ -238,7 +238,7 @@ if [ "$1" = "1" ] || [ "$1" = "on" ]; then
     echo "# Creating the electrs user"
     echo
     sudo adduser --disabled-password --gecos "" electrs
-    cd /home/electrs
+    cd /home/electrs || exit 1
 
     echo
     echo "# Installing Rust"
@@ -252,7 +252,7 @@ if [ "$1" = "1" ] || [ "$1" = "on" ]; then
     echo "# Downloading and building electrs. This will take ~30 minutes" # ~22 min on an Odroid XU4
     echo
     sudo -u electrs git clone https://github.com/romanz/electrs
-    cd /home/electrs/electrs
+    cd /home/electrs/electrs || exit 1
     sudo -u electrs git reset --hard $ELECTRSVERSION
     sudo -u electrs /home/electrs/.cargo/bin/cargo build --release
 

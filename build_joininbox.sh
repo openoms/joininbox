@@ -273,7 +273,7 @@ echo "# add the 'joinmarket' user"
 adduser --disabled-password --gecos "" joinmarket
 
 echo "# clone the joininbox repo and copy the scripts"
-cd /home/joinmarket
+cd /home/joinmarket || exit 1
 sudo -u joinmarket git clone -b ${wantedBranch} https://github.com/${githubUser}/joininbox.git
 sudo -u joinmarket cp ./joininbox/scripts/* /home/joinmarket/
 sudo -u joinmarket cp ./joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
@@ -358,9 +358,9 @@ then
     apt build-dep -y tor deb.torproject.org-keyring
     mkdir ~/debian-packages; cd ~/debian-packages
     apt source tor
-    cd tor-*
+    cd tor-* || exit 1
     debuild -rfakeroot -uc -us
-    cd ..
+    cd .. || exit 1
     dpkg -i tor_*.deb
     # setup Tor in the backgound
     # TODO - test if remains in the background after the Tor service is started

@@ -274,7 +274,7 @@ function copyJoininboxScripts() {
 
 # updateJoininBox <reset|commit>
 function updateJoininBox() {
-  cd /home/joinmarket
+  cd /home/joinmarket || exit 1
   if [ "$1" = "reset" ];then
     echo "# Removing the joininbox source code"
     sudo rm -rf /home/joinmarket/joininbox
@@ -285,7 +285,7 @@ function updateJoininBox() {
   /home/joinmarket/joininbox 2>/dev/null
   echo "# Checking the updates in https://github.com/openoms/joininbox"
   # based on https://github.com/apotdevin/thunderhub/blob/master/scripts/updateToLatest.sh
-  cd /home/joinmarket/joininbox
+  cd /home/joinmarket/joininbox || exit 1
   # fetch latest master
   sudo -u joinmarket git fetch
   echo "# Pulling latest changes..."
@@ -336,7 +336,7 @@ function generateJMconfig() {
     echo "# Generating joinmarket.cfg with default settings"
     echo
     . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
-    cd /home/joinmarket/joinmarket-clientserver/scripts/
+    cd /home/joinmarket/joinmarket-clientserver/scripts/ || exit 1
     python wallet-tool.py generate --datadir=/home/joinmarket/.joinmarket
   else
     echo "# The joinmarket.cfg is present"

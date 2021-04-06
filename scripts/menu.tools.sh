@@ -5,9 +5,9 @@ source /home/joinmarket/_functions.sh
 
 function installBoltzmann {
   if [ ! -f "/home/joinmarket/boltzmann/bvenv/bin/activate" ] ; then
-    cd /home/joinmarket/
+    cd /home/joinmarket/ || exit 1
     git clone https://code.samourai.io/oxt/boltzmann.git
-    cd boltzmann
+    cd boltzmann || exit 1
     python3 -m venv bvenv
     source bvenv/bin/activate || exit 1
     python setup.py install
