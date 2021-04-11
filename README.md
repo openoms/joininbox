@@ -127,5 +127,6 @@ the default password is: `joininbox` - will be prompted to change it on the firs
 * Keybase: <https://keybase.io/team/raspiblitz#joinmarket>
 
 ## Donations
+* For JoinMarket (general): https://bitcoinprivacy.me/joinmarket-donations
 * To waxwing for JoinMarket: <https://joinmarket.me/donations/>
-* To openoms for JoininBox: <https://tips.diynodes.com>
+* To openoms for JoininBox (LN + payjoin enabled): <http://7tpv3ynajkv6cdocmzitcd4z3xrstp3ic6xtv5om3dc2ned3fffll5qd.onion/apps/4FePMm7m818oppkTYNZRwbDnL6HP/pos>
