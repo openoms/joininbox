@@ -134,6 +134,9 @@ bitcoin.node=bitcoind
 [Bitcoind]
 bitcoind.estimatemode=ECONOMICAL
 
+[Watchtower]
+watchtower.active=1
+
 [Wtclient]
 wtclient.active=1
 
