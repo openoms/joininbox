@@ -131,11 +131,9 @@ tlskeypath=/home/${LNDUSER}/.lnd${NODENUMBER}/tls.key
 bitcoin.active=1
 bitcoin.node=bitcoind
 
-[Bitcoind]
-bitcoind.estimatemode=ECONOMICAL
-
 [Watchtower]
 watchtower.active=1
+watchtower.listen=0.0.0.0:9${NODENUMBER}11
 
 [Wtclient]
 wtclient.active=1
@@ -163,7 +161,7 @@ User=${LNDUSER}
 Group=${LNDUSER}
 Type=simple
 ExecStart=/usr/local/bin/lnd \
-  --lnddir="/home/${LNDUSER}/.lnd${NODENUMBER}/" \
+  --lnddir=\"/home/${LNDUSER}/.lnd${NODENUMBER}/\" \
   --bitcoin.$NETWORK
 KillMode=process
 Restart=always
@@ -257,7 +255,7 @@ if [ "$1" =  menu ]||[ "$1" =  hexstring ]||[ "$1" =  scp ]||\
                   --backtitle "RaspiBlitz" \
                   --title "Export Macaroons & TLS.cert" \
                   --menu "How do you want to export?" \
-                  15 52 9 \
+                  16 52 10 \
                   "${OPTIONS[@]}" \
                   2>&1 >/dev/tty)
       clear
@@ -459,10 +457,21 @@ alias bos${NODENUMBER}=\"sudo -u bos /home/bos/.npm-global/bin/bos --node lnd${N
     sudo cat /home/sphinxrelay/sphinx-relay/connection_string.txt
     now=$(date +"%Y_%m_%d_%H%M%S")
     echo "# Will backup your existing Sphinx database to sphinx.backup${now}.db"
-    echo "Press ENTER to continue or CTRL+C to abort"
-    read key
-    sudo mv /home/sphinxrelay/sphinx-relay/connection_string.txt /home/sphinxrelay/sphinx-relay/connection_string.backup$now.txt
-    sudo mv -f /mnt/hdd/app-data/sphinxrelay/sphinx.db  /mnt/hdd/app-data/sphinxrelay/sphinx.backup${now}.db
+    while true; do
+        read -p "# Do you want to move your existing Sphinx database to sphinx.backup${now}.db?" yn
+        case $yn in
+            [Yy]* )
+            echo "# Moving old database to sphinx.backup${now}.db"
+            sudo mv /home/sphinxrelay/sphinx-relay/connection_string.txt /home/sphinxrelay/sphinx-relay/connection_string.backup$now.txt
+            sudo mv -f /mnt/hdd/app-data/sphinxrelay/sphinx.db  /mnt/hdd/app-data/sphinxrelay/sphinx.backup${now}.db
+            break;;
+            [Nn]* ) 
+            echo "# Continue with existing database"
+            break;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+
 
     sudo chmod +x $HOME/install.lnd.sh
     sudo -u sphinxrelay $HOME/install.lnd.sh write-sphinx-environment
@@ -538,7 +547,10 @@ if [ "$1" =  write-sphinx-environment ];then
  --rpcserver localhost:100${NODENUMBER}9 getinfo\
 |jq -c .uris|cut -d@ -f2|cut -d: -f1)")
     echo $command
-    proxychains4 "$CONF" nmap -p9735 "$(sudo -u bitcoin /usr/local/bin/lncli --lnddir=/home/bitcoin/.lnd1/ --network=$NETWORK --rpcserver localhost:100${NODENUMBER}9 getinfo|jq -c .uris|cut -d@ -f2|cut -d: -f1)"
+    proxychains4 $CONF nmap -p9735 "$(sudo -u bitcoin /usr/local/bin/lncli \
+    --lnddir=/home/bitcoin/.lnd${NODENUMBER}/ --network=$NETWORK \
+    --rpcserver localhost:100${NODENUMBER}9 getinfo\
+    |jq -c .uris|cut -d@ -f2|cut -d: -f1)"
 
   ##########################
   # DEDICATED TOR INSTANCE #
@@ -632,9 +644,29 @@ socks5 	127.0.0.1 $SOCKSPORT
     sudo systemctl disable $NODENAME 2>/dev/null
 
     echo "# Editing /etc/systemd/system/$NODENAME.service"
-    sudo sed -i "s/^ExecStart=\/usr\/local\/bin\/lnd.*\
-/ExecStart=\/usr\/local\/bin\/lnd --tor\.socks=$SOCKSPORT --tor\.control=$CONTROLPORT /g" \
-    /etc/systemd/system/$NODENAME.service
+    echo "
+[Unit]
+Description=LND${NODENUMBER} on $NETWORK
+
+[Service]
+User=${LNDUSER}
+Group=${LNDUSER}
+Type=simple
+ExecStart=/usr/local/bin/lnd \
+  --lnddir=\"/home/${LNDUSER}/.lnd${NODENUMBER}/\" \
+  --bitcoin.$NETWORK \
+  --tor.socks=$SOCKSPORT \
+  --tor.control=$CONTROLPORT
+KillMode=process
+Restart=always
+TimeoutSec=120
+RestartSec=30
+StandardOutput=null
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+" | sudo tee /etc/systemd/system/lnd${NODENUMBER}.service
 
     echo "# Enable LND again"
     sudo systemctl enable $NODENAME
