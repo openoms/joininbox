@@ -26,10 +26,10 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 
 * Try signet locally
 * Connect remotely to a
-  * RaspiBlitz over LAN or Tor
-  * RoninDojo over LAN or Tor  
+  * RaspiBlitz over [LAN or Tor](prepare_remote_node.md#raspiblitz)
+  * RoninDojo over [LAN or Tor](prepare_remote_node.md#ronindojo)
 * Run locally as part of the RaspiBlitz SERVICES
-* (Soon: run a pruned node locally on JoininBox)
+* Start a pruned node from https://prunednode.today/
   
 **The addresses, transactions and balances of JoinMarket can be seen in the watch-only wallet of the connected node.**
   * use your own or trusted node
@@ -40,9 +40,10 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 * Power supply (5V 3A and above recommended)
 * Heatsink case
 * 16GB SDcard (minimum)
-* [(USB SSD to run a pruned bitcoin node locally)](FAQ.md#usb-ssd-recommendation)  
+* [(USB SSD to run a pruned bitcoin node locally)](FAQ.md#usb-ssd-recommendation)
+* [other tested hardware ](#tested-environments)
   
-**JoininBox operates on the minimum viable hardware under the assumption that the seed (and passphrase) of the wallets used is safely backed up and can be recovered fully**
+**JoininBox operates on the minimum viable hardware under the assumption that the seed (and passphrase) of the wallets used is safely backed up and can be used to recover the funds!**
 
 ### Set up with an SDcard image
 * Find the links to the prebuilt image in the [releases](https://github.com/openoms/joininbox/releases)
@@ -78,7 +79,7 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 #### Tested environments
   * Debian Buster X86_64 desktop
   * [Raspberry Pi 4 running 64bit Debian Buster](FAQ.md#build-the-sdcard-image)
-  * [Hardkernel Odroid XU4 running 32bit Armbian Buster](FAQ.md#set-up-armbian-on-the-hardkernel-odroid-xu4)
+  * [Hardkernel Odroid XU4/HC1 running 32bit Armbian Buster](FAQ.md#set-up-armbian-on-the-hardkernel-odroid-xu4)
   * Hardkernel Odroid C4 running 64bit Armbian Focal and Buster
   * Raspberry Pi Zero, [3 and 4 running RaspberryOS](FAQ.md#download-and-verify-raspbian-sdcard-image-for-a-raspberry-pi) (32bit Buster)
 
@@ -126,5 +127,6 @@ the default password is: `joininbox` - will be prompted to change it on the firs
 * Keybase: <https://keybase.io/team/raspiblitz#joinmarket>
 
 ## Donations
+* For JoinMarket (general): https://bitcoinprivacy.me/joinmarket-donations
 * To waxwing for JoinMarket: <https://joinmarket.me/donations/>
-* To openoms for JoininBox: <https://tips.diynodes.com>
+* To openoms for JoininBox (LN + payjoin enabled): <http://7tpv3ynajkv6cdocmzitcd4z3xrstp3ic6xtv5om3dc2ned3fffll5qd.onion/apps/4FePMm7m818oppkTYNZRwbDnL6HP/pos>

@@ -100,11 +100,16 @@ if [ "$setupStep" -lt 100 ];then
     fi
   fi
   generateJMconfig
-  # setup finished
-  sudo sed -i  "s#setupStep=.*#setupStep=100#g" $joininConfPath
-  # open the config menu if standalone
-  if [ "$runningEnv" = "standalone" ];then
-    /home/joinmarket/menu.config.sh
+  sudo sed -i  "s#setupStep=.*#setupStep=10#g" $joininConfPath
+  source /home/joinmarket/joinin.conf
+  if [ "$setupStep" -lt 11 ];then
+    if [ "$runningEnv" = "standalone" ];then
+      # open the config menu if standalone
+      /home/joinmarket/menu.config.sh
+    else
+      # setup finished
+      sudo sed -i  "s#setupStep=.*#setupStep=100#g" $joininConfPath
+    fi
   fi
 fi
 

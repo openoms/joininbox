@@ -28,9 +28,9 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 echo 
-echo "#################################"
-echo "# JOININBOX BUILD SCRIPT v0.3.0 #"
-echo "#################################"
+echo "##########################"
+echo "# JOININBOX BUILD SCRIPT #"
+echo "##########################"
 echo 
 
 echo "# Check the command options"
@@ -244,13 +244,13 @@ apt install -y build-essential
 apt install -y python3-venv python3-dev python3-wheel python3-jinja2 \
 python3-pip
 # make sure /usr/bin/pip exists (and calls pip3 in Debian Buster)
-aptupdate-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 # install ifconfig
 apt install -y net-tools
 # to display hex codes
 apt install -y xxd
 # setuptools needed for Nyx
-aptpip install setuptools
+pip install setuptools
 # netcat
 apt install -y netcat
 # install killall, fuser
@@ -259,6 +259,8 @@ apt-get install -y psmisc
 apt install -y dialog
 # qrencode
 apt install -y qrencode
+# unzip for the pruned node snapshot
+apt install -y unzip
 apt-get clean
 apt-get -y autoremove
 
@@ -271,7 +273,7 @@ echo "# add the 'joinmarket' user"
 adduser --disabled-password --gecos "" joinmarket
 
 echo "# clone the joininbox repo and copy the scripts"
-cd /home/joinmarket
+cd /home/joinmarket || exit 1
 sudo -u joinmarket git clone -b ${wantedBranch} https://github.com/${githubUser}/joininbox.git
 sudo -u joinmarket cp ./joininbox/scripts/* /home/joinmarket/
 sudo -u joinmarket cp ./joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
@@ -356,9 +358,9 @@ then
     apt build-dep -y tor deb.torproject.org-keyring
     mkdir ~/debian-packages; cd ~/debian-packages
     apt source tor
-    cd tor-*
+    cd tor-* || exit 1
     debuild -rfakeroot -uc -us
-    cd ..
+    cd .. || exit 1
     dpkg -i tor_*.deb
     # setup Tor in the backgound
     # TODO - test if remains in the background after the Tor service is started

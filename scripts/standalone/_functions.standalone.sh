@@ -33,46 +33,56 @@ function makeEncryptedFolder(){
 }
 
 function downloadSnapShot() {
-  echo "# Paste the link to the latest shapshot from https://prunednode.today:"
-  echo "# For example:"
-  echo "https://prunednode.today/snapshot210224.zip"
-  read downloadLink
-  sudo -u joinmarket mkdir /home/joinmarket/download 2>/dev/null
-  cd /home/joinmarket/download || exit 1 
-  downloadFileName=$(echo $downloadLink | awk 'BEGIN{FS="/"} {print $NF}')
-  noExt=$(echo $downloadLink | cut -d"." -f1-2)
-  hashExt=".signed.txt"
-  hashLink=$(echo $noExt$hashExt)
-  hashFileName=$(echo $hashLink | awk 'BEGIN{FS="/"} {print $NF}')
-  
-  if [ ! -f $hashFileName ];then
-    echo
-    echo "# downloading the signed sha256sum from:"
-    echo "# $hashLink"
-    echo
-    wget $hashLink || exit 1
+  echo "# Check available diskspace"
+  FREE=$(df -k --output=avail "$PWD" | tail -n1) # df -k not df -h
+  if [ $FREE -lt 12582912 ];then                 # 12G = 12*1024*1024k
+    echo "# The free space is only $FREE bytes!"
+    echo "# Would need ~12GB free space to download and extract the snapshot."
+    echo "# Press ENTER to continue to download regardless or CTRL+C to exit." 
+    read key
+  else
+    echo "# OK, more than 12GB is free!"
   fi
+  sudo -u joinmarket mkdir /home/joinmarket/download 2>/dev/null
+  cd /home/joinmarket/download || exit 1
+  hashFileName="latest.signed.txt"
+  sudo rm $hashFileName
+  wget https://prunednode.today/$hashFileName || exit 1
+  downloadFileName=$(grep .zip < $hashFileName | awk '{print $2}')
+  downloadLink="https://prunednode.today/$downloadFileName"
   
   echo "# Import the PGP keys of Stepan Snigirev"
   curl https://stepansnigirev.com/ss-specter-release.asc | gpg --import || exit 1
   
+  echo "# Verifying the signature of the hash ..."
+  verifyResult=$(gpg --verify $hashFileName 2>&1)
+  goodSignature=$(echo ${verifyResult} | grep -c 'Good signature')
+  echo "# goodSignature (${goodSignature})"
+  if [ ${goodSignature} -eq 0 ];then
+    echo "# Invalid signature on $hashFileName"
+    echo "# Press ENTER to remove the invalid file or CTRL+C to abort."
+    read key
+    echo "# Removing $hashFileName"
+    rm -f $hashFileName
+    exit 1
+  fi
+
   if [ ! -f $downloadFileName ];then
     echo
     echo "# Downloading $downloadLink ..."
     echo
     wget $downloadLink
   fi
-  echo "# Verifying the signature of the hash ..."
-  verifyResult=$(gpg --verify $hashFileName 2>&1)
-  goodSignature=$(echo ${verifyResult} | grep -c 'Good signature')
-  echo "# goodSignature (${goodSignature})"
+
   echo "# Verifying the hash (takes time) ..."
   verifyHash=$(sha256sum -c $hashFileName 2>&1)
   goodHash=$(echo ${verifyHash} | grep -c OK)
-  echo "# verifyHash ($verifyHash)"
+  echo "# goodHash ($goodHash)"
   if [ ${goodSignature} -lt 1 ] || [ ${goodHash} -lt 1 ]; then
     echo
     echo "# Download failed --> PGP Verify not OK / signature(${goodSignature})"
+    echo "# Press ENTER to remove the invalid files or CTRL+C to abort."
+    read key
     echo "# Removing the downloaded files"
     rm -f $hashFileName
     rm -f $downloadFileName
@@ -81,18 +91,32 @@ function downloadSnapShot() {
     echo
     echo "# The PGP signature and the hash of the downloaded snapshot is correct"
   fi
-  echo "# Exract and copy to /home/store/app-data/.bitcoin"
+  
+  echo "# Exracting to /home/store/app-data/.bitcoin ..."
+  FREE=$(df -k --output=avail "$PWD" | tail -n1) # df -k not df -h
+  if [ $FREE -lt 7340032 ];then                 # 7G = 7*1024*1024k
+    echo "# The free space is only $FREE bytes!"
+    echo "# Would need ~7GB free space to extract the snapshot."
+    echo "# Press ENTER to continue to download regardless or CTRL+C to exit." 
+    read key
+  else
+    echo "# OK, more than 7GB is free!"
+  fi
   addUserStore
   sudo mkdir -p /home/store/app-data/.bitcoin
+  echo "# Make sure bitcoind is not running"
+  sudo systemctl stop bitcoind
   if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
     echo "# Back up bitcoin.conf"
     sudo -u bitcoin mv /home/bitcoin/.bitcoin/bitcoin.conf \
     /home/bitcoin/.bitcoin/bitcoin.conf.backup
   fi
+  echo "# Check unzip"
+  sudo apt install -y unzip
   sudo unzip -o $downloadFileName -d /home/store/app-data/.bitcoin
   if [ -f /home/bitcoin/.bitcoin/bitcoin.conf.backup ];then
     echo "# Restore bitcoin.conf"
-    sudo -u bitcoin mv /home/bitcoin/.bitcoin/bitcoin.conf.backup \
+    sudo -u bitcoin mv -f /home/bitcoin/.bitcoin/bitcoin.conf.backup \
     /home/bitcoin/.bitcoin/bitcoin.conf
   fi
   echo "# Making sure user: bitcoin exists"
@@ -101,7 +125,6 @@ function downloadSnapShot() {
 }
 
 function installBitcoinCoreStandalone() {
-  source /home/joinmarket/_functions.bitcoincore.sh
   downloadBitcoinCore
 
   if [ -f /home/bitcoin/bitcoin/bitcoind ];then
@@ -111,11 +134,14 @@ function installBitcoinCoreStandalone() {
     echo "# Adding the user: bitcoin"
     sudo adduser --disabled-password --gecos "" bitcoin
     echo "# Installing Bitcoin Core v${bitcoinVersion}"
-    sudo -u bitcoin tar -xvf ${binaryName}
     sudo -u bitcoin mkdir -p /home/bitcoin/bitcoin
-    sudo install -m 0755 -o root -g root -t /home/bitcoin/bitcoin bitcoin-${bitcoinVersion}/bin/*  
+    cd /home/joinmarket/download/bitcoin-${bitcoinVersion}/bin/ || exit 1
+    sudo install -m 0755 -o root -g root -t /home/bitcoin/bitcoin ./*
   fi
-
+  if [ "$(grep -c "/home/bitcoin/bitcoin" < /etc/profile)" -eq 0 ];then
+    echo "# Add /home/bitcoin/bitcoin to global PATH"
+    echo "PATH=/home/bitcoin/bitcoin:$PATH" | sudo tee -a /etc/profile
+  fi
   installed=$(/home/bitcoin/bitcoin/bitcoind --version | grep "${bitcoinVersion}" -c)
   if [ ${installed} -lt 1 ]; then
     echo
@@ -130,7 +156,7 @@ function installBitcoinCoreStandalone() {
     fi
   fi
 
-  echo "# symlink to /home/bitcoin/"
+  echo "# symlink /home/store/app-data/.bitcoin to /home/bitcoin/"
   sudo rm -rf /home/bitcoin/.bitcoin # not a symlink, delete
   sudo mkdir -p /home/store/app-data/.bitcoin
   sudo ln -s /home/store/app-data/.bitcoin /home/bitcoin/

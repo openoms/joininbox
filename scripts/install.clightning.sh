@@ -20,13 +20,12 @@ TORGROUP="debian-tor"
 if [ $network = signet ];then
   LIGHTNINGUSER="joinmarket"
   BITCOINDIR="/home/${LIGHTNINGUSER}/bitcoin"
-  APPDATADIR="/mnt/hdd/app-data"
 else
   LIGHTNINGUSER="bitcoin"
   if [ $runningEnv = standalone ];then
     BITCOINDIR="/home/${LIGHTNINGUSER}/bitcoin"
   elif [ $runningEnv = raspiblitz ];then
-    BITCOINDIR="/usr/local/bin/"
+    BITCOINDIR="/usr/local/bin"
   fi
 fi
 if [ ${#2} -eq 0 ]||[ $2 = purge ]||[ "$1" = update ]||[ "$1" = commit ]||[ "$1" = testPR ];then
@@ -38,16 +37,17 @@ if [ $network = mainnet ];then
   NETWORK=bitcoin
 else
   NETWORK=$network
-    if [ $runningEnv = standalone ];then
+fi
+if [ $runningEnv = standalone ];then
     addUserStore
     APPDATADIR="/home/store/app-data"
-  elif [ $runningEnv = raspiblitz ];then
+elif [ $runningEnv = raspiblitz ];then
     APPDATADIR="/mnt/hdd/app-data"
-  fi
 fi
+
 echo
 echo "NODENUMBER=$NODENUMBER"
-echo "NETWORK = $NETWORK"
+echo "NETWORK=$NETWORK"
 echo "LIGHTNINGUSER=$LIGHTNINGUSER"
 echo "TORGROUP=$TORGROUP"
 echo "BITCOINDIR=$BITCOINDIR"
@@ -134,12 +134,7 @@ if [ "$1" = on ]||[ "$1" = update ]||[ "$1" = commit ]||[ "$1" = testPR ];then
   # config
   echo "# Make sure ${LIGHTNINGUSER} is in the ${TORGROUP} group"
   sudo usermod -a -G ${TORGROUP} ${LIGHTNINGUSER}
-  if [ $runningEnv = standalone ];then
-    addUserStore
-    APPDATADIR="/home/store/app-data"
-  elif [ $runningEnv = raspiblitz ];then
-    APPDATADIR="/mnt/hdd/app-data"
-  fi
+
   echo "# Store the lightning data in $APPDATADIR/.lightning${NODENUMBER}"
   echo "# Symlink to /home/${LIGHTNINGUSER}/"
   # not a symlink, delete
@@ -179,7 +174,6 @@ Description=c-lightning daemon ${NODENUMBER} on $NETWORK
 User=${LIGHTNINGUSER}
 Group=${LIGHTNINGUSER}
 Type=simple
-Environment=PATH=\$PATH:$BITCOINDIR 
 ExecStart=/usr/local/bin/lightningd \
   --lightning-dir="/home/${LIGHTNINGUSER}/.lightning${NODENUMBER}/"
 KillMode=process

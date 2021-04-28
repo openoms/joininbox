@@ -77,7 +77,7 @@ case $CHOICE in
             /home/joinmarket/menu.yg.sh
             ;;
         NICKNAME)
-            name=$(ls -t /home/joinmarket/.joinmarket/logs | grep J5 | head -n 1 | cut -c -16)
+            name=$(YGnickname)
             whiptail \
             --title "Counterparty name"  \
             --msgbox "The last used counterparty name for the Order Book:\n
@@ -109,12 +109,12 @@ Will tail the latest YG logfile from:
 /home/joinmarket/.joinmarket/logs/
 
 Press CTRL+C to exit and return to the menu." 10 50
-            cd /home/joinmarket/.joinmarket/logs 
+            cd /home/joinmarket/.joinmarket/logs || exit 1 
             ls -t | grep J5 | head -n 1 | xargs tail -fn1000
             echo
             echo "Press ENTER to return to menu"
             read key
-            cd /home/joinmarket/joinmarket-clientserver/scripts/
+            cd /home/joinmarket/joinmarket-clientserver/scripts/ || exit 1
             /home/joinmarket/menu.yg.sh
             ;;            
         STOP)

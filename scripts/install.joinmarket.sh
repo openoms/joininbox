@@ -36,7 +36,12 @@ if [ "$1" = "install" ]; then
       pip install matplotlib
     fi
     if [ "$(pip list | grep -c scipy)" -eq 0 ];then
+      # https://stackoverflow.com/questions/7496547/does-python-scipy-need-blas
+      sudo apt-get install -y gfortran libopenblas-dev liblapack-dev
+      # fix 'No space left on device' with 2GB RAM
+      export TMPDIR='/var/tmp'
       pip install scipy
+      export TMPDIR='/tmp'
     fi
   else
     echo

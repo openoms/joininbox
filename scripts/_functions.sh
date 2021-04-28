@@ -45,7 +45,7 @@ function openMenuIfCancelled() {
 
 function errorOnInstall() {
   if [ "$1" -gt 0 ]; then
-    DIALOGRC=.dialogrc.onerror dialog --title "Error during install" \
+    DIALOGRC=/home/joinmarket/.dialogrc.onerror dialog --title "Error during install" \
       --msgbox "\nPlease search or report at:\n https://github.com/openoms/joininbox/issues" 7 56
   fi
 }
@@ -184,6 +184,13 @@ function YGuptime() {
   JMUptime=$(printf '%dd:%dh:%dm\n' $((JMUptimeInSeconds/86400)) $((JMUptimeInSeconds%86400/3600)) $((JMUptimeInSeconds%3600/60)))
 }
 
+function YGnickname() {
+  # Retrieves nickname from the latest NickServ message in the newest logfile
+  newest_log=$(ls -td /home/joinmarket/.joinmarket/logs/* | grep J5 | head -n 1)
+  name=$(grep NickServ $newest_log | tail -1 | awk '{print $9}')
+  echo $name
+}
+
 # installJoinMarket [update|testPR <PRnumber>|commit]
 function installJoinMarket() {
   cpu=$(uname -m)
@@ -267,7 +274,7 @@ function copyJoininboxScripts() {
 
 # updateJoininBox <reset|commit>
 function updateJoininBox() {
-  cd /home/joinmarket
+  cd /home/joinmarket || exit 1
   if [ "$1" = "reset" ];then
     echo "# Removing the joininbox source code"
     sudo rm -rf /home/joinmarket/joininbox
@@ -278,7 +285,7 @@ function updateJoininBox() {
   /home/joinmarket/joininbox 2>/dev/null
   echo "# Checking the updates in https://github.com/openoms/joininbox"
   # based on https://github.com/apotdevin/thunderhub/blob/master/scripts/updateToLatest.sh
-  cd /home/joinmarket/joininbox
+  cd /home/joinmarket/joininbox || exit 1
   # fetch latest master
   sudo -u joinmarket git fetch
   echo "# Pulling latest changes..."
@@ -329,7 +336,7 @@ function generateJMconfig() {
     echo "# Generating joinmarket.cfg with default settings"
     echo
     . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&\
-    cd /home/joinmarket/joinmarket-clientserver/scripts/
+    cd /home/joinmarket/joinmarket-clientserver/scripts/ || exit 1
     python wallet-tool.py generate --datadir=/home/joinmarket/.joinmarket
   else
     echo "# The joinmarket.cfg is present"

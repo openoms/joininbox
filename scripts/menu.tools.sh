@@ -5,9 +5,9 @@ source /home/joinmarket/_functions.sh
 
 function installBoltzmann {
   if [ ! -f "/home/joinmarket/boltzmann/bvenv/bin/activate" ] ; then
-    cd /home/joinmarket/
+    cd /home/joinmarket/ || exit 1
     git clone https://code.samourai.io/oxt/boltzmann.git
-    cd boltzmann
+    cd boltzmann || exit 1
     python3 -m venv bvenv
     source bvenv/bin/activate || exit 1
     python setup.py install
@@ -33,7 +33,7 @@ function getQRstring {
 }
 
 # BASIC MENU INFO
-HEIGHT=12
+HEIGHT=11
 WIDTH=55
 CHOICE_HEIGHT=20
 TITLE="Tools"
@@ -45,6 +45,8 @@ BACKTITLE="JoininBox GUI"
 if [ "${runningEnv}" = standalone ]; then
   OPTIONS+=(
     SPECTER "Specter Desktop options")
+  HEIGHT=$((HEIGHT+1))
+  CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
 fi
 OPTIONS+=(
     QR "Display a QR code from any text"
