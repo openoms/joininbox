@@ -59,7 +59,8 @@ On a RaspiBlitz
 `./config.scripts/internet.hiddenservice.sh ssh 22 22`  
 * get the Hidden Service address to connect to with:  
 `sudo cat /mnt/hdd/tor/ssh/hostname`  
-On the Debian based Linux Desktop (Ubuntu, Debian, MX Linux etc.)
+
+On a Debian based Linux Desktop (Ubuntu, Debian, MX Linux etc.)
 * needs Tor running on your desktop:  
 `sudo apt install tor`
 * might need to add:  
