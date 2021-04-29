@@ -6,6 +6,8 @@ source /home/joinmarket/_functions.sh
 if [ "${runningEnv}" = standalone ]; then
   source /home/joinmarket/standalone/_functions.standalone.sh
   network=mainnet
+elif [ "${runningEnv}" = mynode ];then
+  network=mainnet
 elif [ "${runningEnv}" = raspiblitz ];then
   source /mnt/hdd/raspiblitz.conf
   if [ $network = bitcoin ];then

@@ -28,9 +28,11 @@ OPTIONS+=(
   "" ""
   OFFERS  "Watch the Order Book locally"
   "" "" 
-  CONFIG  "Connection and joinmarket.cfg settings"
-  TOOLS   "Extra helper functions and services"
-  UPDATE  "Update JoininBox or JoinMarket")
+  CONFIG "Connection and joinmarket.cfg settings" \
+  TOOLS  "Extra helper functions and services")
+if [ "${runningEnv}" != mynode ]; then
+  OPTIONS+=(UPDATE "Update JoininBox or JoinMarket")
+fi
 
 CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \

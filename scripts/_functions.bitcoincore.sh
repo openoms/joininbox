@@ -367,6 +367,9 @@ function connectLocalNode() {
   if [ $runningEnv = raspiblitz ];then
     rpc_user=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
     rpc_pass=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf|grep rpcpassword|cut -c 13-)
+  elif [ $runningEnv = mynode ];then
+    rpc_user=mynode
+    rpc_pass=$(sudo cat /mnt/hdd/mynode/settings/.btcrpcpw)
   elif [ $runningEnv = standalone ];then
     rpc_user=$(sudo cat /home/bitcoin/.bitcoin/bitcoin.conf|grep rpcuser|cut -c 9-)
     rpc_pass=$(sudo cat /home/bitcoin/.bitcoin/bitcoin.conf|grep rpcpassword|cut -c 13-)
