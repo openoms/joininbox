@@ -34,7 +34,7 @@ function downloadBitcoinCore() {
     echo "# !!! FAIL !!! Could not download laanwj-releases.asc"
     exit 1
   fi
-  gpg laanwj-releases.asc 
+  gpg --import-options show-only --import ./laanwj-releases.asc
   fingerprint=$(gpg ./laanwj-releases.asc 2>/dev/null | grep "${laanwjPGP}" -c)
   if [ ${fingerprint} -lt 1 ]; then
     echo
@@ -67,10 +67,12 @@ function downloadBitcoinCore() {
     echo "# OK --> BITCOIN MANIFEST IS CORRECT"
     echo
   fi
-  echo
-  echo "# BITCOIN v${bitcoinVersion} for ${bitcoinOSversion}"
+  
+  # get the sha256 value for the corresponding platform from signed hash sum file
+  bitcoinSHA256=$(grep -i "$bitcoinOSversion" SHA256SUMS.asc | cut -d " " -f1)
 
   # download resources
+  echo "# BITCOIN v${bitcoinVersion} for ${bitcoinOSversion}"
   binaryName="bitcoin-${bitcoinVersion}-${bitcoinOSversion}.tar.gz"
   if [ ! -f "./${binaryName}" ];then
     sudo -u joinmarket wget https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/${binaryName}
@@ -86,16 +88,15 @@ function downloadBitcoinCore() {
   binaryChecksum=$(sha256sum ${binaryName} | cut -d " " -f1)
   if [ "${binaryChecksum}" != "${bitcoinSHA256}" ]; then
     echo "# !!! FAIL !!! Downloaded BITCOIN BINARY not matching SHA256 checksum: ${bitcoinSHA256}"
-    echo "# Deleting the corrupt file"
+    echo "# Deleting the the mismatched binary and checksum file"
     rm -f ${binaryName}
+    rm -f SHA256SUMS.asc
     echo "# Deleting the previously downloaded bitcoin-${bitcoinVersion} directory"
     sudo rm -rf /home/joinmarket/download/bitcoin-${bitcoinVersion} 
     exit 1
   else
     echo
-    echo "# ****************************************"
     echo "# OK --> VERIFIED BITCOIN CHECKSUM CORRECT"
-    echo "# ****************************************"
     echo
     echo "# Extracting to /home/joinmarket/download/bitcoin-${bitcoinVersion}"
     sudo -u joinmarket tar -xvf ${binaryName}
