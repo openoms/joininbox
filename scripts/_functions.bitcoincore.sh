@@ -4,22 +4,20 @@
 function downloadBitcoinCore() {
   # set version
   # https://bitcoincore.org/en/download/
-  bitcoinVersion="0.21.0"
+  bitcoinVersion="0.21.1"
 
   # needed to check code signing
   laanwjPGP="01EA5486DE18A882D4C2684590C8019E36C2E964"
 
-  echo "# Detecting CPU architecture ..."
-  isARM=$(uname -m | grep -c 'arm')
-  isAARCH64=$(uname -m | grep -c 'aarch64')
-  isX86_64=$(uname -m | grep -c 'x86_64')
-  if [ ${isARM} -eq 0 ] && [ ${isAARCH64} -eq 0 ] && [ ${isX86_64} -eq 0 ]; then
-    echo "# !!! FAIL !!!"
-    echo "# Can only build on ARM, aarch64, x86_64 not on:"
-    uname -m
-    exit 1
-  else
-    echo "# OK running on $(uname -m) architecture."
+  # detect CPU architecture & fitting download link
+  if [ $(uname -m | grep -c 'arm') -eq 1 ] ; then
+    bitcoinOSversion="arm-linux-gnueabihf"
+  fi
+  if [ $(uname -m | grep -c 'aarch64') -eq 1 ] ; then
+    bitcoinOSversion="aarch64-linux-gnu"
+  fi
+  if [ $(uname -m | grep -c 'x86_64') -eq 1 ] ; then
+    bitcoinOSversion="x86_64-linux-gnu"
   fi
 
   echo
@@ -49,7 +47,7 @@ function downloadBitcoinCore() {
 
   # download signed binary sha256 hash sum file and check
   if [ ! -f "SHA256SUMS.asc" ];then
-    sudo -u joinmarket wget https://bitcoin.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS.asc
+    sudo -u joinmarket wget https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS.asc
   else
     echo "SHA256SUMS.asc is already present"
   fi
@@ -66,31 +64,16 @@ function downloadBitcoinCore() {
     exit 1
   else
     echo
-    echo "# ****************************************"
     echo "# OK --> BITCOIN MANIFEST IS CORRECT"
-    echo "# ****************************************"
     echo
   fi
-
-  # get the sha256 value for the corresponding platform from signed hash sum file
-  if [ ${isARM} -eq 1 ] ; then
-    bitcoinOSversion="arm-linux-gnueabihf"
-  fi
-  if [ ${isAARCH64} -eq 1 ] ; then
-    bitcoinOSversion="aarch64-linux-gnu"
-  fi
-  if [ ${isX86_64} -eq 1 ] ; then
-    bitcoinOSversion="x86_64-linux-gnu"
-  fi
-  bitcoinSHA256=$(grep -i "$bitcoinOSversion" SHA256SUMS.asc | cut -d " " -f1)
-
   echo
   echo "# BITCOIN v${bitcoinVersion} for ${bitcoinOSversion}"
 
   # download resources
   binaryName="bitcoin-${bitcoinVersion}-${bitcoinOSversion}.tar.gz"
   if [ ! -f "./${binaryName}" ];then
-    sudo -u joinmarket wget https://bitcoin.org/bin/bitcoin-core-${bitcoinVersion}/${binaryName}
+    sudo -u joinmarket wget https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/${binaryName}
   else
     echo "# ${binaryName} was already downloaded"
   fi
