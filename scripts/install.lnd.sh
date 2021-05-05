@@ -458,7 +458,8 @@ alias bos${NODENUMBER}=\"sudo -u bos /home/bos/.npm-global/bin/bos --node lnd${N
     now=$(date +"%Y_%m_%d_%H%M%S")
     echo "# Will backup your existing Sphinx database to sphinx.backup${now}.db"
     while true; do
-        read -p "# Do you want to move your existing Sphinx database to sphinx.backup${now}.db?" yn
+        echo "# Do you want to move your existing Sphinx database to sphinx.backup${now}.db?"
+        read -p "y: move | n: continue with existing database" yn
         case $yn in
             [Yy]* )
             echo "# Moving old database to sphinx.backup${now}.db"
