@@ -109,13 +109,21 @@ function installBitcoinCore() {
 
   if [ -f /home/joinmarket/bitcoin/bitcoind ];then
     installedVersion=$(/home/joinmarket/bitcoin/bitcoind --version | grep version)
-    echo "${installedVersion} is already installed"
-  else
-    echo "# Installing Bitcoin Core v${bitcoinVersion}"
-    sudo -u joinmarket mkdir -p /home/joinmarket/bitcoin
-    cd /home/joinmarket/download/bitcoin-${bitcoinVersion}/bin/ || exit 1
-    sudo install -m 0755 -o root -g root -t /home/joinmarket/bitcoin ./*
+    echo "# ${installedVersion} is already installed"
+    if [ $(echo $installedVersion | grep -c "${bitcoinVersion}") -eq 0 ]; then
+      echo "# Press ENTER to install Bitcoin Core v${bitcoinVersion} instead or CTRL+C to exit"
+      read key
+    else
+      echo "# Exiting"
+      exit 1
+    fi
   fi
+
+  echo "# Installing Bitcoin Core v${bitcoinVersion}"
+  sudo -u joinmarket mkdir -p /home/joinmarket/bitcoin
+  cd /home/joinmarket/download/bitcoin-${bitcoinVersion}/bin/ || exit 1
+  sudo install -m 0755 -o root -g root -t /home/joinmarket/bitcoin ./*
+  
   if [ "$(grep -c "/home/joinmarket/bitcoin" < /home/joinmarket/.profile)" -eq 0 ];then
     echo "# Add /home/joinmarket/bitcoin to the local PATH"
     echo "PATH=/home/joinmarket/bitcoin:$PATH" | sudo tee -a /home/joinmarket/.profile
