@@ -15,6 +15,7 @@ JMcfgPath="/home/joinmarket/.joinmarket/joinmarket.cfg"
 joininConfPath="/home/joinmarket/joinin.conf"
 
 # functions
+source /home/joinmarket/_functions.menu.sh
 source /home/joinmarket/_functions.bitcoincore.sh
 if [ "${runningEnv}" = standalone ]; then
   source /home/joinmarket/standalone/_functions.standalone.sh

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# INFO menu options
+# QUICKSTART menu options
 
 source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
@@ -32,33 +32,37 @@ function cacheAndShowQR() {
 }
 
 # BASIC MENU INFO
-HEIGHT=9
+HEIGHT=10
 WIDTH=52
-CHOICE_HEIGHT=21
-TITLE="Info menu options"
-BACKTITLE="Info menu options"
+CHOICE_HEIGHT=4
+TITLE="Quickstart options"
+BACKTITLE="Quickstart options"
 MENU=""
 OPTIONS=()
 
 # Basic Options
 OPTIONS+=(
+  GEN "Generate a new wallet"
   m0 "Show the first mixdepth to deposit to"
-  ALL "Show the content of all mixdepths"
+  MAKER "Run the Yield Generator"
   DOCS "Link to the documentation"
 )
 
-CHOICE=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
-                --title "$TITLE" \
-                --ok-label "Select" \
-                --cancel-label "Back" \
-                --menu "$MENU" \
-                $HEIGHT $WIDTH $CHOICE_HEIGHT \
-                "${OPTIONS[@]}" \
-                2>&1 >/dev/tty)
+CHOICE=$(dialog \
+          --clear \
+          --backtitle "$BACKTITLE" \
+          --title "$TITLE" \
+          --ok-label "Select" \
+          --cancel-label "Back" \
+          --menu "$MENU" \
+            $HEIGHT $WIDTH $CHOICE_HEIGHT \
+            "${OPTIONS[@]}" \
+            2>&1 >/dev/tty)
 
 case $CHOICE in
 
+  GEN)
+    menu_GEN;;
   m0)
     checkRPCwallet
     # wallet
@@ -66,20 +70,9 @@ case $CHOICE in
     cacheAndShowQR
     echo
     echo "Press ENTER to return to the menu"
-    read key
-    ;;
-  ALL)
-    checkRPCwallet
-    # wallet
-    chooseWallet
-    /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)"
-    echo
-    echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
-    echo
-    echo "Press ENTER to return to the menu..."
-    read key
-    /home/joinmarket/menu.sh
-    ;;
+    read key;;
+  MAKER)
+    menu_MAKER;;
   DOCS)
     datastring="https://github.com/openoms/joininbox#more-info"
     clear
@@ -90,6 +83,5 @@ case $CHOICE in
     qrencode -t ANSIUTF8 "${datastring}"
     echo            
     echo "Press ENTER to return to the menu..."
-    read key
-    ;;
+    read key;;
 esac

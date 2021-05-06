@@ -16,7 +16,7 @@ OPTIONS=()
 
 # Basic Options
 OPTIONS+=(
-  INFO    "Show the address list and balances"
+  START   "Quickstart with JoinMarket"
   QTGUI   "Show how to open the JoinMarketQT GUI"
   "" ""
   WALLET  "Wallet management options"
@@ -45,8 +45,8 @@ CHOICE=$(dialog --clear \
                 2>&1 >/dev/tty)
 
 case $CHOICE in
-  INFO)
-      /home/joinmarket/menu.info.sh
+  START)
+      /home/joinmarket/menu.quickstart.sh
       waitKeyOnExit1 $?  
       /home/joinmarket/menu.sh;;
   WALLET)
