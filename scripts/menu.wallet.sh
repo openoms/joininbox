@@ -8,9 +8,9 @@ source /home/joinmarket/_functions.sh
 checkRPCwallet
 
 # BASIC MENU INFO
-HEIGHT=15
+HEIGHT=16
 WIDTH=52
-CHOICE_HEIGHT=21
+CHOICE_HEIGHT=10
 TITLE="Wallet management options"
 BACKTITLE="Wallet management options"
 MENU=""
@@ -18,15 +18,16 @@ OPTIONS=()
 
 # Basic Options
 OPTIONS+=(
-  GEN "Generate a new wallet"
-  HISTORY "Show all past transactions"
-  IMPORT "Copy wallet(s) from a remote node"
-  RECOVER "Restore a wallet from the seed"
-  UNLOCK "Remove the lockfiles"
+  INFO "Show the contents of all mixdepths"
   UTXOS "Shows all the coins in the wallet"
-  RESCAN "Rescan the Bitcoin Core wallet"
+  HISTORY "Show all past transactions"
   XPUBS "Show the master public keys"
   PSBT "Sign an externally prepared PSBT"
+  GEN "Generate a new wallet"
+  IMPORT "Copy wallet(s) from a remote node"
+  RECOVER "Restore a wallet from the seed"
+  RESCAN "Rescan the Bitcoin Core wallet"
+  UNLOCK "Remove the lockfiles"
   )
 
 CHOICE=$(dialog \
@@ -54,6 +55,17 @@ case $CHOICE in
     echo
     echo "Press ENTER to return to the menu"
     read key;;
+  INFO)
+    checkRPCwallet
+    # wallet
+    chooseWallet
+    /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)"
+    echo
+    echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
+    echo
+    echo "Press ENTER to return to the menu..."
+    read key
+    /home/joinmarket/menu.sh;;
   HISTORY)
     activateJMvenv
     if [ "$(pip list | grep -c scipy)" -eq 0 ];then
