@@ -5,7 +5,7 @@ source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
-HEIGHT=20
+HEIGHT=22
 WIDTH=57
 CHOICE_HEIGHT=14
 BACKTITLE="JoininBox GUI $currentJBtag network:$network IP:$localip"
@@ -32,10 +32,11 @@ OPTIONS+=(
   TOOLS  "Extra helper functions and services")
 if [ "${runningEnv}" != mynode ]; then
   OPTIONS+=(UPDATE "Update JoininBox or JoinMarket")
+  OPTIONS+=("" "")
   OPTIONS+=(SHUTDOWN "Switch off the computer")
   OPTIONS+=(RESTART "Restart the computer")
-  HEIGHT=$((HEIGHT+3))
-  CHOICE_HEIGHT=$((CHOICE_HEIGHT+3))
+  HEIGHT=$((HEIGHT+4))
+  CHOICE_HEIGHT=$((CHOICE_HEIGHT+4))
 fi
 if [ "${runningEnv}" = raspiblitz ]; then
   OPTIONS+=(BLITZ "Switch to the RaspiBlitz menu")
@@ -131,7 +132,7 @@ case $CHOICE in
         sudo shutdown now
       fi
     fi;;
-  BLITZ
+  BLITZ)
     sudo su - admin;;
   *)
     clear
