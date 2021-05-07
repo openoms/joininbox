@@ -30,29 +30,30 @@ OPTIONS+=(
   "" "" 
   CONFIG "Connection and joinmarket.cfg settings" \
   TOOLS  "Extra helper functions and services")
-if [ "${runningEnv}" != mynode ]; then
-  OPTIONS+=(UPDATE "Update JoininBox or JoinMarket")
-  OPTIONS+=("" "")
-  OPTIONS+=(SHUTDOWN "Switch off the computer")
-  OPTIONS+=(RESTART "Restart the computer")
-  HEIGHT=$((HEIGHT+4))
-  CHOICE_HEIGHT=$((CHOICE_HEIGHT+4))
-fi
-if [ "${runningEnv}" = raspiblitz ]; then
-  OPTIONS+=(BLITZ "Switch to the RaspiBlitz menu")
-  HEIGHT=$((HEIGHT+1))
-  CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
-fi
+  if [ "${runningEnv}" != mynode ]; then
+    OPTIONS+=(UPDATE "Update JoininBox or JoinMarket")
+    OPTIONS+=("" "")
+    if [ "${runningEnv}" = raspiblitz ]; then
+      OPTIONS+=(BLITZ "Switch to the RaspiBlitz menu")
+      HEIGHT=$((HEIGHT+1))
+      CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
+    fi
+    OPTIONS+=(REBOOT "Restart the computer")
+    OPTIONS+=(SHUTDOWN "Switch off the computer")
+    HEIGHT=$((HEIGHT+4))
+    CHOICE_HEIGHT=$((CHOICE_HEIGHT+4))
+  fi
 
-CHOICE=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
-                --title "$TITLE" \
-                --ok-label "Select" \
-                --cancel-label "Exit" \
-                --menu "$MENU" \
-                $HEIGHT $WIDTH $CHOICE_HEIGHT \
-                "${OPTIONS[@]}" \
-                2>&1 >/dev/tty)
+CHOICE=$(dialog \
+          --clear \
+          --backtitle "$BACKTITLE" \
+          --title "$TITLE" \
+          --ok-label "Select" \
+          --cancel-label "Exit" \
+          --menu "$MENU" \
+            $HEIGHT $WIDTH $CHOICE_HEIGHT \
+            "${OPTIONS[@]}" \
+            2>&1 >/dev/tty)
 
 case $CHOICE in
   START)
