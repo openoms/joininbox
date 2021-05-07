@@ -18,8 +18,8 @@ OPTIONS=()
 
 # Basic Options
 OPTIONS+=(
-  INFO "Show the contents of all mixdepths"
-  UTXOS "Shows all the coins in the wallet"
+  DISPLAY "Show the contents of all mixdepths"
+  UTXOS "Show all the coins in the wallet"
   HISTORY "Show all past transactions"
   XPUBS "Show the master public keys"
   PSBT "Sign an externally prepared PSBT"
@@ -55,17 +55,8 @@ case $CHOICE in
     echo
     echo "Press ENTER to return to the menu"
     read key;;
-  INFO)
-    checkRPCwallet
-    # wallet
-    chooseWallet
-    /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)"
-    echo
-    echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
-    echo
-    echo "Press ENTER to return to the menu..."
-    read key
-    /home/joinmarket/menu.sh;;
+  DISPLAY)
+    menu_DISPLAY;;
   HISTORY)
     activateJMvenv
     if [ "$(pip list | grep -c scipy)" -eq 0 ];then

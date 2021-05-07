@@ -1,6 +1,8 @@
 #!/bin/bash
 
-function menu_GEN {
+# repeatedly used menu items as functions
+
+function menu_GEN() {
   clear
   echo 
   . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
@@ -14,7 +16,7 @@ function menu_GEN {
   read key
 }
 
-function menu_MAKER {
+function menu_MAKER() {
   # wallet
   chooseWallet
   # save wallet in conf
@@ -34,4 +36,17 @@ function menu_MAKER {
   echo "# returning to the menu..."
   sleep 1
   /home/joinmarket/menu.yg.sh
+}
+
+function menu_DISPLAY() {
+  checkRPCwallet
+  # wallet
+  chooseWallet
+  /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)"
+  echo
+  echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
+  echo
+  echo "Press ENTER to return to the menu..."
+  read key
+  /home/joinmarket/menu.sh
 }

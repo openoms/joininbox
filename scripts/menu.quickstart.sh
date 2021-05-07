@@ -32,9 +32,9 @@ function cacheAndShowQR() {
 }
 
 # BASIC MENU INFO
-HEIGHT=10
+HEIGHT=11
 WIDTH=52
-CHOICE_HEIGHT=4
+CHOICE_HEIGHT=5
 TITLE="Quickstart options"
 BACKTITLE="Quickstart options"
 MENU=""
@@ -44,6 +44,7 @@ OPTIONS=()
 OPTIONS+=(
   GEN "Generate a new wallet"
   m0 "Show the first mixdepth to deposit to"
+  DISPLAY "Show the contents of all mixdepths"
   MAKER "Run the Yield Generator"
   DOCS "Link to the documentation"
 )
@@ -70,7 +71,9 @@ case $CHOICE in
     cacheAndShowQR
     echo
     echo "Press ENTER to return to the menu"
-    read key;;
+    read key;;  
+  DISPLAY)
+    menu_DISPLAY;;
   MAKER)
     menu_MAKER;;
   DOCS)
