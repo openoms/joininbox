@@ -5,9 +5,9 @@ source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
-HEIGHT=23
+HEIGHT=20
 WIDTH=57
-CHOICE_HEIGHT=21
+CHOICE_HEIGHT=14
 BACKTITLE="JoininBox GUI $currentJBtag network:$network IP:$localip"
 TITLE="JoininBox $currentJBtag $network"
 MENU="
@@ -32,6 +32,15 @@ OPTIONS+=(
   TOOLS  "Extra helper functions and services")
 if [ "${runningEnv}" != mynode ]; then
   OPTIONS+=(UPDATE "Update JoininBox or JoinMarket")
+  OPTIONS+=(SHUTDOWN "Switch off the computer")
+  OPTIONS+=(RESTART "Restart the computer")
+  HEIGHT=$((HEIGHT+3))
+  CHOICE_HEIGHT=$((CHOICE_HEIGHT+3))
+fi
+if [ "${runningEnv}" = raspiblitz ]; then
+  OPTIONS+=(BLITZ "Switch to the RaspiBlitz menu")
+  HEIGHT=$((HEIGHT+1))
+  CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
 fi
 
 CHOICE=$(dialog --clear \
@@ -46,53 +55,87 @@ CHOICE=$(dialog --clear \
 
 case $CHOICE in
   START)
-      /home/joinmarket/menu.quickstart.sh
-      waitKeyOnExit1 $?  
-      /home/joinmarket/menu.sh;;
+    /home/joinmarket/menu.quickstart.sh
+    waitKeyOnExit1 $?  
+    /home/joinmarket/menu.sh;;
   WALLET)
-      /home/joinmarket/menu.wallet.sh
-      waitKeyOnExit1 $?
-      /home/joinmarket/menu.sh;;
+    /home/joinmarket/menu.wallet.sh
+    waitKeyOnExit1 $?
+    /home/joinmarket/menu.sh;;
   QTGUI)
-      /home/joinmarket/info.qtgui.sh
-      /home/joinmarket/menu.sh;;
+    /home/joinmarket/info.qtgui.sh
+    /home/joinmarket/menu.sh;;
   MAKER)
-      /home/joinmarket/menu.yg.sh
-      waitKeyOnExit1 $?
-      /home/joinmarket/menu.sh;;
+    /home/joinmarket/menu.yg.sh
+    waitKeyOnExit1 $?
+    /home/joinmarket/menu.sh;;
   SEND)
-      /home/joinmarket/menu.send.sh
-      echo ""
-      echo "Press ENTER to return to the menu..."
-      read key
-      /home/joinmarket/menu.sh;;
+    /home/joinmarket/menu.send.sh
+    echo ""
+    echo "Press ENTER to return to the menu..."
+    read key
+    /home/joinmarket/menu.sh;;
   FREEZE)
-      /home/joinmarket/menu.freeze.sh
-      echo ""
-      echo "Press ENTER to return to the menu..."
-      read key
-      /home/joinmarket/menu.sh;;
+    /home/joinmarket/menu.freeze.sh
+    echo ""
+    echo "Press ENTER to return to the menu..."
+    read key
+    /home/joinmarket/menu.sh;;
   PAYJOIN)
-      /home/joinmarket/menu.payjoin.sh
-      waitKeyOnExit1 $?
-      /home/joinmarket/menu.sh;;
+    /home/joinmarket/menu.payjoin.sh
+    waitKeyOnExit1 $?
+    /home/joinmarket/menu.sh;;
   OFFERS)
-      /home/joinmarket/menu.orderbook.sh
-      /home/joinmarket/menu.sh;;
+    /home/joinmarket/menu.orderbook.sh
+    /home/joinmarket/menu.sh;;
   CONFIG)
-      /home/joinmarket/menu.config.sh
-      echo "Returning to the menu..."
-      sleep 1
-      /home/joinmarket/menu.sh;;
+    /home/joinmarket/menu.config.sh
+    echo "Returning to the menu..."
+    sleep 1
+    /home/joinmarket/menu.sh;;
   TOOLS)
-      /home/joinmarket/menu.tools.sh
-      /home/joinmarket/menu.sh;;
+    /home/joinmarket/menu.tools.sh
+    /home/joinmarket/menu.sh;;
   UPDATE)
-      /home/joinmarket/menu.update.sh
-      /home/joinmarket/menu.sh;;            
-    *)
+    /home/joinmarket/menu.update.sh
+    /home/joinmarket/menu.sh;;
+  REBOOT)
+	clear
+	confirmation "Are you sure?" "Reboot" "Cancel" true 7 40
+	confirmationReboot=$?
+	if [ $confirmationReboot -eq 0 ]; then
       clear
-      echo "
+      stopYG
+      echo
+      if [ "${runningEnv}" = raspiblitz ]; then
+        sudo /home/admin/XXshutdown.sh reboot
+        exit 0
+      else
+        echo "# Reboot"
+        sudo shutdown now -r
+      fi
+	fi;;
+  SHUTDOWN)
+    clear
+    confirmation "Are you sure?" "Shutdown" "Cancel" true 7 40
+    confirmationShutdown=$?
+    if [ $confirmationShutdown -eq 0 ]; then
+      clear
+      stopYG
+      echo
+      if [ "${runningEnv}" = raspiblitz ]; then
+        sudo /home/admin/XXshutdown.sh
+        exit 0
+      else
+        echo "# Shutdown" 
+        sudo shutdown now
+      fi
+    fi;;
+  BLITZ
+    sudo su - admin;;
+  *)
+    clear
+    echo "
 ***************************
 * JoinMarket command line *  
 ***************************

@@ -439,3 +439,37 @@ function signPSBT() {
   echo "Press ENTER to return to the menu..."
   read key
 }
+
+function confirmation() {
+  local text=$1
+  local yesButtonText=$2
+  local noButtonText=$3
+  local defaultno=$4
+  local height=$5
+  local width=$6
+
+  if [ $defaultno ]; then
+    dialog \
+    --backtitle "Confirmation" \
+    --title "Confirmation" \
+    --yes-button "$yesButtonText" \
+    --no-button "$noButtonText" \
+    --defaultno \
+    --yesno \
+    "
+  $text
+  " "$height" "$width"
+  else
+    dialog \
+    --backtitle "Confirmation" \
+    --title "Confirmation" \
+    --yes-button "$yesButtonText" \
+    --no-button "$noButtonText" \
+    --yesno \
+    "
+  $text
+  " "$height" "$width"
+  fi
+  answer=$?
+  return $answer
+}
