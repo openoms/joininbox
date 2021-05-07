@@ -116,7 +116,8 @@ case $CHOICE in
         echo "# Reboot"
         sudo shutdown now -r
       fi
-	fi;;
+	fi
+    /home/joinmarket/menu.sh;;
   SHUTDOWN)
     clear
     confirmation "Are you sure?" "Shutdown" "Cancel" true 7 40
@@ -132,7 +133,8 @@ case $CHOICE in
         echo "# Shutdown" 
         sudo shutdown now
       fi
-    fi;;
+    fi
+    /home/joinmarket/menu.sh;;
   BLITZ)
     sudo su - admin;;
   *)
