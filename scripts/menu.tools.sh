@@ -3,6 +3,17 @@
 source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
+function installBitcoinScripts {
+  if [ ! -d "/home/joinmarket/bitcoin-scripts" ];then
+    cd /home/bitcoin/ || exit 1
+    sudo -u bitcoin git clone https://github.com/kristapsk/bitcoin-scripts.git
+    cd bitcoin-scripts || exit 1
+    # from https://github.com/kristapsk/bitcoin-scripts/commits/master
+    sudo -u bitcoin git checkout 45642787d2f9a0ca4d3fd1b22b86863de83d8707
+    sudo -u bitcoin chmod +x *.sh
+  fi
+}
+
 function installBoltzmann {
   if [ ! -f "/home/joinmarket/boltzmann/bvenv/bin/activate" ] ; then
     cd /home/joinmarket/ || exit 1
@@ -15,11 +26,13 @@ function installBoltzmann {
 }
 
 function getTXID {
+  title=$1
+  text=$2
   txid=$(mktemp -p /dev/shm/)
-  dialog --backtitle "Enter a TXID" \
-  --title "Enter a TXID" \
+  dialog --backtitle "$title" \
+  --title "$title" \
   --inputbox "
-  Paste a TXID to analyze" 9 71 2> "$txid"
+  $text" 9 71 2> "$txid"
   openMenuIfCancelled $?
 }
 
@@ -33,9 +46,9 @@ function getQRstring {
 }
 
 # BASIC MENU INFO
-HEIGHT=11
+HEIGHT=12
 WIDTH=55
-CHOICE_HEIGHT=20
+CHOICE_HEIGHT=6
 TITLE="Tools"
 MENU=""
 OPTIONS=()
@@ -51,21 +64,25 @@ fi
 OPTIONS+=(
     QR "Display a QR code from any text"
     CUSTOMRPC "Run a custom bitcoin RPC with curl"
+    CHECKTXN "CLI transaction explorer"    
     BOLTZMANN "Analyze the entropy of a transaction")
 if [ "${runningEnv}" != mynode ]; then
-    OPTIONS+=(PASSWORD "Change the ssh password")
+  OPTIONS+=(
+    PASSWORD "Change the ssh password")
 fi
-OPTIONS+=(LOGS "Show the bitcoind logs on $network")
+OPTIONS+=(
+    LOGS "Show the bitcoind logs on $network")
 
-CHOICE=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
-                --title "$TITLE" \
-                --ok-label "Select" \
-                --cancel-label "Back" \
-                --menu "$MENU" \
-                $HEIGHT $WIDTH $CHOICE_HEIGHT \
-                "${OPTIONS[@]}" \
-                2>&1 >/dev/tty)
+CHOICE=$(dialog \
+          --clear \
+          --backtitle "$BACKTITLE" \
+          --title "$TITLE" \
+          --ok-label "Select" \
+          --cancel-label "Back" \
+          --menu "$MENU" \
+            $HEIGHT $WIDTH $CHOICE_HEIGHT \
+            "${OPTIONS[@]}" \
+            2>&1 >/dev/tty)
 
 case $CHOICE in
   QR)
@@ -83,16 +100,14 @@ case $CHOICE in
     echo "(To shrink QR code: MacOS press CMD- / Linux press CTRL-)"
     echo            
     echo "Press ENTER to return to the menu..."
-    read key
-    ;;
+    read key;;
   BOLTZMANN)
     installBoltzmann
-    getTXID
+    getTXID "Enter a TXID" "Paste a TXID to analyze"
     python /home/joinmarket/start.boltzmann.py --txid=$(cat $txid)
     echo            
     echo "Press ENTER to return to the menu..."
-    read key
-    ;;
+    read key;;
   CUSTOMRPC)
     echo "***DANGER ZONE***"
     echo "# See the options at https://developer.bitcoin.org/reference/rpc/"
@@ -104,15 +119,20 @@ case $CHOICE in
     customRPC "# custom RPC" "$method" "$params" 
     echo            
     echo "Press ENTER to return to the menu..."
-    read key
-    ;;
+    read key;;
   SPECTER)
-    /home/joinmarket/standalone/menu.specter.sh
-    ;;
+    /home/joinmarket/standalone/menu.specter.sh;;
   PASSWORD)
-    sudo /home/joinmarket/set.password.sh
-    ;;
+    sudo /home/joinmarket/set.password.sh;;
   LOGS)
-    showBitcoinLogs
-    ;;
+    showBitcoinLogs;;
+  CHECKTXN)
+    installBitcoinScripts
+    getTXID "Enter a TXID" "Paste a TXID to check"
+    getRPC
+    cd /home/bitcoin/bitcoin-scripts || exit 1
+    sudo -u bitcoin ./checktransaction.sh -rpcwallet=$rpc_wallet $(cat $txid)
+    echo            
+    echo "Press ENTER to return to the menu..."
+    read key;;
 esac
