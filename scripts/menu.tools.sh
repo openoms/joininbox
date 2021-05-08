@@ -48,10 +48,12 @@ function getQRstring {
   openMenuIfCancelled $?
 }
 
+isLocalBitcoinCLI=$(sudo -u bitcoin bitcoin-cli -version|grep -c "Bitcoin Core RPC client")
+
 # BASIC MENU INFO
-HEIGHT=13
+HEIGHT=11
 WIDTH=55
-CHOICE_HEIGHT=7
+CHOICE_HEIGHT=5
 TITLE="Tools"
 MENU=""
 OPTIONS=()
@@ -67,12 +69,20 @@ fi
 OPTIONS+=(
     QR "Display a QR code from any text"
     CUSTOMRPC "Run a custom bitcoin RPC with curl"
-    SCANJM "Scan blocks for JoinMarket coinjoins"
-    CHECKTXN "CLI transaction explorer"    
+    SCANJM "Scan blocks for JoinMarket coinjoins")
+if [ $isLocalBitcoinCLI -gt 0 ];then    
+  OPTIONS+=(
+    CHECKTXN "CLI transaction explorer")
+  HEIGHT=$((HEIGHT+1))
+  CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
+fi    
+  OPTIONS+=(
     BOLTZMANN "Analyze the entropy of a transaction")
 if [ "${runningEnv}" != mynode ]; then
   OPTIONS+=(
     PASSWORD "Change the ssh password")
+  HEIGHT=$((HEIGHT+1))
+  CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
 fi
 OPTIONS+=(
     LOGS "Show the bitcoind logs on $network")
@@ -143,7 +153,7 @@ case $CHOICE in
     echo "Press ENTER to return to the menu..."
     read key;;
   SCANJM)
-    BLOCKHEIGHT=$(sudo -u bitcoin bitcoin-cli getblockchaininfo\
+    BLOCKHEIGHT=$(customRPC "" "getblockchaininfo" ""\
                   |grep blocks|awk '{print $2}'|cut -d, -f1)
     dialog_inputbox "snicker-finder.py" \
     "\nUsing: https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/\
