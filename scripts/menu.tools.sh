@@ -4,7 +4,7 @@ source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
 function installBitcoinScripts {
-  if [ ! -d "/home/joinmarket/bitcoin-scripts" ];then
+  if [ ! -d "/home/bitcoin/bitcoin-scripts" ];then
     cd /home/bitcoin/ || exit 1
     sudo -u bitcoin git clone https://github.com/kristapsk/bitcoin-scripts.git
     cd bitcoin-scripts || exit 1
@@ -25,15 +25,18 @@ function installBoltzmann {
   fi
 }
 
-function getTXID {
-  title=$1
-  text=$2
-  txid=$(mktemp -p /dev/shm/)
+function dialog_inputbox {
+  local title=$1
+  local text=$2
+  local height=$3
+  local width=$4
+  inputdata=$(mktemp -p /dev/shm/)
   dialog --backtitle "$title" \
   --title "$title" \
   --inputbox "
-  $text" 9 71 2> "$txid"
+  $text" $height $width 2> "$inputdata"
   openMenuIfCancelled $?
+  dialog_output=$(cat $inputdata)
 }
 
 function getQRstring {
@@ -46,9 +49,9 @@ function getQRstring {
 }
 
 # BASIC MENU INFO
-HEIGHT=12
+HEIGHT=13
 WIDTH=55
-CHOICE_HEIGHT=6
+CHOICE_HEIGHT=7
 TITLE="Tools"
 MENU=""
 OPTIONS=()
@@ -64,6 +67,7 @@ fi
 OPTIONS+=(
     QR "Display a QR code from any text"
     CUSTOMRPC "Run a custom bitcoin RPC with curl"
+    SCANJM "Scan blocks for JoinMarket coinjoins"
     CHECKTXN "CLI transaction explorer"    
     BOLTZMANN "Analyze the entropy of a transaction")
 if [ "${runningEnv}" != mynode ]; then
@@ -101,13 +105,6 @@ case $CHOICE in
     echo            
     echo "Press ENTER to return to the menu..."
     read key;;
-  BOLTZMANN)
-    installBoltzmann
-    getTXID "Enter a TXID" "Paste a TXID to analyze"
-    python /home/joinmarket/start.boltzmann.py --txid=$(cat $txid)
-    echo            
-    echo "Press ENTER to return to the menu..."
-    read key;;
   CUSTOMRPC)
     echo "***DANGER ZONE***"
     echo "# See the options at https://developer.bitcoin.org/reference/rpc/"
@@ -127,12 +124,42 @@ case $CHOICE in
   LOGS)
     showBitcoinLogs;;
   CHECKTXN)
+    dialog_inputbox "CLI transaction explorer" "\nUsing: https://github.com/kristapsk/bitcoin-scripts\n\nPaste a TXID to check" 11 71
+    clear
     installBitcoinScripts
-    getTXID "Enter a TXID" "Paste a TXID to check"
     getRPC
-    cd /home/bitcoin/bitcoin-scripts || exit 1
-    sudo -u bitcoin ./checktransaction.sh -rpcwallet=$rpc_wallet $(cat $txid)
+    echo "Running the command:"
+    echo "sudo -u bitcoin /home/bitcoin/bitcoin-scripts/checktransaction.sh -rpcwallet=$rpc_wallet $dialog_output"
+    sudo -u bitcoin /home/bitcoin/bitcoin-scripts/checktransaction.sh -rpcwallet=$rpc_wallet $dialog_output
     echo            
     echo "Press ENTER to return to the menu..."
     read key;;
+  BOLTZMANN)
+    dialog_inputbox "Boltzmann transaction entropy analyses" "\nUsing: https://code.samourai.io/oxt/boltzmann\n\nPaste a TXID to analyze" 11 71
+    clear
+    installBoltzmann
+    python /home/joinmarket/start.boltzmann.py --txid=$dialog_output
+    echo            
+    echo "Press ENTER to return to the menu..."
+    read key;;
+  SCANJM)
+    BLOCKHEIGHT=$(sudo -u bitcoin bitcoin-cli getblockchaininfo\
+                  |grep blocks|awk '{print $2}'|cut -d, -f1)
+    dialog_inputbox "snicker-finder.py" \
+    "\nUsing: https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/\
+master/scripts/snicker/snicker-finder.py\n\n\
+Note that scanning the blocks is slow.\n\
+Current blockheight is: $BLOCKHEIGHT\n\
+Input how many previous blocks from the tip you want to scan" 14 108
+    clear
+    echo "Running the command:"
+    echo "python snicker/snicker-finder.py -j $((BLOCKHEIGHT - dialog_output)) \
+-f /home/joinmarket/.joinmarket/candidates.txt"
+    python /home/joinmarket/joinmarket-clientserver/scripts/snicker/snicker-finder.py\
+    -j $((BLOCKHEIGHT - dialog_output)) -f /home/joinmarket/.joinmarket/candidates.txt
+    echo
+    echo "The output is saved in /home/joinmarket/.joinmarket/candidates.txt"
+    echo
+    echo "Press ENTER to return to the menu..."
+    read key;;  
 esac
