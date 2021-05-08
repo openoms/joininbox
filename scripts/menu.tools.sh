@@ -152,13 +152,18 @@ Note that scanning the blocks is slow.\n\
 Current blockheight is: $BLOCKHEIGHT\n\
 Input how many previous blocks from the tip you want to scan" 14 108
     clear
+    echo
     echo "Running the command:"
     echo "python snicker/snicker-finder.py -j $((BLOCKHEIGHT - dialog_output)) \
 -f /home/joinmarket/.joinmarket/candidates.txt"
+    echo
     python /home/joinmarket/joinmarket-clientserver/scripts/snicker/snicker-finder.py\
     -j $((BLOCKHEIGHT - dialog_output)) -f /home/joinmarket/.joinmarket/candidates.txt
     echo
-    echo "The output is saved in /home/joinmarket/.joinmarket/candidates.txt"
+    echo "The transaction details are saved in /home/joinmarket/.joinmarket/candidates.txt"
+    echo "To display the file in the terminal use:"
+    echo "'cat /home/joinmarket/.joinmarket/candidates.txt'"
+    echo "or menu -> TOOLS -> CHECKTXN for a CLI transaction explorer"
     echo
     echo "Press ENTER to return to the menu..."
     read key;;  
