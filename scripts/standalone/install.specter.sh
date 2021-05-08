@@ -2,7 +2,7 @@
 # based on https://github.com/rootzoll/raspiblitz/blob/v1.6/home.admin/config.scripts/bonus.cryptoadvance-specter.sh
 # https://github.com/cryptoadvance/specter-desktop  
 
-pinnedVersion="1.2.2"
+pinnedVersion="1.3.1"
 
 # command info
 if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
