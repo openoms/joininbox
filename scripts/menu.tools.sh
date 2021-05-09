@@ -14,6 +14,18 @@ function installBitcoinScripts {
   fi
 }
 
+function listCJcandidateTXNs {
+clear
+cjTXNs=$(grep "Found Joinmarket coinjoin transaction" < \
+  /home/joinmarket/.joinmarket/candidates.txt| awk '{print $5}')
+installBitcoinScripts
+getRPC
+for i in $cjTXNs; do
+  sudo -u bitcoin /home/bitcoin/bitcoin-scripts/checktransaction.sh \
+    -rpcwallet=$rpc_wallet $i
+done
+}
+
 function installBoltzmann {
   if [ ! -f "/home/joinmarket/boltzmann/bvenv/bin/activate" ] ; then
     cd /home/joinmarket/ || exit 1
@@ -69,7 +81,7 @@ fi
 OPTIONS+=(
     QR "Display a QR code from any text"
     CUSTOMRPC "Run a custom bitcoin RPC with curl"
-    SCANJM "Scan blocks for JoinMarket coinjoins")
+    CJFINDER "Scan blocks for JoinMarket coinjoins")
 if [ $isLocalBitcoinCLI -gt 0 ];then    
   OPTIONS+=(
     CHECKTXN "CLI transaction explorer")
@@ -138,21 +150,23 @@ case $CHOICE in
     clear
     installBitcoinScripts
     getRPC
-    echo "Running the command:"
+    echo
+    echo "# Running the command:"
     echo "sudo -u bitcoin /home/bitcoin/bitcoin-scripts/checktransaction.sh -rpcwallet=$rpc_wallet $dialog_output"
+    echo
     sudo -u bitcoin /home/bitcoin/bitcoin-scripts/checktransaction.sh -rpcwallet=$rpc_wallet $dialog_output
     echo            
     echo "Press ENTER to return to the menu..."
     read key;;
   BOLTZMANN)
-    dialog_inputbox "Boltzmann transaction entropy analyses" "\nUsing: https://code.samourai.io/oxt/boltzmann\n\nPaste a TXID to analyze" 11 71
+    dialog_inputbox "Boltzmann transaction entropy analysis" "\nUsing: https://code.samourai.io/oxt/boltzmann\n\nPaste a TXID to analyze" 11 71
     clear
     installBoltzmann
     python /home/joinmarket/start.boltzmann.py --txid=$dialog_output
     echo            
     echo "Press ENTER to return to the menu..."
     read key;;
-  SCANJM)
+  CJFINDER)
     BLOCKHEIGHT=$(customRPC "" "getblockchaininfo" ""\
                   |grep blocks|awk '{print $2}'|cut -d, -f1)
     dialog_inputbox "snicker-finder.py" \
@@ -173,8 +187,27 @@ Input how many previous blocks from the tip you want to scan" 14 108
     echo "The transaction details are saved in /home/joinmarket/.joinmarket/candidates.txt"
     echo "To display the file in the terminal use:"
     echo "'cat /home/joinmarket/.joinmarket/candidates.txt'"
-    echo "or menu -> TOOLS -> CHECKTXN for a CLI transaction explorer"
-    echo
+    if [ $isLocalBitcoinCLI -gt 0 ];then 
+      echo "or menu -> TOOLS -> CHECKTXN for a CLI transaction explorer"
+      echo
+      echo "Press ENTER for an overview of the JoinMarket coinjoins found with CHECKTXN"
+      read key
+      listCJcandidateTXNs
+    fi
     echo "Press ENTER to return to the menu..."
     read key;;  
 esac
+
+function listCJcandidateTXNs {
+clear
+cjTXIDs=$(cat /home/joinmarket/.joinmarket/candidates.txt \
+  | grep "Found Joinmarket coinjoin transaction" | awk '{print $5}')
+installBitcoinScripts
+getRPC
+checkRPCwallet
+for i in $cjTXIDs; do
+  echo
+  sudo -u bitcoin /home/bitcoin/bitcoin-scripts/checktransaction.sh \
+    -rpcwallet=$rpc_wallet $i
+done
+}
