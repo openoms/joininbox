@@ -5,6 +5,8 @@
 source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
+checkRPCwallet
+
 function cacheAndShowQR() {
   # cache wallet data
   walletData=$(mktemp -p /dev/shm/)
@@ -65,7 +67,6 @@ case $CHOICE in
   GEN)
     menu_GEN;;
   m0)
-    checkRPCwallet
     # wallet
     chooseWallet
     cacheAndShowQR

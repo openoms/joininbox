@@ -3,6 +3,8 @@
 source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
+checkRPCwallet
+
 function receivePayJoin() {
 
 # wallet

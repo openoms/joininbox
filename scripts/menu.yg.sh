@@ -4,6 +4,8 @@
 source /home/joinmarket/_functions.sh
 source /home/joinmarket/joinin.conf
 
+checkRPCwallet
+
 # add default value to joinin config if needed
 if ! grep -Eq "^YGwallet=" $joininConfPath; then
   echo "YGwallet=nil" >> $joininConfPath
