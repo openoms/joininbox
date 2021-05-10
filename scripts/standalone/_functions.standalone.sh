@@ -215,8 +215,8 @@ WantedBy=multi-user.target
 
   # add aliases
   if [ $(alias | grep -c "sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli") -eq 0 ];then 
-    sudo bash -c "echo 'alias bitcoin-cli=\"sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli\"' >> /home/joinmarket/_commands.sh"
-    sudo bash -c "echo 'alias bitcoind=\"sudo -u bitcoin /home/bitcoin/bitcoin/bitcoind\"' >> /home/joinmarket/_commands.sh"
+    sudo bash -c "echo 'alias bitcoin-cli=\"sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli\"' >> /home/joinmarket/_aliases.sh"
+    sudo bash -c "echo 'alias bitcoind=\"sudo -u bitcoin /home/bitcoin/bitcoin/bitcoind\"' >> /home/joinmarket/_aliases.sh"
   fi
 
   sudo systemctl start bitcoind

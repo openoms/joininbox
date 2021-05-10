@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# source aliases from /home/joinmarket/_aliases.sh
+source /home/joinmarket/_aliases.sh
+
 # SHORTCUT COMMANDS for the user 'joinmarket'
 
 # command: menu

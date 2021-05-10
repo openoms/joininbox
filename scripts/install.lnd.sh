@@ -180,15 +180,15 @@ WantedBy=multi-user.target
   echo
   echo "# Adding aliases for $runningEnv"
   if [ $runningEnv = standalone ];then
-    if [ $(grep -c "sudo -u ${LNDUSER} $BITCOINDIR/bitcoin-cli" < /home/joinmarket/_commands.sh ) -eq 0 ];then
+    if [ $(grep -c "sudo -u ${LNDUSER} $BITCOINDIR/bitcoin-cli" < /home/joinmarket/_aliases.sh ) -eq 0 ];then
         echo "
 alias bitcoin-cli=\"sudo -u ${LNDUSER} $BITCOINDIR/bitcoin-cli\"
 alias bcli=\"sudo -u ${LNDUSER} $BITCOINDIR/bitcoin-cli -network=$NETWORK\"\
-" | sudo tee -a /home/joinmarket/_commands.sh
+" | sudo tee -a /home/joinmarket/_aliases.sh
     fi
-    ALIASFILE="/home/joinmarket/_commands.sh"
+    ALIASFILE="/home/joinmarket/_aliases.sh"
   elif [ $runningEnv = raspiblitz ];then
-    ALIASFILE="/home/admin/_commands.sh"
+    ALIASFILE="/home/admin/_aliases.sh"
   fi
   echo "
 alias lncli${NODENUMBER}=\"sudo -u ${LNDUSER} /usr/local/bin/lncli\
@@ -214,9 +214,9 @@ if [ "$1" = "off" ];then
   sudo systemctl stop lnd${NODENUMBER}
   echo "# Removing the aliases"
   if [ $runningEnv = standalone ];then
-    ALIASFILE="/home/joinmarket/_commands.sh"
+    ALIASFILE="/home/joinmarket/_aliases.sh"
   elif [ $runningEnv = raspiblitz ];then
-    ALIASFILE="/home/admin/_commands.sh"
+    ALIASFILE="/home/admin/_aliases.sh"
   fi
   sudo sed -i "/lncli${NODENUMBER}/d" $ALIASFILE
   if [ "$(echo "$@" | grep -c purge)" -gt 0 ];then
@@ -423,9 +423,9 @@ if [ "$1" =  menu ]||[ "$1" =  hexstring ]||[ "$1" =  scp ]||\
 }" | sudo tee /home/bos/.bos/lnd${NODENUMBER}/credentials.json
     echo "# Added node to bos as: lnd${NODENUMBER}"
     echo "
-alias bos${NODENUMBER}=\"sudo -u bos /home/bos/.npm-global/bin/bos --node lnd${NODENUMBER}\"" | tee -a /home/admin/_commands.sh
+alias bos${NODENUMBER}=\"sudo -u bos /home/bos/.npm-global/bin/bos --node lnd${NODENUMBER}\"" | tee -a /home/admin/_aliases.sh
     echo "# Added the alias: 'bos${NODENUMBER}'"
-    echo "# Activate with: 'source /home/admin/_commands.sh'"
+    echo "# Activate with: 'source /home/admin/_aliases.sh'"
     echo "# Example to fund a channel directly:"
     echo "'bos${NODENUMBER} open <pubkey> --amount <sats>'"
 
