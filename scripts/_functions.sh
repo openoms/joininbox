@@ -301,16 +301,10 @@ function updateJoininBox() {
     REMOTE=$(git rev-parse "$UPSTREAM")
     if [ $LOCAL = $REMOTE ]; then
       echo "# You are up-to-date on version" $TAG
-      echo
-      copyJoininboxScripts
-      echo
-      echo "Press ENTER to return to the menu"
-      read key
-      exit 0
     fi
   fi
   sudo -u joinmarket git reset --hard $TAG
-  echo "# Updated to version" $TAG
+  echo "# Current version: $TAG"
   copyJoininboxScripts
 }
 
