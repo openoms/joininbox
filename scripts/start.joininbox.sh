@@ -144,7 +144,7 @@ elif [ "$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -cv /)" -eq 1 ];the
   onlyWallet=$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -v /)
   echo "# Found only one wallet file: $onlyWallet"
   echo "# Using it as default"
-  sed -i "s#^defaultWallet=.*#defaultWallet=$onlyWallet#g" $joininConfPath
+  sed -i "s#^defaultWallet=.*#defaultWallet=/home/joinmarket/.joinmarket/wallets/$onlyWallet#g" $joininConfPath
 fi
 
 # add default value to joinin config if needed
