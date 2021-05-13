@@ -68,7 +68,7 @@ case $CHOICE in
     menu_GEN;;
   m0)
     # wallet
-    chooseWallet
+    chooseWallet noLockFileCheck
     cacheAndShowQR
     echo
     echo "Press ENTER to return to the menu"

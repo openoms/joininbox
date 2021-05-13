@@ -62,10 +62,11 @@ function passwordToFile() {
   data=$(mktemp -p /dev/shm/)
   # trap it
   trap 'rm -f $data' 0 1 2 5 15
-  dialog --backtitle "Enter password" \
-        --title "Enter password" \
-        --insecure \
-        --passwordbox "Type or paste the wallet decryption password" 8 52 2> "$data"
+  dialog --clear \
+   --backtitle "Enter password" \
+   --title "Enter password" \
+   --insecure \
+   --passwordbox "Type or paste the wallet decryption password" 8 52 2> "$data"
   # make decison
   pressed=$?
   case $pressed in
@@ -92,35 +93,56 @@ function passwordToFile() {
   esac
 }
 
+# chooseWallet <noLockFileCheck>
 function chooseWallet() {
   wallet=$(mktemp -p /dev/shm/)
   if [ "$defaultWallet" = "off" ]; then
     wallet=$(mktemp -p /dev/shm/)
-    dialog --backtitle "Choose a wallet by typing the full name of the file" \
-    --title "Choose a wallet by typing the full name of the file" \
-    --fselect "$walletPath" 10 60 2> "$wallet"
+    dialog --clear \
+     --backtitle "Choose a wallet by typing the full name of the file" \
+     --title "Choose a wallet by typing the full name of the file" \
+     --fselect "$walletPath" 10 60 2> "$wallet"
     openMenuIfCancelled $?
-    if [ ! -f $(cat $wallet) ];then
-      clear
-      echo
-      echo "# Error: file not found"
-      echo "# Make sure to type the full filename of the wallet."
-      echo "# eg.: wallet.jmdat"
-      echo
-      exit 1
-    else
-      echo "# OK - the wallet file is present."
-    fi   
-    # TODO: check for lockfile  
   else
     echo "$defaultWallet" > "$wallet"
   fi
+  if [ ! -f $(cat $wallet) ];then
+    clear
+    echo
+    echo "# Error: $(cat $wallet) file not found"
+    echo "# Make sure to type the full filename of the wallet."
+    echo "# eg.: wallet.jmdat"
+    echo
+    exit 1
+  else
+    echo "# OK - the $(cat $wallet) file is present."
+  fi
+  local walletFileName=$(cat $wallet | cut -d/ -f6)
+  if [ $# -eq 0 ] || [ $1 != "noLockFileCheck" ];then
+    if [ -f /home/joinmarket/.joinmarket/wallets/.$walletFileName.lock ];then
+      echo
+      echo "# A wallet lockfile is found: /home/joinmarket/.joinmarket/wallets/.$walletFileName.lock"
+      echo
+      echo "# Press ENTER to make sure the Yield Generator is stopped and the lockfile is deleted (or use CTRL+C to abort)"
+      echo
+      read key
+      stopYG $(cat $wallet)
+    else
+      echo "# OK - no lockfile is present."
+    fi
+  fi
 }
 
+# stopYG <wallet>
 function stopYG() {
+  if [ $# -eq 1 ]; then
+    local stopWallet=$1
+  else
+    local stopWallet=$YGwallet
+  fi  
   # stop the background process (equivalent to CTRL+C)
   # use the YGwallet from joinin.conf
-  pkill -sigint -f "python yg-privacyenhanced.py $YGwallet --wallet-password-stdin"
+  pkill -sigint -f "python yg-privacyenhanced.py $stopWallet --wallet-password-stdin"
   # pgrep python | xargs kill -sigint             
   # remove the service
   sudo systemctl stop yg-privacyenhanced
@@ -128,11 +150,12 @@ function stopYG() {
   # check for failed services
   # sudo systemctl list-units --type=service
   sudo systemctl reset-failed
-  # make sure the lock file is deleted 
-  rm -f ~/.joinmarket/wallets/.$YGwallet.lock
-  # for old version <v0.6.3
-  rm -f ~/.joinmarket/wallets/$YGwallet.lock 2>/dev/null
   echo "# Stopped the Yield Generator background service"
+  # make sure the lock file is deleted 
+  rm -f ~/.joinmarket/wallets/.$stopWallet.lock
+  if [ ! -f ~/.joinmarket/wallets/.$stopWallet.lock ];then
+    echo "# .$stopWallet.lock is removed"
+  fi
 }
 
 function feereport() {

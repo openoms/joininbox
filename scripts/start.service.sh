@@ -6,18 +6,13 @@ source /home/joinmarket/_functions.sh
 script="$1"
 wallet="$2"
 
-echo
-echo "# Making sure $script not running"
-sudo systemctl stop $script
-sudo systemctl disable $script
-
 if [ $script == "yg-privacyenhanced" ]; then 
-  # shut down the process gracefully
-  pkill -sigint -f "python yg-privacyenhanced.py $wallet --wallet-password-stdin"
-  # make sure the lock file is deleted 
-  rm -f ~/.joinmarket/wallets/.$wallet.lock
-  # for old version <v0.6.3
-  rm -f ~/.joinmarket/wallets/$wallet.lock
+  stopYG $wallet
+else
+echo
+  echo "# Making sure $script is not running"
+  sudo systemctl stop $script
+  sudo systemctl disable $script
 fi
 
 if [ ${RPCoverTor} = "on" ];then 

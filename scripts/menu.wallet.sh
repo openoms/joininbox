@@ -64,7 +64,7 @@ case $CHOICE in
       pip install scipy
     fi
     # wallet
-    chooseWallet
+    chooseWallet noLockFileCheck
     /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) "history -v 4"
     echo
     echo "Press ENTER to return to the menu"
@@ -110,14 +110,14 @@ case $CHOICE in
     read key;;
   UTXOS)
     # wallet
-    chooseWallet
+    chooseWallet noLockFileCheck
     /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) "showutxos"
     echo
     echo "Press ENTER to return to the menu"
     read key;;
   XPUBS)
     # wallet
-    chooseWallet
+    chooseWallet noLockFileCheck
     clear
     echo
     echo "The 5 master public keys correspond to the 5 mixdepths (accounts) of the JoinMarket wallet."

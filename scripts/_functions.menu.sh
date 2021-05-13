@@ -18,7 +18,7 @@ function menu_GEN() {
 
 function menu_MAKER() {
   # wallet
-  chooseWallet
+  chooseWallet noLockFileCheck
   # save wallet in conf
   sudo sed -i "s#^YGwallet=.*#YGwallet=$(cat $wallet)#g" $joininConfPath
   # get password
@@ -41,7 +41,7 @@ function menu_MAKER() {
 function menu_DISPLAY() {
   checkRPCwallet
   # wallet
-  chooseWallet
+  chooseWallet noLockFileCheck
   /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)"
   echo
   echo "Fund the wallet on addresses labeled 'new' to avoid address reuse."
