@@ -115,20 +115,20 @@ function chooseWallet() {
     echo
     exit 1
   else
-    echo "# OK - the $(cat $wallet) file is present."
+    echo "# OK - the $(cat $wallet) file is present"
   fi
   local walletFileName=$(cat $wallet | cut -d/ -f6)
   if [ $# -eq 0 ] || [ $1 != "noLockFileCheck" ];then
-    if [ -f /home/joinmarket/.joinmarket/wallets/.$walletFileName.lock ];then
+    if [ -f /home/joinmarket/.joinmarket/wallets/.${walletFileName}.lock ];then
       echo
-      echo "# A wallet lockfile is found: /home/joinmarket/.joinmarket/wallets/.$walletFileName.lock"
+      echo "# A wallet lockfile is found: /home/joinmarket/.joinmarket/wallets/.${walletFileName}.lock"
       echo
       echo "# Press ENTER to make sure the Yield Generator is stopped and the lockfile is deleted (or use CTRL+C to abort)"
       echo
       read key
       stopYG $(cat $wallet)
     else
-      echo "# OK - no lockfile is present."
+      echo "# OK - no .${walletFileName}.lock file is present"
     fi
   fi
 }
@@ -151,10 +151,12 @@ function stopYG() {
   # sudo systemctl list-units --type=service
   sudo systemctl reset-failed
   echo "# Stopped the Yield Generator background service"
-  # make sure the lock file is deleted 
-  rm -f ~/.joinmarket/wallets/.$stopWallet.lock
-  if [ ! -f ~/.joinmarket/wallets/.$stopWallet.lock ];then
-    echo "# .$stopWallet.lock is removed"
+  # make sure the lock file is deleted
+  local walletFileName=$(echo $stopWallet | cut -d/ -f6)
+  if rm /home/joinmarket/.joinmarket/wallets/.${walletFileName}.lock 2>/dev/null; then
+    echo "# The file .$walletFileName.lock is removed"
+  else
+    echo "# The file .$walletFileName.lock is not present"
   fi
 }
 
