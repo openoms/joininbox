@@ -6,13 +6,14 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
   <img width="400" src="/images/menu.png">
   <img width="400" src="/images/menu.wallet.png">
 </p>
+
 <p align="left">
   <img width="400" src="/images/menu.yg.png">
-  <img width="400" src="/images/menu.payjoin.png">
+  <img width="400" src="/images/menu.tools.png">
 </p>
 
 <p align="left">
-  <img width="400" src="/images/joininbox.jpeg">
+  <img width="800" src="/images/menu.m0.png">
 </p>
 
 ### Features
