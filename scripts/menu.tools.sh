@@ -197,17 +197,3 @@ Input how many previous blocks from the tip you want to scan" 14 108
     echo "Press ENTER to return to the menu..."
     read key;;  
 esac
-
-function listCJcandidateTXNs {
-clear
-cjTXIDs=$(cat /home/joinmarket/.joinmarket/candidates.txt \
-  | grep "Found Joinmarket coinjoin transaction" | awk '{print $5}')
-installBitcoinScripts
-getRPC
-checkRPCwallet
-for i in $cjTXIDs; do
-  echo
-  sudo -u bitcoin /home/bitcoin/bitcoin-scripts/checktransaction.sh \
-    -rpcwallet=$rpc_wallet $i
-done
-}
