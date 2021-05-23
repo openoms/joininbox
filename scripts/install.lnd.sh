@@ -473,7 +473,6 @@ alias bos${NODENUMBER}=\"sudo -u bos /home/bos/.npm-global/bin/bos --node lnd${N
         esac
     done
 
-
     sudo chmod +x $HOME/install.lnd.sh
     sudo -u sphinxrelay $HOME/install.lnd.sh write-sphinx-environment
     if [ $(grep -c write-sphinx-environment < /etc/systemd/system/sphinxrelay.service) -eq 0 ];then
@@ -494,6 +493,12 @@ TimeoutSec=120
 RestartSec=30
 StandardOutput=journal
 StandardError=journal
+
+# Hardening measures
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+PrivateDevices=true
 
 [Install]
 WantedBy=multi-user.target

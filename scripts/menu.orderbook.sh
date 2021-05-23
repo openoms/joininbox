@@ -50,6 +50,12 @@ KillMode=process
 TimeoutSec=600
 Restart=no
 
+# Hardening measures
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+PrivateDevices=true
+
 [Install]
 WantedBy=multi-user.target
 " | sudo tee /etc/systemd/system/ob-watcher.service 1>/dev/null
