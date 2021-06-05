@@ -107,18 +107,6 @@ function downloadBitcoinCore() {
 function installBitcoinCore() {
   downloadBitcoinCore
 
-  if [ -f /home/joinmarket/bitcoin/bitcoind ];then
-    installedVersion=$(/home/joinmarket/bitcoin/bitcoind --version | grep version)
-    echo "# ${installedVersion} is already installed"
-    if [ $(echo $installedVersion | grep -c "${bitcoinVersion}") -eq 0 ]; then
-      echo "# Press ENTER to install Bitcoin Core v${bitcoinVersion} instead or CTRL+C to exit"
-      read key
-    else
-      echo "# Exiting"
-      exit 1
-    fi
-  fi
-
   echo "# Installing Bitcoin Core v${bitcoinVersion}"
   sudo -u joinmarket mkdir -p /home/joinmarket/bitcoin
   cd /home/joinmarket/download/bitcoin-${bitcoinVersion}/bin/ || exit 1
@@ -128,10 +116,10 @@ function installBitcoinCore() {
     echo "# Add /home/joinmarket/bitcoin to the local PATH"
     echo "PATH=/home/joinmarket/bitcoin:$PATH" | sudo tee -a /home/joinmarket/.profile
   fi
-  installed=$(/home/joinmarket/bitcoin/bitcoind --version | grep "${bitcoinVersion}" -c)
+  installed=$(/home/joinmarket/bitcoin/bitcoind --version | grep -c "Bitcoin Core version")
   if [ ${installed} -lt 1 ]; then
     echo
-    echo "!!! BUILD FAILED --> Was not able to install bitcoind version(${bitcoinVersion})"
+    echo "!!! BUILD FAILED --> Was not able to install Bitcoin Core"
     exit 1
   fi
 
@@ -167,7 +155,8 @@ function installSignet() {
   # fix permissions
   sudo chown -R joinmarket:joinmarket /home/joinmarket/.bitcoin/
   removeSignetdService
-    # /etc/systemd/system/signetd.service
+
+  # /etc/systemd/system/signetd.service
   echo "
 [Unit]
 Description=Bitcoin daemon on signet
