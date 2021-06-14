@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from stem import Signal
 from stem.control import Controller
 
