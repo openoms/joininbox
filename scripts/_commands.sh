@@ -14,50 +14,48 @@ function menu() {
 # command: newnym
 function newnym(){
   if [ "$(cat /home/joinmarket/joinin.conf 2>/dev/null | grep -c "runBehindTor=on")" -eq 1 ]; then
-    echo "Changing Tor circuits..."
-    echo "Savind old ID..."
+    echo "# Changing Tor circuits..."
+    echo "# Savind old ID..."
     oldID=$(curl --connect-timeout 15 --socks5-hostname 127.0.0.1:9050 ifconfig.me 2>/dev/null)
-    echo "Requesting new identity ..."
-    sudo -u debian-tor python3 /home/joininbox/scripts/standalone/tor.newnym.py
+    echo "# Requesting new identity ..."
+    sudo -u debian-tor python3 /home/joinmarket/tor.newnym.py
     sleep 3
-    echo "Savind new ID..."
+    echo "# Savind new ID..."
     newID=$(curl --connect-timeout 15 --socks5-hostname 127.0.0.1:9050 ifconfig.me 2>/dev/null)
     echo
     if [ ${oldID} = ${newID} ]; then
-      echo "!!! FAIL: Identity did not change. Read error message above."
-      echo "Exiting for precaution"
+      echo "# !!! FAIL: Identity did not change. Read error message above."
+      echo "# Exiting for precaution."
       exit 0
     else
-      echo "!!! SUCCESS"
-      echo "Old id: " ${oldID}
-      echo "New id: " ${newID}
+      echo "# !!! SUCCESS"
+      echo "# Old id: " ${oldID}
+      echo "# New id: " ${newID}
     fi
   else
-    echo "Not running behind Tor"
+    echo "# Not running behind Tor"
   fi
 }
 
 # command: torthistx
 function torthistx() {
-  if [ "$(cat /home/joinmarket/joinin.conf 2>/dev/null | grep -c "runBehindTor=on")" -eq 1 ]&&\
-     [ "$(cat /home/joinmarket/joinin.conf 2>/dev/null | grep -c "network=signet")" -eq 1 ]; then
+  if [ "$(cat /home/joinmarket/joinin.conf 2>/dev/null | grep -c "runBehindTor=on")" -eq 1 ];then
     echo
-    newnym
-    echo
-    echo "Broadcasts a transaction through Tor to mempool.space's API and into the network..."
-    echo
-    echo "Transaction ID:"
-    curl --socks5-hostname localhost:9050 -d "$1" -X POST https://mempool.space/signet/api/tx
-  elif [ "$(cat /home/joinmarket/joinin.conf 2>/dev/null | grep -c "runBehindTor=on")" -eq 1 ]; then
-    echo
-    newnym
-    echo
-    echo "Broadcasts a transaction through Tor to Blockstream's API and into the network..."
-    echo
-    echo "Transaction ID:"
-    curl --socks5-hostname localhost:9050 -d "$1" -X POST http://explorerzydxu5ecjrkwceayqybizmpjjznk5izmitf2modhcusuqlid.onion/api/tx
+    if [ "$(cat /home/joinmarket/joinin.conf 2>/dev/null | grep -c "network=signet")" -eq 1 ]; then
+      newnym
+      echo
+      echo "# Broadcasts a transaction through Tor to Blockstream's API and into the network..."
+      echo
+      echo "# Transaction ID:"
+      curl --socks5-hostname localhost:9050 -d "$1" -X POST https://mempool.space/signet/api/tx
+    else
+      echo "# Broadcasts a transaction through Tor to Blockstream's API and into the network..."
+      echo
+      echo "# Transaction ID:"
+      curl --socks5-hostname localhost:9050 -d "$1" -X POST http://explorerzydxu5ecjrkwceayqybizmpjjznk5izmitf2modhcusuqlid.onion/api/tx
+    fi
   else
-    echo "Not running behind Tor"
+    echo "# Not running behind Tor"
   fi
 }
 
