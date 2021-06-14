@@ -18,7 +18,7 @@ function newnym(){
     echo "Savind old ID..."
     oldID=$(curl --connect-timeout 15 --socks5-hostname 127.0.0.1:9050 ifconfig.me 2>/dev/null)
     echo "Requesting new identity ..."
-    sudo python3 /home/joininbox/scripts/standalone/tor.newnym.py
+    sudo -u debian-tor python3 /home/joininbox/scripts/standalone/tor.newnym.py
     sleep 3
     echo "Savind new ID..."
     newID=$(curl --connect-timeout 15 --socks5-hostname 127.0.0.1:9050 ifconfig.me 2>/dev/null)
