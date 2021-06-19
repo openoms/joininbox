@@ -3,7 +3,7 @@
 source /home/joinmarket/joinin.conf
 
 # versions
-testedJMversion="v0.8.2"
+testedJMversion="v0.8.3"
 currentJBcommit=$(cd /home/joinmarket/joininbox; git describe --tags)
 currentJBtag=$(cd /home/joinmarket/joininbox; git tag | sort -V | tail -1)
 currentJMversion=$(cd /home/joinmarket/joinmarket-clientserver 2>/dev/null; \
@@ -336,7 +336,7 @@ function updateJoininBox() {
 function setIRCtoTor() {
   if [ "${runBehindTor}" = "on" ]; then
     sed -i "s/^host = irc.darkscience.net/#host = irc.darkscience.net/g" $JMcfgPath
-    sed -i "s/^#host = darksci3bfoka7tw.onion/host = darksci3bfoka7tw.onion/g" $JMcfgPath
+    sed -i "s/^#host = dark.*/host = darkirc6tqgpnwd3blln3yfv5ckl47eg7llfxkmtovrv7c7iwohhb6ad.onion/g" $JMcfgPath
     sed -i "s/^host = irc.hackint.org/#host = irc.hackint.org/g" $JMcfgPath
     sed -i "s/^#host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion/host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion/g" $JMcfgPath
     sed -i "s/^socks5 = false/#socks5 = false/g" $JMcfgPath
