@@ -53,14 +53,14 @@ case $CHOICE in
 https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber
 (Y/N)? " confirm && [[ $confirm == [yY]||$confirm == [yY][eE][sS] ]]||exit 1
       stopYG
-      installJoinMarket testPR $PRnumber
+      /home/joinmarket/install.joinmarket.sh testPR $PRnumber
       errorOnInstall $?
       echo
       echo "Press ENTER to return to the menu"
       read key
       ;;
   JMCOMMIT)
-      installJoinMarket commit
+      /home/joinmarket/install.joinmarket.sh commit
       errorOnInstall $?
       echo
       echo "Press ENTER to return to the menu"

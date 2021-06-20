@@ -1,14 +1,119 @@
 #!/bin/bash
 
+testedJMversion="v0.8.3"
+PGPsigner="waxwing"
+PGPpkeys="https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc"
+PGPcheck="2B6FC204D9BF332D062B461A141001A1AF77F20B"
+
 # command info
 if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
  echo "a script to install, update or configure JoinMarket"
  echo "install.joinmarket.sh [install|config|update|testPR <PRnumber>]"
+ echo "the latest tested version: $testedJMversion is installed by default"
  exit 1
 fi
 
 source /home/joinmarket/_functions.sh
 source /home/joinmarket/joinin.conf
+
+# installJoinMarket [update|testPR <PRnumber>|commit]
+function installJoinMarket() {
+  cpu=$(uname -m)
+  cd /home/joinmarket
+  # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
+  echo "# Installing ARM specific dependencies to run the QT GUI"
+  sudo apt install -y python3-pyside2.qtcore python3-pyside2.qtgui \
+  python3-pyside2.qtwidgets zlib1g-dev libjpeg-dev python3-pyqt5 libltdl-dev
+  # https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/668#issuecomment-717815719
+  sudo apt -y install build-essential automake pkg-config libffi-dev python3-dev libgmp-dev 
+  sudo -u joinmarket pip install libtool asn1crypto cffi pycparser coincurve
+  echo "# Installing JoinMarket"
+  
+  if [ "$1" = "update" ] || [ "$1" = "testPR" ] || [ "$1" = "commit" ]; then
+    echo "# Deleting the old source code (joinmarket-clientserver directory)"
+    sudo rm -rf /home/joinmarket/joinmarket-clientserver
+  fi
+  
+  sudo -u joinmarket git clone https://github.com/Joinmarket-Org/joinmarket-clientserver
+  cd joinmarket-clientserver || exit 1
+  
+  if [ "$1" = "testPR" ]; then
+    PRnumber=$2
+    echo "# Using the PR:"
+    echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber"
+    git fetch origin pull/$PRnumber/head:pr$PRnumber
+    git checkout pr$PRnumber
+  elif [ "$1" = "commit" ]; then
+    echo "# Updating to the latest commit in:"
+    echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver"
+  else
+    sudo -u joinmarket git reset --hard $testedJMversion
+
+    sudo -u joinmarket wget -O "pgp_keys.asc" ${PGPpkeys}
+    gpg --import --import-options show-only ./pgp_keys.asc
+    fingerprint=$(gpg "pgp_keys.asc" 2>/dev/null | grep "${PGPcheck}" -c)
+    if [ ${fingerprint} -lt 1 ]; then
+      echo
+      echo "# !!! WARNING --> the PGP fingerprint is not as expected for ${PGPsigner}"
+      echo "# Should contain PGP: ${PGPcheck}"
+      echo "# PRESS ENTER to TAKE THE RISK if you think all is OK"
+      read key
+    fi
+    gpg --import ./pgp_keys.asc
+    
+    verifyResult=$(git verify-tag $testedJMversion 2>&1)
+    
+    goodSignature=$(echo ${verifyResult} | grep 'Good signature' -c)
+    echo "# goodSignature(${goodSignature})"
+    correctKey=$(echo ${verifyResult} | tr -d " \t\n\r" | grep "${PGPcheck}" -c)
+    echo "# correctKey(${correctKey})"
+    if [ ${correctKey} -lt 1 ] || [ ${goodSignature} -lt 1 ]; then
+      echo 
+      echo "# !!! BUILD FAILED --> PGP verification not OK / signature(${goodSignature}) verify(${correctKey})"
+      exit 1
+    else
+      echo 
+      echo "#########################################################"
+      echo "# OK --> the PGP signature of the $testedJMversion tag is correct #"
+      echo "#########################################################"
+      echo 
+    fi
+  fi
+
+  # do not stop at installing Debian dependencies
+  sudo -u joinmarket sed -i \
+  "s#^        if ! sudo apt-get install \${deb_deps\[@\]}; then#\
+        if ! sudo apt-get install -y \${deb_deps\[@\]}; then#g" install.sh
+  # https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/805/files
+  sudo -u joinmarket sed -i \
+  "s#txtorcon#txtorcon', 'cryptography==3.3.2#g" jmdaemon/setup.py
+  if [ ${cpu} != "x86_64" ]; then
+    echo "# Make install.sh set up jmvenv with -- system-site-packages on arm"
+    # and import the PySide2 armf package from the system
+    sudo -u joinmarket sed -i "s#^    virtualenv -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1#\
+      virtualenv --system-site-packages -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1 ;\
+    /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python -c \'import PySide2\'\
+    #g" install.sh
+    # don't install PySide2 - using the system-site-package instead 
+    sudo -u joinmarket sed -i "s#^PySide2.*##g" requirements/gui.txt
+    # don't install PyQt5 - using the system package instead 
+    sudo -u joinmarket sed -i "s#^PyQt5.*##g" requirements/gui.txt
+  fi
+  if [ "$1" = "update" ] || [ "$1" = "testPR" ] || [ "$1" = "commit" ]; then
+    # build the Qt GUI, do not run libsecp256k1 test
+    sudo -u joinmarket ./install.sh --with-qt --disable-secp-check 
+  else
+    # build the Qt GUI
+    sudo -u joinmarket ./install.sh --with-qt
+  fi
+  currentJMversion=$(cd /home/joinmarket/joinmarket-clientserver 2>/dev/null; \
+    git describe --tags 2>/dev/null)
+  echo
+  echo "# installed JoinMarket $currentJMversion"
+  echo
+  echo "# Type: 'exit' to leave the terminal and log in again"
+  echo
+}
 
 if [ "$1" = "config" ]; then
   generateJMconfig

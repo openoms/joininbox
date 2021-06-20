@@ -16,7 +16,7 @@ BACKTITLE="JoininBox GUI"
 # Basic Options
 OPTIONS+=(
   JOININBOX  "Update the JoininBox scripts and menu"
-  JOINMARKET "Update/reinstall JoinMarket to $(grep testedJMversion= < ~/_functions.sh | cut -d '"' -f 2)"
+  JOINMARKET "Update/reinstall JoinMarket to $(grep testedJMversion= < ~/install.joinmarket.sh | cut -d '"' -f 2)"
   ADVANCED   "Advanced update options")
 
 CHOICE=$(dialog --clear \
