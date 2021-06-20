@@ -215,7 +215,7 @@ This can take multiple hours.
   exit 0
 fi
 
-# add default value to raspi config if needed
+# add default value to config if needed
 if ! grep -Eq "^ElectRS=" /home/joinmarket/joinin.conf; then
   echo "ElectRS=off" >> /home/joinmarket/joinin.conf
 fi
@@ -348,7 +348,7 @@ WantedBy=multi-user.target
     echo "# ElectRS is already installed."
   fi
 
-  # setting value in raspiblitz config
+  # set value in config
   sudo sed -i "s/^ElectRS=.*/ElectRS=on/g" /home/joinmarket/joinin.conf
 
   # Hidden Service for electrs if Tor active
@@ -363,7 +363,7 @@ fi
 # switch off
 if [ "$1" = "0" ] || [ "$1" = "off" ]; then
 
-  # setting value in config
+  # set value in config
   sudo sed -i "s/^ElectRS=.*/ElectRS=off/g" /home/joinmarket/joinin.conf
 
   # if second parameter is "deleteindex"

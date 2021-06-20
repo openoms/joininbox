@@ -53,7 +53,30 @@
 * <https://stadicus.github.io/RaspiBolt/raspibolt_21_security.html#login-with-ssh-keys>
 
 ### Two factor authenetication (2FA) for SSH
-* <https://pimylifeup.com/setup-2fa-ssh/>
+Detailed guide: <https://pimylifeup.com/setup-2fa-ssh/>  
+See all the options at: <https://www.mankier.com/1/google-authenticator#Options>
+* Commands:
+  ```
+  sudo apt update
+  sudo apt install libpam-google-authenticator
+  google-authenticator --time-based --force --disallow-reuse --qr-mode=UTF8 --rate-limit=3 --rate-time=30 --window-size=3
+
+  echo "auth required pam_google_authenticator.so" | sudo tee -a /etc/pam.d/sshd
+
+  sudo sed -i "s/^ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/g" /etc/ssh/sshd_config
+
+  sudo systemctl restart sshd
+  ```
+* test without exiting first by connecting to the localhost:  
+`ssh joinmarket@127.0.0.1`
+*  verify that the login with paasword and 2FA works before exiting the terminal
+
+* Set 2FA up for ssh key authentication:
+  ```
+  sudo sed -i "s/^@include common-auth/#@include common-auth/g" /etc/pam.d/sshd
+  echo "AuthenticationMethods publickey,keyboard-interactive" | sudo tee -a /etc/ssh/sshd_config
+  sudo systemctl restart sshd
+  ```
 
 ### Log in through SSH using a hardware wallet
 * See the official pages for:
@@ -239,45 +262,45 @@ peerbloomfilters=1
 https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT
 https://www.raspberrypi.org/documentation/hardware/raspberrypi/spi/README.md
 SPI0 is disabled by default. To enable it, use raspi-config, or ensure the line dtparam=spi=on isn't commented out in /boot/config.txt
-```
-#Install BCM2835 libraries
-wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.60.tar.gz
-tar zxvf bcm2835-1.60.tar.gz 
-cd bcm2835-1.60/
-sudo ./configure
-sudo make
-sudo make check
-sudo make install
-#For more details, please refer to http://www.airspayce.com/mikem/bcm2835/
+* Installation
+  ```
+  #Install BCM2835 libraries
+  wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.60.tar.gz
+  tar zxvf bcm2835-1.60.tar.gz 
+  cd bcm2835-1.60/
+  sudo ./configure
+  sudo make
+  sudo make check
+  sudo make install
+  #For more details, please refer to http://www.airspayce.com/mikem/bcm2835/
 
-#Install wiringPi libraries
+  #Install wiringPi libraries
 
-sudo apt-get install wiringpi
+  sudo apt-get install wiringpi
 
-#For Pi 4, you need to update it：
-cd /tmp
-wget https://project-downloads.drogon.net/wiringpi-latest.deb
-sudo dpkg -i wiringpi-latest.deb
-gpio -v
-#You will get 2.52 information if you install it correctly
+  #For Pi 4, you need to update it：
+  cd /tmp
+  wget https://project-downloads.drogon.net/wiringpi-latest.deb
+  sudo dpkg -i wiringpi-latest.deb
+  gpio -v
+  #You will get 2.52 information if you install it correctly
 
-#Install Python libraries
-#python3
-sudo apt-get update
-sudo apt-get install python3-pip
-sudo apt-get install python3-pil
-sudo apt-get install python3-numpy
-sudo pip3 install RPi.GPIO
-sudo pip3 install spidev
+  #Install Python libraries
+  #python3
+  sudo apt-get update
+  sudo apt-get install python3-pip
+  sudo apt-get install python3-pil
+  sudo apt-get install python3-numpy
+  sudo pip3 install RPi.GPIO
+  sudo pip3 install spidev
+  ```
 
-```
-
-Test:
-```
-sudo git clone https://github.com/waveshare/e-Paper
-cd e-Paper/RaspberryPi\&JetsonNano/python/examples
-sudo python epd_2in13_V2_test.py
-```
+* Test:
+  ```
+  sudo git clone https://github.com/waveshare/e-Paper
+  cd e-Paper/RaspberryPi\&JetsonNano/python/examples
+  sudo python epd_2in13_V2_test.py
+  ```
 Code examples:   
 https://github.com/waveshare/e-Paper/blob/master/RaspberryPi%26JetsonNano/python/examples/epd_2in13_V2_test.py
 https://github.com/21isenough/LightningATM/blob/master/displays/waveshare2in13.py  
@@ -362,6 +385,7 @@ https://2019.www.torproject.org/docs/debian#source
   sudo bash build_joininbox.sh
   ```
 * Monitor/Check outputs for warnings/errors
+
 ### Prepare the SDcard release
  * Make the SDcard image safe to share by removing unique infos like ssh pubkeys and network identifiers:  
      ```bash
@@ -369,6 +393,7 @@ https://2019.www.torproject.org/docs/debian#source
     ```
 * Disconnect WiFi/LAN on build laptop (hardware switch off) and shutdown
 * Remove Ubuntu LIVE USB stick and cut power from the RaspberryPi
+
 ### Sign the image on an airgapped computer
 * Connect USB stick with [Tails](https://tails.boum.org/) (stay offline)
 * Power on the Build Laptop (press F12 for boot menu)
@@ -488,90 +513,90 @@ https://bitcoin.stackexchange.com/questions/99681/how-can-i-import-a-private-key
 
 ## External drive
 Alternatively to a pruned node there could be a larger >400 GB storage connected and mounted on the standalone JoininBox with the `.bitcoin` directory containing the `blocks` and `chainstate` symlinked to `/home/store/app-data/` and owned by the `bitcoin` user.
-See the manual commands and output:
-```bash
-lsblk
-# NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
-# sda           8:0    0 931.5G  0 disk 
-# └─sda1        8:1    0 931.5G  0 part 
-# mmcblk1     179:0    0  29.1G  0 disk 
-# └─mmcblk1p1 179:1    0  28.8G  0 part /
-# zram0       253:0    0 995.2M  0 disk [SWAP]
-# zram1       253:1    0    50M  0 disk /var/log
-sudo mkdir -p /mnt/hdd
-sudo mount /dev/sda1 /mnt/hdd
-lsblk
-# NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
-# sda           8:0    0 931.5G  0 disk 
-# └─sda1        8:1    0 931.5G  0 part /mnt/hdd
-# mmcblk1     179:0    0  29.1G  0 disk 
-# └─mmcblk1p1 179:1    0  28.8G  0 part /
-# zram0       253:0    0 995.2M  0 disk [SWAP]
-# zram1       253:1    0    50M  0 disk /var/log
-ls -la /mnt/hdd
-# drwxr-xr-x  7 1005 1006 4096 Mar 21 10:38 bitcoin
-source ~/_functions.sh
-installBitcoinCoreStandalone
-# remove symlink
-sudo rm /home/bitcoin/.bitcoin
-# create new symlink
-sudo ln -s /mnt/hdd/bitcoin /home/bitcoin/.bitcoin
-# fix permissions
-sudo chown -R bitcoin:bitcoin /home/bitcoin/.bitcoin/
-# check
-ls -la /home/bitcoin/.bitcoin/
-# total 25676
-# drwxr-xr-x  7 bitcoin bitcoin     4096 Mar 21 10:38 .
-# drwxr-xr-x  4 root    root        4096 Mar 20 18:51 ..
-# -rw-------  1 bitcoin bitcoin      105 Mar 21 10:38 anchors.dat
-# -rw-------  1 bitcoin bitcoin   224355 Jan 13 20:04 banlist.dat
-# -r--r--r--  1 bitcoin bitcoin      674 Mar 20 19:03 bitcoin.conf
-# drwxrwxr-x  3 bitcoin bitcoin   135168 Mar 20 23:57 blocks
-# drwxrwxr-x  2 bitcoin bitcoin    98304 Mar 21 10:38 chainstate
-# -rw-------  1 bitcoin bitcoin  2631680 Mar 21 10:38 debug.log
-# -rw-------  1 bitcoin bitcoin   247985 Mar 21 10:38 fee_estimates.dat
-# drwx------  4 bitcoin bitcoin     4096 Dec  6 14:18 indexes
-# -rw-------  1 bitcoin bitcoin        0 Feb 10 10:57 .lock
-# -rw-------  1 bitcoin bitcoin 21369746 Mar 21 10:38 mempool.dat
-# -rw-------  1 bitcoin bitcoin      820 Jan 28 19:07 onion_private_key
-# -rw-------  1 bitcoin bitcoin       99 Feb 10 10:58 onion_v3_private_key
-# -rw-------  1 bitcoin bitcoin  1521305 Mar 21 10:38 peers.dat
-# -rw-r--r--  1 bitcoin bitcoin        7 Mar 21 10:08 settings.json
-# drwx------ 34 bitcoin bitcoin     4096 Dec  7 23:39 specter
-# drwx------  2 bitcoin bitcoin     4096 Mar 21 10:38 wallet.dat
-installMainnet
-# Failed to stop bitcoind.service: Unit bitcoind.service not loaded.
-# 
-# [Unit]
-# Description=Bitcoin daemon on mainnet
-# [Service]
-# User=bitcoin
-# Group=bitcoin
-# Type=forking
-# PIDFile=/home/bitcoin/bitcoin/bitcoind.pid
-# ExecStart=/home/bitcoin/bitcoin/bitcoind -daemon -pid=/home/bitcoin/bitcoin/bitcoind.pid
-# KillMode=process
-# Restart=always
-# TimeoutSec=120
-# RestartSec=30
-# StandardOutput=null
-# StandardError=journal
-# 
-# [Install]
-# WantedBy=multi-user.target
-# 
-# Created symlink /etc/systemd/system/multi-user.target.wants/bitcoind.service → /etc/systemd/system/bitcoind.service.
-# # OK - the bitcoind.service is now enabled
-# 
-# # Installed Bitcoin Core version v0.21.0
-# 
-# # Monitor the bitcoind with: sudo tail -f /home/bitcoin/.bitcoin/mainnet/debug.log
-# 
-# # Create wallet.dat ...
-# error code: -28
-# error message:
-# Loading block index...
-# check progress
-sudo tail -f /home/bitcoin/.bitcoin/debug.log | grep progress
-# 2021-03-23T12:12:34Z UpdateTip: new best=0000000000000000000c503fbc0e2724b4713dbbb8b0f0048177fc3aaebe0b9b height=675602 version=0x20400000 log2_work=92.750996 tx=626795389 date='2021-03-21T11:05:10Z' progress=0.999011 cache=5.4MiB(48880txo)
-```
+* See the manual commands and output:
+  ```bash
+  lsblk
+  # NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+  # sda           8:0    0 931.5G  0 disk 
+  # └─sda1        8:1    0 931.5G  0 part 
+  # mmcblk1     179:0    0  29.1G  0 disk 
+  # └─mmcblk1p1 179:1    0  28.8G  0 part /
+  # zram0       253:0    0 995.2M  0 disk [SWAP]
+  # zram1       253:1    0    50M  0 disk /var/log
+  sudo mkdir -p /mnt/hdd
+  sudo mount /dev/sda1 /mnt/hdd
+  lsblk
+  # NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+  # sda           8:0    0 931.5G  0 disk 
+  # └─sda1        8:1    0 931.5G  0 part /mnt/hdd
+  # mmcblk1     179:0    0  29.1G  0 disk 
+  # └─mmcblk1p1 179:1    0  28.8G  0 part /
+  # zram0       253:0    0 995.2M  0 disk [SWAP]
+  # zram1       253:1    0    50M  0 disk /var/log
+  ls -la /mnt/hdd
+  # drwxr-xr-x  7 1005 1006 4096 Mar 21 10:38 bitcoin
+  source ~/_functions.sh
+  installBitcoinCoreStandalone
+  # remove symlink
+  sudo rm /home/bitcoin/.bitcoin
+  # create new symlink
+  sudo ln -s /mnt/hdd/bitcoin /home/bitcoin/.bitcoin
+  # fix permissions
+  sudo chown -R bitcoin:bitcoin /home/bitcoin/.bitcoin/
+  # check
+  ls -la /home/bitcoin/.bitcoin/
+  # total 25676
+  # drwxr-xr-x  7 bitcoin bitcoin     4096 Mar 21 10:38 .
+  # drwxr-xr-x  4 root    root        4096 Mar 20 18:51 ..
+  # -rw-------  1 bitcoin bitcoin      105 Mar 21 10:38 anchors.dat
+  # -rw-------  1 bitcoin bitcoin   224355 Jan 13 20:04 banlist.dat
+  # -r--r--r--  1 bitcoin bitcoin      674 Mar 20 19:03 bitcoin.conf
+  # drwxrwxr-x  3 bitcoin bitcoin   135168 Mar 20 23:57 blocks
+  # drwxrwxr-x  2 bitcoin bitcoin    98304 Mar 21 10:38 chainstate
+  # -rw-------  1 bitcoin bitcoin  2631680 Mar 21 10:38 debug.log
+  # -rw-------  1 bitcoin bitcoin   247985 Mar 21 10:38 fee_estimates.dat
+  # drwx------  4 bitcoin bitcoin     4096 Dec  6 14:18 indexes
+  # -rw-------  1 bitcoin bitcoin        0 Feb 10 10:57 .lock
+  # -rw-------  1 bitcoin bitcoin 21369746 Mar 21 10:38 mempool.dat
+  # -rw-------  1 bitcoin bitcoin      820 Jan 28 19:07 onion_private_key
+  # -rw-------  1 bitcoin bitcoin       99 Feb 10 10:58 onion_v3_private_key
+  # -rw-------  1 bitcoin bitcoin  1521305 Mar 21 10:38 peers.dat
+  # -rw-r--r--  1 bitcoin bitcoin        7 Mar 21 10:08 settings.json
+  # drwx------ 34 bitcoin bitcoin     4096 Dec  7 23:39 specter
+  # drwx------  2 bitcoin bitcoin     4096 Mar 21 10:38 wallet.dat
+  installMainnet
+  # Failed to stop bitcoind.service: Unit bitcoind.service not loaded.
+  # 
+  # [Unit]
+  # Description=Bitcoin daemon on mainnet
+  # [Service]
+  # User=bitcoin
+  # Group=bitcoin
+  # Type=forking
+  # PIDFile=/home/bitcoin/bitcoin/bitcoind.pid
+  # ExecStart=/home/bitcoin/bitcoin/bitcoind -daemon -pid=/home/bitcoin/bitcoin/bitcoind.pid
+  # KillMode=process
+  # Restart=always
+  # TimeoutSec=120
+  # RestartSec=30
+  # StandardOutput=null
+  # StandardError=journal
+  # 
+  # [Install]
+  # WantedBy=multi-user.target
+  # 
+  # Created symlink /etc/systemd/system/multi-user.target.wants/bitcoind.service → /etc/systemd/system/bitcoind.service.
+  # # OK - the bitcoind.service is now enabled
+  # 
+  # # Installed Bitcoin Core version v0.21.0
+  # 
+  # # Monitor the bitcoind with: sudo tail -f /home/bitcoin/.bitcoin/mainnet/debug.log
+  # 
+  # # Create wallet.dat ...
+  # error code: -28
+  # error message:
+  # Loading block index...
+  # check progress
+  sudo tail -f /home/bitcoin/.bitcoin/debug.log | grep progress
+  # 2021-03-23T12:12:34Z UpdateTip: new best=0000000000000000000c503fbc0e2724b4713dbbb8b0f0048177fc3aaebe0b9b height=675602 version=0x20400000 log2_work=92.750996 tx=626795389 date='2021-03-21T11:05:10Z' progress=0.999011 cache=5.4MiB(48880txo)
+  ```
