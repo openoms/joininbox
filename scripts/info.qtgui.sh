@@ -21,6 +21,12 @@ esac
 # get local ip
 localip=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1 -d'/')
 
+joinmarketSSHchanged=0
+if grep -Eq "^joinmarketSSH=off" /home/joinmarket/joinin.conf; then
+  sudo /home/joinmarket/set.ssh.sh on
+  joinmarketSSHchanged=1
+fi
+
 echo "
 ************************************************************************************
 Instructions to open the JoinMarket-QT GUI on the desktop
@@ -92,3 +98,7 @@ Press ENTER when done with the instructions to exit to the menu
 
 sleep 2
 read key
+
+if [ $joinmarketSSHchanged = 1 ];then
+  sudo /home/joinmarket/set.ssh.sh off
+fi

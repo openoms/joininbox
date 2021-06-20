@@ -64,7 +64,7 @@ isLocalBitcoinCLI=$(sudo -u bitcoin bitcoin-cli -version|grep -c "Bitcoin Core R
 
 # BASIC MENU INFO
 HEIGHT=11
-WIDTH=55
+WIDTH=60
 CHOICE_HEIGHT=5
 TITLE="Tools"
 MENU=""
@@ -93,6 +93,17 @@ fi
 if [ "${runningEnv}" != mynode ]; then
   OPTIONS+=(
     PASSWORD "Change the ssh password")
+  HEIGHT=$((HEIGHT+1))
+  CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
+fi
+if [ "${runningEnv}" != standalone ]; then
+  if grep -Eq "^joinmarketSSH=off" /home/joinmarket/joinin.conf; then
+    sshAction="Enable"
+  else
+    sshAction="Disable"
+  fi
+  OPTIONS+=(
+    SSH "$sshAction ssh access with the joinmarket user")
   HEIGHT=$((HEIGHT+1))
   CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
 fi
@@ -196,4 +207,13 @@ Input how many previous blocks from the tip you want to scan" 14 108
     fi
     echo "Press ENTER to return to the menu..."
     read key;;  
+  SSH)
+    if [ $sshAction = "Disable" ];then
+      sudo /home/joinmarket/set.ssh.sh off
+    elif [ $sshAction = "Enable" ];then
+      sudo /home/joinmarket/set.ssh.sh on
+    fi
+    echo            
+    echo "Press ENTER to return to the menu..."
+    read key;;
 esac
