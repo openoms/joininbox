@@ -443,9 +443,23 @@ ufw --force enable
 systemctl enable ufw
 ufw status
 
-# make folder for authorized keys 
+# make a folder for authorized keys 
 sudo -u joinmarket mkdir -p /home/joinmarket/.ssh
 chmod -R 700 /home/joinmarket/.ssh
+
+# deny root login via ssh
+if grep -Eq "^PermitRootLogin" /etc/ssh/sshd_config; then
+  sed -i "s/^PermitRootLogin.*/PermitRootLogin  no/g" /etc/ssh/sshd_config
+else
+  echo "PermitRootLogin  no" >> /etc/ssh/sshd_config
+fi
+systemctl restart ssh
+
+echo 
+echo "##########"
+echo "# Extras #"
+echo "##########"
+echo 
 
 # install a command-line fuzzy finder (https://github.com/junegunn/fzf)
 apt -y install fzf
