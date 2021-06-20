@@ -1,3 +1,4 @@
+<!-- omit in toc -->
 # JoininBox
 
 A minimalistic, security focused linux environment for JoinMarket with a terminal based graphical menu.
@@ -16,14 +17,27 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
   <img width="800" src="/images/menu.m0.png">
 </p>
 
-### Features
+
+- [Features](#features)
+- [Connect to a Bitcoin Core node](#connect-to-a-bitcoin-core-node)
+- [Required Hardware](#required-hardware)
+- [Set up with an SDcard image](#set-up-with-an-sdcard-image)
+- [Set up JoininBox on Linux](#set-up-joininbox-on-linux)
+  - [Tested environments](#tested-environments)
+  - [Install JoininBox](#install-joininbox)
+- [More info](#more-info)
+- [About JoinMarket](#about-joinmarket)
+- [Forums](#forums)
+- [Donations](#donations)
+
+## Features
 
 * Send transactions with improved privacy using CoinJoin and PayJoin
 * Run the Yield Generator as a service and earn fees for providing liquidity
 * Use the JoinMarket-QT GUI remotely over SSH
 * Signet support to test for free
 
-### Connect to a Bitcoin Core node
+## Connect to a Bitcoin Core node
 
 * Try signet locally
 * Connect remotely to a
@@ -36,7 +50,7 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
   * use your own or trusted node
   * to protect privacy in case of physical access use disk encryption
 
-### Required Hardware
+## Required Hardware
 * RaspberryPi 4 ([alternatively any other computer running a Debian Linux flavour](#tested-environments))
 * Power supply (5V 3A and above recommended)
 * Heatsink case
@@ -46,7 +60,7 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
   
 **JoininBox operates on the minimum viable hardware under the assumption that the seed (and passphrase) of the wallets used is safely backed up and can be used to recover the funds!**
 
-### Set up with an SDcard image
+## Set up with an SDcard image
 * Find the links to the prebuilt image in the [releases](https://github.com/openoms/joininbox/releases)
 * [Verify the downloaded image](FAQ.md#verify-the-downloaded-the-image)
 * Write to the SDcard with [Balena Etcher](https://www.balena.io/etcher/)
@@ -76,15 +90,15 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
    ![menu](/images/menu.png)
 
 * Find [more info on the usage](#more-info) and [community help](#forums) at the end of this readme
-### Set up JoininBox on Linux
-#### Tested environments
+## Set up JoininBox on Linux
+### Tested environments
   * Debian Buster X86_64 desktop
   * [Raspberry Pi 4 running 64bit Debian Buster](FAQ.md#build-the-sdcard-image)
   * [Hardkernel Odroid XU4/HC1 running 32bit Armbian Buster](FAQ.md#set-up-armbian-on-the-hardkernel-odroid-xu4)
   * Hardkernel Odroid C4 running 64bit Armbian Focal and Buster
   * Raspberry Pi Zero, [3 and 4 running RaspberryOS](FAQ.md#download-and-verify-raspbian-sdcard-image-for-a-raspberry-pi) (32bit Buster)
 
-#### Install JoininBox
+### Install JoininBox
 * Start as the `root` user or change with:  
 `$ sudo - su`
 
@@ -104,6 +118,7 @@ or
 log in with ssh to:  
 `joinmarket@LAN_IP_ADDRESS`  
 the default password is: `joininbox` - will be prompted to change it on the first start
+
 ---
 
 ## More info
@@ -123,11 +138,11 @@ the default password is: `joininbox` - will be prompted to change it on the firs
 ## Forums
 
 * Telegram: <https://t.me/joinmarketorg>
-* IRC: #joinmarket on Freenode  
+* IRC: #joinmarket on [libera.chat](https://libera.chat/) or [hackint.org](https://hackint.org/)
 * Reddit: <https://www.reddit.com/r/joinmarket/>
 * Keybase: <https://keybase.io/team/raspiblitz#joinmarket>
 
 ## Donations
 * For JoinMarket (general): https://bitcoinprivacy.me/joinmarket-donations
 * To waxwing for JoinMarket: <https://joinmarket.me/donations/>
-* To openoms for JoininBox (LN + payjoin enabled): <http://7tpv3ynajkv6cdocmzitcd4z3xrstp3ic6xtv5om3dc2ned3fffll5qd.onion/apps/4FePMm7m818oppkTYNZRwbDnL6HP/pos>
+* To openoms for JoininBox (LN + payjoin enabled - open in the [Tor Browser](https://www.torproject.org/)): <http://7tpv3ynajkv6cdocmzitcd4z3xrstp3ic6xtv5om3dc2ned3fffll5qd.onion/apps/4FePMm7m818oppkTYNZRwbDnL6HP/pos>
