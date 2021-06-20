@@ -1,39 +1,44 @@
 <!-- omit in toc -->
-# [Frequently Asked Questions and Notes](#frequently-asked-questions-and-notes)
-  - [Public JoinMarket Order Book links](#public-joinmarket-order-book-links)
-  - [Signet links](#signet-links)
+# Frequently Asked Questions and Notes
+
+- [Public JoinMarket Order Book links](#public-joinmarket-order-book-links)
+- [Signet links](#signet-links)
+- [SSH hardening options](#ssh-hardening-options)
+  - [SSH key authentication](#ssh-key-authentication)
+  - [Two factor authenetication (2FA) for SSH](#two-factor-authenetication-2fa-for-ssh)
   - [Log in through SSH using a hardware wallet](#log-in-through-ssh-using-a-hardware-wallet)
-  - [SSH through Tor from Linux](#ssh-through-tor-from-linux)
-  - [Allow Tor to connect to localhost](#allow-tor-to-connect-to-localhost)
-  - [Set up Armbian on the Hardkernel Odroid XU4](#set-up-armbian-on-the-hardkernel-odroid-xu4)
-  - [Download and verify Raspbian SDcard image for a Raspberry Pi](#download-and-verify-raspbian-sdcard-image-for-a-raspberry-pi)
-  - [Error when connecting to a full node remotely through Tor](#error-when-connecting-to-a-full-node-remotely-through-tor)
-  - [Nuke the joinmarket user and the /home/joinmarket folder](#nuke-the-joinmarket-user-and-the-homejoinmarket-folder)
-  - [Sample bitcoin.conf for a remote node accepting RPC connections through LAN](#sample-bitcoinconf-for-a-remote-node-accepting-rpc-connections-through-lan)
-  - [Using the 2.13" WaveShare e-ink display](#using-the-213-waveshare-e-ink-display)
-  - [Compile Tor for the RPi Zero (armv6l)](#compile-tor-for-the-rpi-zero-armv6l)
-  - [Build the SDcard image](#build-the-sdcard-image)
-    - [Boot Ubuntu Live from USB: https://releases.ubuntu.com/focal/ubuntu-20.04.2-desktop-amd64.iso](#boot-ubuntu-live-from-usb-httpsreleasesubuntucomfocalubuntu-20042-desktop-amd64iso)
-    - [Download and verify the base image](#download-and-verify-the-base-image)
-    - [Flash the base image to the SDcard](#flash-the-base-image-to-the-sdcard)
-    - [Prepare the base image](#prepare-the-base-image)
-    - [Install Joininbox](#install-joininbox)
-    - [Prepare the SDcard release](#prepare-the-sdcard-release)
-    - [Sign the image on an airgapped computer](#sign-the-image-on-an-airgapped-computer)
-  - [Verify the downloaded the image](#verify-the-downloaded-the-image)
-    - [Linux instructions](#linux-instructions)
-    - [Windows instructions](#windows-instructions)
-  - [Wallet recovery](#wallet-recovery)
-    - [on JoininBox](#on-joininbox)
-    - [on the remote node](#on-the-remote-node)
-  - [USB SSD recommendation](#usb-ssd-recommendation)
-  - [Pruned node notes](#pruned-node-notes)
-  - [External drive](#external-drive)
-### Public JoinMarket Order Book links
+- [SSH through Tor from Linux](#ssh-through-tor-from-linux)
+- [Allow Tor to connect to localhost](#allow-tor-to-connect-to-localhost)
+- [Set up Armbian on the Hardkernel Odroid HC1 / XU4](#set-up-armbian-on-the-hardkernel-odroid-hc1--xu4)
+- [Download and verify Raspbian SDcard image for a Raspberry Pi](#download-and-verify-raspbian-sdcard-image-for-a-raspberry-pi)
+- [Error when connecting to a full node remotely through Tor](#error-when-connecting-to-a-full-node-remotely-through-tor)
+- [Erase the joinmarket user and the /home/joinmarket folder](#erase-the-joinmarket-user-and-the-homejoinmarket-folder)
+- [Sample bitcoin.conf for a remote node accepting RPC connections through LAN](#sample-bitcoinconf-for-a-remote-node-accepting-rpc-connections-through-lan)
+- [Using the 2.13" WaveShare e-ink display](#using-the-213-waveshare-e-ink-display)
+- [Compile Tor for the RPi Zero (armv6l)](#compile-tor-for-the-rpi-zero-armv6l)
+- [Build the SDcard image](#build-the-sdcard-image)
+  - [Boot Ubuntu Live from USB: https://releases.ubuntu.com/focal/ubuntu-20.04.2-desktop-amd64.iso](#boot-ubuntu-live-from-usb-httpsreleasesubuntucomfocalubuntu-20042-desktop-amd64iso)
+  - [Download and verify the base image](#download-and-verify-the-base-image)
+  - [Flash the base image to the SDcard](#flash-the-base-image-to-the-sdcard)
+  - [Prepare the base image](#prepare-the-base-image)
+  - [Install Joininbox](#install-joininbox)
+  - [Prepare the SDcard release](#prepare-the-sdcard-release)
+  - [Sign the image on an airgapped computer](#sign-the-image-on-an-airgapped-computer)
+- [Verify the downloaded the image](#verify-the-downloaded-the-image)
+  - [Linux instructions](#linux-instructions)
+  - [Windows instructions](#windows-instructions)
+- [Wallet recovery](#wallet-recovery)
+  - [on JoininBox](#on-joininbox)
+  - [on the remote node](#on-the-remote-node)
+- [USB SSD recommendation](#usb-ssd-recommendation)
+- [Pruned node notes](#pruned-node-notes)
+- [External drive](#external-drive)
+
+## Public JoinMarket Order Book links
 * <https://nixbitcoin.org/obwatcher/>  
 * <https://ttbit.mine.bz/orderbook>
 
-### Signet links
+## Signet links
 * Faucet (free signet coins): https://signet.bc-2.jp
 * Block Explorer:
     * esplora: <https://explorer.bc-2.jp>  
@@ -41,6 +46,14 @@
 * JoinMarket Order Book: <http://gopnmsknawlntb4qpyav3q5ejvvk6p74a7y5xotmph4v64wl3wicscad.onion>
 * [Concise instructions on setting up Joinmarket for testing on signet](https://gist.github.com/AdamISZ/325716a66c7be7dd3fc4acdfce449fb1)
 * <https://en.bitcoin.it/wiki/Signet>
+
+## SSH hardening options
+
+### SSH key authentication
+* <https://stadicus.github.io/RaspiBolt/raspibolt_21_security.html#login-with-ssh-keys>
+
+### Two factor authenetication (2FA) for SSH
+* <https://pimylifeup.com/setup-2fa-ssh/>
 
 ### Log in through SSH using a hardware wallet
 * See the official pages for:
@@ -53,7 +66,7 @@
 * paste the generated SSH pubkey to:  
 `$ nano /home/joinmarket/.ssh/authorized_keys`
 
-### SSH through Tor from Linux
+## SSH through Tor from Linux
 On a RaspiBlitz
 * since v1.4 there is a script to create a hidden service on your blitz:  
 `./config.scripts/internet.hiddenservice.sh ssh 22 22`  
@@ -83,7 +96,7 @@ On a Debian based Linux Desktop (Ubuntu, Debian, MX Linux etc.)
 Use `ssh` with `torify`  on the desktop (needs Tor installed):  
 `torify ssh admin@HiddenServiceAddress.onion`
 
-### Allow Tor to connect to localhost
+## Allow Tor to connect to localhost
 * To solve the error when running `$ torify python yg-privacyenhanced.py wallet.jmdat`
     ```
     [INFO]  starting yield generator
@@ -107,7 +120,7 @@ Use `ssh` with `torify`  on the desktop (needs Tor installed):
 * Restart Tor:   
 `sudo systemctl restart tor`
 
-### Set up Armbian on the Hardkernel Odroid HC1 / XU4
+## Set up Armbian on the Hardkernel Odroid HC1 / XU4
 * Download the base image (`.img.gz`), the `.sha` and `.asc` file
 https://www.armbian.com/odroid-xu4/
 * Verify: https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authenticity
@@ -138,7 +151,8 @@ https://www.armbian.com/odroid-xu4/
 * Create a new user called `joinmarket` and set the password (the password will be changed to `joininbox`).  
  Keep pressing [ENTER] to use the default user information.
 * Continue to [install JoininBox](README.md#install-joininbox)
-### Download and verify Raspbian SDcard image for a Raspberry Pi
+
+## Download and verify Raspbian SDcard image for a Raspberry Pi
 To be able to open the JoinMarket-QT GUI on the dekstop from the RPI
 need to use the Raspberry Pi OS (32-bit) with desktop inage
 * Download image:  
@@ -157,7 +171,7 @@ Read more on [how to gain ssh access here](https://www.raspberrypi.org/documenta
 The default password is: `raspberry`
 * Continue to [install JoininBox](README.md#install-joininbox)
 
-### Error when connecting to a full node remotely through Tor
+## Error when connecting to a full node remotely through Tor
 * Getting the error:
     ```
     socket.gaierror: [Errno -2] Name or service not known
@@ -165,10 +179,11 @@ The default password is: `raspberry`
 * Remember to use `torify` with the python scripts when connecting remotely through Tor. Example:  
     `torify wallet-tool.py wallet.jmdat`
 
-### Nuke the joinmarket user and the /home/joinmarket folder
+## Erase the joinmarket user and the /home/joinmarket folder
+`sudo srm -rf /home/joinmarket/`  
 `sudo userdel -rf joinmarket`
 
-### Sample bitcoin.conf for a remote node accepting RPC connections through LAN
+## Sample bitcoin.conf for a remote node accepting RPC connections through LAN
 ```
 # bitcoind configuration
 
@@ -220,7 +235,7 @@ dns=0
 peerbloomfilters=1
 ```
 
-### Using the 2.13" WaveShare e-ink display
+## Using the 2.13" WaveShare e-ink display
 https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT
 https://www.raspberrypi.org/documentation/hardware/raspberrypi/spi/README.md
 SPI0 is disabled by default. To enable it, use raspi-config, or ensure the line dtparam=spi=on isn't commented out in /boot/config.txt
@@ -267,14 +282,16 @@ Code examples:
 https://github.com/waveshare/e-Paper/blob/master/RaspberryPi%26JetsonNano/python/examples/epd_2in13_V2_test.py
 https://github.com/21isenough/LightningATM/blob/master/displays/waveshare2in13.py  
 
-### Compile Tor for the RPi Zero (armv6l)
+## Compile Tor for the RPi Zero (armv6l)
 https://2019.www.torproject.org/docs/debian#source
 
-### Build the SDcard image
+## Build the SDcard image
 * Partially based on: https://github.com/rootzoll/raspiblitz/blob/v1.6/FAQ.md#what-is-the-process-of-creating-a-new-sd-card-image-release
-#### Boot Ubuntu Live from USB: https://releases.ubuntu.com/focal/ubuntu-20.04.2-desktop-amd64.iso
+
+### Boot Ubuntu Live from USB: https://releases.ubuntu.com/focal/ubuntu-20.04.2-desktop-amd64.iso
 * Connect to a secure WiFi (hardware switch on) or LAN
-#### Download and verify the base image
+  
+### Download and verify the base image
 * Open a terminal
 * Paste the following commands (see the comments for the explanations and an example output)
     ```bash  
@@ -305,12 +322,12 @@ https://2019.www.torproject.org/docs/debian#source
     # 20201112_raspi_4.img.xz: OK
     # sha256sum: WARNING: 10 lines are improperly formatted
     ```
-#### Flash the base image to the SDcard
+### Flash the base image to the SDcard
 * Connect an SDcard reader with a 8GB SDcard.
 * In the file manager open the context menu (right click) on the `.img.xz` file.
 * Select the option `Open With Disk Image Writer`.
 * Write the image to the SDcard.
-#### Prepare the base image
+### Prepare the base image
 
 * Before the first boot edit the `sysconf.txt` on the `RASPIFIRM` partition to be able to ssh remotely - needs an authorized ssh pubkey.
 * Generate ssh keys on Ubuntu with (keep selecting the defaults with ENTER):
@@ -334,7 +351,7 @@ https://2019.www.torproject.org/docs/debian#source
     apt update
     apt install sudo wget
     ```
-#### Install Joininbox
+### Install Joininbox
 * Download and run the build script
   ```bash 
   # download
@@ -345,14 +362,14 @@ https://2019.www.torproject.org/docs/debian#source
   sudo bash build_joininbox.sh
   ```
 * Monitor/Check outputs for warnings/errors
-#### Prepare the SDcard release
+### Prepare the SDcard release
  * Make the SDcard image safe to share by removing unique infos like ssh pubkeys and network identifiers:  
      ```bash
     /home/joinmarket/standalone/prepare.release.sh
     ```
 * Disconnect WiFi/LAN on build laptop (hardware switch off) and shutdown
 * Remove Ubuntu LIVE USB stick and cut power from the RaspberryPi
-#### Sign the image on an airgapped computer
+### Sign the image on an airgapped computer
 * Connect USB stick with [Tails](https://tails.boum.org/) (stay offline)
 * Power on the Build Laptop (press F12 for boot menu)
 * Connect USB stick with GPG signing keys - decrypt drive if needed
@@ -382,8 +399,8 @@ https://2019.www.torproject.org/docs/debian#source
 * Upload the new image to server - put the .sig file and sha256sum.txt next to it
 * Copy the sha256sum to GitHub README and update the download link
 
-### Verify the downloaded the image
-#### Linux instructions
+## Verify the downloaded the image
+### Linux instructions
 * Open a terminal in the directory with the downloaded files
     ```
     joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz
@@ -412,7 +429,7 @@ https://2019.www.torproject.org/docs/debian#source
   # joininbox-v0.2.0-2021-02-15.img.gz: OK
   ```
 
-#### Windows instructions
+### Windows instructions
 * Download and open the PGP verification software for Windows from <https://www.gpg4win.org> 
 * Verify the `joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz.sha256` file
 * The signature is in the file:  
