@@ -1,4 +1,158 @@
-## v0.3.0 - Standalone pruned node
+# v0.4.1 - Hardened systemd services
+
+* hardened settings for systemd services
+* fix installing different Bitcoin Core versions when standalone
+
+```
+0e9bd8f fix standalone Bitcoin Core install
+74cf32b add hardening measures to lnd.service
+f05d05a tools: remove duplicated function
+8fcdd50 add hardening measures to all systemd services
+```
+
+# v0.4.0 - Quickstart with JoinMarket
+
+New features:
+* START menu with the first steps to get started with JoinMarket
+* CJFINDER in TOOLS - scan the chain for JoinMarket coinjoins and SNICKER candidates
+* CHECKTXN in TOOLS - CLI transaction explorer using the [bitcoin-scripts](https://github.com/kristapsk/bitcoin-scripts) from @kristapsk
+* UTXOS in WALLET - list all coins in the wallet
+* SHUTDOWN, RESTART and back to BLITZ from the main menu
+
+Updates:
+* Bitcoin Core v0.21.1
+* Specter Desktop v1.3.1
+* C-lightning (CLI only) v0.10.0
+
+Fixes:
+* check for a lockfile before wallet actions
+* avoid menu loops
+* myNode compatibility improvements - @tehelsper 
+
+Commits since the last release:
+
+```
+10cbd2a v0.4.0 screenshots in readme
+fbb892d show more output about the lockfile
+79ee578 check for lockfile before wallet actions
+3300af3 updateJoininBox: always set to TAG
+63a67dd switch aliases to ~/_aliases.sh
+562e349 checkRPCwallet before related scripts
+8ca1319 CJFINDER: list the found txn details
+bf1512c specter update to v1.3.1
+1981e1d adapt tools to remote RPC connection
+4a37336 SCANJM: improve instructions to explore  the txns
+eb3aa18 add SCANJM to use snicker-finder.py -j
+8398457 add CLI transaction explorer CHECKTXN
+6b03cbe return to the menu if shutdown/reboot canceled
+8ffb6c5 menu formatting
+3300a1d menu formatting
+637cfe8 add SHUTDOWN, RESTART and back to BLITZ
+397a427 add DISPLAY option to the Quickstart menu
+1b3dc44 avoid menu loops on Cancel and ESC
+f3cc5ea WALLET and YG menu refactoring
+e3c7af2 add START option to Quickstart with JoinMarket
+c811c2c add UTXOS option to the wallet menu (showutxos)
+4f24a59 ask to update bitcoin core on version mismatch
+8a8c770 fix bitcoin binary checksum check
+83930c6 bitcoin: update to v0.21.1 from bitcoincore.org
+19440e9 lnd: improve sphinx connection guidance
+0f2fde3 clightning update to v0.10.0
+f927849 Simplify config options when running within myNode (#44)
+7672813 FAQ formatting
+d7ed43c lnd: fix tor config and sphinx pairing
+e189a5a lnd: activate the watchtower by default
+ea4811c update donation links
+c6d8b45 lnd: add tor selftest and torinstance options
+5b12386 update version to v0.8.2 in manual instructions
+c1de832 exit 1 if cd fails
+```
+
+# v0.3.4 - PayJoin for the Win
+
+- selectable miner fee in the menu when sending a payjoin
+- LND install script to run a private node 
+
+RaspiBlitz integration:
+- pair the parallel 2nd node to Sphinx, BoS, ThunderHub, BTCPay - see: https://github.com/rootzoll/raspiblitz/issues/2073
+
+Standalone:
+- ElectRS install scritpt to be used with a local disk (requires a non-pruned node) - [FAQ](https://github.com/openoms/joininbox/blob/master/FAQ.md#external-drive)
+
+```
+369c883 payjoin: extend dialog window to content
+68289cb add txfee choice when sending a payjoin
+5d5f761 add electrs setup script for a local disk
+b6305f2 run an LND node for private donations and to connect to Sphinx chat on the RaspiBlitz (#41)
+bf34747 lnd: addNodeToBos option
+8c5f490 FAQ: notes on how to mount an external drive
+c2a73c7 fix scipy install on armv7l with 2GB RAM
+181d5fd build: fix the install of pip3 and setuptools
+```
+
+# v0.3.3 - Standalone startup improvements
+
+* fix the snapshot download and verification
+* show startup menu on the first standalone run with UPDATE option
+* edit the bitcoin.conf from the menu (CONFIG -> BTCCONF)
+* add [LND install script](https://github.com/openoms/joininbox/blob/master/scripts/install.lnd.sh) with multiple node support (CLI only)
+```
+7f207cf update README.md and clean files
+c532554 Merge pull request #40 from openoms/dev-v0.3.3
+7d1ccfe (origin/dev-v0.3.3, dev-v0.3.3) FAQ: Armbian image verification
+344949f add CLI only LND install
+32c4791 clightning: clean script
+c13a8c5 format startup menu
+7058151 improve startup and expand filesystem on armbian
+144df6a fix the snapshot download and verification
+1bb8452 menu formatting
+a7cbebc add startup menu and  BTCCONF to CONFIG
+c1a6254 FAQ: add Pruned node notes
+0a6a190 display the correct segwit activation blockheight
+```
+# v0.3.2 - Maker bot nickname display
+
+* show the Maker IRC bot nickname on the RaspiBlitz info screen
+* Add PGP verification instructions for Windows
+* Fix a missing dependency to unzip the pruned chain snapshot
+
+A special thanks to the first time contributor:
+@m00ninite
+and everyone helping with testing and providing feedback!
+
+```
+974e3ec stats: fit the 3.5" inch LCD
+44652c7 build: add unzip, remove script version
+d1edaa9 Merge pull request #37 from m00ninite/master
+2d63793 Improve yg nickname detection; show nick on info screen
+d4d7439 install unzip to extract the snapshot
+6dc50e1 add PGP verification instructions for Windows
+882b56b fix clightning APPDATADIR for the raspiblitz
+```
+
+# v0.3.1 - Free Open Source Software
+
+## Changes:
+* add the open source MIT software licence explicitly allowing to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the JoininBox software and documentation
+* fix starting with a pruned node installation
+
+## SDcard image release for the Raspberry Pi 4:
+* Download links:
+  * https://mega.nz/folder/1gNQwZyL#inJbiuoQsw1HgTMVdAwD6g
+  * alternative: https://keybase.pub/oms/joininbox-v0.3.1-2021-03-13/
+* PGP verification: https://github.com/openoms/joininbox/blob/master/FAQ.md#verify-the-downloaded-the-image
+* process: https://github.com/openoms/joininbox/blob/master/FAQ.md#build-the-sdcard-image
+* build log: https://gist.github.com/openoms/0447d5e578486305ddc0848bb46f65ca  
+
+```
+82d2e6b add the MIT licence
+24423bb improve image build and verification instructions
+6fdc391 adapt the height of dialog boxes dynamically
+cb97a9e fix paths for bitcoin core installation
+```
+
+# v0.3.0 - Standalone pruned node
 * Update to [JoinMarket v0.8.2 - Urgent upgrade for takers - to fix leak of input utxo info to makers](https://github.com/JoinMarket-Org/joinmarket-clientserver/releases/tag/v0.8.2)
 * Improved signet support
 * Show the XPUBs of the JoinMarket wallet to be imported to Specter
@@ -84,7 +238,7 @@ e7a2ce6 restructure readme
 d107d0e FAQ: improve image signing instructions
 63db82d start.joininbox: never exit after set.password.sh
 ```
-## v0.2.0 - SDcard image release
+# v0.2.0 - SDcard image release
 * update JoinMarket to v0.8.1
 * signet support to try JoinMarket with free coins. Find a faucet, block explorer and more info about signet in the FAQ
 * SDcard image release for the RaspberryPi 4 based on pure Debian
@@ -151,7 +305,7 @@ f8d672a build: include pure debian image in preparations
 c9ed6ab signet: add local instance of bitcoin core
 cb4c973 add an option to update JM to the latest commit
 ```
-## v0.1.17 - Tor update option
+# v0.1.17 - Tor update option
 * option to update Tor to the latest alpha on both X86 and ARM
 * improve setup flow on the first run
 ```
@@ -164,7 +318,7 @@ cb4c973 add an option to update JM to the latest commit
 70ec48d add link to nixbitcoin.org/obwatcher/
 82e7e48 improve instructions on connecting over LAN
 ```
-## v0.1.16 - remote node connection help and Boltzmann
+# v0.1.16 - remote node connection help and Boltzmann
 * streamlined install process for Linux based systems (standalone mode)
 * interactive help to connect to a remote bitcoind RPC over LAN or Tor
 * add Boltzmann transaction entropy analysis (experimental)
@@ -196,7 +350,7 @@ e3da3ab add helper script to connect to a remote node
 f18625d installJoinMarket: fix editing dependencies
 7b0022e FAQ: use curl to download and import PGP key
 ```
-## v0.1.15 - JoinMarket v0.8.0
+# v0.1.15 - JoinMarket v0.8.0
 * installs JoinMarket v0.8.0
 * advanced update options in menu to help testing
 * skip libsecp256k1 tests on update and testPR
@@ -211,7 +365,7 @@ e0c9b9c install: no libsecp256k1 test on update and testPR
 60669f3 installJoinmarket: merge update and testPR
 a5e5b56 readme: inspect the build script before running
 ```
-## v0.1.14 - improve standalone installation
+# v0.1.14 - improve standalone installation
 * major refactoring of the standalone install process
 * improved compatibility with aarch64 environments
 * minor UI improvements
@@ -233,7 +387,7 @@ d5bb6e6 installJoinMarket: add libltdl-dev
 06af831 build_joininbox.sh: clean script
 ```
 
-## v0.1.13 - JoinMarket update to v0.7.2
+# v0.1.13 - JoinMarket update to v0.7.2
 ```
 2feaa64 updateJoininBox: fix updating to commit
 0d39c05 start.joininbox: check for cpu type every time
@@ -242,26 +396,26 @@ d5bb6e6 installJoinMarket: add libltdl-dev
 8b394b9 installJoinMarket: update to v0.7.2
 761f4dd start.joininbox: check cpu architecture
 ```
-## v0.1.12 - improve update options
+# v0.1.12 - improve update options
 ```
 195b4a6 update: show current versions in dialog
 ea5888f _commands: fix the qtgui shortcut
 129c10b menu.update: fix path to display JM version
 ```
-## v0.1.11 - improve update functions
+# v0.1.11 - improve update functions
 ```
 1504d23 display current version in menu title
 664df22 move install and update to functions
 6cfed58 format dialog box titles
 c61400c payjoin: change dialog and help output
 ```
-## v0.1.10 - JoinMarket update to v0.7.1
+# v0.1.10 - JoinMarket update to v0.7.1
 ```
 84a381d joinmarket update to v0.7.1
 63f071e wait for key before returning to menu
 db595b0 build: Tor config fixes
 ```
-## v0.1.9 - improved QT GUI instructions for Windows
+# v0.1.9 - improved QT GUI instructions for Windows
 ```
 9a1677c qtgui: add shortcut, improve windows instructions
 79ae230 info.qtgui.sh: fix path in windows intructions
