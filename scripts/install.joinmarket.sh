@@ -80,13 +80,13 @@ function installJoinMarket() {
     fi
   fi
 
+  # do not clear screen during installation
+  sudo -u joinmarket sed -i 's/clear//g' install.sh
   # do not stop at installing Debian dependencies
   sudo -u joinmarket sed -i \
   "s#^        if ! sudo apt-get install \${deb_deps\[@\]}; then#\
         if ! sudo apt-get install -y \${deb_deps\[@\]}; then#g" install.sh
-  # https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/805/files
-  sudo -u joinmarket sed -i \
-  "s#txtorcon#txtorcon', 'cryptography==3.3.2#g" jmdaemon/setup.py
+
   if [ ${cpu} != "x86_64" ]; then
     echo "# Make install.sh set up jmvenv with -- system-site-packages on arm"
     # and import the PySide2 armf package from the system
@@ -99,6 +99,7 @@ function installJoinMarket() {
     # don't install PyQt5 - using the system package instead 
     sudo -u joinmarket sed -i "s#^PyQt5.*##g" requirements/gui.txt
   fi
+
   if [ "$1" = "update" ] || [ "$1" = "testPR" ] || [ "$1" = "commit" ]; then
     # build the Qt GUI, do not run libsecp256k1 test
     sudo -u joinmarket ./install.sh --with-qt --disable-secp-check 
