@@ -1,3 +1,28 @@
+# v0.5.0 - JoinMarket v0.8.3 tested and verified
+
+- update JoinMarket to v0.8.3
+- automatic PGP verification of the git tag on install
+- option to disable the ssh login with the joinmarket user
+- updated FAQ with ssh hardening options including 2FA
+- new commands - thanks to @nyxnor
+  - `newnym` : start a new Tor circuit and verify the change of identity
+  - `torthistx` : start new Tor circuit if broadcasting through an exit node
+
+```
+3bdddf4 PGP verify the git tag in installJoinMarket
+7f13c69 add option to disable ssh access for joinmarket
+fda5e21 build: deny root login via ssh
+57f4d34 FAQ: add instructions to set 2FA for ssh
+259fceb update FAQ with ssh hardening options
+e15c71b update readme with ToC
+876ef89 update joinmarket to v0.8.3
+d293c02 newnym only if an exit node is involved
+22fd8e4 move file tor.newnym.py
+b82c20a calling py script with user debian-tor
+b3af7da Update _commands.sh
+f25f6a0 Create tor.newnym.py
+```
+
 # v0.4.1 - Hardened systemd services
 
 * hardened settings for systemd services
