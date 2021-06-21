@@ -19,7 +19,6 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 
 
 - [Features](#features)
-- [Connect to a Bitcoin Core node](#connect-to-a-bitcoin-core-node)
 - [Required Hardware](#required-hardware)
 - [Set up with an SDcard image](#set-up-with-an-sdcard-image)
 - [Set up JoininBox on Linux](#set-up-joininbox-on-linux)
@@ -36,18 +35,14 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 * Run the Yield Generator as a service and earn fees for providing liquidity
 * Use the JoinMarket-QT GUI remotely over SSH
 * Signet support to test for free
-
-## Connect to a Bitcoin Core node
-
-* Try signet locally
-* Connect remotely to a
+* Connect remotely to a Bitcoin Core node
   * RaspiBlitz over [LAN or Tor](prepare_remote_node.md#raspiblitz)
   * RoninDojo over [LAN or Tor](prepare_remote_node.md#ronindojo)
-* Run locally as part of the RaspiBlitz SERVICES
 * Start a pruned node from https://prunednode.today/
-  
+* JoininBox is part the RaspiBlitz SERVICES
+
 **The addresses, transactions and balances of JoinMarket can be seen in the watch-only wallet of the connected node.**
-  * use your own or trusted node
+  * use your own or a trusted node
   * to protect privacy in case of physical access use disk encryption
 
 ## Required Hardware
@@ -61,8 +56,11 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 **JoininBox operates on the minimum viable hardware under the assumption that the seed (and passphrase) of the wallets used is safely backed up and can be used to recover the funds!**
 
 ## Set up with an SDcard image
-* Find the links to the prebuilt image in the [releases](https://github.com/openoms/joininbox/releases)
-* [Verify the downloaded image](FAQ.md#verify-the-downloaded-the-image)
+* Download and verify the latest prebuilt image for the Raspberry Pi 4:
+  * Download link: <https://mega.nz/folder/BkFlgShZ#lVEGJmrM8cEdJINQaHEUrg>
+  * Alternative: <https://keybase.pub/oms/joininbox-v0.5.0-2021-06-21/>
+  * [How to verify the downloaded image](FAQ.md#verify-the-downloaded-the-image)
+  
 * Write to the SDcard with [Balena Etcher](https://www.balena.io/etcher/)
 * Assemble the RaspberryPi and connect with a LAN cable to the internet
 * Make sure that your laptop and the RPi are on the same local network
@@ -79,11 +77,13 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
   ![password change](/images/password.change.png)
 
 * next will be presented with the CONFIG menu to
-  * Edit the joinmarket.cfg manually
-  * Connect to  a remote bitcoin node on mainnet
+  * Connect to a remote bitcoin node on mainnet
   * Try JoinMarket on signet
+  * Start a pruned node from [prunednode.today](https://prunednode.today)
+  * Edit the joinmarket.cfg manually
+  * Update JoininBox or JoinMarket
   
-  ![config menu](/images/menu.config.png)
+  ![config menu](/images/menu.startup.png)
 
 * Continuing with one of the options or exiting will get you to the main JoininBox menu where you can start using JoinMarket
    
