@@ -46,7 +46,6 @@ python ob-watcher.py'
 User=joinmarket
 Group=joinmarket
 Type=simple
-KillMode=process
 TimeoutSec=600
 Restart=no
 

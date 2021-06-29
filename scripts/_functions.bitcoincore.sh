@@ -168,7 +168,6 @@ Type=forking
 PIDFile=/home/joinmarket/bitcoin/bitcoind.pid
 ExecStart=/home/joinmarket/bitcoin/bitcoind -signet -daemon \
 -pid=/home/joinmarket/bitcoin/bitcoind.pid
-KillMode=process
 Restart=always
 TimeoutSec=120
 RestartSec=30

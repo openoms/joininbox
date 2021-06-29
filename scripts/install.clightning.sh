@@ -176,7 +176,6 @@ Group=${LIGHTNINGUSER}
 Type=simple
 ExecStart=/usr/local/bin/lightningd \
   --lightning-dir="/home/${LIGHTNINGUSER}/.lightning${NODENUMBER}/"
-KillMode=process
 Restart=always
 TimeoutSec=120
 RestartSec=30

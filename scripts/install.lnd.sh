@@ -163,7 +163,6 @@ Type=simple
 ExecStart=/usr/local/bin/lnd \
   --lnddir=\"/home/${LNDUSER}/.lnd${NODENUMBER}/\" \
   --bitcoin.$NETWORK
-KillMode=process
 Restart=always
 TimeoutSec=120
 RestartSec=30
@@ -663,7 +662,6 @@ ExecStart=/usr/local/bin/lnd \
   --bitcoin.$NETWORK \
   --tor.socks=$SOCKSPORT \
   --tor.control=$CONTROLPORT
-KillMode=process
 Restart=always
 TimeoutSec=120
 RestartSec=30

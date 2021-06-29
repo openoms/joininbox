@@ -40,7 +40,6 @@ ExecStart=/bin/sh -c \
 User=joinmarket
 Group=joinmarket
 Type=simple
-KillMode=process
 TimeoutSec=infinity
 Restart=no
 
