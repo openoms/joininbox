@@ -31,6 +31,9 @@ function downloadBitcoinCore() {
     sudo -u joinmarket wget https://bitcoin.org/laanwj-releases.asc
   fi
   if [ ! -f "laanwj-releases.asc" ];then
+    sudo -u joinmarket wget https://raw.githubusercontent.com/bitcoin-dot-org/Bitcoin.org/master/laanwj-releases.asc
+  fi
+  if [ ! -f "laanwj-releases.asc" ];then
     echo "# !!! FAIL !!! Could not download laanwj-releases.asc"
     exit 1
   fi
