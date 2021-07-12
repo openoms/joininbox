@@ -44,17 +44,7 @@ CHOICE=$(dialog \
 case $CHOICE in
 
   GEN)
-    clear
-    echo 
-    . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
-    if [ "${RPCoverTor}" = "on" ]; then 
-      torify python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
-    else
-      python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
-    fi
-    echo
-    echo "Press ENTER to return to the menu"
-    read key;;
+    menu_GEN;;
   DISPLAY)
     menu_DISPLAY;;
   HISTORY)
