@@ -329,7 +329,7 @@ function updateTor() {
   'tor-nightly-master')
   echo "torSourceListAvailable=${torSourceListAvailable}"  
   if [ ${torSourceListAvailable} -eq 0 ]; then
-    echo "Adding TOR sources ..."
+    echo "Adding Tor sources ..."
     if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "buster" ]||[ "${baseImage}" = "dietpi" ]; then
       distro="buster"
     elif [ "${baseImage}" = "bionic" ]; then

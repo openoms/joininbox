@@ -335,7 +335,7 @@ then
   'https://deb.torproject.org/torproject.org')
   echo "torSourceListAvailable=${torSourceListAvailable}"  
   if [ ${torSourceListAvailable} -eq 0 ]; then
-    echo "Adding TOR sources ..."
+    echo "Adding Tor sources ..."
     if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "buster" ]||[ "${baseImage}" = "dietpi" ]; then
       echo "deb https://deb.torproject.org/torproject.org buster main" | tee -a /etc/apt/sources.list
       echo "deb-src https://deb.torproject.org/torproject.org buster main" | tee -a /etc/apt/sources.list
