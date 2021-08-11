@@ -116,7 +116,8 @@ function chooseWallet() {
   else
     echo "# OK - the $(cat $wallet) file is present"
   fi
-  local walletFileName=$(cat $wallet | cut -d/ -f6)
+  
+  walletFileName=$(cat $wallet | cut -d/ -f6)
   if [ $# -eq 0 ] || [ $1 != "noLockFileCheck" ];then
     if [ -f /home/joinmarket/.joinmarket/wallets/.${walletFileName}.lock ];then
       echo

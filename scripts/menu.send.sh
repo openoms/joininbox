@@ -13,46 +13,80 @@ mixdepth=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose a mixdepth to send from" \
 --title "Choose a mixdepth to send from" \
 --inputbox "
-Enter a number between 0 to 4 to choose the mixdepth" 9 60 2> "$mixdepth"
-openMenuIfCancelled $?
+From the wallet: $walletFileName
+mixdepth: $(cat "$mixdepth")
+send: $amountsats
+coinjoin: $makercountMessage
+miner fee: $txfeeMessage
+destination address:
+$(cat "$address")
 
-# makercount
-makercount=$(mktemp -p /dev/shm/)
-dialog --backtitle "Choose the makercount" \
---title "Choose the makercount" \
---inputbox "
-Enter the number of makers to coinjoin with (min 4)
-Leave empty for the default 5-7 (randomized)
-Enter 0 to send without a coinjoin." 11 60 2> "$makercount"
+Enter a number between 0 to 4 to choose the mixdepth" 17 69 2> "$mixdepth"
 openMenuIfCancelled $?
-varMakercount=$(cat "$makercount")
-if [ ${#varMakercount} -eq 0 ]; then
-  makercountMessage="coinjoined with 5-7 (randomized) makers"
-  makercountOption=""
-elif [ "$varMakercount" = "0" ]; then
-  makercountMessage="no coinjoin"
-  makercountOption="-N 0"
-else
-  makercountMessage="coinjoined with $varMakercount makers"
-  makercountOption="-N $varMakercount"
-fi
 
 # amount
 amount=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose the amount" \
 --title "Choose the amount" \
 --inputbox "
+From the wallet: $walletFileName
+mixdepth: $(cat "$mixdepth")
+send: $amountsats
+coinjoin: $makercountMessage
+miner fee: $txfeeMessage
+destination address:
+$(cat "$address")
+
 Enter the amount to send in satoshis
-Use 0 to sweep the mixdepth without a change output" 10 60 2> "$amount"
+Use 0 to sweep the mixdepth without a change output" 18 69 2> "$amount"
 openMenuIfCancelled $?
+amountsats="$(cat "$amount") sats"
+
+# makercount
+makercount=$(mktemp -p /dev/shm/)
+dialog --backtitle "Choose the makercount" \
+--title "Choose the makercount" \
+--inputbox "
+From the wallet: $walletFileName
+mixdepth: $(cat "$mixdepth")
+send: $amountsats
+coinjoin: $makercountMessage
+miner fee: $txfeeMessage
+destination address:
+$(cat "$address")
+
+Enter the number of makers to coinjoin with (min 4)
+Leave empty for the default 5-9 (randomized)
+Enter 0 to send without a coinjoin." 19 69 2> "$makercount"
+openMenuIfCancelled $?
+varMakercount=$(cat "$makercount")
+if [ ${#varMakercount} -eq 0 ]; then
+  makercountMessage="with 5-9 (randomized) makers"
+  makercountOption=""
+elif [ "$varMakercount" = "0" ]; then
+  makercountMessage="none"
+  makercountOption="-N 0"
+else
+  makercountMessage="with $varMakercount makers"
+  makercountOption="-N $varMakercount"
+fi
+
 
 # txfee
 txfee=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose the miner fee" \
 --title "Choose the miner fee" \
 --inputbox "
+From the wallet: $walletFileName
+mixdepth: $(cat "$mixdepth")
+send: $amountsats
+coinjoin: $makercountMessage
+miner fee: $txfeeMessage
+destination address:
+$(cat "$address")
+
 Enter the miner fee to be used for the transaction in sat/byte
-Leave empty to use the default fee (set in the joinmarket.cfg)" 10 67 2> "$txfee"
+Leave empty to use the default fee (set in the joinmarket.cfg)" 18 69 2> "$txfee"
 openMenuIfCancelled $?
 varTxfee=$(cat "$txfee")
 if [ ${#varTxfee} -eq 0 ]; then
@@ -68,7 +102,15 @@ address=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose the address" \
 --title "Choose the address" \
 --inputbox "
-Paste the destination address" 9 69 2> "$address"
+From the wallet: $walletFileName
+mixdepth: $(cat "$mixdepth")
+send: $amountsats
+coinjoin: $makercountMessage
+miner fee: $txfeeMessage
+destination address:
+$(cat "$address")
+
+Paste the destination address" 17 69 2> "$address"
 openMenuIfCancelled $?
 
 if [ "${RPCoverTor}" = "on" ]; then 
@@ -81,18 +123,13 @@ fi
 dialog --backtitle "Confirm the details" \
 --title "Confirm the details" \
 --yesno "
-Send: $(cat "$amount") sats
-
-From the wallet:
-$(sed "s#$walletPath##g" < "$wallet" )
+From the wallet: $walletFileName
 mixdepth: $(cat "$mixdepth")
-
-to the address:
-$(cat "$address")
-
-$makercountMessage.
-
-Miner fee: $txfeeMessage" 18 67
+send: $amountsats
+coinjoin: $makercountMessage
+miner fee: $txfeeMessage
+destination address:
+$(cat "$address")" 15 69
 
 # make decison
 pressed=$?
