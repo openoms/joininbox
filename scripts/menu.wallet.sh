@@ -15,7 +15,7 @@ checkRPCwallet
 
 # BASIC MENU INFO
 HEIGHT=18
-WIDTH=52
+WIDTH=53
 CHOICE_HEIGHT=12
 TITLE="Wallet management options"
 BACKTITLE="Wallet management options"
