@@ -4,6 +4,12 @@
 source /home/joinmarket/_functions.sh
 source /home/joinmarket/joinin.conf
 
+if [ ${RPCoverTor} = "on" ]; then 
+  tor="torify"
+else
+  tor=""
+fi
+
 checkRPCwallet
 
 # add default value to joinin config if needed
@@ -12,9 +18,9 @@ if ! grep -Eq "^YGwallet=" $joininConfPath; then
 fi
 
 # BASIC MENU INFO
-HEIGHT=13
+HEIGHT=14
 WIDTH=52
-CHOICE_HEIGHT=20
+CHOICE_HEIGHT=21
 TITLE="Yield Generator options"
 MENU=""
 OPTIONS=()
@@ -29,6 +35,7 @@ OPTIONS+=(
   SERVICE "Monitor the YG service (INFO)"
   LOGS "View the last YG logfile (DEBUG)"
   STOP "Stop the YG service"
+  TIMELOCK "Create a Fidelity Bond address"
 )
 
 CHOICE=$(dialog \
@@ -100,5 +107,31 @@ Press CTRL+C to exit and return to the menu." 10 50
     stopYG
     echo
     echo "Press ENTER to return to the menu..."
+    read key;;
+  TIMELOCK)
+    # wallet
+    chooseWallet noLockFileCheck
+    # (gettimelockaddress) Obtain a timelocked address. Argument is locktime value as yyyy-mm. For example `2021-03`.
+    # locktime
+    locktime=$(mktemp -p /dev/shm/)
+    dialog --backtitle "Obtain a timelocked address" \
+    --title "Obtain a timelocked address" \
+    --inputbox "
+Enter a date until which the coin sent to the address should be locked.
+The format is: yyyy-mm. For example: 
+2021-03
+" 12 60 2> "$locktime"
+    openMenuIfCancelled $?
+    echo
+    . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
+    command="$tor python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py $(cat $wallet) gettimelockaddress $(cat $locktime)"
+    echo "Running the command:"
+    echo "$command"
+    $command
+    echo
+    echo "Note that only the most valuable Fidelity Bond will be taken into account."
+    echo "Send only one private coin to be locked until the chosen date."
+    echo
+    echo "Press ENTER to return to the menu"
     read key;;
 esac
