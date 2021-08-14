@@ -5,12 +5,18 @@
 source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
+if [ ${RPCoverTor} = "on" ]; then 
+  tor="torify"
+else
+  tor=""
+fi
+
 checkRPCwallet
 
 # BASIC MENU INFO
-HEIGHT=16
+HEIGHT=18
 WIDTH=52
-CHOICE_HEIGHT=10
+CHOICE_HEIGHT=12
 TITLE="Wallet management options"
 BACKTITLE="Wallet management options"
 MENU=""
@@ -25,7 +31,9 @@ OPTIONS+=(
   PSBT "Sign an externally prepared PSBT"
   GEN "Generate a new wallet"
   IMPORT "Copy wallet(s) from a remote node"
+  SHOWSEED "Shows the wallet recovery seed"
   RECOVER "Restore a wallet from the seed"
+  INCREASEGAP "Increase the gap limit"
   RESCAN "Rescan the Bitcoin Core wallet"
   UNLOCK "Remove the lockfiles"
   )
@@ -64,16 +72,47 @@ case $CHOICE in
     echo "Returning to the menu..."
     sleep 1
     /home/joinmarket/menu.sh;;
+  SHOWSEED)
+    # wallet
+    chooseWallet noLockFileCheck
+    /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) "showseed"
+    echo
+    echo "Press ENTER to return to the menu"
+    read key;;
   RECOVER)
-    clear
     echo
     . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
-    if [ "${RPCoverTor}" = "on" ];then 
-      torify python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py recover
-    else
-      python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py recover
-    fi
-    echo ""
+    command="$tor python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py recover"
+    echo "Running the command:"
+    echo "$command"
+    $command
+    echo
+    echo "Press ENTER to return to the menu"
+    read key;;
+  INCREASEGAP)
+    # wallet
+    chooseWallet noLockFileCheck
+    # gaplimit
+    gaplimit=$(mktemp -p /dev/shm/)
+    dialog --backtitle "Choose the new gap limit" \
+    --title "Choose the new gap limit" \
+    --inputbox "
+The gap limit is the number of empty addresses after which the wallet stops looking for funds.
+The default used is 6. 
+Set a higher number if funds are missing after recovery.
+The tradeoff is more time needed for the wallet to open with more addresses monitored.
+
+Enter the new gap limit to be used" 16 60 2> "$gaplimit"
+    openMenuIfCancelled $?
+    . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
+    command="$tor python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py --recoversync -g $(cat $gaplimit) $(cat $wallet)"
+    echo "Running the command:"
+    echo "$command"
+    $command
+    echo
+    echo "Check if the funds appeared now with DISPLAY."
+    echo "You can set the gap limit as many times as needed."
+    echo
     echo "Press ENTER to return to the menu"
     read key;;
   UNLOCK)
@@ -82,7 +121,7 @@ case $CHOICE in
     rm ~/.joinmarket/wallets/.*.lock
     # for old version <v0.6.3
     rm ~/.joinmarket/wallets/*.lock 2>/dev/null
-    echo ""
+    echo
     echo "Press ENTER to return to the menu"
     read key;;
   RESCAN)
