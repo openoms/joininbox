@@ -58,9 +58,8 @@ function waitKeyOnExit1() {
 function passwordToFile() {
   # write password into a file (to be shredded)
   # get password
+  trap 'rm -f "$data"' EXIT
   data=$(mktemp -p /dev/shm/)
-  # trap it
-  trap 'rm -f $data' 0 1 2 5 15
   dialog --clear \
    --backtitle "Enter password" \
    --title "Enter password" \
@@ -94,9 +93,9 @@ function passwordToFile() {
 
 # chooseWallet <noLockFileCheck>
 function chooseWallet() {
+  trap 'rm -f "$wallet"' EXIT
   wallet=$(mktemp -p /dev/shm/)
   if [ "$defaultWallet" = "off" ]; then
-    wallet=$(mktemp -p /dev/shm/)
     dialog --clear \
      --backtitle "Choose a wallet by typing the full name of the file" \
      --title "Choose a wallet by typing the full name of the file" \

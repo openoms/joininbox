@@ -113,6 +113,7 @@ Press CTRL+C to exit and return to the menu." 10 50
     chooseWallet noLockFileCheck
     # (gettimelockaddress) Obtain a timelocked address. Argument is locktime value as yyyy-mm. For example `2021-03`.
     # locktime
+    trap 'rm -f "$locktime"' EXIT
     locktime=$(mktemp -p /dev/shm/)
     dialog --backtitle "Obtain a timelocked address" \
     --title "Obtain a timelocked address" \

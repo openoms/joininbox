@@ -277,6 +277,7 @@ function checkRPCwallet {
     rpc_wallet=$1
   fi
   echo "# Making sure the set $rpc_wallet wallet is present in bitcoind"
+  trap 'rm -f "$connectionOutput"' EXIT
   connectionOutput=$(mktemp -p /dev/shm/)
   walletFound=$(customRPC "# Check wallet" "listwallets" 2>$connectionOutput | grep -c "$rpc_wallet")
   if [ $walletFound -eq 0 ]; then

@@ -11,6 +11,7 @@ function receivePayJoin() {
 chooseWallet
 
 # mixdepth
+trap 'rm -f "$mixdepth"' EXIT
 mixdepth=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose a mixdepth to receive to" \
 --title "Choose a mixdepth to receive to" \
@@ -20,6 +21,7 @@ Enter a number between 0 to 4 to choose the mixdepth
 openMenuIfCancelled $?
 
 # amount
+trap 'rm -f "$amount"' EXIT
 amount=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose the amount" \
 --title "Choose the amount" \
@@ -79,6 +81,7 @@ function sendPayJoin() {
 chooseWallet
 
 # mixdepth
+trap 'rm -f "$mixdepth"' EXIT
 mixdepth=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose a mixdepth to send from" \
 --title "Choose a mixdepth to send from" \
@@ -87,6 +90,7 @@ Enter a number between 0 to 4 to choose the mixdepth" 9 60 2> $mixdepth
 openMenuIfCancelled $?
 
 # receiveURI
+trap 'rm -f "$receiveURI"' EXIT
 receiveURI=$(mktemp -p /dev/shm/)
 dialog --backtitle "Receive URI" \
 --title "Receive URI" \
@@ -95,6 +99,7 @@ Paste the Receive URI to send to" 9 60 2> $receiveURI
 openMenuIfCancelled $?
 
 # txfee
+trap 'rm -f "$txfee"' EXIT
 txfee=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose the miner fee" \
 --title "Choose the miner fee" \

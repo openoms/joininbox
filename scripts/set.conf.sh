@@ -10,14 +10,16 @@ if [ ${#EDITFILE} -eq 0 ]; then
 else
   echo "Opening $EDITFILE"
 fi
+
 # temp conf
+trap 'rm -f "$conf"' EXIT
 conf=$(mktemp -p /dev/shm/)
-# trap it
-trap 'rm -f $conf' 0 1 2 5 15
+
 dialog \
 --title "Editing the $EDITFILE" \
 --editbox "$EDITFILE" 200 200 2> "$conf"
-# make decison
+
+# make decision
 pressed=$?
 case $pressed in
   0)

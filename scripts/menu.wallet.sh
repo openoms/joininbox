@@ -93,6 +93,7 @@ case $CHOICE in
     # wallet
     chooseWallet noLockFileCheck
     # gaplimit
+    trap 'rm -f "$gaplimit"' EXIT
     gaplimit=$(mktemp -p /dev/shm/)
     dialog --backtitle "Choose the new gap limit" \
     --title "Choose the new gap limit" \

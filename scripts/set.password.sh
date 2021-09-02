@@ -21,6 +21,7 @@ if [ "$piUserPresent" -gt 0 ]; then
 fi
 
 # mktemp in the RAM
+trap 'rm -f "$_temp"' EXIT
 _temp="$(mktemp -p /dev/shm/)"
 
 # 1. parameter [?newpassword]

@@ -42,6 +42,7 @@ function dialog_inputbox {
   local text=$2
   local height=$3
   local width=$4
+  trap 'rm -f "$inputdata"' EXIT
   inputdata=$(mktemp -p /dev/shm/)
   dialog --backtitle "$title" \
   --title "$title" \
@@ -52,6 +53,7 @@ function dialog_inputbox {
 }
 
 function getQRstring {
+  trap 'rm -f "$QRstring"' EXIT
   QRstring=$(mktemp -p /dev/shm/)
   dialog --backtitle "Display a QR code from any text" \
   --title "Enter any text" \

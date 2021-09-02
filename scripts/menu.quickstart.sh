@@ -9,6 +9,7 @@ checkRPCwallet
 
 function cacheAndShowQR() {
   # cache wallet data
+  trap 'rm -f "$walletData"' EXIT
   walletData=$(mktemp -p /dev/shm/)
   clear
   /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)" nomethod 0 2>&1 | tee $walletData

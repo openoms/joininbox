@@ -9,6 +9,7 @@ checkRPCwallet
 chooseWallet
 
 # mixdepth
+trap 'rm -f "$mixdepth"' EXIT
 mixdepth=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose a mixdepth to send from" \
 --title "Choose a mixdepth to send from" \
@@ -25,6 +26,7 @@ Enter a number between 0 to 4 to choose the mixdepth" 17 69 2> "$mixdepth"
 openMenuIfCancelled $?
 
 # amount
+trap 'rm -f "$amount"' EXIT
 amount=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose the amount" \
 --title "Choose the amount" \
@@ -43,6 +45,7 @@ openMenuIfCancelled $?
 amountsats="$(cat "$amount") sats"
 
 # makercount
+trap 'rm -f "$makercount"' EXIT
 makercount=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose the makercount" \
 --title "Choose the makercount" \
@@ -73,6 +76,7 @@ fi
 
 
 # txfee
+trap 'rm -f "$txfee"' EXIT
 txfee=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose the miner fee" \
 --title "Choose the miner fee" \
@@ -103,6 +107,7 @@ else
 fi
 
 # address
+trap 'rm -f "$address"' EXIT
 address=$(mktemp -p /dev/shm/)
 dialog --backtitle "Choose the address" \
 --title "Choose the address" \
