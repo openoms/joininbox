@@ -108,7 +108,12 @@ if [ ${#varTxfee} -eq 0 ]; then
   txfeeOption=""
 else
   txfeeMessage="$varTxfee sat/byte"
-  txfeeOption="--txfee=$((varTxfee * 1000))"
+  if [ ${#varTxfee} -eq 1 ]; then
+    # https://github.com/openoms/joininbox/issues/64
+    txfeeOption="--txfee=1001"
+  else
+    txfeeOption="--txfee=$((varTxfee * 1000))"
+  fi
 fi
 
 if [ ${RPCoverTor} = "on" ]; then 
