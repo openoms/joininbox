@@ -180,7 +180,7 @@ function feereport() {
   while read -r timestamp cj_amount_satoshi my_input_count my_input_value_satoshi  cjfee_satoshi  earned_satoshi  confirm_time_min  notes
   do
     unixtimeEvent=$(date -d "$timestamp" +%s 2>/dev/null)
-    if [ "$earned_satoshi" -gt 0 ]; then
+    if [ "$my_input_count" -gt 0 ]; then
       allEarned=$(( allEarned + earned_satoshi ))
       allCoinjoins=$(( allCoinjoins + 1 ))
       if [ "$unixtimeEvent" -gt "$unixtimeMonthAgo" ]; then
