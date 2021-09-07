@@ -135,6 +135,7 @@ the default password is: `joininbox` - will be prompted to change it on the firs
 * [JoinMarket on Ubuntu](https://www.youtube.com/watch?v=zTCC86IUzWo) video by [K3tan](https://twitter.com/_k3tan)
 * [How to use JoinMarket](https://www.keepitsimplebitcoin.com/joinmarket) command line focused video by [Keep It Simple Bitcoin](https://twitter.com/kisbitcoin)
 * [Connect JoinMarket running on a Linux desktop to a remote node](https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/joinmarket_desktop_to_blitz.md)
+
 ## Forums
 
 * Telegram: <https://t.me/joinmarketorg>

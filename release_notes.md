@@ -1,3 +1,29 @@
+# v0.6.0 - Fidelity Bonds with JoinMarket v0.9.1
+
+- update to JoinMarket v0.9.1
+- new menu options:
+`TIMELOCK` -  Create a Fidelity Bond address
+`SHOWSEED` - Shows the wallet recovery seed
+`INCREASEGAP` - Increase the gap limit
+- display all previously selected options in the `SEND` dialog
+- added Bitcoin Core release signing key fallback link
+- PGP verification of the downloaded JoinMarket source code
+- systemd config improvement with `KillMode=control-group`
+
+```
+8975421 update screenshots for v0.6.0
+4656100 TIMELOCK option in MAKER for Fidelity Bonds
+6b2085c add SHOWSEED and INCREASEGAP to the WALLET menu
+a280c7e update joinmarket to v0.9.1
+ec8d94b always display selected options in the SEND dialog
+ab7c9e4 Tor: reload only with -sighup , spelling fixes
+a62d000 JoinMarket update to v0.9.0 with tag verification
+dfc006e menu.wallet.sh: use GEN function
+8f49af6 add Bitcoin Core release signing key fallback link
+e06969b default to KillMode=control-group in services
+13697dc readme: update links and screenshots for v0.5.0
+```
+
 # v0.5.0 - JoinMarket v0.8.3 tested and verified
 
 - update JoinMarket to v0.8.3
