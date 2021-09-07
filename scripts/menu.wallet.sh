@@ -130,12 +130,13 @@ Enter the new gap limit to be used" 16 60 2> "$gaplimit"
     echo
     echo "# Input the blockheight to scan from (first SegWit block: 481824):"
     read blockheight
-    echo "# Can exit the command with CTRL+C, the rescan will continue in the background"
-    customRPC "# Rescan wallet in bitcoind" "rescanblockchain" "$blockheight"
     echo
+    echo "# Starting the rescan from the block $blockheight ..."
+    echo "# Can exit this screen with CTRL+C, the rescan will continue in the background"
     echo "# Monitor the progress in the logs of the connected bitcoind"
     echo
-    showBitcoinLogs 30
+    customRPC "# Rescan wallet in bitcoind" "rescanblockchain" "$blockheight"
+    echo
     echo "Press ENTER to return to the menu"
     read key;;
   UTXOS)
