@@ -66,10 +66,12 @@ echo
 echo "# Blockheight on the connected node: $(checkRPC 2>/dev/null|grep "result"|cut -d":" -f2|cut -d"," -f1)"
 echo
 rpc_wallet=joininbox
-checkRPCwallet $rpc_wallet
 python /home/joinmarket/set.bitcoinrpc.py --network=mainnet --rpc_user=$rpc_user\
  --rpc_pass=$rpc_pass --rpc_host=$rpc_host --rpc_port=$rpc_port --rpc_wallet=$rpc_wallet
+echo
+echo "# The wallet used in the connected bitcoind is called: $rpc_wallet"
 echo
 echo "# The bitcoinRPC connection settings are set in the joinmarket.cfg"
 sed -i "s#^connectedRemoteNode=.*#connectedRemoteNode=on#g" $joininConfPath
 echo 
+checkRPCwallet $rpc_wallet
