@@ -8,7 +8,7 @@ PGPcheck="2B6FC204D9BF332D062B461A141001A1AF77F20B"
 # command info
 if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
  echo "a script to install, update or configure JoinMarket"
- echo "install.joinmarket.sh [install|config|update|testPR <PRnumber>]"
+ echo "install.joinmarket.sh [install|config|update|testPR <PRnumber>|commit]"
  echo "the latest tested version: $testedJMversion is installed by default"
  exit 1
 fi
@@ -19,7 +19,7 @@ source /home/joinmarket/joinin.conf
 # installJoinMarket [update|testPR <PRnumber>|commit]
 function installJoinMarket() {
   cpu=$(uname -m)
-  cd /home/joinmarket
+  cd /home/joinmarket || exit 1
   # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
   echo "# Installing ARM specific dependencies to run the QT GUI"
   sudo apt install -y python3-pyside2.qtcore python3-pyside2.qtgui \
@@ -167,6 +167,13 @@ fi
 if [ "$1" = "testPR" ]; then
   stopYG
   installJoinMarket testPR $2
+  errorOnInstall $?
+  exit 0
+fi
+
+if [ "$1" = "commit" ]; then
+  stopYG
+  installJoinMarket commit
   errorOnInstall $?
   exit 0
 fi
