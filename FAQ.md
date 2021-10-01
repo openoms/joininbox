@@ -33,6 +33,7 @@
 - [USB SSD recommendation](#usb-ssd-recommendation)
 - [Pruned node notes](#pruned-node-notes)
 - [External drive](#external-drive)
+- [IRC server settings](#irc-server-settings)
 
 ## Public JoinMarket Order Book links
 * <https://nixbitcoin.org/obwatcher/>  
@@ -599,3 +600,49 @@ Alternatively to a pruned node there could be a larger >400 GB storage connected
   sudo tail -f /home/bitcoin/.bitcoin/debug.log | grep progress
   # 2021-03-23T12:12:34Z UpdateTip: new best=0000000000000000000c503fbc0e2724b4713dbbb8b0f0048177fc3aaebe0b9b height=675602 version=0x20400000 log2_work=92.750996 tx=626795389 date='2021-03-21T11:05:10Z' progress=0.999011 cache=5.4MiB(48880txo)
   ```
+## IRC server settings
+* See the most up to date configuration in:  
+  https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/jmclient/jmclient/configure.py
+* The latest setting with Tor enabled:
+  ```
+  [MESSAGING:server1]
+  #host = irc.darkscience.net
+  channel = joinmarket-pit
+  port = 6697
+  usessl = true
+  #socks5 = false
+  socks5_host = localhost
+  socks5_port = 9050
+  #for tor
+  host = darkirc6tqgpnwd3blln3yfv5ckl47eg7llfxkmtovrv7c7iwohhb6ad.onion
+  socks5 = true
+
+  [MESSAGING:server2]
+  #host = irc.hackint.org
+  channel = joinmarket-pit
+  #port = 6697
+  #usessl = true
+  #socks5 = false
+  socks5_host = localhost
+  socks5_port = 9050
+  #for tor
+  host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion
+  port = 6667
+  usessl = false
+  socks5 = true
+
+  [MESSAGING:server3]
+  #host = agora.anarplex.net
+  channel = joinmarket-pit
+  #port = 14716
+  #usessl = true
+  #socks5 = false
+  socks5_host = localhost
+  socks5_port = 9050
+  #for tor
+  host = vxecvd6lc4giwtasjhgbrr3eop6pzq6i5rveracktioneunalgqlwfad.onion
+  port = 6667
+  usessl = false
+  socks5 = true
+  ```
+
