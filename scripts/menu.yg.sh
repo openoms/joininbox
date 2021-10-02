@@ -5,7 +5,7 @@ source /home/joinmarket/_functions.sh
 source /home/joinmarket/joinin.conf
 
 if [ ${RPCoverTor} = "on" ]; then 
-  tor="torify"
+  tor="torsocks"
 else
   tor=""
 fi

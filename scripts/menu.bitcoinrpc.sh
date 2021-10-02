@@ -30,7 +30,7 @@ function inputRPC {
 function checkRPC {
   tor=""
   if [ $(echo $rpc_host | grep -c .onion) -gt 0 ]; then
-    tor="torify"
+    tor="torsocks"
     echo "# Connecting over Tor..."
     echo
   fi

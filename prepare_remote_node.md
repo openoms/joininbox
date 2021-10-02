@@ -182,7 +182,7 @@ Fill the connection settings from the `5 Credentials` -> `6 Bitcoind` menu of Ro
 * [Connect JoinMarket running on a Linux desktop to a remote node](https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/joinmarket_desktop_to_blitz.md)
 
 * Note about the Tor connection (applied automatically in the JoininBox):
-Remember to use `torify` with the python scripts when connecting remotely through Tor  
+Remember to use `torsocks` with the python scripts when connecting remotely through Tor  
 Example:  
-`torify wallet-tool.py wallet.jmdat`  
+`torsocks wallet-tool.py wallet.jmdat`  
 also need to [allow Tor to connect to localhost](FAQ.md#allow-tor-to-connect-to-localhost)

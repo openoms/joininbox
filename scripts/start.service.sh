@@ -16,7 +16,7 @@ echo
 fi
 
 if [ ${RPCoverTor} = "on" ];then 
-  tor="torify"
+  tor="torsocks"
 else
   tor=""
 fi

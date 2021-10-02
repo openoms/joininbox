@@ -42,7 +42,7 @@ if [ "${CHOICE}" = "LAN" ]; then
   fi
 echo "need to be connected to the same local network."
 elif [ "${CHOICE}" = "TOR" ]; then
-  echo "The remote node needs to have Tor activated to be able to use torify"
+  echo "The remote node needs to have Tor activated to be able to use torsocks"
 fi 
 echo "
 Open a terminal connected to the source computer and change into
@@ -58,7 +58,7 @@ COPY, PASTE & EXECUTE the following command in the terminal of the source comput
 if [ "${CHOICE}" = "LAN" ]; then
   echo "scp ./*.jmdat joinmarket@${localip}:~/.joinmarket/wallets"
 elif [ "${CHOICE}" = "TOR" ]; then
-  echo "torify scp ./*.jmdat joinmarket@${TOR_ADDRESS}:~/.joinmarket/wallets"
+  echo "torsocks scp ./*.jmdat joinmarket@${TOR_ADDRESS}:~/.joinmarket/wallets"
 fi
 echo "" 
 if [ -f "/mnt/hdd/raspiblitz.conf" ] ; then

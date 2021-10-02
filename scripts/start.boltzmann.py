@@ -40,7 +40,7 @@ WARNING: this feature is highly experimental and not optimised to be used with J
     tor = ''
     if rpc_host.find('.onion') >= 0:
       print('# Connecting to bitcoind RPC over Tor')
-      tor = 'torify'
+      tor = 'torsocks'
 
     boltzmannpath = "/home/joinmarket/boltzmann/"
 

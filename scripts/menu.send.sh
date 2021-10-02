@@ -124,7 +124,7 @@ Paste the destination address" 17 69 2> "$address"
 openMenuIfCancelled $?
 
 if [ "${RPCoverTor}" = "on" ]; then 
-  tor="torify"
+  tor="torsocks"
 else
   tor=""
 fi

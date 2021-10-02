@@ -117,11 +117,11 @@ On a Debian based Linux Desktop (Ubuntu, Debian, MX Linux etc.)
 * get the Hidden Service address to connect to with:  
 `sudo cat /mnt/hdd/tor/ssh/hostname`  
 
-Use `ssh` with `torify`  on the desktop (needs Tor installed):  
-`torify ssh admin@HiddenServiceAddress.onion`
+Use `ssh` with `torsocks`  on the desktop (needs Tor installed):  
+`torsocks ssh admin@HiddenServiceAddress.onion`
 
 ## Allow Tor to connect to localhost
-* To solve the error when running `$ torify python yg-privacyenhanced.py wallet.jmdat`
+* To solve the error when running `$ torsocks python yg-privacyenhanced.py wallet.jmdat`
     ```
     [INFO]  starting yield generator
     [INFO]  Listening on port 27183
@@ -200,8 +200,8 @@ The default password is: `raspberry`
     ```
     socket.gaierror: [Errno -2] Name or service not known
     ```
-* Remember to use `torify` with the python scripts when connecting remotely through Tor. Example:  
-    `torify wallet-tool.py wallet.jmdat`
+* Remember to use `torsocks` with the python scripts when connecting remotely through Tor. Example:  
+    `torsocks wallet-tool.py wallet.jmdat`
 
 ## Erase the joinmarket user and the /home/joinmarket folder
 `sudo srm -rf /home/joinmarket/`  
@@ -475,8 +475,8 @@ JoinMarket docs:
 ### on JoininBox
 * Connect the remote bitcoind with `CONFIG` -> `CONNECT` menu so it checks if the connection is successful. It will also set the remote watch-only wallet in bitcoind to "joininbox" so will need to rescan that after recovering an old wallet with previously used addresses.
 
-* When using the CLI and connecting to the remote node over Tor, you will need to use the script with the torify prefix like:  
-`torify python3 wallet-tool.py --recoversync -g 20 ~/.joinmarket/wallets/wallet.jmdat`
+* When using the CLI and connecting to the remote node over Tor, you will need to use the script with the torsocks prefix like:  
+`torsocks python3 wallet-tool.py --recoversync -g 20 ~/.joinmarket/wallets/wallet.jmdat`
 
 ### on the remote node
 * Use the menu option `WALLET` -> `RESCAN` or follow manually

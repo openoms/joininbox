@@ -30,7 +30,7 @@ Enter the amount to receive in satoshis" 9 60 2> $amount
 openMenuIfCancelled $?
 
 if [ ${RPCoverTor} = "on" ];then 
-  tor="torify"
+  tor="torsocks"
 else
   tor=""
 fi
@@ -122,7 +122,7 @@ else
 fi
 
 if [ ${RPCoverTor} = "on" ]; then 
-  tor="torify"
+  tor="torsocks"
 else
   tor=""
 fi

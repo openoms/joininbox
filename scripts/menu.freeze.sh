@@ -13,7 +13,7 @@ dialog --backtitle "Choose a mixdepth" \
 openMenuIfCancelled $?
 
 if [ "${RPCoverTor}" = "on" ]; then 
-  tor="torify"
+  tor="torsocks"
 else
   tor=""
 fi

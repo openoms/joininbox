@@ -7,7 +7,7 @@ function menu_GEN() {
   echo 
   . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
   if [ "${RPCoverTor}" = "on" ]; then 
-    torify python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
+    torsocks python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
   else
     python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
   fi

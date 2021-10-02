@@ -4,7 +4,7 @@ if [ ${#1} -eq 0 ]||[ $1 = "-h" ]||[ $1 = "--help" ];then
   echo "# Usage:"
   echo "start.script.sh [script] [wallet] [method|nomethod] [mixdepth|nomixdepth]\
  [makercount|nomakercount] <amount|PSBT> <address> <nickname>"
-  echo "# Applies 'torify' automatically"
+  echo "# Applies 'torsocks' automatically"
 fi
 
 source /home/joinmarket/_functions.sh
@@ -59,7 +59,7 @@ fi
 
 source /home/joinmarket/joinin.conf
 if [ ${RPCoverTor} = "on" ]; then 
-  tor="torify"
+  tor="torsocks"
 else
   tor=""
 fi
