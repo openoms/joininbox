@@ -1,6 +1,6 @@
 #!/bin/bash
 
-testedJMversion="v0.9.1"
+testedJMversion="v0.9.2"
 PGPsigner="waxwing"
 PGPpkeys="https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc"
 PGPcheck="2B6FC204D9BF332D062B461A141001A1AF77F20B"
@@ -98,14 +98,15 @@ function installJoinMarket() {
     sudo -u joinmarket sed -i "s#^PySide2.*##g" requirements/gui.txt
     # don't install PyQt5 - using the system package instead 
     sudo -u joinmarket sed -i "s#^PyQt5.*##g" requirements/gui.txt
+    sudo -u joinmarket sed -i "s#PyQt5!=5.15.0,!=5.15.1,!=5.15.2,!=6.0##g" jmqtui/setup.py
   fi
 
   if [ "$1" = "update" ] || [ "$1" = "testPR" ] || [ "$1" = "commit" ]; then
     # build the Qt GUI, do not run libsecp256k1 test
-    sudo -u joinmarket ./install.sh --with-qt --disable-secp-check 
+    sudo -u joinmarket ./install.sh --with-qt --disable-secp-check || exit 1
   else
     # build the Qt GUI
-    sudo -u joinmarket ./install.sh --with-qt
+    sudo -u joinmarket ./install.sh --with-qt || exit 1
   fi
   currentJMversion=$(cd /home/joinmarket/joinmarket-clientserver 2>/dev/null; \
     git describe --tags 2>/dev/null)
