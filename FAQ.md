@@ -646,3 +646,11 @@ Alternatively to a pruned node there could be a larger >400 GB storage connected
   socks5 = true
   ```
 
+## Run the JoinMarket-QT GUI from a different user on the same Linux desktop where JoininBox is installed
+
+* To disable the display access control of the xserver open a new terminal on the desktop and type:  
+`xhost +`
+* use the shortcut in the JoininBox terminal to open the JoinMarket-QT GUI:  
+`qtgui`
+* re-enable the access control with:  
+`xhost -`

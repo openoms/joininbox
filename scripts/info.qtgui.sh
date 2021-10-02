@@ -3,18 +3,20 @@
 source /home/joinmarket/joinin.conf
 
 # Basic Options
-OPTIONS=(LINUX "Running Linux" \
-        MAC "Running MacOS" \
-        WINDOWS "Running Windows" \
+OPTIONS=(LINUX "Running Linux"
+        MAC "Running MacOS"
+        WINDOWS "Running Windows"
+        localhost "Linux on the same desktop"
         )
 
-CHOICE=$(dialog --clear --title "Choose a desktop OS" --menu "" 9 45 3 "${OPTIONS[@]}" 2>&1 >/dev/tty)
+CHOICE=$(dialog --clear --title "Choose a desktop OS" --menu "" 10 45 4 "${OPTIONS[@]}" 2>&1 >/dev/tty)
 
 clear
 case $CHOICE in
         LINUX) echo "Showing intructions for Linux";;
         MAC) echo "Showing intructions for MacOS";;
         WINDOWS) echo "Showing intructions for Windows";;
+        localhost) echo "Showing intructions for Linux on the same desktop";;
         *) exit 1;;
 esac
 
@@ -27,6 +29,12 @@ if grep -Eq "^joinmarketSSH=off" /home/joinmarket/joinin.conf; then
   joinmarketSSHchanged=1
 fi
 
+if [ "$RPCoverTor" = "on" ];then
+  tor=" torsocks "
+else
+  tor=" "
+fi
+
 echo "
 ************************************************************************************
 Instructions to open the JoinMarket-QT GUI on the desktop
@@ -37,9 +45,11 @@ if [ "${CHOICE}" = "LINUX" ]; then
   echo "
 Use the following line in a new desktop terminal to connect:
 
-ssh -X joinmarket@$localip joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
+ssh -X joinmarket@${localip}${tor}joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
 
-Use the PASSWORD_B (rpcpassword in the bitcoin.conf) to open the JoinMarket-QT GUI"
+Use the PASSWORD_B (rpcpassword in the bitcoin.conf) to open the JoinMarket-QT GUI
+"
+
 
 elif [ "${CHOICE}" = "MAC" ]; then
   echo "
@@ -47,9 +57,11 @@ Install the XQuartz application from https://www.xquartz.org/
 
 Use the following line in a new desktop terminal to connect:
 
-ssh -X joinmarket@$localip joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
+ssh -X joinmarket@${localip}${tor}joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
 
-Use the PASSWORD_B (rpcpassword in the bitcoin.conf) to open the JoinMarket-QT GUI"
+Use the PASSWORD_B (rpcpassword in the bitcoin.conf) to open the JoinMarket-QT GUI
+"
+
 
 elif [ "${CHOICE}" = "WINDOWS" ]; then
   echo "
@@ -73,9 +85,36 @@ In the terminal Exit to the Command Line and type:
 qtgui
 
 The QT GUI will appear on the Windows desktop running from your RaspiBlitz.
-
 "
-fi 
+
+elif [ "${CHOICE}" = "localhost" ]; then
+
+  if ! grep -Eq "^X11Forwarding no" /etc/ssh/sshd_config; then
+    echo "X11Forwarding no" | sudo tee -a /etc/ssh/sshd_config
+  fi
+    if sudo sed -i "s/^X11Forwarding no/X11Forwarding yes/g" /etc/ssh/sshd_config;then
+    echo "# Set 'X11Forwarding yes' and restarting sshd"
+    sudo service sshd restart
+  fi
+
+  echo "
+Use the following line in a new desktop terminal to connect:
+
+ssh -X joinmarket@localhost${tor}joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
+
+Use your ssh password to open the JoinMarket-QT GUI
+
+
+Alternatively disable the display access control of the xserver:
+* Open a new terminal on the desktop
+* type:
+  xhost +
+* use the shortcut in the JoininBox terminal to open the JoinMarket-QT GUI:
+  qtgui
+* re-enable the access control with:
+  xhost -
+"
+fi
 
 echo "
 
@@ -95,6 +134,13 @@ https://twitter.com/zndtoshi/status/1191799199119134720
 ************************************************************************************
 Press ENTER when done with the instructions to exit to the menu
 "
+
+if grep -Eq "^X11Forwarding yes" /etc/ssh/sshd_config; then
+  echo "# Setting 'X11Forwarding no' in the /etc/ssh/sshd_config"
+  sudo sed -i "s/^X11Forwarding yes/X11Forwarding no/g" /etc/ssh/sshd_config
+  echo "# Restarting sshd"
+  sudo service sshd restart
+fi
 
 sleep 2
 read key

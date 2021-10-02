@@ -70,8 +70,14 @@ function stats() {
 # command: qtgui
 # starts the JoinMarket-QT GUI
 function qtgui() {
-  echo "# opening the JoinMarket-QT GUI with the command: '(jmvenv) python joinmarket-qt.py'"
-  /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python /home/joinmarket/joinmarket-clientserver/scripts/joinmarket-qt.py
+  if grep -Eq "RPCoverTor=on" /home/joinmarket/joinin.conf; then
+    tor="torsocks"
+  else
+    tor=""
+  fi
+  
+  echo "# Opening the JoinMarket-QT GUI with the command: '(jmvenv) $tor python joinmarket-qt.py'"
+  $tor /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python /home/joinmarket/joinmarket-clientserver/scripts/joinmarket-qt.py
 }
 
 # command: qr [string]
