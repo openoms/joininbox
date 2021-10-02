@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # source aliases from /home/joinmarket/_aliases.sh
-source /home/joinmarket/_aliases.sh
+if [ -f /home/joinmarket/_aliases.sh ];then
+  source /home/joinmarket/_aliases.sh
+fi
 
 # SHORTCUT COMMANDS for the user 'joinmarket'
 

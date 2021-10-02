@@ -473,7 +473,6 @@ echo
 echo "#############"
 echo "# Autostart #"
 echo "#############"
-echo 
 echo "
 if [ -f \"/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate\" ]; then
   . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
@@ -489,8 +488,6 @@ if [ -z \"\$TMUX\" ]; then
 fi
 " | sudo -u joinmarket tee -a /home/joinmarket/.bashrc
 
-
-echo 
 echo "#########################"
 echo "# Download Bitcoin Core #"
 echo "#########################"
@@ -501,7 +498,6 @@ echo
 echo "######################"
 echo "# Install JoinMarket #"
 echo "######################"
-echo 
 sudo -u joinmarket /home/joinmarket/install.joinmarket.sh install
 
 echo
