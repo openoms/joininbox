@@ -168,8 +168,7 @@ fi
 if ! grep -Eq "^localip=" $joininConfPath;then
   echo "localip=unknown" >> $joininConfPath
 fi
-localip=$(ip addr | grep 'state UP' -A2 | grep -Ev 'docker0|veth' | \
-grep 'eth0\|wlan0\|enp0' | tail -n1 | awk '{print $2}' | cut -f1 -d'/')
+localip=$(hostname -I | awk '{print $1}')
 sed -i "s#^localip=.*#localip=$localip#g" $joininConfPath
 
 # check for qrencode

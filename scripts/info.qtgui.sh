@@ -20,9 +20,6 @@ case $CHOICE in
         *) exit 1;;
 esac
 
-# get local ip
-localip=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1 -d'/')
-
 joinmarketSSHchanged=0
 if grep -Eq "^joinmarketSSH=off" /home/joinmarket/joinin.conf; then
   sudo /home/joinmarket/set.ssh.sh on
