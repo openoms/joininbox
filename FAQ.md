@@ -209,51 +209,24 @@ The default password is: `raspberry`
 
 ## Sample bitcoin.conf for a remote node accepting RPC connections through LAN
 ```
-# bitcoind configuration
-
-# mainnet/testnet
-testnet=0
-
 # Bitcoind options
 server=1
 daemon=1
-txindex=1
 disablewallet=0
-
 main.wallet=wallet.dat
-datadir=/mnt/hdd/bitcoin
 
 # Connection settings
 rpcuser=REDACTED
 rpcpassword=REDACTED
 rpcport=8332
-#rpcallowip=127.0.0.1
-#main.rpcbind=127.0.0.1:8332
 # SET THE LOCAL SUBNET
 rpcallowip=192.168.1.0/24
 main.rpcbind=0.0.0.0
-zmqpubrawblock=tcp://127.0.0.1:28332
-zmqpubrawtx=tcp://127.0.0.1:28333
 
-# SBC optimizations
-dbcache=1512
-maxorphantx=10
-maxmempool=300
-maxconnections=40
-maxuploadtarget=5000
-
-# Tor
+# Tor only
 onlynet=onion
 proxy=127.0.0.1:9050
 main.bind=127.0.0.1
-test.bind=127.0.0.1
-main.addnode=fno4aakpl6sg6y47.onion
-main.addnode=toguvy5upyuctudx.onion
-main.addnode=ndndword5lpb7eex.onion
-main.addnode=6m2iqgnqjxh7ulyk.onion
-main.addnode=5tuxetn7tar3q5kp.onion
-dnsseed=0
-dns=0
 
 # for Bisq
 peerbloomfilters=1
