@@ -1,6 +1,6 @@
 #!/bin/bash
 
-testedJMversion="v0.9.2"
+testedJMversion="v0.9.3"
 PGPsigner="waxwing"
 PGPpkeys="https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc"
 PGPcheck="2B6FC204D9BF332D062B461A141001A1AF77F20B"
