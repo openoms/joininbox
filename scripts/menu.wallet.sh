@@ -28,7 +28,7 @@ OPTIONS+=(
   UTXOS "Show all the coins in the wallet"
   HISTORY "Show all past transactions"
   XPUBS "Show the master public keys"
-  PSBT "Sign an externally prepared PSBT"
+  PSBT "Sign a Base64 format PSBT"
   GEN "Generate a new wallet"
   IMPORT "Copy wallet(s) from a remote node"
   SHOWSEED "Shows the wallet recovery seed"

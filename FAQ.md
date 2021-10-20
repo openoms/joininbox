@@ -34,6 +34,7 @@
 - [Pruned node notes](#pruned-node-notes)
 - [External drive](#external-drive)
 - [IRC server settings](#irc-server-settings)
+- [Run the JoinMarket-QT GUI from a different user on the same Linux desktop where JoininBox is installed](#run-the-joinmarket-qt-gui-from-a-different-user-on-the-same-linux-desktop-where-joininbox-is-installed)
 
 ## Public JoinMarket Order Book links
 * <https://nixbitcoin.org/obwatcher/>  
@@ -178,7 +179,7 @@ https://www.armbian.com/odroid-xu4/
 
 ## Download and verify Raspbian SDcard image for a Raspberry Pi
 To be able to open the JoinMarket-QT GUI on the dekstop from the RPI
-need to use the Raspberry Pi OS (32-bit) with desktop inage
+need to use the Raspberry Pi OS (32-bit) with desktop image
 * Download image:  
 https://downloads.raspberrypi.org/raspios_armhf/images/raspios_armhf-2020-05-28/2020-05-27-raspios-buster-armhf.zip
 * Download signature:  
