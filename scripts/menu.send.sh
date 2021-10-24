@@ -98,7 +98,7 @@ if [ ${#varTxfee} -eq 0 ]; then
   txfeeOption=""
 else
   txfeeMessage="$varTxfee sat/byte"
-  if [ ${#varTxfee} -eq 1 ]; then
+  if [ ${varTxfee} -eq 1 ]; then
     # https://github.com/openoms/joininbox/issues/64
     txfeeOption="--txfee=1001"
   else
