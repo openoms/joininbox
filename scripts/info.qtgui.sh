@@ -32,6 +32,15 @@ else
   tor=" "
 fi
 
+# switch on X11 forwarding
+if ! grep -Eq "^X11Forwarding no" /etc/ssh/sshd_config; then
+  echo "X11Forwarding no" | sudo tee -a /etc/ssh/sshd_config
+fi
+if sudo sed -i "s/^X11Forwarding no/X11Forwarding yes/g" /etc/ssh/sshd_config;then
+  echo "# Set 'X11Forwarding yes' and restarting sshd"
+  sudo service sshd restart
+fi
+
 echo "
 ************************************************************************************
 Instructions to open the JoinMarket-QT GUI on the desktop
@@ -85,15 +94,6 @@ The QT GUI will appear on the Windows desktop running from your RaspiBlitz.
 "
 
 elif [ "${CHOICE}" = "localhost" ]; then
-
-  if ! grep -Eq "^X11Forwarding no" /etc/ssh/sshd_config; then
-    echo "X11Forwarding no" | sudo tee -a /etc/ssh/sshd_config
-  fi
-    if sudo sed -i "s/^X11Forwarding no/X11Forwarding yes/g" /etc/ssh/sshd_config;then
-    echo "# Set 'X11Forwarding yes' and restarting sshd"
-    sudo service sshd restart
-  fi
-
   echo "
 Use the following line in a new desktop terminal to connect:
 
@@ -132,15 +132,15 @@ https://twitter.com/zndtoshi/status/1191799199119134720
 Press ENTER when done with the instructions to exit to the menu
 "
 
+sleep 2
+read key
+
 if grep -Eq "^X11Forwarding yes" /etc/ssh/sshd_config; then
   echo "# Setting 'X11Forwarding no' in the /etc/ssh/sshd_config"
   sudo sed -i "s/^X11Forwarding yes/X11Forwarding no/g" /etc/ssh/sshd_config
   echo "# Restarting sshd"
   sudo service sshd restart
 fi
-
-sleep 2
-read key
 
 if [ $joinmarketSSHchanged = 1 ];then
   sudo /home/joinmarket/set.ssh.sh off
