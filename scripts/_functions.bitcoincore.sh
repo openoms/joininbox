@@ -251,11 +251,11 @@ Press CTRL+C to exit and type 'menu' for the GUI." 10 54
 # getRPC - reads the RPC settings from the joinmarket.cfg
 function getRPC {
   echo "# Reading the bitcoind RPC settings from the joinmarket.cfg"
-  rpc_user="$(awk '/rpc_user / {print $3}' < $JMcfgPath)"
-  rpc_pass="$(awk '/rpc_password / {print $3}' < $JMcfgPath)"
-  rpc_host="$(awk '/rpc_host / {print $3}' < $JMcfgPath)"
-  rpc_port="$(awk '/rpc_port / {print $3}' < $JMcfgPath)"
-  rpc_wallet="$(awk '/rpc_wallet_file / {print $3}' < $JMcfgPath)"
+  rpc_user="$(awk '/^rpc_user / {print $3}' < $JMcfgPath)"
+  rpc_pass="$(awk '/^rpc_password / {print $3}' < $JMcfgPath)"
+  rpc_host="$(awk '/^rpc_host / {print $3}' < $JMcfgPath)"
+  rpc_port="$(awk '/^rpc_port / {print $3}' < $JMcfgPath)"
+  rpc_wallet="$(awk '/^rpc_wallet_file / {print $3}' < $JMcfgPath)"
   if [ ${#1} -gt 0 ]&&[ $1 = print ];then
     echo "$rpc_user $rpc_pass $rpc_host $rpc_port $rpc_wallet"
   fi
