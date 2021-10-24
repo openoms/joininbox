@@ -4,11 +4,52 @@
 function downloadBitcoinCore() {
   # set version
   # https://bitcoincore.org/en/download/
-  bitcoinVersion="0.21.1"
+  bitcoinVersion="22.0"
 
-  # needed to check code signing
-  laanwjPGP="01EA5486DE18A882D4C2684590C8019E36C2E964"
+  # https://github.com/laanwj
+  laanwjPGP="71A3 B167 3540 5025 D447 E8F2 7481 0B01 2346 C9A6"
 
+  echo
+  echo "# *** PREPARING BITCOIN ***"
+  # prepare directories
+  sudo -u joinmarket mkdir /home/joinmarket/download 2>/dev/null
+  cd /home/joinmarket/download || exit 1 
+
+  # receive signer key
+  if ! gpg --keyserver hkp://keyserver.ubuntu.com --recv-key "71A3 B167 3540 5025 D447 E8F2 7481 0B01 2346 C9A6"
+  then
+    echo "# !!! FAIL !!! Couldn't download Wladimir J. van der Laan's PGP pubkey"
+    exit 1
+  fi
+
+  # download signed binary sha256 hash sum file
+  if [ ! -f SHA256SUMS ];then
+    sudo -u joinmarket wget https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS
+  fi
+  # download signed binary sha256 hash sum file and check
+  if [ ! -f SHA256SUMS.asc ];then
+    sudo -u joinmarket wget https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS.asc
+  fi
+  verifyResult=$(gpg --verify SHA256SUMS.asc 2>&1)
+  goodSignature=$(echo ${verifyResult} | grep 'Good signature' -c)
+  echo "goodSignature(${goodSignature})"
+  correctKey=$(echo ${verifyResult} | grep "${laanwjPGP}" -c)
+  echo "correctKey(${correctKey})"
+  if [ ${correctKey} -lt 1 ] || [ ${goodSignature} -lt 1 ]; then
+    echo
+    echo "# !!! BUILD FAILED --> PGP Verify not OK / signature(${goodSignature}) verify(${correctKey})"
+    echo "# Removing files"
+    sudo rm -f SHA256SUMS
+    sudo rm -f SHA256SUMS.asc
+    exit 1
+  else
+    echo
+    echo "****************************************"
+    echo "OK --> BITCOIN MANIFEST IS CORRECT"
+    echo "****************************************"
+    echo
+  fi
+  
   # detect CPU architecture & fitting download link
   if [ $(uname -m | grep -c 'arm') -eq 1 ] ; then
     bitcoinOSversion="arm-linux-gnueabihf"
@@ -19,87 +60,39 @@ function downloadBitcoinCore() {
   if [ $(uname -m | grep -c 'x86_64') -eq 1 ] ; then
     bitcoinOSversion="x86_64-linux-gnu"
   fi
-
-  echo
-  echo "# *** PREPARING BITCOIN ***"
-  # prepare directories
-  sudo -u joinmarket mkdir /home/joinmarket/download 2>/dev/null
-  cd /home/joinmarket/download || exit 1 
-
-  # download, check and import signer key
-  if [ ! -f "laanwj-releases.asc" ];then
-    sudo -u joinmarket wget https://bitcoin.org/laanwj-releases.asc
-  fi
-  if [ ! -f "laanwj-releases.asc" ];then
-    sudo -u joinmarket wget https://raw.githubusercontent.com/bitcoin-dot-org/Bitcoin.org/master/laanwj-releases.asc
-  fi
-  if [ ! -f "laanwj-releases.asc" ];then
-    echo "# !!! FAIL !!! Could not download laanwj-releases.asc"
-    exit 1
-  fi
-  gpg --import-options show-only --import ./laanwj-releases.asc
-  fingerprint=$(gpg ./laanwj-releases.asc 2>/dev/null | grep "${laanwjPGP}" -c)
-  if [ ${fingerprint} -lt 1 ]; then
-    echo
-    echo "# !!! BUILD WARNING --> Bitcoin PGP author not as expected"
-    echo "# Should contain laanwjPGP: ${laanwjPGP}"
-    echo "# PRESS ENTER to TAKE THE RISK if you think all is OK"
-    read key
-  fi
-  gpg --import laanwj-releases.asc
-
-  # download signed binary sha256 hash sum file and check
-  if [ ! -f "SHA256SUMS.asc" ];then
-    sudo -u joinmarket wget https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS.asc
-  else
-    echo "SHA256SUMS.asc is already present"
-  fi
-  verifyResult=$(gpg --verify SHA256SUMS.asc 2>&1)
-  goodSignature=$(echo ${verifyResult} | grep 'Good signature' -c)
-  echo "# goodSignature(${goodSignature})"
-  correctKey=$(echo ${verifyResult} |  grep "using RSA key ${laanwjPGP: -16}" -c)
-  echo "# correctKey(${correctKey})"
-  if [ ${correctKey} -lt 1 ] || [ ${goodSignature} -lt 1 ]; then
-    echo
-    echo "# !!! BUILD FAILED --> PGP Verify not OK / signature(${goodSignature}) verify(${correctKey})"
-    echo "# Deleting the mismatched file"
-    rm -f SHA256SUMS.asc
-    exit 1
-  else
-    echo
-    echo "# OK --> BITCOIN MANIFEST IS CORRECT"
-    echo
-  fi
   
-  # get the sha256 value for the corresponding platform from signed hash sum file
-  bitcoinSHA256=$(grep -i "$bitcoinOSversion" SHA256SUMS.asc | cut -d " " -f1)
-
+  echo
+  echo "*** BITCOIN CORE v${bitcoinVersion} for ${bitcoinOSversion} ***"
+  
   # download resources
-  echo "# BITCOIN v${bitcoinVersion} for ${bitcoinOSversion}"
   binaryName="bitcoin-${bitcoinVersion}-${bitcoinOSversion}.tar.gz"
-  if [ ! -f "./${binaryName}" ];then
-    sudo -u joinmarket wget https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/${binaryName}
-  else
-    echo "# ${binaryName} was already downloaded"
+  if [ ! -f "./${binaryName}" ]; then
+     sudo -u joinmarket wget https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/${binaryName}
   fi
-  if [ ! -f "./${binaryName}" ];then
-      echo "# !!! FAIL !!! ${binaryName} is not present"
-      exit 1
-  fi
-
-  # check binary checksum test
-  binaryChecksum=$(sha256sum ${binaryName} | cut -d " " -f1)
-  if [ "${binaryChecksum}" != "${bitcoinSHA256}" ]; then
-    echo "# !!! FAIL !!! Downloaded BITCOIN BINARY not matching SHA256 checksum: ${bitcoinSHA256}"
-    echo "# Deleting the the mismatched binary and checksum file"
-    rm -f ${binaryName}
-    rm -f SHA256SUMS.asc
-    echo "# Deleting the previously downloaded bitcoin-${bitcoinVersion} directory"
-    sudo rm -rf /home/joinmarket/download/bitcoin-${bitcoinVersion} 
+  if [ ! -f "./${binaryName}" ]; then
+    echo "!!! FAIL !!! Could not download the BITCOIN BINARY"
     exit 1
   else
-    echo
-    echo "# OK --> VERIFIED BITCOIN CHECKSUM CORRECT"
+    # check binary checksum test
+    echo "- checksum test"
+    # get the sha256 value for the corresponding platform from signed hash sum file
+    bitcoinSHA256=$(grep -i "${binaryName}" SHA256SUMS | cut -d " " -f1)
+    binaryChecksum=$(sha256sum ${binaryName} | cut -d " " -f1)
+    echo "Valid SHA256 checksum should be: ${bitcoinSHA256}"
+    echo "Downloaded binary SHA256 checksum: ${binaryChecksum}"
+    if [ "${binaryChecksum}" != "${bitcoinSHA256}" ]; then
+      echo "!!! FAIL !!! Downloaded BITCOIN BINARY not matching SHA256 checksum: ${bitcoinSHA256}"
+      rm -v ./${binaryName}
+      exit 1
+    else
+      echo
+      echo "********************************************"
+      echo "OK --> VERIFIED BITCOIN CORE BINARY CHECKSUM"
+      echo "********************************************"
+      echo
+      sleep 10
+      echo
+    fi
     echo
     echo "# Extracting to /home/joinmarket/download/bitcoin-${bitcoinVersion}"
     sudo -u joinmarket tar -xvf ${binaryName}
@@ -364,7 +357,7 @@ function connectLocalNode() {
     rpc_user=$(sudo cat /home/bitcoin/.bitcoin/bitcoin.conf|grep rpcuser|cut -c 9-)
     rpc_pass=$(sudo cat /home/bitcoin/.bitcoin/bitcoin.conf|grep rpcpassword|cut -c 13-)
   fi
-  # set.bitcoinrpc.py 
+  # set.bitcoinrpc.py
   python /home/joinmarket/set.bitcoinrpc.py --network=mainnet \
   --rpc_user=$rpc_user --rpc_pass=$rpc_pass --rpc_host=$rpc_host \
   --rpc_port=$rpc_port --rpc_wallet=$rpc_wallet
