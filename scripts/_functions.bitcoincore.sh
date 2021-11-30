@@ -163,7 +163,9 @@ Group=joinmarket
 Type=forking
 PIDFile=/home/joinmarket/bitcoin/bitcoind.pid
 ExecStart=/home/joinmarket/bitcoin/bitcoind -signet -daemon \
--pid=/home/joinmarket/bitcoin/bitcoind.pid
+ -datadir=/home/joinmarket/.bitcoin \
+ -conf=/home/joinmarket/.bitcoin/bitcoin.conf \
+ -pid=/home/joinmarket/bitcoin/bitcoind.pid
 Restart=always
 TimeoutSec=120
 RestartSec=30
@@ -182,6 +184,11 @@ WantedBy=multi-user.target
   sudo systemctl enable signetd
   echo "# OK - the bitcoin daemon on signet service is now enabled"
 
+  # add to path
+  if ! sudo grep -Eq "/home/joinmarket/bitcoin/" < /etc/profile ;then
+    echo "PATH=\$PATH:/home/joinmarket/bitcoin/" | sudo tee -a /etc/profile
+  fi
+
   # add aliases
   if [ $(alias | grep -c signet) -eq 0 ];then 
     sudo bash -c "echo 'alias signet-cli=\"/home/joinmarket/bitcoin/bitcoin-cli -signet\"' >> /home/joinmarket/_aliases.sh"
@@ -196,11 +203,6 @@ WantedBy=multi-user.target
   echo "# Monitor the signet bitcoind with: tail -f ~/.bitcoin/signet/debug.log"
   echo
 
-  if [ ! -f /home/joinmarket/.bitcoin/signet/wallets/wallet.dat/wallet.dat ];then
-    echo "# Create wallet.dat for signet ..."
-    sleep 10
-    sudo -u joinmarket /home/joinmarket/bitcoin/bitcoin-cli -signet createwallet wallet.dat
-  fi
 }
 
 setJMconfigToSignet() {

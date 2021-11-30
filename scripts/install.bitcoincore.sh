@@ -16,6 +16,13 @@ if [ "$1" = "signetOn" ]; then
   fi
   generateJMconfig 
   setJMconfigToSignet
+
+  if [ ! -f /home/joinmarket/.bitcoin/signet/wallets/wallet.dat/wallet.dat ];then
+    echo "# Create wallet.dat for signet ..."
+    sleep 10
+    sudo -u joinmarket /home/joinmarket/bitcoin/bitcoin-cli -signet createwallet wallet.dat
+  fi
+
 elif [ "$1" = "signetOff" ]; then
   removeSignetdService
   isSignet=$(grep -c "network = signet" < $JMcfgPath)

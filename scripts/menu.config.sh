@@ -3,17 +3,19 @@
 source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
-if [ "${runningEnv}" = standalone ]; then
-  source /home/joinmarket/standalone/_functions.standalone.sh
-  network=mainnet
-elif [ "${runningEnv}" = mynode ];then
-  network=mainnet
-elif [ "${runningEnv}" = raspiblitz ];then
-  source /mnt/hdd/raspiblitz.conf
-  if [ $network = bitcoin ];then
-    network=${chain}net
-  else
-    network=unsupported
+if [ ${#network} -eq 0 ] || [ "${network}" = "unknown" ] ;then
+  if [ "${runningEnv}" = standalone ]; then
+    source /home/joinmarket/standalone/_functions.standalone.sh
+    network=mainnet
+  elif [ "${runningEnv}" = mynode ];then
+    network=mainnet
+  elif [ "${runningEnv}" = raspiblitz ];then
+    source /mnt/hdd/raspiblitz.conf
+    if [ $network = bitcoin ];then
+      network=${chain}net
+    else
+      network=unsupported
+    fi
   fi
 fi
 
@@ -39,7 +41,7 @@ if [ "$runningEnv" = "standalone" ]&&[ "$setupStep" -lt 100 ];then
       PRUNED  "Start a pruned node from prunednode.today")
   if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
     OPTIONS+=(
-      LOCAL   "Connect to the local Bitcoin Core on $network")
+      LOCAL   "Connect to the local Bitcoin Core on mainnet")
     HEIGHT=$((HEIGHT+1))
     CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
   fi
@@ -131,7 +133,7 @@ case $CHOICE in
     echo "Press ENTER to return to the menu..."
     read key;;
   LOCAL)
-    connectLocalNode $network
+    connectLocalNode mainnet
     sudo systemctl start bitcoind
     showBitcoinLogs
     echo         
