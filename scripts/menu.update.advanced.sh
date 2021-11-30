@@ -3,9 +3,9 @@
 source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
-HEIGHT=14
+HEIGHT=15
 WIDTH=60
-CHOICE_HEIGHT=5
+CHOICE_HEIGHT=6
 TITLE="Advanced update options"
 MENU="
 Current JoininBox version: $currentJBcommit
@@ -15,10 +15,11 @@ BACKTITLE="JoininBox GUI"
 
 # Basic Options
 OPTIONS+=(\
-  JBRESET "Reinstall the JoininBox scripts and menu" \
-  JBCOMMIT "Update JoininBox to the latest commit" \
-  JMPR "Test a JoinMarket pull request" \
-  JMCOMMIT "Update JoinMarket to the latest commit" \
+  JBRESET "Reinstall the JoininBox scripts and menu"
+  JBCOMMIT "Update JoininBox to the latest commit"
+  JMCUSTOM "Update JoinMarket to a custom version"
+  JMPR "Test a JoinMarket pull request"
+  JMCOMMIT "Update JoinMarket to the latest commit"
   TOR "Update Tor to the latest alpha"
 )
 
@@ -42,6 +43,18 @@ case $CHOICE in
       ;;
   JBCOMMIT)
       updateJoininBox commit
+      errorOnInstall $?
+      echo
+      echo "Press ENTER to return to the menu"
+      read key
+      ;;
+  JMCUSTOM)
+      read -p "Enter the version to be installed, eg 'v0.9.3': " updateVersion
+      read -p "Continue to install the version:
+https://github.com/JoinMarket-Org/joinmarket-clientserver/releases/tag/${updateVersion}
+(Y/N)? " confirm && [[ $confirm == [yY]||$confirm == [yY][eE][sS] ]]||exit 1
+      stopYG
+      /home/joinmarket/install.joinmarket.sh update $updateVersion
       errorOnInstall $?
       echo
       echo "Press ENTER to return to the menu"

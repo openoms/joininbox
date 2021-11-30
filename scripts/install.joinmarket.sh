@@ -40,12 +40,15 @@ function installJoinMarket() {
   if [ "$1" = "testPR" ]; then
     PRnumber=$2
     echo "# Using the PR:"
-    echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber"
+    echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/$PRnumber"
     git fetch origin pull/$PRnumber/head:pr$PRnumber
     git checkout pr$PRnumber
   elif [ "$1" = "commit" ]; then
     echo "# Updating to the latest commit in:"
     echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver"
+  elif [ "$1" = "update" ] && [ $#2 -gt 0 ]; then
+    updateVersion="$2"
+    sudo -u joinmarket git reset --hard $updateVersion
   else
     sudo -u joinmarket git reset --hard $testedJMversion
 
@@ -160,7 +163,7 @@ fi
 
 if [ "$1" = "update" ]; then
   stopYG
-  installJoinMarket update
+  installJoinMarket "update" "$2"
   errorOnInstall $?
   exit 0
 fi
