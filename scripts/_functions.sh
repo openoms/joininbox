@@ -224,19 +224,28 @@ function updateJoininBox() {
 
 function setIRCtoTor() {
   if [ "${runBehindTor}" = "on" ]; then
+    # darkscience
     sed -i "s/^host = irc.darkscience.net/#host = irc.darkscience.net/g" $JMcfgPath
     sed -i "s/^#host = dark.*/host = darkirc6tqgpnwd3blln3yfv5ckl47eg7llfxkmtovrv7c7iwohhb6ad.onion/g" $JMcfgPath
+    # hackint
     sed -i "s/^host = irc.hackint.org/#host = irc.hackint.org/g" $JMcfgPath
     sed -i "s/^#host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion/host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion/g" $JMcfgPath
+    # anarplex
     sed -i "s/^host = agora.anarplex.net/#host = agora.anarplex.net/g" $JMcfgPath
     sed -i "s/^#host = vxecvd6lc4giwtasjhgbrr3eop6pzq6i5rveracktioneunalgqlwfad.onion/host = vxecvd6lc4giwtasjhgbrr3eop6pzq6i5rveracktioneunalgqlwfad.onion/g" $JMcfgPath
+    # ilita
+    sed -i "s/^#host = ilitafrzzgxymv6umx2ux7kbz3imyeko6cnqkvy4nisjjj4qpqkrptid.onion.onion/host = ilitafrzzgxymv6umx2ux7kbz3imyeko6cnqkvy4nisjjj4qpqkrptid.onion.onion/g" $JMcfgPath
+
     # socks5
     sed -i "s/^socks5 = false/#socks5 = false/g" $JMcfgPath
     sed -i "s/^#socks5 = true/socks5 = true/g" $JMcfgPath
+    sed -i "s/^#socks5_host = localhost/socks5_host = localhost/g" $JMcfgPath
+    sed -i "s/^#socks5_port = 9050/socks5_port = 9050/g" $JMcfgPath
     # port
     sed -i "s/^#port = 6667/port = 6667/g" $JMcfgPath
     # usessl
     sed -i "s/^#usessl = false/usessl = false/g" $JMcfgPath
+
     echo "# Edited the joinmarket.cfg to connect to IRC servers over Tor only."
   else
     echo "# Tor is not active, will communicate with IRC servers via clearnet"
