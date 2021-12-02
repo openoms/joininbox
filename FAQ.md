@@ -41,7 +41,9 @@
 * <https://ttbit.mine.bz/orderbook>
 
 ## Signet links
-* Faucet (free signet coins): https://signet.bc-2.jp
+* Faucets (free signet coins): 
+  * https://signet.bc-2.jp
+  * https://signetfaucet.bublina.eu.org/
 * Block Explorer:
     * esplora: <https://explorer.bc-2.jp>  
     * mempool.space: <https://mempool.space/signet>
