@@ -76,7 +76,7 @@ else
   fi
   if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
     OPTIONS+=(
-      LOCAL    "Connect to the local Bitcoin Core on $network"
+      LOCAL    "Connect to the local Bitcoin Core on mainnet"
       "" ""
       BTCCONF  "Edit the local bitcoin.conf")
     HEIGHT=$((HEIGHT+3))
@@ -118,7 +118,13 @@ case $CHOICE in
     echo "Press ENTER to return to the menu..."
     read key;;
   SIGNET)
-    /home/joinmarket/install.bitcoincore.sh signetOn
+    if [ "${runningEnv}" = "raspiblitz" ] && grep "signet=on" /mnt/hdd/raspiblitz.conf; then
+      echo "There is a signet instance running on the RaspiBlitz already."
+      echo "Please connect manually by editing the joinmarket.cfg."
+      echo "See: https://github.com/openoms/joininbox/issues/72"
+    else
+      /home/joinmarket/install.bitcoincore.sh signetOn
+    fi
     echo         
     echo "Press ENTER to return to the menu..."
     read key;;
