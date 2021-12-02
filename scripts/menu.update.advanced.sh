@@ -49,6 +49,8 @@ case $CHOICE in
       read key
       ;;
   JMCUSTOM)
+      clear
+      echo
       read -p "Enter the version to be installed, eg 'v0.9.3': " updateVersion
       read -p "Continue to install the version:
 https://github.com/JoinMarket-Org/joinmarket-clientserver/releases/tag/${updateVersion}
@@ -57,10 +59,14 @@ https://github.com/JoinMarket-Org/joinmarket-clientserver/releases/tag/${updateV
       /home/joinmarket/install.joinmarket.sh update $updateVersion
       errorOnInstall $?
       echo
+      echo "Reset the joinmarket.cfg to the defaults from the menu CONFIG -> RESET to activate the new options."
+      echo
       echo "Press ENTER to return to the menu"
       read key
       ;;
   JMPR)
+      clear
+      echo
       read -p "Enter the number of the pull request to be tested: " PRnumber
       read -p "Continue to install the PR:
 https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber
@@ -69,12 +75,16 @@ https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber
       /home/joinmarket/install.joinmarket.sh testPR $PRnumber
       errorOnInstall $?
       echo
+      echo "Reset the joinmarket.cfg to the defaults from the menu CONFIG -> RESET to activate the new options."
+      echo
       echo "Press ENTER to return to the menu"
       read key
       ;;
   JMCOMMIT)
       /home/joinmarket/install.joinmarket.sh commit
       errorOnInstall $?
+      echo
+      echo "Reset the joinmarket.cfg to the defaults from the menu CONFIG -> RESET to activate the new options."
       echo
       echo "Press ENTER to return to the menu"
       read key

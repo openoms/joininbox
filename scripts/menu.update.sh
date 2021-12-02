@@ -39,6 +39,8 @@ case $CHOICE in
   JOINMARKET)
       /home/joinmarket/install.joinmarket.sh update
       echo
+      echo "Reset the joinmarket.cfg to the defaults from the menu CONFIG -> RESET to activate the new options."
+      echo
       echo "Press ENTER to return to the menu"
       read key;;
   ADVANCED)
