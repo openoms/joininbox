@@ -46,7 +46,7 @@ function installJoinMarket() {
   elif [ "$1" = "commit" ]; then
     echo "# Updating to the latest commit in:"
     echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver"
-  elif [ "$1" = "update" ] && [ $#2 -gt 0 ]; then
+  elif [ "$1" = "update" ] && [ ${#2} -gt 0 ]; then
     updateVersion="$2"
     sudo -u joinmarket git reset --hard $updateVersion
   else
