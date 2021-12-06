@@ -9,7 +9,7 @@ function installBitcoinScripts {
     sudo -u bitcoin git clone https://github.com/kristapsk/bitcoin-scripts.git
     cd bitcoin-scripts || exit 1
     # from https://github.com/kristapsk/bitcoin-scripts/commits/master
-    sudo -u bitcoin git checkout 45642787d2f9a0ca4d3fd1b22b86863de83d8707
+    sudo -u bitcoin git checkout 9919d7410106aa99e64b605b4c7e836fe629d010
     sudo -u bitcoin chmod +x *.sh
   fi
 }
@@ -63,6 +63,7 @@ function getQRstring {
 }
 
 isLocalBitcoinCLI=$(sudo -u bitcoin bitcoin-cli -version|grep -c "Bitcoin Core RPC client")
+isTxindex=$(sudo -u bitcoin cat /home/bitcoin/.bitcoin/bitcoin.conf | grep -c "txindex=1")
 
 # BASIC MENU INFO
 HEIGHT=11
@@ -84,19 +85,22 @@ OPTIONS+=(
     QR "Display a QR code from any text"
     CUSTOMRPC "Run a custom bitcoin RPC with curl"
     CJFINDER "Scan blocks for JoinMarket coinjoins")
-if [ $isLocalBitcoinCLI -gt 0 ];then    
+if [ "$isLocalBitcoinCLI" -gt 0 ] && [ "$isTxindex" -gt 0 ];then    
   OPTIONS+=(
     CHECKTXN "CLI transaction explorer")
-  HEIGHT=$((HEIGHT+1))
-  CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
-fi    
+      HEIGHT=$((HEIGHT+1)); CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
+  if [ -f /home/joinmarket/.joinmarket/candidates.txt ];then
+  OPTIONS+=(
+    LISTCJS "List filtered coinjoin transactions")
+      HEIGHT=$((HEIGHT+1)); CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
+  fi
+fi
   OPTIONS+=(
     BOLTZMANN "Analyze the entropy of a transaction")
 if [ "${runningEnv}" != mynode ]; then
   OPTIONS+=(
     PASSWORD "Change the ssh password")
-  HEIGHT=$((HEIGHT+1))
-  CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
+      HEIGHT=$((HEIGHT+1)); CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
 fi
 if [ "${runningEnv}" != standalone ]; then
   if grep -Eq "^joinmarketSSH=off" /home/joinmarket/joinin.conf; then
@@ -106,8 +110,7 @@ if [ "${runningEnv}" != standalone ]; then
   fi
   OPTIONS+=(
     SSH "$sshAction ssh access with the joinmarket user")
-  HEIGHT=$((HEIGHT+1))
-  CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
+      HEIGHT=$((HEIGHT+1)); CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
 fi
 OPTIONS+=(
     LOGS "Show the bitcoind logs on $network")
@@ -207,6 +210,10 @@ Input how many previous blocks from the tip you want to scan" 14 108
       read key
       listCJcandidateTXNs
     fi
+    echo "Press ENTER to return to the menu..."
+    read key;;
+  LISTCJS)
+    listCJcandidateTXNs
     echo "Press ENTER to return to the menu..."
     read key;;  
   SSH)
