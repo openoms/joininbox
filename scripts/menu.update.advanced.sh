@@ -15,8 +15,8 @@ BACKTITLE="JoininBox GUI"
 
 # Basic Options
 OPTIONS+=(\
-  JBRESET "Reinstall the JoininBox scripts and menu"
   JBCOMMIT "Update JoininBox to the latest commit"
+  JBRESET "Reinstall the JoininBox scripts and menu"
   JMCUSTOM "Update JoinMarket to a custom version"
   JMPR "Test a JoinMarket pull request"
   JMCOMMIT "Update JoinMarket to the latest commit"
@@ -59,7 +59,18 @@ https://github.com/JoinMarket-Org/joinmarket-clientserver/releases/tag/${updateV
       /home/joinmarket/install.joinmarket.sh update $updateVersion
       errorOnInstall $?
       echo
-      echo "Reset the joinmarket.cfg to the defaults from the menu CONFIG -> RESET to activate the new options."
+      echo "A new version might introduce new IRC servers and other settings."
+      echo "It is best to reset the joinmarket.cfg after every install and can be done any time from the menu CONFIG -> RESET."
+      read -p "Do you want to reset the joinmarket.cfg to the defaults (with Tor settings) now (yes/no)?" confirm && [[ $confirm == [yY]||$confirm == [yY][eE][sS] ]]||exit 0
+      echo "# Removing the joinmarket.cfg"
+      rm -f $JMcfgPath
+      generateJMconfig
+      if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
+        read -p "Do you want to connect to the local Bitcoin Core on mainnet now (yes/no)?" confirm && [[ $confirm == [yY]||$confirm == [yY][eE][sS] ]]||exit 0
+        connectLocalNode mainnet
+        sudo systemctl start bitcoind
+        showBitcoinLogs
+      fi
       echo
       echo "Press ENTER to return to the menu"
       read key
@@ -75,7 +86,18 @@ https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber
       /home/joinmarket/install.joinmarket.sh testPR $PRnumber
       errorOnInstall $?
       echo
-      echo "Reset the joinmarket.cfg to the defaults from the menu CONFIG -> RESET to activate the new options."
+      echo "A new version might introduce new IRC servers and other settings."
+      echo "It is best to reset the joinmarket.cfg after every install and can be done any time from the menu CONFIG -> RESET."
+      read -p "Do you want to reset the joinmarket.cfg to the defaults (with Tor settings) now (yes/no)?" confirm && [[ $confirm == [yY]||$confirm == [yY][eE][sS] ]]||exit 0
+      echo "# Removing the joinmarket.cfg"
+      rm -f $JMcfgPath
+      generateJMconfig
+      if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
+        read -p "Do you want to connect to the local Bitcoin Core on mainnet now (yes/no)?" confirm && [[ $confirm == [yY]||$confirm == [yY][eE][sS] ]]||exit 0
+        connectLocalNode mainnet
+        sudo systemctl start bitcoind
+        showBitcoinLogs
+      fi
       echo
       echo "Press ENTER to return to the menu"
       read key
@@ -84,7 +106,18 @@ https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber
       /home/joinmarket/install.joinmarket.sh commit
       errorOnInstall $?
       echo
-      echo "Reset the joinmarket.cfg to the defaults from the menu CONFIG -> RESET to activate the new options."
+      echo "A new version might introduce new IRC servers and other settings."
+      echo "It is best to reset the joinmarket.cfg after every install and can be done any time from the menu CONFIG -> RESET."
+      read -p "Do you want to reset the joinmarket.cfg to the defaults (with Tor settings) now (yes/no)?" confirm && [[ $confirm == [yY]||$confirm == [yY][eE][sS] ]]||exit 0
+      echo "# Removing the joinmarket.cfg"
+      rm -f $JMcfgPath
+      generateJMconfig
+      if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
+        read -p "Do you want to connect to the local Bitcoin Core on mainnet now (yes/no)?" confirm && [[ $confirm == [yY]||$confirm == [yY][eE][sS] ]]||exit 0
+        connectLocalNode mainnet
+        sudo systemctl start bitcoind
+        showBitcoinLogs
+      fi
       echo
       echo "Press ENTER to return to the menu"
       read key
