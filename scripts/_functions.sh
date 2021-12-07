@@ -45,6 +45,7 @@ function errorOnInstall() {
   if [ "$1" -gt 0 ]; then
     DIALOGRC=/home/joinmarket/.dialogrc.onerror dialog --title "Error during install" \
       --msgbox "\nPlease search or report at:\nhttps://github.com/openoms/joininbox/issues\nwith the logs above" 8 56
+    exit 1
   fi
 }
 
