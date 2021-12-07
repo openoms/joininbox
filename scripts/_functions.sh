@@ -99,7 +99,7 @@ function chooseWallet() {
     dialog --clear \
      --backtitle "Choose a wallet by typing the full name of the file" \
      --title "Choose a wallet by typing the full name of the file" \
-     --fselect "$walletPath" 10 60 2> "$wallet"
+     --fselect "$walletPath" 20 60 2> "$wallet"
     openMenuIfCancelled $?
   else
     echo "$defaultWallet" > "$wallet"
