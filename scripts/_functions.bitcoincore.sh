@@ -37,8 +37,9 @@ function downloadBitcoinCore() {
   echo "correctKey(${correctKey})"
   if [ ${correctKey} -lt 1 ] || [ ${goodSignature} -lt 1 ]; then
     echo
-    echo "# !!! BUILD FAILED --> PGP Verify not OK / signature(${goodSignature}) verify(${correctKey})"
-    echo "# Removing files"
+    echo "# !!! BUILD FAILED --> the PGP verification failed / signature(${goodSignature}) verify(${correctKey})"
+    echo "# Removing the conflicting files"
+    echo "# This is normal after an update - try to choose the option / run the script again."
     sudo rm -f SHA256SUMS
     sudo rm -f SHA256SUMS.asc
     exit 1

@@ -80,7 +80,7 @@ function downloadSnapShot() {
   echo "# goodHash ($goodHash)"
   if [ ${goodSignature} -lt 1 ] || [ ${goodHash} -lt 1 ]; then
     echo
-    echo "# Download failed --> PGP Verify not OK / signature(${goodSignature})"
+    echo "# Download failed --> the PGP signature did not match / signature(${goodSignature})"
     echo "# Press ENTER to remove the invalid files or CTRL+C to abort."
     read key
     echo "# Removing the downloaded files"
