@@ -24,24 +24,24 @@ case $CHOICE in
 esac
 
 joinmarketSSHchanged=0
-if grep -Eq "^joinmarketSSH=off" /home/joinmarket/joinin.conf; then
+if grep -Eq "^DenyUsers joinmarket" /etc/ssh/sshd_config; then
   sudo /home/joinmarket/set.ssh.sh on
   joinmarketSSHchanged=1
 fi
+
+# switch on X11 forwarding
+sudo sed -i "s/^X11Forwarding no/X11Forwarding yes/g" /etc/ssh/sshd_config
+if ! grep -Eq "^X11Forwarding yes" /etc/ssh/sshd_config; then
+  echo "X11Forwarding yes" | sudo tee -a /etc/ssh/sshd_config
+fi
+echo "# Set 'X11Forwarding yes' and restarting sshd"
+sudo service sshd restart
+
 
 if [ "$RPCoverTor" = "on" ];then
   tor="torsocks "
 else
   tor=""
-fi
-
-# switch on X11 forwarding
-if ! grep -Eq "^X11Forwarding no" /etc/ssh/sshd_config; then
-  echo "X11Forwarding no" | sudo tee -a /etc/ssh/sshd_config
-fi
-if sudo sed -i "s/^X11Forwarding no/X11Forwarding yes/g" /etc/ssh/sshd_config;then
-  echo "# Set 'X11Forwarding yes' and restarting sshd"
-  sudo service sshd restart
 fi
 
 echo "
