@@ -32,6 +32,8 @@ else
   tor=" "
 fi
 
+checkRPCwallet
+
 # switch on X11 forwarding
 if ! grep -Eq "^X11Forwarding no" /etc/ssh/sshd_config; then
   echo "X11Forwarding no" | sudo tee -a /etc/ssh/sshd_config
@@ -47,13 +49,19 @@ Instructions to open the JoinMarket-QT GUI on the desktop
 ************************************************************************************
 "
 
+if [ "${runningEnv}" = standalone ]; then
+  joinmarketUserPsw="ssh login password"
+else
+  joinmarketUserPsw="PASSWORD_B (rpcpassword in the bitcoin.conf)"
+fi
+
 if [ "${CHOICE}" = "LINUX" ]; then
   echo "
 Use the following line in a new desktop terminal to connect:
 
 ssh -X joinmarket@${localip}${tor}joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
 
-Use the PASSWORD_B (rpcpassword in the bitcoin.conf) to open the JoinMarket-QT GUI
+Use the ${joinmarketUserPsw} to open the JoinMarket-QT GUI
 "
 
 
@@ -65,7 +73,7 @@ Use the following line in a new desktop terminal to connect:
 
 ssh -X joinmarket@${localip}${tor}joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
 
-Use the PASSWORD_B (rpcpassword in the bitcoin.conf) to open the JoinMarket-QT GUI
+Use the ${joinmarketUserPsw} to open the JoinMarket-QT GUI
 "
 
 
@@ -85,7 +93,7 @@ The settings can be saved in Session -> type a name under Saved session -> Save
 Make sure that Xming is running (the icon is present on the taskbar)
 
 Open the connection
-Use the PASSWORD_B to log in
+Use the ${joinmarketUserPsw} to log in
 In the terminal Exit to the Command Line and type:
 
 qtgui
@@ -99,7 +107,7 @@ Use the following line in a new desktop terminal to connect:
 
 ssh -X joinmarket@localhost${tor}joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
 
-Use your ssh password to open the JoinMarket-QT GUI
+Use the ${joinmarketUserPsw} to open the JoinMarket-QT GUI
 
 
 Alternatively disable the display access control of the xserver:
