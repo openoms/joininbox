@@ -1,6 +1,9 @@
 #!/bin/bash
 
+source /home/joinmarket/_functions.sh
 source /home/joinmarket/joinin.conf
+
+checkRPCwallet
 
 # Basic Options
 OPTIONS=(LINUX "Running Linux"
@@ -27,12 +30,10 @@ if grep -Eq "^joinmarketSSH=off" /home/joinmarket/joinin.conf; then
 fi
 
 if [ "$RPCoverTor" = "on" ];then
-  tor=" torsocks "
+  tor="torsocks "
 else
-  tor=" "
+  tor=""
 fi
-
-checkRPCwallet
 
 # switch on X11 forwarding
 if ! grep -Eq "^X11Forwarding no" /etc/ssh/sshd_config; then
@@ -59,7 +60,7 @@ if [ "${CHOICE}" = "LINUX" ]; then
   echo "
 Use the following line in a new desktop terminal to connect:
 
-ssh -X joinmarket@${localip}${tor}joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
+ssh -X joinmarket@${localip} ${tor}joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
 
 Use the ${joinmarketUserPsw} to open the JoinMarket-QT GUI
 "
@@ -71,7 +72,7 @@ Install the XQuartz application from https://www.xquartz.org/
 
 Use the following line in a new desktop terminal to connect:
 
-ssh -X joinmarket@${localip}${tor}joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
+ssh -X joinmarket@${localip} ${tor}joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
 
 Use the ${joinmarketUserPsw} to open the JoinMarket-QT GUI
 "
@@ -105,7 +106,7 @@ elif [ "${CHOICE}" = "localhost" ]; then
   echo "
 Use the following line in a new desktop terminal to connect:
 
-ssh -X joinmarket@localhost${tor}joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
+ssh -X joinmarket@localhost ${tor}joinmarket-clientserver/jmvenv/bin/python joinmarket-clientserver/scripts/joinmarket-qt.py
 
 Use the ${joinmarketUserPsw} to open the JoinMarket-QT GUI
 
