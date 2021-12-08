@@ -50,3 +50,50 @@ function menu_DISPLAY() {
   read key
   /home/joinmarket/menu.sh
 }
+
+function menu_resetJMconfig {
+  dialog --backtitle "Reset the joinmarket.cfg" \
+  --title "Reset the joinmarket.cfg" \
+  --yesno "
+A new JoinMarket version might introduce new IRC servers and other settings.
+It is best to reset the joinmarket.cfg after every install.
+(can be done any time from the menu CONFIG -> RESET)
+
+Do you want to reset the joinmarket.cfg to the defaults (with Tor settings) now?
+" 12 65
+  # make decison
+  pressed=$?
+  case $pressed in
+    0)
+      echo "# Removing the joinmarket.cfg"
+      rm -f $JMcfgPath
+      generateJMconfig;;
+    1)
+      echo "Cancelled"
+      exit 1;;
+    255)
+      echo "ESC pressed."
+      exit 1;;
+  esac
+}
+
+function menu_connectLocalCore {
+dialog --backtitle "Connect to the local Bitcoin Core" \
+--title "Connect to the local Bitcoin Core" \
+--yesno "
+Do you want to connect to the local Bitcoin Core on mainnet now?" 7 55
+  # make decison
+  pressed=$?
+  case $pressed in
+    0)
+      connectLocalNode mainnet
+      sudo systemctl start bitcoind
+      showBitcoinLogs;;
+    1)
+      echo "Cancelled"
+      exit 1;;
+    255)
+      echo "ESC pressed."
+      exit 1;;
+  esac
+}
