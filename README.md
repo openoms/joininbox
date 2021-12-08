@@ -72,8 +72,7 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
   * check the router interface 
 
   `ssh joinmarket@rpi4-20210210` → use the password: `joininbox`
-* after the first loging will be prompted to change the password to access Joininbox
-
+* after the first login will be prompted to change the password to access the menu.
   ![password change](/images/password.change.png)
 
 * next will be presented with the CONFIG menu to
@@ -85,8 +84,10 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
   
   ![config menu](/images/menu.startup.png)
 
-* Continuing with one of the options or exiting will get you to the main JoininBox menu where you can start using JoinMarket
-   
+* Update to the latest version of JoininBox and update JoinMarket if the latest version is newer than the one installed on the SDcard
+
+  After any of the options or Exit is selected the main JoininBox menu will open where you can start using JoinMarket
+
    ![menu](/images/menu.png)
 
 * Find [more info on the usage](#more-info) and [community help](#forums) at the end of this readme
