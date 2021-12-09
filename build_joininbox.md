@@ -96,7 +96,7 @@ https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authe
     ```
 
 
-* Setting up the ssh keys and removing the password login option is described in the [RaspiBolt Guide](https://stadicus.github.io/RaspiBolt/raspibolt_21_security.html#login-with-ssh-keys)
+* Setting up the ssh keys and removing the password login option is described in the [RaspiBolt Guide](https://raspibolt.org/security.html#login-with-ssh-keys)
     ```bash
     # make ssh keystore for the "joinmarket" user
     sudo -u joinmarket mkdir -p ~/.ssh
