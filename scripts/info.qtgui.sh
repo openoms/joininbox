@@ -30,6 +30,9 @@ if grep -Eq "^DenyUsers joinmarket" /etc/ssh/sshd_config; then
 fi
 
 # switch on X11 forwarding
+if [ ! -f /home/joinmarket/.Xauthority ]; then
+  sudo -u joinmarket touch /home/joinmarket/.Xauthority
+fi
 sudo sed -i "s/^X11Forwarding no/X11Forwarding yes/g" /etc/ssh/sshd_config
 if ! grep -Eq "^X11Forwarding yes" /etc/ssh/sshd_config; then
   echo "X11Forwarding yes" | sudo tee -a /etc/ssh/sshd_config
