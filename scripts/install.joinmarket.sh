@@ -83,6 +83,11 @@ function installJoinMarket() {
     fi
   fi
 
+  # Use specific python version, if set
+  python_args=""
+  if [[ ! -z "${JM_PYTHON}" ]]; then
+    python_args="--python=${JM_PYTHON}"
+  fi
   # do not clear screen during installation
   sudo -u joinmarket sed -i 's/clear//g' install.sh
   # do not stop at installing Debian dependencies
@@ -106,10 +111,10 @@ function installJoinMarket() {
 
   if [ "$1" = "update" ] || [ "$1" = "testPR" ] || [ "$1" = "commit" ]; then
     # build the Qt GUI, do not run libsecp256k1 test
-    sudo -u joinmarket ./install.sh --with-qt --disable-secp-check || exit 1
+    sudo -u joinmarket ./install.sh --with-qt --disable-secp-check $python_args || exit 1
   else
     # build the Qt GUI
-    sudo -u joinmarket ./install.sh --with-qt || exit 1
+    sudo -u joinmarket ./install.sh --with-qt $python_args || exit 1
   fi
   currentJMversion=$(cd /home/joinmarket/joinmarket-clientserver 2>/dev/null; \
     git describe --tags 2>/dev/null)
