@@ -235,7 +235,7 @@ function setIRCtoTor() {
     sed -i "s/^host = agora.anarplex.net/#host = agora.anarplex.net/g" $JMcfgPath
     sed -i "s/^#host = vxecvd6lc4giwtasjhgbrr3eop6pzq6i5rveracktioneunalgqlwfad.onion/host = vxecvd6lc4giwtasjhgbrr3eop6pzq6i5rveracktioneunalgqlwfad.onion/g" $JMcfgPath
     # ilita
-    sed -i "s/^#host = ilitafrzzgxymv6umx2ux7kbz3imyeko6cnqkvy4nisjjj4qpqkrptid.onion.onion/host = ilitafrzzgxymv6umx2ux7kbz3imyeko6cnqkvy4nisjjj4qpqkrptid.onion.onion/g" $JMcfgPath
+    sed -i "s/^#host = ilitafrzzgxymv6umx2ux7kbz3imyeko6cnqkvy4nisjjj4qpqkrptid.onion/host = ilitafrzzgxymv6umx2ux7kbz3imyeko6cnqkvy4nisjjj4qpqkrptid.onion/g" $JMcfgPath
 
     # socks5
     sed -i "s/^socks5 = false/#socks5 = false/g" $JMcfgPath
