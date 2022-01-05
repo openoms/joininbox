@@ -270,11 +270,22 @@ function generateJMconfig() {
   if [ -f "/mnt/hdd/bitcoin/bitcoin.conf" ];then
     echo
     echo "# editing the joinmarket.cfg with the local bitcoin RPC settings."
+  
     RPCUSER=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
     sed -i "s/^rpc_user =.*/rpc_user = $RPCUSER/g" $JMcfgPath
+    echo "rpc_user = $RPCUSER"
+
     PASSWORD_B=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
     sed -i "s/^rpc_password =.*/rpc_password = $PASSWORD_B/g" $JMcfgPath
-    echo "# filled the bitcoin RPC password (PASSWORD_B)"
+    echo "# rpc_password = $PASSWORD_B"
+
+    RPCPORT=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep main.rpcport | cut -c 14-)
+    if [ ${#RPCPORT} -eq 0 ];then
+      RPCPORT=8332
+    fi
+    sed -i "s/^rpc_port =.*/rpc_port = $RPCPORT/g" $JMcfgPath
+    echo  "# rpc_port = $RPCPORT"
+
     sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/g" $JMcfgPath
     echo "# using the bitcoind wallet: wallet.dat"
   fi
