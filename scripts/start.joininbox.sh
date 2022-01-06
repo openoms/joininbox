@@ -78,8 +78,12 @@ if [ "$setupStep" -lt 100 ];then
     # check for dialog
     if [ "$(dialog | grep -c "ComeOn Dialog!")" -eq 0 ];then
       sudo apt install -y dialog
-      sed -i  "s#setupStep=.*#setupStep=4#g" $joininConfPath
     fi
+    # check for qrencode
+    if [ "$(qrencode -V 2>&1 | grep -c "not found")" -gt 0 ];then
+      sudo apt install -y qrencode
+    fi
+    sed -i  "s#setupStep=.*#setupStep=4#g" $joininConfPath
 
     # check if JoinMarket is installed
     /home/joinmarket/install.joinmarket.sh install
@@ -170,8 +174,3 @@ if ! grep -Eq "^localip=" $joininConfPath;then
 fi
 localip=$(hostname -I | awk '{print $1}')
 sed -i "s#^localip=.*#localip=$localip#g" $joininConfPath
-
-# check for qrencode
-if [ "$(qrencode -V 2>&1 | grep -c "not found")" -gt 0 ];then
-  sudo apt install -y qrencode
-fi
