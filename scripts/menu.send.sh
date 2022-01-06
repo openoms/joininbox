@@ -59,7 +59,7 @@ destination address:
 $(cat "$address")
 
 Enter the number of makers to coinjoin with (min 4)
-Leave empty for the default 8-10 (randomized)
+Leave empty for the default 5-9 (randomized)
 Enter 0 to send without a coinjoin." 19 69 2> "$makercount"
 openMenuIfCancelled $?
 varMakercount=$(cat "$makercount")
