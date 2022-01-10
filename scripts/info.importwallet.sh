@@ -16,7 +16,11 @@ case $CHOICE in
         *) exit 1;;
 esac
 
-
+joinmarketSSHchanged=0
+if grep -Eq "^DenyUsers joinmarket" /etc/ssh/sshd_config; then
+  sudo /home/joinmarket/set.ssh.sh on
+  joinmarketSSHchanged=1
+fi
 
 if [ "${CHOICE}" = "TOR" ]; then
   # set up a Hidden Service for ssh
@@ -53,9 +57,9 @@ You should see files called '.jmdat'
 COPY, PASTE & EXECUTE the following command in the terminal of the source computer:
 "
 if [ "${CHOICE}" = "LAN" ]; then
-  echo "scp ./*.jmdat joinmarket@${localip}:~/.joinmarket/wallets"
+  echo "scp ./*.jmdat joinmarket@${localip}:~/.joinmarket/wallets/"
 elif [ "${CHOICE}" = "TOR" ]; then
-  echo "torsocks scp ./*.jmdat joinmarket@${TOR_ADDRESS}:~/.joinmarket/wallets"
+  echo "torsocks scp ./*.jmdat joinmarket@${TOR_ADDRESS}:~/.joinmarket/wallets/"
 fi
 echo "" 
 if [ -f "/mnt/hdd/raspiblitz.conf" ] ; then
@@ -69,3 +73,7 @@ PRESS ENTER if the transfer is done OR if you want to choose another option.
 "
 sleep 2
 read key
+
+if [ $joinmarketSSHchanged = 1 ];then
+  sudo /home/joinmarket/set.ssh.sh off
+fi
