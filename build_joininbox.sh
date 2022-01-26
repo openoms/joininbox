@@ -15,21 +15,21 @@
 # command info
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
   echo "JoininBox Build Script" 
-  echo "Usage: bash build_joininbox.sh [branch] [github user]"
-  echo "Example: bash bash build_joininbox.sh dev openoms"
+  echo "Usage: sudo bash build_joininbox.sh [branch] [github user]"
+  echo "Example: sudo bash build_joininbox.sh dev openoms"
   exit 1
 fi
 
 # check if sudo
 if [ "$EUID" -ne 0 ]; then
   echo "Please run as root or with sudo"
-  echo "Root access is needed to create the dedicated user to install system dependencies"
+  echo "Root access is needed to create the dedicated user and to install system dependencies"
   exit 1
 fi
 
 echo 
 echo "##########################"
-echo "# JOININBOX BUILD SCRIPT #"
+echo "# JOININBOX BUILD SCRIPT"
 echo "##########################"
 echo 
 
@@ -53,7 +53,7 @@ read key
 
 echo 
 echo "###################################"
-echo "# Identify the CPU and base image #"
+echo "# Identify the CPU and base image"
 echo "###################################"
 echo 
 cpu=$(uname -m)
@@ -90,7 +90,7 @@ fi
 
 echo 
 echo "############################"
-echo "# Preparing the base image #"
+echo "# Preparing the base image"
 echo "############################"
 echo 
 if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "dietpi" ]||\
@@ -99,7 +99,6 @@ if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "dietpi" ]||\
   # https://github.com/rootzoll/raspiblitz/issues/138
   # https://daker.me/2014/10/how-to-fix-perl-warning-setting-locale-failed-in-raspbian.html
   # https://stackoverflow.com/questions/38188762/generate-all-locales-in-a-docker-image
-  echo
   echo "# FIXING LOCALES FOR BUILD "
   apt install -y locales
   sed -i "s/^# en_US.UTF-8 UTF-8.*/en_US.UTF-8 UTF-8/g" /etc/locale.gen
@@ -117,22 +116,8 @@ if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "dietpi" ]||\
   rm -f /etc/apt/trusted.gpg.d/microsoft.gpg
 fi
 
-if [ -f "/usr/bin/python3.7" ]; then
-  # make sure /usr/bin/python exists (and calls Python3.7 in Debian Buster)
-  update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
-  echo "# python calls python3.7"
-elif [ -f "/usr/bin/python3.8" ]; then
-  # use python 3.8 if available
-  update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
-  echo "# python calls python3.8"
-else
-  echo "!!! FAIL !!!"
-  echo "There is no tested version of python present"
-  exit 1
-fi
 echo
-echo "# PREPARE ${baseImage} "
-
+echo "# Prepare ${baseImage} "
 # special prepare when Raspbian
 if [ "${baseImage}" = "raspbian" ]; then
   # do memory split (16MB)
@@ -152,7 +137,7 @@ if [ "${baseImage}" = "raspbian" ]; then
 fi
 
 echo 
-echo "# change log rotates"
+echo "# Change log rotates"
 # see https://github.com/rootzoll/raspiblitz/issues/394#issuecomment-471535483
 echo "/var/log/syslog" >> ./rsyslog
 echo "{" >> ./rsyslog
@@ -222,16 +207,79 @@ chown root:root /etc/logrotate.d/rsyslog
 service rsyslog restart
 
 echo 
-echo "###############################"
-echo "# Apt update & upgrade        #"
-echo "###############################"
+echo "########################"
+echo "# Apt update & upgrade"
+echo "########################"
 echo 
 apt-get update -y
 apt-get upgrade -f -y
 
 echo 
+echo "##########"
+echo "# Python"
+echo "##########"
+echo 
+if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
+  if [ ! -f "/usr/bin/python3.7" ]; then
+    # install python37
+    pythonVersion="3.7.9"
+    majorPythonVersion=$(echo "$pythonVersion" | awk -F. '{print $1"."$2}' )
+    # dependencies
+    sudo apt install wget software-properties-common build-essential libnss3-dev zlib1g-dev libgdbm-dev libncurses5-dev libssl-dev libffi-dev libreadline-dev libsqlite3-dev libbz2-dev -y
+    # download
+    wget https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz
+    # optional signature for verification
+    wget https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz.asc
+    # get PGP pubkey of Ned Deily (Python release signing key) <nad@python.org>
+    gpg --recv-key 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
+    # check for: Good signature from "Pablo Galindo Salgado <pablogsal@gmail.com>"
+    gpg --verify Python-${pythonVersion}.tgz.asc || (echo "# PGP verfication failed"; exit 1)
+    # unzip
+    tar xvf Python-${pythonVersion}.tgz
+    cd Python-${pythonVersion} || (echo "# Pyhton37 was not downloaded"; exit 1)
+    # configure
+    ./configure --enable-optimizations
+    # install
+    make altinstall
+    # move the python binary to the expected directory
+    mv "$(which python${majorPythonVersion})" /usr/bin/
+    # check
+    ls -la /usr/bin/python${majorPythonVersion} || (echo "# Python37 was not installed"; exit 1)
+    # clean
+    cd ..
+    rm Python-${pythonVersion}.tgz
+    rm -rf Python-${pythonVersion}
+  fi
+  update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+  echo "# python calls python3.7"
+
+else
+  if [ -f "/usr/bin/python3.7" ]; then
+    # make sure /usr/bin/python exists (and calls Python3.7 in Debian Buster)
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+    echo "# python calls python3.7"
+  elif [ -f "/usr/bin/python3.8" ]; then
+    # use python 3.8 if available
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
+    echo "# python calls python3.8"
+  elif [ -f "/usr/bin/python3.9" ]; then
+    # use python 3.9 if available
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
+    echo "# python calls python3.8"
+  elif [ -f "/usr/bin/python3.10" ]; then
+    # use python 3.10 if available
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
+    echo "# python calls python3.8"  
+  else
+    echo "!!! FAIL !!!"
+    echo "There is no tested version of python present"
+    exit 1
+  fi
+fi
+
+echo 
 echo "##########################"
-echo "# Tools and dependencies #"
+echo "# Tools and dependencies"
 echo "##########################"
 echo 
 apt-get install -y htop git curl bash-completion vim jq bsdmainutils
@@ -266,19 +314,61 @@ apt-get -y autoremove
 
 echo 
 echo "#############"
-echo "# JoininBox #"
+echo "# JoininBox"
 echo "#############"
 echo 
 echo "# add the 'joinmarket' user"
 adduser --disabled-password --gecos "" joinmarket
 
 echo "# clone the joininbox repo and copy the scripts"
-cd /home/joinmarket || exit 1
+cd /home/joinmarket || (echo "# User wasn't created" ;exit 1)
 sudo -u joinmarket git clone -b ${wantedBranch} https://github.com/${githubUser}/joininbox.git
-sudo -u joinmarket cp ./joininbox/scripts/* /home/joinmarket/
-sudo -u joinmarket cp ./joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
+
+cd /home/joinmarket/joininbox || (echo "# Failed git clone" ;exit 1)
+PGPsigner="openoms"
+PGPpubkeyLink="https://github.com/openoms.gpg"
+PGPpubkeyFingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
+sudo -u joinmarket wget -O pgp_keys.asc "${PGPpubkeyLink}"
+sudo -u joinmarket gpg --import --import-options show-only ./pgp_keys.asc
+fingerprint=$(sudo -u joinmarket gpg pgp_keys.asc 2>/dev/null | grep "${PGPpubkeyFingerprint}" -c)
+if [ "${fingerprint}" -lt 1 ]; then
+  echo
+  echo "# !!! WARNING --> the PGP fingerprint is not as expected for ${PGPsigner}" >&2
+  echo "# Should contain PGP: ${PGPpubkeyFingerprint}" >&2
+  echo "# Exiting" >&2
+  exit 7
+fi
+sudo -u joinmarket gpg --import ./pgp_keys.asc
+trap 'rm -f "$_temp"' EXIT
+_temp="$(mktemp -p /dev/shm/)"
+commitHash="$(sudo -u joinmarket git log --oneline | head -1 | awk '{print $1}')"
+gitCommand="sudo -u joinmarket git verify-commit $commitHash"
+if ${gitCommand} 2>&1 >&"$_temp"; then
+  goodSignature=1
+else
+  goodSignature=0
+fi
+echo
+cat "$_temp"
+echo "# goodSignature(${goodSignature})"
+correctKey=$(tr -d " \t\n\r" < "$_temp" | grep "${PGPpubkeyFingerprint}" -c)
+echo "# correctKey(${correctKey})"
+if [ "${correctKey}" -lt 1 ] || [ "${goodSignature}" -lt 1 ]; then
+  echo
+  echo "# !!! BUILD FAILED --> PGP verification not OK / signature(${goodSignature}) verify(${correctKey})"
+  exit 1
+else
+  echo
+  echo "##########################################################################"
+  echo "# OK --> the PGP signature of the checked out $commitHash commit is correct"
+  echo "##########################################################################"
+  echo
+fi
+
+sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/
+sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
 chmod +x /home/joinmarket/*.sh
-sudo -u joinmarket cp -r ./joininbox/scripts/standalone /home/joinmarket/
+sudo -u joinmarket cp -r /home/joinmarket/joininbox/scripts/standalone /home/joinmarket/
 chmod +x /home/joinmarket/standalone/*.sh
 
 echo "# set the default password 'joininbox' for the users 'pi', \
@@ -299,7 +389,7 @@ sudo -u joinmarket touch /home/joinmarket/joinin.conf
 
 echo 
 echo "#######"
-echo "# Tor #"
+echo "# Tor"
 echo "#######"
 echo 
 # add default value to joinin config if needed
@@ -351,7 +441,7 @@ then
     echo "Tor sources are available"
   fi
   apt update
-  if [ "$cpu" = "armv6l" ]; then
+  if [ "${cpu}" = "armv6l" ]; then
     # https://2019.www.torproject.org/docs/debian#source
     echo "# running on armv6l - need to compile Tor from source"
     apt install -y build-essential fakeroot devscripts
@@ -373,7 +463,7 @@ fi
 
 # test Tor
 tries=0
-while [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]
+while [ "${torTest}" != "Congratulations. This browser is configured to use Tor." ]
 do
   echo "# waiting another 10 seconds for Tor"
   echo "# press CTRL + C to abort"
@@ -417,7 +507,7 @@ sed -i "s/^runBehindTor=.*/runBehindTor=on/g" /home/joinmarket/joinin.conf
 
 echo 
 echo "#############"
-echo "# Hardening #"
+echo "# Hardening"
 echo "#############"
 echo 
 # install packages
@@ -457,7 +547,7 @@ systemctl restart ssh
 
 echo 
 echo "##########"
-echo "# Extras #"
+echo "# Extras"
 echo "##########"
 echo 
 
@@ -471,7 +561,7 @@ apt -y install tmux
 
 echo 
 echo "#############"
-echo "# Autostart #"
+echo "# Autostart"
 echo "#############"
 echo "
 if [ -f \"/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate\" ]; then
@@ -489,20 +579,20 @@ fi
 " | sudo -u joinmarket tee -a /home/joinmarket/.bashrc
 
 echo "#########################"
-echo "# Download Bitcoin Core #"
+echo "# Download Bitcoin Core"
 echo "#########################"
 echo 
 sudo -u joinmarket /home/joinmarket/install.bitcoincore.sh downloadCoreOnly
 
 echo 
 echo "######################"
-echo "# Install JoinMarket #"
+echo "# Install JoinMarket"
 echo "######################"
 sudo -u joinmarket /home/joinmarket/install.joinmarket.sh install
 
 echo
 echo "###########################"
-echo "# The Base Image is ready #"
+echo "# The base image is ready"
 echo "###########################"
 echo 
 echo "Look through / save this output and continue with:"
