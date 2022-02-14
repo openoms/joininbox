@@ -27,6 +27,10 @@ echo "# OK"
 echo
 echo "# Deleting local WIFI conf ..."
 sudo rm /boot/wpa_supplicant.conf 2>/dev/null
+# reset entries
+echo "ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=US" | sudo tee /etc/wpa_supplicant/wpa_supplicant.conf  2>/dev/null
 echo "# OK"
 
 echo
@@ -35,7 +39,7 @@ echo "# Will be recreated when the menu is next run."
 sudo rm /home/joinmarket/joinin.conf 2>/dev/null
 echo "# OK"
 
-echo 
+echo
 echo "# Will shutdown now."
 echo "# Wait until the SBC LEDs show no activity anymore."
 echo "# Then remove SD card and make a release image from it."
