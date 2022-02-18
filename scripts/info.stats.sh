@@ -50,7 +50,7 @@ JMpid=$(pgrep -f "python yg-privacyenhanced.py $YGwallet --wallet-password-stdin
 JMUptimeInSeconds=$(ps -p $JMpid -oetime= 2>/dev/null | tr '-' ':' | awk -F: '{ total=0; m=1; } { for (i=0; i < NF; i++) {total += $(NF-i)*m; m *= i >= 2 ? 24 : 60 }} {print total}')
 JMUptime=$(printf '%dd:%dh:%dm\n' $((JMUptimeInSeconds/86400)) $((JMUptimeInSeconds%86400/3600)) $((JMUptimeInSeconds%3600/60)))
 if [ "$JMUptime" = "0:0:0" ]; then
-  JMUptime="not running"
+  sixteencharname="The Maker is not"
 fi
 trap 'rm -f "$JMstats"' EXIT
 JMstats=$(mktemp -p /dev/shm)
