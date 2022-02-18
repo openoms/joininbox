@@ -1,6 +1,6 @@
 #!/bin/bash
 
-testedJMversion="v0.9.4"
+testedJMversion="v0.9.5"
 PGPsigner="waxwing"
 PGPpkeys="https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc"
 PGPcheck="2B6FC204D9BF332D062B461A141001A1AF77F20B"
@@ -25,18 +25,18 @@ function installJoinMarket() {
   sudo apt install -y python3-pyside2.qtcore python3-pyside2.qtgui \
   python3-pyside2.qtwidgets zlib1g-dev libjpeg-dev python3-pyqt5 libltdl-dev
   # https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/668#issuecomment-717815719
-  sudo apt -y install build-essential automake pkg-config libffi-dev python3-dev libgmp-dev 
+  sudo apt -y install build-essential automake pkg-config libffi-dev python3-dev
   sudo -u joinmarket pip install libtool asn1crypto cffi pycparser coincurve
   echo "# Installing JoinMarket"
-  
+
   if [ "$1" = "update" ] || [ "$1" = "testPR" ] || [ "$1" = "commit" ]; then
     echo "# Deleting the old source code (joinmarket-clientserver directory)"
     sudo rm -rf /home/joinmarket/joinmarket-clientserver
   fi
-  
+
   sudo -u joinmarket git clone https://github.com/Joinmarket-Org/joinmarket-clientserver
   cd joinmarket-clientserver || exit 1
-  
+
   if [ "$1" = "testPR" ]; then
     PRnumber=$2
     echo "# Using the PR:"
@@ -63,23 +63,23 @@ function installJoinMarket() {
       read key
     fi
     gpg --import ./pgp_keys.asc
-    
+
     verifyResult=$(git verify-tag $testedJMversion 2>&1)
-    
+
     goodSignature=$(echo ${verifyResult} | grep 'Good signature' -c)
     echo "# goodSignature(${goodSignature})"
     correctKey=$(echo ${verifyResult} | tr -d " \t\n\r" | grep "${PGPcheck}" -c)
     echo "# correctKey(${correctKey})"
     if [ ${correctKey} -lt 1 ] || [ ${goodSignature} -lt 1 ]; then
-      echo 
+      echo
       echo "# !!! BUILD FAILED --> PGP verification not OK / signature(${goodSignature}) verify(${correctKey})"
       exit 1
     else
-      echo 
+      echo
       echo "#########################################################"
       echo "# OK --> the PGP signature of the $testedJMversion tag is correct #"
       echo "#########################################################"
-      echo 
+      echo
     fi
   fi
 
@@ -102,9 +102,9 @@ function installJoinMarket() {
       virtualenv --system-site-packages -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1 ;\
     /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python -c \'import PySide2\'\
     #g" install.sh
-    # don't install PySide2 - using the system-site-package instead 
+    # don't install PySide2 - using the system-site-package instead
     sudo -u joinmarket sed -i "s#^PySide2.*##g" requirements/gui.txt
-    # don't install PyQt5 - using the system package instead 
+    # don't install PyQt5 - using the system package instead
     sudo -u joinmarket sed -i "s#^PyQt5.*##g" requirements/gui.txt
     sudo -u joinmarket sed -i "s#PyQt5!=5.15.0,!=5.15.1,!=5.15.2,!=6.0##g" jmqtui/setup.py
   fi
@@ -143,7 +143,7 @@ if [ "$1" = "install" ]; then
     echo
     echo "# JoinMarket is not yet installed - proceeding now"
     echo
-    installJoinMarket  
+    installJoinMarket
     errorOnInstall $?
     echo "# Check for optional dependencies: matplotlib and scipy"
     activateJMvenv
