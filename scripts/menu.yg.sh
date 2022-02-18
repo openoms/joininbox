@@ -18,9 +18,9 @@ if ! grep -Eq "^YGwallet=" $joininConfPath; then
 fi
 
 # BASIC MENU INFO
-HEIGHT=14
+HEIGHT=15
 WIDTH=52
-CHOICE_HEIGHT=21
+CHOICE_HEIGHT=22
 TITLE="Yield Generator options"
 MENU=""
 OPTIONS=()
@@ -31,6 +31,7 @@ OPTIONS+=(
   MAKER "Run the Yield Generator"
   JMCONF "YG settings in the joinmarket.cfg"
   YGLIST "List the past YG activity"
+  STATS "Show the sats earned as a Maker"
   NICKNAME "Show the last used counterparty name"
   SERVICE "Monitor the YG service (INFO)"
   LOGS "View the last YG logfile (DEBUG)"
@@ -65,6 +66,17 @@ case $CHOICE in
     echo "# returning to the menu..."
     sleep 1
     /home/joinmarket/menu.yg.sh;;
+  STATS)
+    if [ ! -f /home/joinmarket/.joinmarket/logs/yigen-statement.csv ]; then
+    dialog \
+    --title "yigen-statement.csv is not present"  \
+    --msgbox "
+There are no stats because the Yield Generator was never run.
+
+Start with the menu option: RUN_YG" 10 50
+    else  
+      dialog --prgbox "/home/joinmarket/info.stats.sh showAllEarned" 9 50
+    fi;;
   NICKNAME)
     name=$(YGnickname)
     whiptail \

@@ -49,19 +49,27 @@ IFS=$OLDIFS
 JMpid=$(pgrep -f "python yg-privacyenhanced.py $YGwallet --wallet-password-stdin" 2>/dev/null | head -1)
 JMUptimeInSeconds=$(ps -p $JMpid -oetime= 2>/dev/null | tr '-' ':' | awk -F: '{ total=0; m=1; } { for (i=0; i < NF; i++) {total += $(NF-i)*m; m *= i >= 2 ? 24 : 60 }} {print total}')
 JMUptime=$(printf '%dd:%dh:%dm\n' $((JMUptimeInSeconds/86400)) $((JMUptimeInSeconds%86400/3600)) $((JMUptimeInSeconds%3600/60)))
-
+if [ "$JMUptime" = "0:0:0" ]; then
+  JMUptime="not running"
+fi
 trap 'rm -f "$JMstats"' EXIT
 JMstats=$(mktemp -p /dev/shm)
 
-echo "\
+if [ "$1" != "showAllEarned" ]; then 
+  # keep original behaviour for the raspiblitz display (00infoBlitz.sh)
+  echo "\
 JoinMarket stats:day:week:month
 coinjoins as a Maker:$dayCoinjoins:$weekCoinjoins:$monthCoinjoins
 sats earned:$dayEarned:$weekEarned:$monthEarned
 $sixteencharname up:$JMUptime" | column -t -s: > $JMstats
 
+else
+  echo "\
+JoinMarket stats:day:week:month:all
+coinjoins as a Maker:$dayCoinjoins:$weekCoinjoins:$monthCoinjoins:$allCoinjoins
+sats earned:$dayEarned:$weekEarned:$monthEarned:$allEarned
+$sixteencharname up:$JMUptime" | column -t -s: > $JMstats
+fi
+
 cat "$JMstats"
 
-JMstatsL1=$(sed -n 1p < "$JMstats")
-JMstatsL2=$(sed -n 2p < "$JMstats")
-JMstatsL3=$(sed -n 3p < "$JMstats")
-JMstatsL4=$(sed -n 4p < "$JMstats")
