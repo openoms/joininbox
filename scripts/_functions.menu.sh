@@ -2,11 +2,16 @@
 
 # repeatedly used menu items as functions
 
+# paths
+walletPath="/home/joinmarket/.joinmarket/wallets/"
+JMcfgPath="/home/joinmarket/.joinmarket/joinmarket.cfg"
+joininConfPath="/home/joinmarket/joinin.conf"
+
 function menu_GEN() {
   clear
-  echo 
+  echo
   . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
-  if [ "${RPCoverTor}" = "on" ]; then 
+  if [ "${RPCoverTor}" = "on" ]; then
     torsocks python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate
   else
     python /home/joinmarket/joinmarket-clientserver/scripts/wallet-tool.py generate

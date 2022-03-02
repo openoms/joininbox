@@ -116,7 +116,7 @@ function chooseWallet() {
   else
     echo "# OK - the $(cat $wallet) file is present"
   fi
-  
+
   walletFileName=$(cat $wallet | cut -d/ -f6)
   if [ $# -eq 0 ] || [ $1 != "noLockFileCheck" ];then
     if [ -f /home/joinmarket/.joinmarket/wallets/.${walletFileName}.lock ];then
@@ -139,11 +139,11 @@ function stopYG() {
     local stopWallet=$1
   else
     local stopWallet=$YGwallet
-  fi  
+  fi
   # stop the background process (equivalent to CTRL+C)
   # use the YGwallet from joinin.conf
   pkill -sigint -f "python yg-privacyenhanced.py $stopWallet --wallet-password-stdin"
-  # pgrep python | xargs kill -sigint             
+  # pgrep python | xargs kill -sigint
   # remove the service
   sudo systemctl stop yg-privacyenhanced
   sudo systemctl disable yg-privacyenhanced
@@ -270,7 +270,7 @@ function generateJMconfig() {
   if [ -f "/mnt/hdd/bitcoin/bitcoin.conf" ];then
     echo
     echo "# editing the joinmarket.cfg with the local bitcoin RPC settings."
-  
+
     RPCUSER=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
     sed -i "s/^rpc_user =.*/rpc_user = $RPCUSER/g" $JMcfgPath
     echo "rpc_user = $RPCUSER"
@@ -312,7 +312,7 @@ function updateTor() {
   echo "# Adding tor-nightly-master to sources.list"
   torSourceListAvailable=$(sudo cat /etc/apt/sources.list | grep -c \
   'tor-nightly-master')
-  echo "torSourceListAvailable=${torSourceListAvailable}"  
+  echo "torSourceListAvailable=${torSourceListAvailable}"
   if [ ${torSourceListAvailable} -eq 0 ]; then
     echo "Adding Tor sources ..."
     if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "buster" ]||[ "${baseImage}" = "dietpi" ]; then

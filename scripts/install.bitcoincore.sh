@@ -11,10 +11,10 @@ fi
 if [ "$1" = "signetOn" ]; then
   installBitcoinCore
   installSignet
-  if [ $connectedRemoteNode = "on" ];then
+  if [ "$connectedRemoteNode" = "on" ];then
     backupJMconf
   fi
-  generateJMconfig 
+  generateJMconfig
   setJMconfigToSignet
 
   if [ ! -f /home/joinmarket/.bitcoin/signet/wallets/wallet.dat/wallet.dat ];then

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# paths
+walletPath="/home/joinmarket/.joinmarket/wallets/"
+JMcfgPath="/home/joinmarket/.joinmarket/joinmarket.cfg"
+joininConfPath="/home/joinmarket/joinin.conf"
+
 # downloadBitcoinCore
 function downloadBitcoinCore() {
   # set version
@@ -13,7 +18,7 @@ function downloadBitcoinCore() {
   echo "# *** PREPARING BITCOIN ***"
   # prepare directories
   sudo -u joinmarket mkdir /home/joinmarket/download 2>/dev/null
-  cd /home/joinmarket/download || exit 1 
+  cd /home/joinmarket/download || exit 1
 
   # receive signer key
   if ! gpg --keyserver hkp://keyserver.ubuntu.com --recv-key "71A3 B167 3540 5025 D447 E8F2 7481 0B01 2346 C9A6"
@@ -50,7 +55,7 @@ function downloadBitcoinCore() {
     echo "****************************************"
     echo
   fi
-  
+
   # detect CPU architecture & fitting download link
   if [ $(uname -m | grep -c 'arm') -eq 1 ] ; then
     bitcoinOSversion="arm-linux-gnueabihf"
@@ -61,10 +66,10 @@ function downloadBitcoinCore() {
   if [ $(uname -m | grep -c 'x86_64') -eq 1 ] ; then
     bitcoinOSversion="x86_64-linux-gnu"
   fi
-  
+
   echo
   echo "*** BITCOIN CORE v${bitcoinVersion} for ${bitcoinOSversion} ***"
-  
+
   # download resources
   binaryName="bitcoin-${bitcoinVersion}-${bitcoinOSversion}.tar.gz"
   if [ ! -f "./${binaryName}" ]; then
@@ -108,7 +113,7 @@ function installBitcoinCore() {
   sudo -u joinmarket mkdir -p /home/joinmarket/bitcoin
   cd /home/joinmarket/download/bitcoin-${bitcoinVersion}/bin/ || exit 1
   sudo install -m 0755 -o root -g root -t /home/joinmarket/bitcoin ./*
-  
+
   if [ "$(grep -c "/home/joinmarket/bitcoin" < /home/joinmarket/.profile)" -eq 0 ];then
     echo "# Add /home/joinmarket/bitcoin to the local PATH"
     echo "PATH=/home/joinmarket/bitcoin:$PATH" | sudo tee -a /home/joinmarket/.profile
@@ -191,7 +196,7 @@ WantedBy=multi-user.target
   fi
 
   # add aliases
-  if [ $(alias | grep -c signet) -eq 0 ];then 
+  if [ $(alias | grep -c signet) -eq 0 ]; then
     sudo bash -c "echo 'alias signet-cli=\"/home/joinmarket/bitcoin/bitcoin-cli -signet\"' >> /home/joinmarket/_aliases.sh"
     sudo bash -c "echo 'alias signetd=\"/home/joinmarket/bitcoin/bitcoind -signet\"' >> /home/joinmarket/_aliases.sh"
   fi
@@ -200,7 +205,7 @@ WantedBy=multi-user.target
 
   echo
   echo "# Installed $(/home/joinmarket/bitcoin/bitcoind --version | grep version)"
-  echo 
+  echo
   echo "# Monitor the signet bitcoind with: tail -f ~/.bitcoin/signet/debug.log"
   echo
 
@@ -287,7 +292,7 @@ function checkRPCwallet {
       customRPC "# Load wallet in bitcoind" "loadwallet" "$rpc_wallet"
       walletFound=$(customRPC "# Check wallet" "listwallets" 2>$connectionOutput | grep -c "$rpc_wallet")
     fi
-    echo 
+    echo
   fi
   echo "# The wallet: $rpc_wallet is present and loaded in the connected bitcoind"
 }

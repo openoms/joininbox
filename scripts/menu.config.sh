@@ -108,13 +108,13 @@ case $CHOICE in
     echo "# Removing the joinmarket.cfg"
     rm -f $JMcfgPath
     generateJMconfig
-    echo         
+    echo
     echo "Press ENTER to return to the menu..."
     read key;;
   CONNECT)
     /home/joinmarket/install.bitcoincore.sh signetOff
     /home/joinmarket/menu.bitcoinrpc.sh
-    echo         
+    echo
     echo "Press ENTER to return to the menu..."
     read key;;
   SIGNET)
@@ -125,7 +125,7 @@ case $CHOICE in
     else
       /home/joinmarket/install.bitcoincore.sh signetOn
     fi
-    echo         
+    echo
     echo "Press ENTER to return to the menu..."
     read key;;
   PRUNED)
@@ -135,14 +135,14 @@ case $CHOICE in
     installMainnet
     connectLocalNode
     showBitcoinLogs
-    echo         
+    echo
     echo "Press ENTER to return to the menu..."
     read key;;
   LOCAL)
     connectLocalNode mainnet
     sudo systemctl start bitcoind
     showBitcoinLogs
-    echo         
+    echo
     echo "Press ENTER to return to the menu..."
     read key;;
   BTCCONF)
@@ -156,5 +156,5 @@ case $CHOICE in
     fi;;
   UPDATE)
       /home/joinmarket/menu.update.sh
-      /home/joinmarket/menu.sh;;          
+      /home/joinmarket/menu.sh;;
 esac

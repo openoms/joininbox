@@ -5,7 +5,7 @@
 source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
-if [ ${RPCoverTor} = "on" ]; then 
+if [ ${RPCoverTor} = "on" ]; then
   tor="torsocks"
 else
   tor=""
@@ -67,7 +67,7 @@ case $CHOICE in
     echo
     echo "Press ENTER to return to the menu"
     read key;;
-  IMPORT) 
+  IMPORT)
     /home/joinmarket/info.importwallet.sh
     echo "Returning to the menu..."
     sleep 1
@@ -99,7 +99,7 @@ case $CHOICE in
     --title "Choose the new gap limit" \
     --inputbox "
 The gap limit is the number of empty addresses after which the wallet stops looking for funds.
-The default used is 6. 
+The default used is 6.
 Set a higher number if funds are missing after recovery.
 The tradeoff is more time needed for the wallet to open with more addresses monitored.
 
