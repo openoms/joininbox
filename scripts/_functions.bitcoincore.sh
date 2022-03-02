@@ -214,7 +214,7 @@ WantedBy=multi-user.target
 }
 
 setJMconfigToSignet() {
-  echo "# editing the joinmarket.cfg with signet values"
+  echo "## editing the joinmarket.cfg with signet values."
   # rpc_user
   RPCUSERSIGNET=$(sudo cat /home/joinmarket/.bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
   sed -i "s/^rpc_user =.*/rpc_user = $RPCUSERSIGNET/g" $JMcfgPath

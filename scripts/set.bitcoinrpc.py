@@ -19,7 +19,7 @@ def main():
 
     for opt, arg in opts:
         if opt in ('-n','--network'):
-            network = arg        
+            network = arg
         elif opt in ('-r','--rpc_user'):
             rpc_user = arg
         elif opt in ('-p','--rpc_pass'):
@@ -29,13 +29,13 @@ def main():
         elif opt in ('-c','--rpc_port'):
             rpc_port = arg
         elif opt in ('-w','--rpc_wallet'):
-            rpc_wallet_file = arg            
+            rpc_wallet_file = arg
         else:
             assert False, "unhandled option"
-    
+
     config = configparser.ConfigParser(strict=False, comment_prefixes='/', allow_no_value=True)
     config.read('/home/joinmarket/.joinmarket/joinmarket.cfg')
-    config.set('BLOCKCHAIN','network',network)    
+    config.set('BLOCKCHAIN','network',network)
     config.set('BLOCKCHAIN','rpc_user',rpc_user)
     config.set('BLOCKCHAIN','rpc_password',rpc_password)
     config.set('BLOCKCHAIN','rpc_host',rpc_host)

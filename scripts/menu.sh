@@ -27,7 +27,7 @@ OPTIONS+=(
   PAYJOIN "Send/Receive between JoinMarket wallets"
   "" ""
   OFFERS  "Watch the Order Book locally"
-  "" "" 
+  "" ""
   CONFIG "Connection and joinmarket.cfg settings" \
   TOOLS  "Extra helper functions and services")
   if [ "${runningEnv}" != mynode ]; then
@@ -58,7 +58,7 @@ CHOICE=$(dialog \
 case $CHOICE in
   START)
     /home/joinmarket/menu.quickstart.sh
-    waitKeyOnExit1 $?  
+    waitKeyOnExit1 $?
     /home/joinmarket/menu.sh;;
   WALLET)
     /home/joinmarket/menu.wallet.sh
@@ -102,21 +102,21 @@ case $CHOICE in
     /home/joinmarket/menu.update.sh
     /home/joinmarket/menu.sh;;
   REBOOT)
-	clear
-	confirmation "Are you sure?" "Reboot" "Cancel" true 7 40
-	confirmationReboot=$?
-	if [ $confirmationReboot -eq 0 ]; then
-      clear
-      stopYG
-      echo
-      if [ "${runningEnv}" = raspiblitz ]; then
-        sudo /home/admin/XXshutdown.sh reboot
-        exit 0
-      else
-        echo "# Reboot"
-        sudo shutdown now -r
-      fi
-	fi
+    clear
+    confirmation "Are you sure?" "Reboot" "Cancel" true 7 40
+    confirmationReboot=$?
+    if [ $confirmationReboot -eq 0 ]; then
+        clear
+        stopYG
+        echo
+        if [ "${runningEnv}" = raspiblitz ]; then
+          sudo /home/admin/XXshutdown.sh reboot
+          exit 0
+        else
+          echo "# Reboot"
+          sudo shutdown now -r
+        fi
+    fi
     /home/joinmarket/menu.sh;;
   SHUTDOWN)
     clear
@@ -130,7 +130,7 @@ case $CHOICE in
         sudo /home/admin/XXshutdown.sh
         exit 0
       else
-        echo "# Shutdown" 
+        echo "# Shutdown"
         sudo shutdown now
       fi
     fi
@@ -141,7 +141,7 @@ case $CHOICE in
     clear
     echo "
 ***************************
-* JoinMarket command line *  
+* JoinMarket command line *
 ***************************
 Notes on usage:
 https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/README.md

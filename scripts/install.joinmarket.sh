@@ -126,12 +126,14 @@ function installJoinMarket() {
 }
 
 if [ "$1" = "config" ]; then
-  generateJMconfig
+  if [ ! -f "$JMcfgPath" ]; then
+    generateJMconfig
+  fi
   # show info
   dialog \
   --title "Configure JoinMarket" \
   --exit-label "Continue to edit the joinmarket.cfg" \
-  --textbox "/home/joinmarket/info.conf.txt" 45 101
+  --textbox "/home/joinmarket/info.conf.txt" 43 108
   # edit joinmarket.cfg
   /home/joinmarket/set.conf.sh $JMcfgPath
   exit 0

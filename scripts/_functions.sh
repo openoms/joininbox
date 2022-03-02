@@ -269,11 +269,11 @@ function generateJMconfig() {
   sudo chmod 600 $JMcfgPath || exit 1
   if [ -f "/mnt/hdd/bitcoin/bitcoin.conf" ];then
     echo
-    echo "# editing the joinmarket.cfg with the local bitcoin RPC settings."
+    echo "## editing the joinmarket.cfg with the local bitcoin RPC settings."
 
     RPCUSER=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
     sed -i "s/^rpc_user =.*/rpc_user = $RPCUSER/g" $JMcfgPath
-    echo "rpc_user = $RPCUSER"
+    echo "# rpc_user = $RPCUSER"
 
     PASSWORD_B=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
     sed -i "s/^rpc_password =.*/rpc_password = $PASSWORD_B/g" $JMcfgPath

@@ -19,7 +19,7 @@ if [ ${#network} -eq 0 ] || [ "${network}" = "unknown" ] ;then
   fi
 fi
 
-if [ "$runningEnv" = "standalone" ]&&[ "$setupStep" -lt 100 ];then
+if [ "$runningEnv" = "standalone" ] && [ "$setupStep" -lt 100 ]; then
   echo "# Open the startup menu on the first start"
   sudo sed -i  "s#setupStep=.*#setupStep=100#g" $joininConfPath
 
