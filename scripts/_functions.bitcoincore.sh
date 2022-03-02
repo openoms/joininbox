@@ -40,7 +40,7 @@ function downloadBitcoinCore() {
   verifyResult=$(gpg --verify SHA256SUMS.asc 2>&1)
   goodSignature=$(echo ${verifyResult} | grep 'Good signature' -c)
   echo "goodSignature(${goodSignature})"
-  correctKey=$(echo ${verifyResult} | grep "${PGPpubkey}" -c)
+  correctKey=$(echo ${verifyResult} | tr -d " \t\n\r" | grep "${PGPpubkey}" -c)
   echo "correctKey(${correctKey})"
   if [ ${correctKey} -lt 1 ] || [ ${goodSignature} -lt 1 ]; then
     echo
@@ -214,24 +214,30 @@ WantedBy=multi-user.target
 }
 
 setJMconfigToSignet() {
-  echo "# editing the joinmarket.cfg"
+  echo "# editing the joinmarket.cfg with signet values"
   # rpc_user
   RPCUSERSIGNET=$(sudo cat /home/joinmarket/.bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
   sed -i "s/^rpc_user =.*/rpc_user = $RPCUSERSIGNET/g" $JMcfgPath
+  echo "# rpc_user = $RPCUSERSIGNET"
   # rpc_password
   RPCPWSIGNET=$(sudo cat /home/joinmarket/.bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
   sed -i "s/^rpc_password =.*/rpc_password = $RPCPWSIGNET/g" $JMcfgPath
+  echo "# rpc_password = $RPCPWSIGNET"
   # rpc_wallet_file
   sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/g" $JMcfgPath
   echo "# using the bitcoind wallet: wallet.dat"
   # rpc_host
   sed -i "s/^rpc_host =.*/rpc_host = 127.0.0.1/g" $JMcfgPath
+  echo "# rpc_host = 127.0.0.1"
   # rpc_port
   sed -i "s/^rpc_port =.*/rpc_port = 38332/g" $JMcfgPath
+  echo "# rpc_port = 38332"
   # network
   sed -i "s/^network =.*/network = signet/g" $JMcfgPath
+  echo "# network = signet "
   # minimum_makers
   sed -i "s/^minimum_makers =.*/minimum_makers = 1/g" $JMcfgPath
+  echo "# minimum_makers = 1"
 }
 
 function showBitcoinLogs() {

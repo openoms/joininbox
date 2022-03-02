@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ########################################################################
-# setup a Linux environment see: 
+# setup a Linux environment see:
 # https://github.com/openoms/joininbox#tested-environments-for-joininbox
 # login with SSH or boot directly
 # run this script as root or with sudo
@@ -14,7 +14,7 @@
 
 # command info
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-  echo "JoininBox Build Script" 
+  echo "JoininBox Build Script"
   echo "Usage: sudo bash build_joininbox.sh [branch] [github user]"
   echo "Example: sudo bash build_joininbox.sh dev openoms"
   exit 1
@@ -27,11 +27,11 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-echo 
+echo
 echo "##########################"
 echo "# JOININBOX BUILD SCRIPT"
 echo "##########################"
-echo 
+echo
 
 echo "# Check the command options"
 wantedBranch="$1"
@@ -45,17 +45,17 @@ if [ ${#githubUser} -eq 0 ]; then
 fi
 
 echo "
-# Installing JoininBox from: 
+# Installing JoininBox from:
 # https://github.com/${githubUser}/joininbox/tree/${wantedBranch}
 
 # Press ENTER to confirm or CTRL+C to exit"
 read key
 
-echo 
+echo
 echo "###################################"
 echo "# Identify the CPU and base image"
 echo "###################################"
-echo 
+echo
 cpu=$(uname -m)
 echo "# CPU: ${cpu}"
 baseImage="?"
@@ -66,7 +66,7 @@ isDietPi=$(uname -n | grep -c 'DietPi')
 isRaspbian=$(grep -c 'Raspbian' < /etc/os-release)
 if [ ${isBuster} -gt 0 ]; then
   baseImage="buster"
-fi 
+fi
 if [ ${isBionic} -gt 0 ]; then
   baseImage="bionic"
 fi
@@ -88,11 +88,11 @@ else
   echo "# Base image: ${baseImage}"
 fi
 
-echo 
+echo
 echo "############################"
 echo "# Preparing the base image"
 echo "############################"
-echo 
+echo
 if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "dietpi" ]||\
    [ "${baseImage}" = "buster" ]; then
   # fixing locales for build
@@ -112,7 +112,7 @@ if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "dietpi" ]||\
   # remove unnecessary files
   rm -rf /home/pi/MagPi
   # https://www.reddit.com/r/linux/comments/lbu0t1/microsoft_repo_installed_on_all_raspberry_pis/
-  rm -f /etc/apt/sources.list.d/vscode.list 
+  rm -f /etc/apt/sources.list.d/vscode.list
   rm -f /etc/apt/trusted.gpg.d/microsoft.gpg
 fi
 
@@ -136,7 +136,7 @@ if [ "${baseImage}" = "raspbian" ]; then
  sed -i 's/^/fsck.mode=force fsck.repair=yes /g' /boot/cmdline.txt
 fi
 
-echo 
+echo
 echo "# Change log rotates"
 # see https://github.com/rootzoll/raspiblitz/issues/394#issuecomment-471535483
 echo "/var/log/syslog" >> ./rsyslog
@@ -206,19 +206,19 @@ mv ./rsyslog /etc/logrotate.d/rsyslog
 chown root:root /etc/logrotate.d/rsyslog
 service rsyslog restart
 
-echo 
+echo
 echo "########################"
 echo "# Apt update & upgrade"
 echo "########################"
-echo 
+echo
 apt-get update -y
 apt-get upgrade -f -y
 
-echo 
+echo
 echo "##########"
 echo "# Python"
 echo "##########"
-echo 
+echo
 if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
   if [ ! -f "/usr/bin/python3.7" ]; then
     # install python37
@@ -269,7 +269,7 @@ else
   elif [ -f "/usr/bin/python3.10" ]; then
     # use python 3.10 if available
     update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
-    echo "# python calls python3.8"  
+    echo "# python calls python3.8"
   else
     echo "!!! FAIL !!!"
     echo "There is no tested version of python present"
@@ -277,11 +277,11 @@ else
   fi
 fi
 
-echo 
+echo
 echo "##########################"
 echo "# Tools and dependencies"
 echo "##########################"
-echo 
+echo
 apt-get install -y htop git curl bash-completion vim jq bsdmainutils
 # prepare for display graphics mode
 # see https://github.com/rootzoll/raspiblitz/pull/334
@@ -312,11 +312,11 @@ apt install -y unzip
 apt-get clean
 apt-get -y autoremove
 
-echo 
+echo
 echo "#############"
 echo "# JoininBox"
 echo "#############"
-echo 
+echo
 echo "# add the 'joinmarket' user"
 adduser --disabled-password --gecos "" joinmarket
 
@@ -387,11 +387,11 @@ fi
 echo "# create the joinin.conf"
 sudo -u joinmarket touch /home/joinmarket/joinin.conf
 
-echo 
+echo
 echo "#######"
 echo "# Tor"
 echo "#######"
-echo 
+echo
 # add default value to joinin config if needed
 checkTorEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | \
 grep -c "runBehindTor")
@@ -404,10 +404,10 @@ https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
 if [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]
 then
   echo "# install the Tor repo"
-  echo 
+  echo
   echo "# Install dirmngr"
   apt install -y dirmngr apt-transport-https
-  echo 
+  echo
   echo "# Adding KEYS deb.torproject.org "
   torKeyAvailable=$(gpg --list-keys | grep -c \
   "A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89")
@@ -423,7 +423,7 @@ then
   echo "# Adding Tor Sources to sources.list"
   torSourceListAvailable=$(cat /etc/apt/sources.list | grep -c \
   'https://deb.torproject.org/torproject.org')
-  echo "torSourceListAvailable=${torSourceListAvailable}"  
+  echo "torSourceListAvailable=${torSourceListAvailable}"
   if [ ${torSourceListAvailable} -eq 0 ]; then
     echo "Adding Tor sources ..."
     if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "buster" ]||[ "${baseImage}" = "dietpi" ]; then
@@ -434,7 +434,7 @@ then
       echo "deb-src https://deb.torproject.org/torproject.org bionic main" | tee -a /etc/apt/sources.list
     elif [ "${baseImage}" = "focal" ]; then
       echo "deb https://deb.torproject.org/torproject.org focal main" | tee -a /etc/apt/sources.list
-      echo "deb-src https://deb.torproject.org/torproject.org focal main" | tee -a /etc/apt/sources.list    
+      echo "deb-src https://deb.torproject.org/torproject.org focal main" | tee -a /etc/apt/sources.list
     fi
     echo "OK"
   else
@@ -497,7 +497,7 @@ if ! grep -Eq "^CookieAuthentication 1" /etc/tor/torrc; then
 fi
 sed -i "s:^CookieAuthFile*:#CookieAuthFile:g" /etc/tor/torrc
 # torsocks.conf
-if ! grep -Eq "^AllowOutboundLocalhost 1" /etc/tor/torsocks.conf; then          
+if ! grep -Eq "^AllowOutboundLocalhost 1" /etc/tor/torsocks.conf; then
   echo "AllowOutboundLocalhost 1" | tee -a /etc/tor/torsocks.conf
 fi
 # add the joinmarket user to the tor group
@@ -505,11 +505,11 @@ usermod -a -G debian-tor joinmarket
 # setting value in joinin config
 sed -i "s/^runBehindTor=.*/runBehindTor=on/g" /home/joinmarket/joinin.conf
 
-echo 
+echo
 echo "#############"
 echo "# Hardening"
 echo "#############"
-echo 
+echo
 # install packages
 apt install -y virtualenv fail2ban ufw
 # autostart fail2ban
@@ -522,7 +522,7 @@ ufw allow 22 comment 'allow SSH'
 
 old_kernel=$(uname -a | grep -c "4.14.165")
 if [ $old_kernel -gt 0 ]; then
-  # due to the old kernel iptables needs to be configured 
+  # due to the old kernel iptables needs to be configured
   # https://superuser.com/questions/1480986/iptables-1-8-2-failed-to-initialize-nft-protocol-not-supported
   echo "switching to iptables-legacy"
   update-alternatives --set iptables /usr/sbin/iptables-legacy
@@ -533,7 +533,7 @@ ufw --force enable
 systemctl enable ufw
 ufw status
 
-# make a folder for authorized keys 
+# make a folder for authorized keys
 sudo -u joinmarket mkdir -p /home/joinmarket/.ssh
 chmod -R 700 /home/joinmarket/.ssh
 
@@ -545,11 +545,11 @@ else
 fi
 systemctl restart ssh
 
-echo 
+echo
 echo "##########"
 echo "# Extras"
 echo "##########"
-echo 
+echo
 
 # install a command-line fuzzy finder (https://github.com/junegunn/fzf)
 apt -y install fzf
@@ -559,7 +559,7 @@ bash -c "echo 'source /usr/share/doc/fzf/examples/key-bindings.bash' >> \
 # install tmux
 apt -y install tmux
 
-echo 
+echo
 echo "#############"
 echo "# Autostart"
 echo "#############"
@@ -581,10 +581,10 @@ fi
 echo "#########################"
 echo "# Download Bitcoin Core"
 echo "#########################"
-echo 
+echo
 sudo -u joinmarket /home/joinmarket/install.bitcoincore.sh downloadCoreOnly
 
-echo 
+echo
 echo "######################"
 echo "# Install JoinMarket"
 echo "######################"
@@ -594,7 +594,7 @@ echo
 echo "###########################"
 echo "# The base image is ready"
 echo "###########################"
-echo 
+echo
 echo "Look through / save this output and continue with:"
 echo "'su - joinmarket'"
 echo
@@ -604,4 +604,4 @@ echo
 echo "the ssh login credentials are until the first login:"
 echo "user:joinmarket"
 echo "password:joininbox"
-echo 
+echo
