@@ -12,7 +12,8 @@ function downloadBitcoinCore() {
   bitcoinVersion="22.0"
 
   # https://github.com/laanwj
-  laanwjPGP="71A3 B167 3540 5025 D447 E8F2 7481 0B01 2346 C9A6"
+  PGPname="Wladimir J. van der Laan"
+  PGPpubkey="74810B012346C9A6"
 
   echo
   echo "# *** PREPARING BITCOIN ***"
@@ -21,24 +22,25 @@ function downloadBitcoinCore() {
   cd /home/joinmarket/download || exit 1
 
   # receive signer key
-  if ! gpg --keyserver hkp://keyserver.ubuntu.com --recv-key "71A3 B167 3540 5025 D447 E8F2 7481 0B01 2346 C9A6"
-  then
-    echo "# !!! FAIL !!! Couldn't download Wladimir J. van der Laan's PGP pubkey"
-    exit 1
+  if ! gpg -k | grep "${PGPpubkey}"; then
+    if ! gpg --keyserver hkp://keyserver.ubuntu.com --recv-key "${PGPpubkey}"; then
+      echo "# !!! FAIL !!! Couldn't download ${PGPname}'s PGP pubkey"
+      exit 1
+    fi
   fi
 
   # download signed binary sha256 hash sum file
-  if [ ! -f SHA256SUMS ];then
+  if [ ! -f SHA256SUMS ]; then
     sudo -u joinmarket wget https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS
   fi
   # download signed binary sha256 hash sum file and check
-  if [ ! -f SHA256SUMS.asc ];then
+  if [ ! -f SHA256SUMS.asc ]; then
     sudo -u joinmarket wget https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS.asc
   fi
   verifyResult=$(gpg --verify SHA256SUMS.asc 2>&1)
   goodSignature=$(echo ${verifyResult} | grep 'Good signature' -c)
   echo "goodSignature(${goodSignature})"
-  correctKey=$(echo ${verifyResult} | grep "${laanwjPGP}" -c)
+  correctKey=$(echo ${verifyResult} | grep "${PGPpubkey}" -c)
   echo "correctKey(${correctKey})"
   if [ ${correctKey} -lt 1 ] || [ ${goodSignature} -lt 1 ]; then
     echo
@@ -57,13 +59,13 @@ function downloadBitcoinCore() {
   fi
 
   # detect CPU architecture & fitting download link
-  if [ $(uname -m | grep -c 'arm') -eq 1 ] ; then
+  if [ $(uname -m | grep -c 'arm') -eq 1 ]; then
     bitcoinOSversion="arm-linux-gnueabihf"
   fi
-  if [ $(uname -m | grep -c 'aarch64') -eq 1 ] ; then
+  if [ $(uname -m | grep -c 'aarch64') -eq 1 ]; then
     bitcoinOSversion="aarch64-linux-gnu"
   fi
-  if [ $(uname -m | grep -c 'x86_64') -eq 1 ] ; then
+  if [ $(uname -m | grep -c 'x86_64') -eq 1 ]; then
     bitcoinOSversion="x86_64-linux-gnu"
   fi
 
@@ -126,7 +128,7 @@ function installBitcoinCore() {
   fi
 
   # bitcoin.conf
-  if [ ! -f /home/joinmarket/.bitcoin/bitcoin.conf ];then
+  if [ ! -f /home/joinmarket/.bitcoin/bitcoin.conf ]; then
     mkdir -p /home/joinmarket/.bitcoin
     randomRPCpass=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c8)
     cat > /home/joinmarket/.bitcoin/bitcoin.conf <<EOF
@@ -145,7 +147,7 @@ EOF
 }
 
 function removeSignetdService() {
-  if [ -f "/etc/systemd/system/signetd.service" ];then
+  if [ -f "/etc/systemd/system/signetd.service" ]; then
     sudo systemctl stop signetd
     sudo systemctl disable signetd
     echo "# Bitcoin Core on signet service is stopped and disabled"
@@ -191,7 +193,7 @@ WantedBy=multi-user.target
   echo "# OK - the bitcoin daemon on signet service is now enabled"
 
   # add to path
-  if ! sudo grep -Eq "/home/joinmarket/bitcoin/" < /etc/profile ;then
+  if ! sudo grep -Eq "/home/joinmarket/bitcoin/" < /etc/profile; then
     echo "PATH=\$PATH:/home/joinmarket/bitcoin/" | sudo tee -a /etc/profile
   fi
 
@@ -233,7 +235,7 @@ setJMconfigToSignet() {
 }
 
 function showBitcoinLogs() {
-  if [ $# -eq 0 ];then
+  if [ $# -eq 0 ]; then
     lines=""
     echo "# Show the default number of lines"
   else
@@ -264,7 +266,7 @@ function getRPC {
   rpc_host="$(awk '/^rpc_host / {print $3}' < $JMcfgPath)"
   rpc_port="$(awk '/^rpc_port / {print $3}' < $JMcfgPath)"
   rpc_wallet="$(awk '/^rpc_wallet_file / {print $3}' < $JMcfgPath)"
-  if [ ${#1} -gt 0 ]&&[ $1 = print ];then
+  if [ ${#1} -gt 0 ] && [ $1 = print ]; then
     echo "$rpc_user $rpc_pass $rpc_host $rpc_port $rpc_wallet"
   fi
 }
@@ -367,6 +369,6 @@ function connectLocalNode() {
   fi
   # set.bitcoinrpc.py
   python /home/joinmarket/set.bitcoinrpc.py --network=mainnet \
-  --rpc_user=$rpc_user --rpc_pass=$rpc_pass --rpc_host=$rpc_host \
+  --rpc_user="$rpc_user" --rpc_pass="$rpc_pass" --rpc_host=$rpc_host \
   --rpc_port=$rpc_port --rpc_wallet=$rpc_wallet
 }
