@@ -4,7 +4,7 @@
 source /home/joinmarket/_functions.sh
 source /home/joinmarket/joinin.conf
 
-if [ ${RPCoverTor} = "on" ]; then 
+if [ ${RPCoverTor} = "on" ]; then
   tor="torsocks"
 else
   tor=""
@@ -74,8 +74,8 @@ case $CHOICE in
 There are no stats because the Yield Generator was never run.
 
 Start with the menu option: RUN_YG" 10 50
-    else  
-      dialog --prgbox "/home/joinmarket/info.stats.sh showAllEarned" 9 50
+    else
+      dialog --prgbox "/home/joinmarket/info.stats.sh showAllEarned" 9 55
     fi;;
   NICKNAME)
     name=$(YGnickname)
@@ -108,13 +108,13 @@ Will tail the latest YG logfile from:
 /home/joinmarket/.joinmarket/logs/
 
 Press CTRL+C to exit and return to the menu." 10 50
-    cd /home/joinmarket/.joinmarket/logs || exit 1 
+    cd /home/joinmarket/.joinmarket/logs || exit 1
     ls -t | grep J5 | head -n 1 | xargs tail -fn1000
     echo
     echo "Press ENTER to return to menu"
     read key
     cd /home/joinmarket/joinmarket-clientserver/scripts/ || exit 1
-    /home/joinmarket/menu.yg.sh;;            
+    /home/joinmarket/menu.yg.sh;;
   STOP)
     stopYG
     echo
@@ -131,7 +131,7 @@ Press CTRL+C to exit and return to the menu." 10 50
     --title "Obtain a timelocked address" \
     --inputbox "
 Enter a date until which the coin sent to the address should be locked.
-The format is: yyyy-mm. For example: 
+The format is: yyyy-mm. For example:
 2021-03
 " 12 60 2> "$locktime"
     openMenuIfCancelled $?
