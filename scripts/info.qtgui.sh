@@ -131,13 +131,13 @@ echo "
 
 The graphical interface will run on the desktop relayed from the node via an encrypted ssh tunnel.
 
-See the walkthrough for the JoinMarket-Qt GUI to send payments with coinjoin or run multiple coinjoins (tumbler): 
+See the walkthrough for the JoinMarket-Qt GUI to send payments with coinjoin or run multiple coinjoins (tumbler):
 https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/docs/JOINMARKET-QT-GUIDE.md
 
-Video demonstration of using the JoinMarket-Qt GUI by Adam Gibson (waxwing): 
+Video demonstration of using the JoinMarket-Qt GUI by Adam Gibson (waxwing):
 https://youtu.be/hwmvZVQ4C4M
 
-See this review thread about the QT GUI: 
+See this review thread about the QT GUI:
 https://twitter.com/zndtoshi/status/1191799199119134720
 
 ************************************************************************************

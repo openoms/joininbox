@@ -85,7 +85,7 @@ OPTIONS+=(
     QR "Display a QR code from any text"
     CUSTOMRPC "Run a custom bitcoin RPC with curl"
     CJFINDER "Scan blocks for JoinMarket coinjoins")
-if [ "$isLocalBitcoinCLI" -gt 0 ] && [ "$isTxindex" -gt 0 ];then    
+if [ "$isLocalBitcoinCLI" -gt 0 ] && [ "$isTxindex" -gt 0 ];then
   OPTIONS+=(
     CHECKTXN "CLI transaction explorer")
       HEIGHT=$((HEIGHT+1)); CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
@@ -140,7 +140,7 @@ case $CHOICE in
     fi
     qrencode -t ANSIUTF8 "${datastring}"
     echo "(To shrink QR code: MacOS press CMD- / Linux press CTRL-)"
-    echo            
+    echo
     echo "Press ENTER to return to the menu..."
     read key;;
   CUSTOMRPC)
@@ -151,8 +151,8 @@ case $CHOICE in
     read method
     echo "# Input the parameter(s) (optional)"
     read params
-    customRPC "# custom RPC" "$method" "$params" 
-    echo            
+    customRPC "# custom RPC" "$method" "$params"
+    echo
     echo "Press ENTER to return to the menu..."
     read key;;
   SPECTER)
@@ -171,7 +171,7 @@ case $CHOICE in
     echo "sudo -u bitcoin /home/bitcoin/bitcoin-scripts/checktransaction.sh -rpcwallet=$rpc_wallet $dialog_output"
     echo
     sudo -u bitcoin /home/bitcoin/bitcoin-scripts/checktransaction.sh -rpcwallet=$rpc_wallet $dialog_output
-    echo            
+    echo
     echo "Press ENTER to return to the menu..."
     read key;;
   BOLTZMANN)
@@ -179,7 +179,7 @@ case $CHOICE in
     clear
     installBoltzmann
     python /home/joinmarket/start.boltzmann.py --txid=$dialog_output
-    echo            
+    echo
     echo "Press ENTER to return to the menu..."
     read key;;
   CJFINDER)
@@ -203,7 +203,7 @@ Input how many previous blocks from the tip you want to scan" 14 108
     echo "The transaction details are saved in /home/joinmarket/.joinmarket/candidates.txt"
     echo "To display the file in the terminal use:"
     echo "'cat /home/joinmarket/.joinmarket/candidates.txt'"
-    if [ $isLocalBitcoinCLI -gt 0 ];then 
+    if [ $isLocalBitcoinCLI -gt 0 ];then
       echo "or menu -> TOOLS -> CHECKTXN for a CLI transaction explorer"
       echo
       echo "Press ENTER for an overview of the JoinMarket coinjoins found with CHECKTXN"
@@ -215,14 +215,14 @@ Input how many previous blocks from the tip you want to scan" 14 108
   LISTCJS)
     listCJcandidateTXNs
     echo "Press ENTER to return to the menu..."
-    read key;;  
+    read key;;
   SSH)
     if [ $sshAction = "Disable" ];then
       sudo /home/joinmarket/set.ssh.sh off
     elif [ $sshAction = "Enable" ];then
       sudo /home/joinmarket/set.ssh.sh on
     fi
-    echo            
+    echo
     echo "Press ENTER to return to the menu..."
     read key;;
 esac

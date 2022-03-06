@@ -37,19 +37,19 @@ You can use the wallets from another JoinMarket instance
 "
 if [ "${CHOICE}" = "LAN" ]; then
   if [ -f "/mnt/hdd/raspiblitz.conf" ] ; then
-    echo "Both computers (the RaspiBlitz and the source computer with the wallet(s))" 
+    echo "Both computers (the RaspiBlitz and the source computer with the wallet(s))"
   else
     echo "Both computers (the JoininBox and the source computer with the wallet(s))"
   fi
 echo "need to be connected to the same local network."
 elif [ "${CHOICE}" = "TOR" ]; then
   echo "The remote node needs to have Tor activated to be able to use torsocks"
-fi 
+fi
 echo "
 Open a terminal connected to the source computer and change into
-the directory containing the wallets. 
+the directory containing the wallets.
 
-By default the path is: '~/.joinmarket/wallets' or 
+By default the path is: '~/.joinmarket/wallets' or
 in older versions: '~/joinmarket-clientserver/scripts/wallets'
 
 You should see files called '.jmdat'
@@ -61,7 +61,7 @@ if [ "${CHOICE}" = "LAN" ]; then
 elif [ "${CHOICE}" = "TOR" ]; then
   echo "torsocks scp ./*.jmdat joinmarket@${TOR_ADDRESS}:~/.joinmarket/wallets/"
 fi
-echo "" 
+echo ""
 if [ -f "/mnt/hdd/raspiblitz.conf" ] ; then
   echo "Use the PASSWORD_B to authorize the file transfer
 (same as the rpcpassword in the /mnt/hdd/bitcoin/bitcoin.conf)."

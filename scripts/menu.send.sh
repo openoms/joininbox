@@ -123,7 +123,7 @@ $(cat "$address")
 Paste the destination address" 17 69 2> "$address"
 openMenuIfCancelled $?
 
-if [ "${RPCoverTor}" = "on" ]; then 
+if [ "${RPCoverTor}" = "on" ]; then
   tor="torsocks"
 else
   tor=""

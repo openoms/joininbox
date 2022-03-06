@@ -1,6 +1,6 @@
 #!/bin/bash
 # based on https://github.com/rootzoll/raspiblitz/blob/v1.6/home.admin/config.scripts/bonus.cryptoadvance-specter.sh
-# https://github.com/cryptoadvance/specter-desktop  
+# https://github.com/cryptoadvance/specter-desktop
 
 pinnedVersion="1.3.1"
 
@@ -97,7 +97,7 @@ if [ "$1" = "status" ]; then
   else
     echo "configured=0"
   fi
-  
+
   exit 0
 fi
 
@@ -166,7 +166,7 @@ if [ "$1" = "1" ] || [ "$1" = "on" ]; then
 
     echo "# pip-installing specter"
     sudo -u specter /home/specter/.env/bin/python3 -m pip install --upgrade cryptoadvance.specter==$pinnedVersion
-    
+
     # Mandatory as the camera doesn't work without https
     echo "# Creating self-signed certificate"
     openssl req -x509 -newkey rsa:4096 -nodes -out /tmp/cert.pem -keyout /tmp/key.pem -days 365 -subj "/C=US/ST=Nooneknows/L=Springfield/O=Dis/CN=www.fakeurl.com"
@@ -182,7 +182,7 @@ if [ "$1" = "1" ] || [ "$1" = "on" ]; then
     echo ""
 
     echo "# Installing udev-rules for hardware-wallets"
-    
+
     # Ledger
     cat > /home/joinmarket/20-hw1.rules <<EOF
  HW.1 / Nano
@@ -198,7 +198,7 @@ SUBSYSTEMS=="usb", ATTRS{idVendor}=="2c97", ATTRS{idProduct}=="0003|3000|3001|30
 # Nano X
 SUBSYSTEMS=="usb", ATTRS{idVendor}=="2c97", ATTRS{idProduct}=="0004|4000|4001|4002|4003|4004|4005|4006|4007|4008|4009|400a|400b|400c|400d|400e|400f|4010|4011|4012|4013|4014|4015|4016|4017|4018|4019|401a|401b|401c|401d|401e|401f", TAG+="uaccess", TAG+="udev-acl", OWNER="specter"
 EOF
-    
+
     # ColdCard
     cat > /home/joinmarket/51-coinkite.rules <<EOF
 # Linux udev support file.
@@ -217,7 +217,7 @@ SUBSYSTEMS=="usb", ATTRS{idVendor}=="d13e", ATTRS{idProduct}=="cc10", GROUP="plu
 # from <https://github.com/signal11/hidapi/blob/master/udev/99-hid.rules>
 KERNEL=="hidraw*", ATTRS{idVendor}=="d13e", ATTRS{idProduct}=="cc10", GROUP="plugdev", MODE="0666"
 EOF
-    
+
     # Trezor
     cat > /home/joinmarket/51-trezor.rules <<EOF
 # Trezor: The Original Hardware Wallet
@@ -238,7 +238,7 @@ SUBSYSTEM=="usb", ATTR{idVendor}=="1209", ATTR{idProduct}=="53c0", MODE="0660", 
 SUBSYSTEM=="usb", ATTR{idVendor}=="1209", ATTR{idProduct}=="53c1", MODE="0660", GROUP="plugdev", TAG+="uaccess", TAG+="udev-acl", SYMLINK+="trezor%n"
 KERNEL=="hidraw*", ATTRS{idVendor}=="1209", ATTRS{idProduct}=="53c1", MODE="0660", GROUP="plugdev", TAG+="uaccess", TAG+="udev-acl"
 EOF
-    
+
     # KeepKey
     cat > /home/joinmarket/51-usb-keepkey.rules <<EOF
 # KeepKey: Your Private Bitcoin Vault
@@ -295,14 +295,14 @@ EOF
     sudo mv /home/joinmarket/specter.service /etc/systemd/system/specter.service
     sudo systemctl enable specter
     echo "# OK - the specter service is now enabled and started"
-  else 
+  else
     echo "# specter already installed."
     createSpecterConfig
   fi
 
   # setting value in  config
   sudo sed -i "s/^specter=.*/specter=on/g" /home/joinmarket/joinin.conf
-  
+
   # Hidden Service for SERVICE if Tor is active
   source /home/joinmarket/joinin.conf
   if [ "${runBehindTor}" = "on" ]; then
@@ -339,8 +339,8 @@ if [ "$1" = "0" ] || [ "$1" = "off" ]; then
     if whiptail --defaultno --yesno "Do you want to delete all Data related to specter? This includes also Bitcoin-Core-Wallets managed by specter?" 0 0; then
       echo "# Removing wallets in core"
       customRPC "#listwallets" "listwallets" | tail -n +2
-      for i in $(customRPC "#listwallets" "listwallets" | tail -n +2) 
-      do  
+      for i in $(customRPC "#listwallets" "listwallets" | tail -n +2)
+      do
 	      name=$(echo $i | cut -d"/" -f2)
        	customRPC "#unloadwallet" "unloadwallet" "specter/$name"
       done
@@ -355,7 +355,7 @@ if [ "$1" = "0" ] || [ "$1" = "off" ]; then
     fi
 
     echo "# OK Specter removed."
-  else 
+  else
     echo "# Specter is not installed."
   fi
   exit 0

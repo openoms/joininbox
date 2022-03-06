@@ -73,7 +73,7 @@ case $CHOICE in
     cacheAndShowQR
     echo
     echo "Press ENTER to return to the menu"
-    read key;;  
+    read key;;
   DISPLAY)
     menu_DISPLAY;;
   MAKER)
@@ -86,7 +86,7 @@ case $CHOICE in
     echo "$datastring"
     echo
     qrencode -t ANSIUTF8 "${datastring}"
-    echo            
+    echo
     echo "Press ENTER to return to the menu..."
     read key;;
 esac

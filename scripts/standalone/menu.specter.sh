@@ -20,7 +20,7 @@ BACKTITLE="JoininBox GUI $currentJBtag network:$network IP:$localip"
 OPTIONS+=(
     INSTALL "Install or reconfigure Specter Desktop")
 if [ $specter = on ];then
-  OPTIONS+=(  
+  OPTIONS+=(
     INFO "Connection info and password"
     UPDATE "Update Specter Desktop"
     REMOVE "Uninstall Specter Desktop")
@@ -39,28 +39,28 @@ CHOICE=$(dialog --clear \
 case $CHOICE in
   INSTALL)
     /home/joinmarket/standalone/install.specter.sh on
-    echo            
+    echo
     echo "Press ENTER to return to the menu..."
     read key
     /home/joinmarket/standalone/menu.specter.sh
     ;;
  INFO)
     /home/joinmarket/standalone/install.specter.sh menu
-    echo            
+    echo
     echo "Press ENTER to return to the menu..."
     read key
     /home/joinmarket/standalone/menu.specter.sh
     ;;
   UPDATE)
     /home/joinmarket/standalone/install.specter.sh update
-    echo            
+    echo
     echo "Press ENTER to return to the menu..."
     read key
     /home/joinmarket/standalone/menu.specter.sh
     ;;
   REMOVE)
     /home/joinmarket/standalone/install.specter.sh off
-    echo         
+    echo
     echo "Press ENTER to return to the menu..."
     read key
     ;;

@@ -7,7 +7,7 @@ function addUserStore() {
     sudo -u store mkdir /home/store/app-data
   else
     echo "# The folder /home/store/app-data is present already"
-  fi 
+  fi
 }
 
 function moveSignetData() {
@@ -25,7 +25,7 @@ function makeEncryptedFolder(){
   # make encrypted file
 
   # mount to /mnt/encrypted/
-  
+
   # move all from app-data
   sudo mv /home/store/app-data /mnt/encrypted/
   # symlink
@@ -38,7 +38,7 @@ function downloadSnapShot() {
   if [ $FREE -lt 12582912 ];then                 # 12G = 12*1024*1024k
     echo "# The free space is only $FREE bytes!"
     echo "# Would need ~12GB free space to download and extract the snapshot."
-    echo "# Press ENTER to continue to download regardless or CTRL+C to exit." 
+    echo "# Press ENTER to continue to download regardless or CTRL+C to exit."
     read key
   else
     echo "# OK, more than 12GB is free!"
@@ -50,10 +50,10 @@ function downloadSnapShot() {
   wget https://prunednode.today/$hashFileName || exit 1
   downloadFileName=$(grep .zip < $hashFileName | awk '{print $2}')
   downloadLink="https://prunednode.today/$downloadFileName"
-  
+
   echo "# Import the PGP keys of Stepan Snigirev"
   curl https://stepansnigirev.com/ss-specter-release.asc | gpg --import || exit 1
-  
+
   echo "# Verifying the signature of the hash ..."
   verifyResult=$(gpg --verify $hashFileName 2>&1)
   goodSignature=$(echo ${verifyResult} | grep -c 'Good signature')
@@ -91,13 +91,13 @@ function downloadSnapShot() {
     echo
     echo "# The PGP signature and the hash of the downloaded snapshot is correct"
   fi
-  
+
   echo "# Exracting to /home/store/app-data/.bitcoin ..."
   FREE=$(df -k --output=avail "$PWD" | tail -n1) # df -k not df -h
   if [ $FREE -lt 7340032 ];then                 # 7G = 7*1024*1024k
     echo "# The free space is only $FREE bytes!"
     echo "# Would need ~7GB free space to extract the snapshot."
-    echo "# Press ENTER to continue to download regardless or CTRL+C to exit." 
+    echo "# Press ENTER to continue to download regardless or CTRL+C to exit."
     read key
   else
     echo "# OK, more than 7GB is free!"
@@ -176,7 +176,7 @@ fallbackfee=0.0002
 
 onlynet=onion
 proxy=127.0.0.1:9050
-" | sudo tee /home/bitcoin/.bitcoin/bitcoin.conf 
+" | sudo tee /home/bitcoin/.bitcoin/bitcoin.conf
   else
     echo "# /home/bitcoin/.bitcoin/bitcoin.conf is present"
   fi
@@ -219,7 +219,7 @@ WantedBy=multi-user.target
   echo "# OK - the bitcoind.service is now enabled"
 
   # add aliases
-  if [ $(alias | grep -c "sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli") -eq 0 ];then 
+  if [ $(alias | grep -c "sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli") -eq 0 ];then
     sudo bash -c "echo 'alias bitcoin-cli=\"sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli\"' >> /home/joinmarket/_aliases.sh"
     sudo bash -c "echo 'alias bitcoind=\"sudo -u bitcoin /home/bitcoin/bitcoin/bitcoind\"' >> /home/joinmarket/_aliases.sh"
   fi
@@ -227,7 +227,7 @@ WantedBy=multi-user.target
   sudo systemctl start bitcoind
   echo
   echo "# Installed $(/home/bitcoin/bitcoin/bitcoind --version | grep version)"
-  echo 
+  echo
   echo "# Monitor the bitcoind with: sudo tail -f /home/bitcoin/.bitcoin/mainnet/debug.log"
   echo
 

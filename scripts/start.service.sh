@@ -6,7 +6,7 @@ source /home/joinmarket/_functions.sh
 script="$1"
 wallet="$2"
 
-if [ $script == "yg-privacyenhanced" ]; then 
+if [ $script == "yg-privacyenhanced" ]; then
   stopYG $wallet
 else
 echo
@@ -15,7 +15,7 @@ echo
   sudo systemctl disable $script
 fi
 
-if [ ${RPCoverTor} = "on" ];then 
+if [ ${RPCoverTor} = "on" ];then
   tor="torsocks"
 else
   tor=""

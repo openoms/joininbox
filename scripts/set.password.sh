@@ -37,11 +37,11 @@ if [ ${#newPassword} -eq 0 ]; then
 Set a new password for the users:
 'joinmarket' and 'root' $piUser
 Use at least 8 characters." 11 56 2>$_temp
-  
+
   # get user input
   password1=$( cat $_temp )
   shred $_temp
-  
+
   # ask user for new password A (second time)
   DIALOGRC=/home/joinmarket/.dialogrc dialog \
   --backtitle "JoininBox - Password Change"\
@@ -50,11 +50,11 @@ Use at least 8 characters." 11 56 2>$_temp
 Confirm the new password.
 This will be required to login via SSH.
   " 11 56 2>$_temp
-  
+
   # get user input
   password2=$( cat $_temp )
   shred $_temp
-  
+
   # check if passwords match
   if [ "${password1}" != "${password2}" ]; then
     DIALOGRC=/home/joinmarket/.dialogrc.onerror dialog \
@@ -63,7 +63,7 @@ This will be required to login via SSH.
     sudo /home/joinmarket/set.password.sh
     exit 1
   fi
-  
+
   # password zero
   if [ ${#password1} -eq 0 ]; then
     DIALOGRC=/home/joinmarket/.dialogrc.onerror dialog \
@@ -72,7 +72,7 @@ This will be required to login via SSH.
     sudo /home/joinmarket/set.password.sh
     exit 1
   fi
-  
+
   # password longer than 8
   if [ ${#password1} -lt 8 ]; then
     DIALOGRC=/home/joinmarket/.dialogrc.onerror dialog \
@@ -81,7 +81,7 @@ This will be required to login via SSH.
     sudo /home/joinmarket/set.password.sh
     exit 1
   fi
-  
+
   # use entered password now as parameter
   newPassword=$password1
 

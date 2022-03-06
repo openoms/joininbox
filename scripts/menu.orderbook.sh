@@ -12,12 +12,12 @@ sudo systemctl disable ob-watcher 2>/dev/null
 
 function showOrderBookAddress() {
   running=$(ps $(pidof python) | grep -c "python ob-watcher.py")
-  if [ "$running" -gt 0 ]; then  
+  if [ "$running" -gt 0 ]; then
     TOR_ADDRESS=$(sudo cat "$HiddenServiceDir"/ob-watcher/hostname)
     clear
-    echo 
+    echo
     echo "The local Order Book instance is running"
-    echo 
+    echo
     echo "Visit the address in the Tor Browser (shown as a QR code also):"
     echo "$TOR_ADDRESS"
     echo
@@ -104,20 +104,20 @@ case $CHOICE in
   START)
       startOrderBook
       showOrderBookAddress
-      echo ""            
+      echo ""
       echo "Press ENTER to return to the menu..."
       read key
       ;;
   SHOW)
       showOrderBookAddress
-      echo ""            
+      echo ""
       echo "Press ENTER to return to the menu..."
       read key
-      ;;              
+      ;;
   STOP)
       stopOrderBook
-      echo ""            
+      echo ""
       echo "Press ENTER to return to the menu..."
       read key
-      ;;        
+      ;;
 esac

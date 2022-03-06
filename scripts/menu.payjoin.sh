@@ -29,7 +29,7 @@ dialog --backtitle "Choose the amount" \
 Enter the amount to receive in satoshis" 9 60 2> $amount
 openMenuIfCancelled $?
 
-if [ ${RPCoverTor} = "on" ];then 
+if [ ${RPCoverTor} = "on" ];then
   tor="torsocks"
 else
   tor=""
@@ -59,7 +59,7 @@ $(echo $(cat $wallet) | sed "s#$walletPath##g") $(cat $amount)
 "
     echo "Will wait for the ephemeral Tor Hidden Service to be created.
 Can cancel the process by pressing CTRL+C .
-" 
+"
     # run
     $tor python ~/joinmarket-clientserver/scripts/receive-payjoin.py \
     -m$(cat $mixdepth) $(cat $wallet) $(cat $amount)
@@ -121,7 +121,7 @@ else
   fi
 fi
 
-if [ ${RPCoverTor} = "on" ]; then 
+if [ ${RPCoverTor} = "on" ]; then
   tor="torsocks"
 else
   tor=""
@@ -131,7 +131,7 @@ fi
 dialog --backtitle "Confirm the selections" \
 --title "Confirm the details" \
 --yesno "
-Send to: 
+Send to:
 $(cat $receiveURI)
 
 from the wallet:
@@ -203,5 +203,5 @@ case $CHOICE in
       echo ""
       echo "Press ENTER to return to the menu..."
       read key
-      ;;              
+      ;;
 esac

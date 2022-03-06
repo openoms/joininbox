@@ -75,7 +75,7 @@ function qtgui() {
   else
     tor=""
   fi
-  
+
   echo "# Opening the JoinMarket-QT GUI with the command: '(jmvenv) $tor python joinmarket-qt.py'"
   $tor /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python /home/joinmarket/joinmarket-clientserver/scripts/joinmarket-qt.py
 }

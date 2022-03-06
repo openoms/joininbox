@@ -55,7 +55,7 @@ fi
 trap 'rm -f "$JMstats"' EXIT
 JMstats=$(mktemp -p /dev/shm)
 
-if [ "$1" != "showAllEarned" ]; then 
+if [ "$1" != "showAllEarned" ]; then
   # keep original behaviour for the raspiblitz display (00infoBlitz.sh)
   echo "\
 JoinMarket stats:day:week:month

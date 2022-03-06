@@ -21,8 +21,8 @@ source /home/joinmarket/joinin.conf
 if [ "$setupStep" -lt 100 ];then
   if [ "$setupStep" -lt 5 ];then
     # identify running env
-    runningEnvEntry=$(grep -c "runningEnv" < $joininConfPath)  
-    if [ "$runningEnvEntry" -eq 0 ];then  
+    runningEnvEntry=$(grep -c "runningEnv" < $joininConfPath)
+    if [ "$runningEnvEntry" -eq 0 ];then
       if [ -f "/mnt/hdd/raspiblitz.conf" ];then
         runningEnv="raspiblitz"
       elif [ -f "/usr/share/mynode/mynode_config.sh" ];then
@@ -34,7 +34,7 @@ if [ "$setupStep" -lt 100 ];then
       sed -i  "s#setupStep=.*#setupStep=1#g" $joininConfPath
     fi
     echo "# running in the environment: $runningEnv"
-  
+
     # identify cpu architecture
     cpuEntry=$(grep -c "cpu" < $joininConfPath)
     if [ "$cpuEntry" -eq 0 ];then
@@ -43,7 +43,7 @@ if [ "$setupStep" -lt 100 ];then
       sed -i  "s#setupStep=.*#setupStep=2#g" $joininConfPath
     fi
     echo "# cpu=${cpu}"
-  
+
     # check Tor
     torEntry=$(grep -c "runBehindTor" < $joininConfPath)
     if [ "$torEntry" -eq 0 ];then
@@ -62,7 +62,7 @@ if [ "$setupStep" -lt 100 ];then
       echo "runBehindTor=$runBehindTor" >> $joininConfPath
       echo "# runBehindTor=$runBehindTor"
     fi
-  
+
     # make sure Tor path is known
     DirEntry=$(grep -c "HiddenServiceDir" < $joininConfPath)
     if [ "$DirEntry" -eq 0 ];then
@@ -70,7 +70,7 @@ if [ "$setupStep" -lt 100 ];then
         HiddenServiceDir="/mnt/hdd/tor"
       else
         HiddenServiceDir="/var/lib/tor"
-      fi  
+      fi
       echo "HiddenServiceDir=$HiddenServiceDir" >> $joininConfPath
       sed -i  "s#setupStep=.*#setupStep=3#g" $joininConfPath
     fi
@@ -127,7 +127,7 @@ if ! grep -Eq "^RPCoverTor=" $joininConfPath;then
   echo "RPCoverTor=off" >> $joininConfPath
 fi
 # check if bitcoin RPC connection is over Tor
-if grep -Eq "^rpc_host = .*.onion" $JMcfgPath;then 
+if grep -Eq "^rpc_host = .*.onion" $JMcfgPath;then
   echo "# RPC over Tor is on"
   sed -i "s/^RPCoverTor=.*/RPCoverTor=on/g" $joininConfPath
 else

@@ -58,14 +58,14 @@ else
 fi
 
 source /home/joinmarket/joinin.conf
-if [ ${RPCoverTor} = "on" ]; then 
+if [ ${RPCoverTor} = "on" ]; then
   tor="torsocks"
 else
   tor=""
 fi
 
 clear
-# display 
+# display
 echo "Running the command:
 $tor python $script.py \
 $makercount $mixdepth $(echo $wallet | sed "s#$walletPath##g") $method \

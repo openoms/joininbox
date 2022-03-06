@@ -77,7 +77,7 @@ if [ "$checkDirEntry" -eq 0 ]; then
     HiddenServiceDir="/mnt/hdd/tor"
   else
     HiddenServiceDir="/var/lib/tor"
-  fi  
+  fi
   echo "HiddenServiceDir=$HiddenServiceDir" >> /home/joinmarket/joinin.conf
 fi
 
@@ -93,7 +93,7 @@ HiddenServiceDir $HiddenServiceDir/$service
 HiddenServiceVersion 3
 HiddenServicePort $toPort 127.0.0.1:$fromPort" | sudo tee -a /etc/tor/torrc
 
-  # remove double empty lines  
+  # remove double empty lines
   awk 'NF > 0 {blank=0} NF == 0 {blank++} blank < 2' /etc/tor/torrc | sudo tee /home/joinmarket/tmp >/dev/null && sudo mv /home/joinmarket/tmp /etc/tor/torrc
 
   # check and insert second port pair

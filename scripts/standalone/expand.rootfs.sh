@@ -9,7 +9,7 @@ function do_expand_rootfs() {
 
   PART_NUM="$(echo "$ROOT_PART" | grep -o "[[:digit:]]*$")"
 
-  # NOTE: the NOOBS partition layout confuses parted. For now, let's only 
+  # NOTE: the NOOBS partition layout confuses parted. For now, let's only
   # agree to work with a sufficiently simple partition layout
   if [ "$PART_NUM" -ne 2 ]; then
     whiptail --msgbox "Your partition layout is not currently supported by this tool. You are probably using NOOBS, in which case your root filesystem is already expanded anyway." 20 60 2
@@ -95,12 +95,12 @@ if [ -f /usr/lib/armbian/armbian-resize-filesystem ];then
 else
   do_expand_rootfs
   sed -i "s#setupStep=.*#setupStep=7#g" /home/joinmarket/joinin.conf
-  echo 
+  echo
   echo "# Need to reboot for the filesystem to enlarge"
   echo "# Log in again with ssh and use the new password set"
-  echo 
-  echo "# Press ENTER to restart ..."  
+  echo
+  echo "# Press ENTER to restart ..."
   read key
-  echo 
+  echo
   sudo shutdown -h -r now
 fi

@@ -12,7 +12,7 @@ generateJMconfig
 
 function displayHelp {
   echo "# See how to prepare a remote node to accept the JoinMarket connection:"
-  echo "# https://github.com/openoms/joininbox/blob/master/prepare_remote_node.md"  
+  echo "# https://github.com/openoms/joininbox/blob/master/prepare_remote_node.md"
 }
 
 function inputRPC {
@@ -37,7 +37,7 @@ function checkRPC {
   $tor curl -sS --data-binary \
   '{"jsonrpc": "1.0", "id":"# Connected to bitcoinRPC successfully", "method": "getblockcount", "params": [] }' \
   http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port
-} 
+}
 
 displayHelp
 inputRPC
@@ -73,5 +73,5 @@ echo "# The wallet used in the connected bitcoind is called: $rpc_wallet"
 echo
 echo "# The bitcoinRPC connection settings are set in the joinmarket.cfg"
 sed -i "s#^connectedRemoteNode=.*#connectedRemoteNode=on#g" $joininConfPath
-echo 
+echo
 checkRPCwallet $rpc_wallet
