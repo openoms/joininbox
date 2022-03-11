@@ -469,5 +469,5 @@ db595b0 build: Tor config fixes
 # v0.1.9 - improved QT GUI instructions for Windows
 ```
 9a1677c qtgui: add shortcut, improve windows instructions
-79ae230 info.qtgui.sh: fix path in windows intructions
+79ae230 info.qtgui.sh: fix path in windows instructions
 ```
