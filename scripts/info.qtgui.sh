@@ -16,10 +16,10 @@ CHOICE=$(dialog --clear --title "Choose a desktop OS" --menu "" 10 45 4 "${OPTIO
 
 clear
 case $CHOICE in
-        LINUX) echo "Showing intructions for Linux";;
-        MAC) echo "Showing intructions for MacOS";;
-        WINDOWS) echo "Showing intructions for Windows";;
-        localhost) echo "Showing intructions for Linux on the same desktop";;
+        LINUX) echo "Showing instructions for Linux";;
+        MAC) echo "Showing intsructions for MacOS";;
+        WINDOWS) echo "Showing instructions for Windows";;
+        localhost) echo "Showing instructions for Linux on the same desktop";;
         *) exit 1;;
 esac
 
