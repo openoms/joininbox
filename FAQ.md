@@ -54,7 +54,7 @@
 ## SSH hardening options
 
 ### SSH key authentication
-* <https://raspibolt.org/security.html#login-with-ssh-keys>
+* <https://raspibolt.org/guide/raspberry-pi/security.html#login-with-ssh-keys>
 
 ### Two factor authenetication (2FA) for SSH
 Detailed guide: <https://pimylifeup.com/setup-2fa-ssh/>  
