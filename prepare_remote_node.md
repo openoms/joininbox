@@ -74,9 +74,15 @@ Make sure that Tor is installed or active in the SERVICES menu
 
 Create a Hidden Service to forward the bitcoin RPC port:
 
-1) On the RaspiBlitz since v1.4 there is a script to create a hidden service:  
-    `./config.scripts/internet.hiddenservice.sh bitcoinrpc 8332 8332`  
-
+1) On the RaspiBlitz there is a script to create a hidden service 
+  * Raspiblitz v1.7.2 and above:
+  ```
+  ~/config.scripts/tor.onion-service.sh bitcoinrpc 8332 8332
+  ```
+  * Raspiblitz v1.4 - v1.7.1: 
+  ```
+  ~/config.scripts/internet.hiddenservice.sh bitcoinrpc 8332 8332
+  ```
 2) Take note of the `Tor_Hidden_Service.onion` and fill in to the `rpc_host` in the `joinmarket.cfg`
 
 Alternatively proceed manually: 
