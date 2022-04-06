@@ -15,7 +15,7 @@ echo
   sudo systemctl disable $script
 fi
 
-if [ ${RPCoverTor} = "on" ];then
+if [ "${RPCoverTor}" = "on" ];then
   tor="torsocks"
 else
   tor=""

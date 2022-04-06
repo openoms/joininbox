@@ -37,6 +37,12 @@ function startOrderBook() {
     echo "# Installing optional dependencies"
     pip install matplotlib
   fi
+
+  if [ "${RPCoverTor}" = "on" ];then
+    tor="torsocks"
+  else
+    tor=""
+  fi
   echo "
 [Unit]
 Description=ob-watcher
@@ -45,7 +51,7 @@ Description=ob-watcher
 WorkingDirectory=/home/joinmarket/joinmarket-clientserver/scripts/obwatch
 ExecStart=/bin/sh -c \
 '. /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate && \
-python ob-watcher.py'
+ $tor python ob-watcher.py'
 User=joinmarket
 Group=joinmarket
 Type=simple
