@@ -3,6 +3,9 @@
 source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
+# the bitcoind wallet needs to be loaded for the ob-watcher.py also
+checkRPCwallet
+
 function stopOrderBook() {
 echo "# Stopping the ob-watcher background service"
 pkill -sigint -f "python ob-watcher.py"
