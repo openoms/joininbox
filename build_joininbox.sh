@@ -58,43 +58,39 @@ echo "###################################"
 echo
 cpu=$(uname -m)
 echo "# CPU: ${cpu}"
-baseImage="?"
-isBuster=$(grep -c 'buster' < /etc/os-release)
-isBionic=$(grep -c 'bionic' < /etc/os-release)
-isFocal=$(grep -c 'focal' < /etc/os-release)
-isDietPi=$(uname -n | grep -c 'DietPi')
-isRaspbian=$(grep -c 'Raspbian' < /etc/os-release)
-if [ ${isBuster} -gt 0 ]; then
-  baseImage="buster"
-fi
-if [ ${isBionic} -gt 0 ]; then
-  baseImage="bionic"
-fi
-if [ ${isFocal} -gt 0 ]; then
-  baseImage="focal"
-fi
-if [ ${isDietPi} -gt 0 ]; then
-  baseImage="dietpi"
-fi
-if [ ${isRaspbian} -gt 0 ]; then
-  baseImage="raspbian"
-fi
-if [ "${baseImage}" = "?" ]; then
-  cat /etc/os-release 2>/dev/null
-  echo "# !!! FAIL !!!"
-  echo "# Base image cannot be detected or is not supported."
-  exit 1
+if [ $(cat /etc/os-release 2>/dev/null | grep -c 'Debian') -gt 0 ]; then
+  if [ $(uname -n | grep -c 'raspberrypi') -gt 0 ]; then
+    # default image for RaspberryPi 64 or 32bit
+    baseimage="raspios"
+  elif [ $(uname -n | grep -c 'rpi') -gt 0 ] && [ "${cpu}" = aarch64 ]; then
+    # a clean alternative image of debian for RaspberryPi
+    baseimage="debian_rpi64"
+  elif [ "${cpu}" = "arm" ] || [ "${cpu}" = "aarch64" ]; then
+    # experimental: fallback for all debian on arm
+    baseimage="armbian"
+  else
+    # experimental: fallback for all debian on other CPUs
+    baseimage="debian"
+  fi
+elif [ $(cat /etc/os-release 2>/dev/null | grep -c 'Ubuntu') -gt 0 ]; then
+  baseimage="ubuntu"
 else
-  echo "# Base image: ${baseImage}"
+  echo "\n!!! FAIL: Base Image cannot be detected or is not supported."
+  cat /etc/os-release 2>/dev/null
+  uname -a
+  exit 1
 fi
-
+echo "baseimage=${baseimage}"
 echo
 echo "############################"
 echo "# Preparing the base image"
 echo "############################"
 echo
-if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "dietpi" ]||\
-   [ "${baseImage}" = "buster" ]; then
+
+echo "# Prepare ${baseImage} "
+# special prepare on RPi
+if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ]; then
+
   # fixing locales for build
   # https://github.com/rootzoll/raspiblitz/issues/138
   # https://daker.me/2014/10/how-to-fix-perl-warning-setting-locale-failed-in-raspbian.html
@@ -116,24 +112,60 @@ if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "dietpi" ]||\
   rm -f /etc/apt/trusted.gpg.d/microsoft.gpg
 fi
 
-echo
-echo "# Prepare ${baseImage} "
-# special prepare when Raspbian
-if [ "${baseImage}" = "raspbian" ]; then
+if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ]; then
+  echo -e "\n*** PREPARE RASPBERRY OS VARIANTS ***"
+  sudo apt install -y raspi-config
   # do memory split (16MB)
- raspi-config nonint do_memory_split 16
+  sudo raspi-config nonint do_memory_split 16
   # set to wait until network is available on boot (0 seems to yes)
- raspi-config nonint do_boot_wait 0
+  sudo raspi-config nonint do_boot_wait 0
   # set WIFI country so boot does not block
- raspi-config nonint do_wifi_country US
+  # this will undo the softblock of rfkill on RaspiOS
+  [ "${wifi_region}" != "off" ] && sudo raspi-config nonint do_wifi_country $wifi_region
   # see https://github.com/rootzoll/raspiblitz/issues/428#issuecomment-472822840
-  echo "max_usb_current=1" |tee -a /boot/config.txt
-  # run fsck on sd boot partition on every startup to prevent "maintenance login" screen
+
+  configFile="/boot/config.txt"
+  max_usb_current="max_usb_current=1"
+  max_usb_currentDone=$(grep -c "$max_usb_current" $configFile)
+
+  if [ ${max_usb_currentDone} -eq 0 ]; then
+    echo | sudo tee -a $configFile
+    echo "# Raspiblitz" | sudo tee -a $configFile
+    echo "$max_usb_current" | sudo tee -a $configFile
+  else
+    echo "$max_usb_current already in $configFile"
+  fi
+
+  # run fsck on sd root partition on every startup to prevent "maintenance login" screen
   # see: https://github.com/rootzoll/raspiblitz/issues/782#issuecomment-564981630
-  # use command to check last fsck check: tune2fs -l /dev/mmcblk0p2
- tune2fs -c 1 /dev/mmcblk0p2
   # see https://github.com/rootzoll/raspiblitz/issues/1053#issuecomment-600878695
- sed -i 's/^/fsck.mode=force fsck.repair=yes /g' /boot/cmdline.txt
+  # use command to check last fsck check: sudo tune2fs -l /dev/mmcblk0p2
+  if [ "${tweak_boot_drive}" == "true" ]; then
+    echo "* running tune2fs"
+    sudo tune2fs -c 1 /dev/mmcblk0p2
+  else
+    echo "* skipping tweak_boot_drive"
+  fi
+
+  # edit kernel parameters
+  kernelOptionsFile=/boot/cmdline.txt
+  fsOption1="fsck.mode=force"
+  fsOption2="fsck.repair=yes"
+  fsOption1InFile=$(grep -c ${fsOption1} ${kernelOptionsFile})
+  fsOption2InFile=$(grep -c ${fsOption2} ${kernelOptionsFile})
+
+  if [ ${fsOption1InFile} -eq 0 ]; then
+    sudo sed -i "s/^/$fsOption1 /g" "$kernelOptionsFile"
+    echo "$fsOption1 added to $kernelOptionsFile"
+  else
+    echo "$fsOption1 already in $kernelOptionsFile"
+  fi
+  if [ ${fsOption2InFile} -eq 0 ]; then
+    sudo sed -i "s/^/$fsOption2 /g" "$kernelOptionsFile"
+    echo "$fsOption2 added to $kernelOptionsFile"
+  else
+    echo "$fsOption2 already in $kernelOptionsFile"
+  fi
 fi
 
 echo
@@ -255,7 +287,7 @@ if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
 
 else
   if [ -f "/usr/bin/python3.7" ]; then
-    # make sure /usr/bin/python exists (and calls Python3.7 in Debian Buster)
+    # make sure /usr/bin/python exists (and calls Python3.7)
     update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
     echo "# python calls python3.7"
   elif [ -f "/usr/bin/python3.8" ]; then
@@ -265,11 +297,11 @@ else
   elif [ -f "/usr/bin/python3.9" ]; then
     # use python 3.9 if available
     update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
-    echo "# python calls python3.8"
+    echo "# python calls python3.9"
   elif [ -f "/usr/bin/python3.10" ]; then
     # use python 3.10 if available
     update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
-    echo "# python calls python3.8"
+    echo "# python calls python3.10"
   else
     echo "!!! FAIL !!!"
     echo "There is no tested version of python present"
@@ -291,7 +323,7 @@ apt install -y build-essential
 # dependencies for python
 apt install -y python3-venv python3-dev python3-wheel python3-jinja2 \
 python3-pip
-# make sure /usr/bin/pip exists (and calls pip3 in Debian Buster)
+# make sure /usr/bin/pip exists (and calls pip3)
 update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 # install ifconfig
 apt install -y net-tools
@@ -325,6 +357,11 @@ cd /home/joinmarket || (echo "# User wasn't created" ;exit 1)
 sudo -u joinmarket git clone -b ${wantedBranch} https://github.com/${githubUser}/joininbox.git
 
 cd /home/joinmarket/joininbox || (echo "# Failed git clone" ;exit 1)
+
+# reset to the last release # be aware this is alphabetical (use one digit versions)
+TAG=$(git tag | sort -V | tail -1)
+sudo -u joinmarket git reset --hard $TAG
+
 PGPsigner="openoms"
 PGPpubkeyLink="https://github.com/openoms.gpg"
 PGPpubkeyFingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
@@ -426,16 +463,9 @@ then
   echo "torSourceListAvailable=${torSourceListAvailable}"
   if [ ${torSourceListAvailable} -eq 0 ]; then
     echo "Adding Tor sources ..."
-    if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "buster" ]||[ "${baseImage}" = "dietpi" ]; then
-      echo "deb https://deb.torproject.org/torproject.org buster main" | tee -a /etc/apt/sources.list
-      echo "deb-src https://deb.torproject.org/torproject.org buster main" | tee -a /etc/apt/sources.list
-    elif [ "${baseImage}" = "bionic" ]; then
-      echo "deb https://deb.torproject.org/torproject.org bionic main" | tee -a /etc/apt/sources.list
-      echo "deb-src https://deb.torproject.org/torproject.org bionic main" | tee -a /etc/apt/sources.list
-    elif [ "${baseImage}" = "focal" ]; then
-      echo "deb https://deb.torproject.org/torproject.org focal main" | tee -a /etc/apt/sources.list
-      echo "deb-src https://deb.torproject.org/torproject.org focal main" | tee -a /etc/apt/sources.list
-    fi
+    distribution=$(lsb_release -sc)
+    echo "deb https://deb.torproject.org/torproject.org ${distribution} main" | tee -a /etc/apt/sources.list
+    echo "deb-src https://deb.torproject.org/torproject.org ${distribution} main" | tee -a /etc/apt/sources.list
     echo "OK"
   else
     echo "Tor sources are available"
