@@ -15,8 +15,9 @@
 # command info
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
   echo "JoininBox Build Script"
-  echo "Usage: sudo bash build_joininbox.sh [branch] [github user]"
-  echo "Example: sudo bash build_joininbox.sh dev openoms"
+  echo "Usage: sudo bash build_joininbox.sh <branch> <github user> <without-qt>"
+  echo "Example: 'sudo bash build_joininbox.sh dev openoms --without-qt' to install from the dev branch without the QT GUI"
+  echo "By default uses https://github.com/openoms/joininbox/tree/master and installs the QT GUI"
   exit 1
 fi
 
@@ -618,7 +619,17 @@ echo
 echo "######################"
 echo "# Install JoinMarket"
 echo "######################"
-sudo -u joinmarket /home/joinmarket/install.joinmarket.sh install
+
+checkEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | \
+grep -c "QTGUI")
+if [ ${checkEntry} -eq 0 ]; then
+  echo "QTGUI=on" | tee -a /home/joinmarket/joinin.conf
+fi
+if [ "$3" = "without-qt" ]; then
+ QTGUI="--without-qt"
+ sed -i "s/^QTGUI=.*/QTGUI=without-qt/g" /home/joinmarket/joinin.conf
+fi
+sudo -u joinmarket /home/joinmarket/install.joinmarket.sh install "$QTGUI"
 
 echo
 echo "###########################"

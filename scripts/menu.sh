@@ -5,9 +5,9 @@ source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
-HEIGHT=22
+HEIGHT=21
 WIDTH=57
-CHOICE_HEIGHT=14
+CHOICE_HEIGHT=13
 BACKTITLE="JoininBox GUI $currentJBtag network:$network IP:$localip"
 TITLE="JoininBox $currentJBtag $network"
 MENU="
@@ -15,10 +15,13 @@ Choose from the options:"
 OPTIONS=()
 
 # Basic Options
-OPTIONS+=(
-  START   "Quickstart with JoinMarket"
-  QTGUI   "Show how to open the JoinMarketQT GUI"
-  "" ""
+OPTIONS+=(START   "Quickstart with JoinMarket")
+if [ "${QTGUI}" != "without-qt"  ]; then
+  OPTIONS+=(QTGUI   "Show how to open the JoinMarketQT GUI")
+  HEIGHT=$((HEIGHT+1))
+  CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
+fi
+OPTIONS+=("" ""
   WALLET  "Wallet management options"
   MAKER   "Yield Generator options"
   "" ""

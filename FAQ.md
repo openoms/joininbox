@@ -34,6 +34,7 @@
 - [Pruned node notes](#pruned-node-notes)
 - [External drive](#external-drive)
 - [IRC server settings](#irc-server-settings)
+- [Install JoinMarket without the QT GUI and dependencies](#install-joinmarket-without-the-qt-gui-and-dependencies)
 - [Run the JoinMarket-QT GUI from a different user on the same Linux desktop where JoininBox is installed](#run-the-joinmarket-qt-gui-from-a-different-user-on-the-same-linux-desktop-where-joininbox-is-installed)
 
 ## Public JoinMarket Order Book links
@@ -376,7 +377,7 @@ https://2019.www.torproject.org/docs/debian#source
 * Power on the Build Laptop (press F12 for boot menu)
 * Connect USB stick with GPG signing keys - decrypt drive if needed
 * Open Terminal and cd into directory of USB Stick under `/media/amnesia`
-* Run `gpg --import backupsecretkey.gpg`, check and exit
+* Run `gpg --import backupsecretkey.gpg`, check and `exit`
 * Disconnect USB stick with GPG keys
 * Take the SD card from the RaspberryPi and connect with an external SD card reader to the laptop
 * Click on the RASPIFIRM volume once in the file manager to mount it
@@ -622,11 +623,23 @@ Alternatively to a pruned node there could be a larger >400 GB storage connected
   socks5 = true
   ```
 
+## Install JoinMarket without the QT GUI and dependencies
+* Run the build script with the options `BRANCH` `GITHUBUSER` `without-qt`:
+```
+sudo bash build_joininbox.sh master openoms without-qt
+```
+
 ## Run the JoinMarket-QT GUI from a different user on the same Linux desktop where JoininBox is installed
 
-* To disable the display access control of the xserver open a new terminal on the desktop and type:  
-`xhost +`
-* use the shortcut in the JoininBox terminal to open the JoinMarket-QT GUI:  
-`qtgui`
-* re-enable the access control with:  
-`xhost -`
+* To disable the display access control of the xserver open a new terminal on the desktop and type:
+```
+xhost +
+```
+* use the shortcut in the JoininBox terminal to open the JoinMarket-QT GUI:
+```
+qtgui
+```
+* re-enable the access control with:
+```
+xhost -
+```

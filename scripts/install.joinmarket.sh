@@ -8,8 +8,8 @@ PGPcheck="2B6FC204D9BF332D062B461A141001A1AF77F20B"
 # command info
 if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
  echo "a script to install, update or configure JoinMarket"
- echo "install.joinmarket.sh [install|config|update|testPR <PRnumber>|commit]"
- echo "the latest tested version: $testedJMversion is installed by default"
+ echo "install.joinmarket.sh [install|config|update|testPR <PRnumber>|commit] <without-qt>"
+ echo "the latest tested version: $testedJMversion is installed by default with the QT GUI"
  exit 1
 fi
 
@@ -20,10 +20,12 @@ source /home/joinmarket/joinin.conf
 function installJoinMarket() {
   cpu=$(uname -m)
   cd /home/joinmarket || exit 1
-  # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
-  echo "# Installing ARM specific dependencies to run the QT GUI"
-  sudo apt install -y python3-pyside2.qtcore python3-pyside2.qtgui \
-  python3-pyside2.qtwidgets zlib1g-dev libjpeg-dev python3-pyqt5 libltdl-dev
+  if [ "$2" != "without-qt" ] || [ "${QTGUI}" != "without-qt" ]; then
+    # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
+    echo "# Installing ARM specific dependencies to run the QT GUI"
+    sudo apt install -y python3-pyside2.qtcore python3-pyside2.qtgui \
+     python3-pyside2.qtwidgets zlib1g-dev libjpeg-dev python3-pyqt5 libltdl-dev
+  fi
   # https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/668#issuecomment-717815719
   sudo apt -y install build-essential automake pkg-config libffi-dev python3-dev
   sudo -u joinmarket pip install libtool asn1crypto cffi pycparser coincurve
@@ -109,12 +111,17 @@ function installJoinMarket() {
     sudo -u joinmarket sed -i "s#PyQt5!=5.15.0,!=5.15.1,!=5.15.2,!=6.0##g" jmqtui/setup.py
   fi
 
-  if [ "$1" = "update" ] || [ "$1" = "testPR" ] || [ "$1" = "commit" ]; then
-    # build the Qt GUI, do not run libsecp256k1 test
-    sudo -u joinmarket ./install.sh --with-qt --disable-secp-check $python_args || exit 1
+  if [ "$2" = "without-qt" ] || [ "${QTGUI}" = "without-qt" ]; then
+    GUIchoice="--without-qt"
   else
-    # build the Qt GUI
-    sudo -u joinmarket ./install.sh --with-qt $python_args || exit 1
+    GUIchoice="--with-qt"
+  fi
+
+  if [ "$1" = "update" ] || [ "$1" = "testPR" ] || [ "$1" = "commit" ]; then
+    # do not run libsecp256k1 test
+    sudo -u joinmarket ./install.sh "${GUIchoice}" --disable-secp-check "$python_args" || exit 1
+  else
+    sudo -u joinmarket ./install.sh "${GUIchoice}" "$python_args" || exit 1
   fi
   currentJMversion=$(cd /home/joinmarket/joinmarket-clientserver 2>/dev/null; \
     git describe --tags 2>/dev/null)
