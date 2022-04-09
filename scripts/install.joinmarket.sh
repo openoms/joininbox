@@ -97,6 +97,13 @@ range_argument qtgui "0" "1" "false" "true"
 
 : "${user:=joinmarket}"
 
+checkEntry=$(sudo -u ${user} cat /home/${user}/joinin.conf | grep -c "qtgui")
+if [ ${checkEntry} -eq 0 ]; then
+  echo "qtgui=true" | sudo -u ${user} tee -a /home/${user}/joinin.conf
+fi
+if [ "${qtgui}" = "false" ]; then
+  sudo -u ${user} sed -i "s/^qtgui=.*/qtgui=false/g" /home/${user}/joinin.conf
+fi
 
 source /home/joinmarket/_functions.sh
 source /home/joinmarket/joinin.conf
@@ -106,8 +113,24 @@ if [ "${user}" != "joinmarket" ]; then
   echo "# add the '${user}' user"
   sudo adduser --disabled-password --gecos "" ${user}
   sudo adduser ${user} sudo
+  # add user to Tor group
+  sudo usermod -a -G debian-tor ${user}
   # configure for usage without password entry
-  echo "${user} ALL=(ALL) NOPASSWD:ALL" | EDITOR='tee -a' sudo visudo
+  checkEntry=$(sudo cat /etc/sudoers | grep -c "${user} ALL=(ALL) NOPASSWD:ALL")
+  if [ ${checkEntry} -eq 0 ]; then
+   echo "${user} ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers
+  fi
+  # Autostart
+  checkEntry=$(sudo -u ${user} cat /home/${user}/.bashrc | grep -c "jmvenv/bin/activate")
+  if [ ${checkEntry} -eq 0 ]; then
+    echo "
+if [ -f \"/home/${user}/joinmarket-clientserver/jmvenv/bin/activate\" ]; then
+  . /home/${user}/joinmarket-clientserver/jmvenv/bin/activate
+  /home/${user}/joinmarket-clientserver/jmvenv/bin/python -c \"import PySide2\"
+  cd /home/${user}/joinmarket-clientserver/scripts/
+fi
+" | sudo -u ${user} tee -a /home/${user}/.bashrc
+  fi
 fi
 
 # installJoinMarket [update|testPR <PRnumber>|commit]

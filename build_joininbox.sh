@@ -620,7 +620,6 @@ echo "######################"
 echo "# Install JoinMarket"
 echo "######################"
 
-
 qtgui=true
 checkEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | grep -c "qtgui")
 if [ ${checkEntry} -eq 0 ]; then
