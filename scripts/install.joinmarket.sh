@@ -18,20 +18,20 @@ a script to install, update or configure JoinMarket
 the latest tested version: $testedJMversion is installed by default with the QT GUI
 
 Options:
--h, --help                                    this help info
--i, --install [install|config|update|testPR]  install options
--v, --version [version]                       version to install (default: ${testedJMversion})
--p, --pull-request [number-of-PR|commit]      which PR to test
--q, --qt-gui [0|1]                            install the QT GUI and dependencies (default: 1)
--u, --user [user]                             the linux user to install with (default: joinmarket)
+-h, --help                                           this help info
+-i, --install [install|config|update|testPR|commit]  install options, use 'commit' for the latest master
+-v, --version [version|number-of-PR]                 the version to install or PR to test (default: ${testedJMversion})
+-q, --qtgui [0|1]                                    install the QT GUI and dependencies (default: 1)
+-u, --user [user]                                    the linux user to install with (default: joinmarket)
 
 Notes:
   all options, long and short accept --opt=value mode also
   [0|1] can also be referenced as [false|true]
+
 "
   exit 1
 }
-if [ "$install" = "-h" ] || [ "$install" = "--help" ]; then
+if [ $# -lt 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
   usage
 fi
 
@@ -78,8 +78,7 @@ while :; do
   case "${opt}" in
     -i|-i=*|--install|--install=*) get_arg install "${opt}" "${arg}";;
     -v|-v=*|--version|--version=*) get_arg version "${opt}" "${arg}";;
-    -p|-p=*|--pull-request|--pull-request=*) get_arg pull-request "${opt}" "${arg}";;
-    -q|-q=*|--qt-gui|--qt-gui=*) get_arg qt-gui "${opt}" "${arg}";;
+    -q|-q=*|--qtgui|--qtgui=*) get_arg qtgui "${opt}" "${arg}";;
     -u|-u=*|--user|--user=*) get_arg user "${opt}" "${arg}";;
     "") break;;
     *) error_msg "Invalid option: ${opt}";;
@@ -88,16 +87,13 @@ while :; do
 done
 
 : "${install:=install}"
-range_argument install "install" "config" "update" "testPR"
+range_argument install "install" "config" "update" "testPR" "commit"
 
 : "${version:=${testedJMversion}}"
-#TODO verify if version exists || error_msg ""
+curl -s "https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/${version}" | grep -q "\"message\": \"Version not found\"" && error_msg "'There is no: https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/${version}'"
 
-: "${pull-request:=${pull-request}}"
-curl -s "https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/${pull-request}" | grep -q "\"message\": \"Pull request not found\"" && error_msg "'There is no: https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/${pull-request}'"
-
-: "${qt-gui:=true}"
-range_argument qt-gui "0" "1" "false" "true"
+: "${qtgui:=true}"
+range_argument qtgui "0" "1" "false" "true"
 
 : "${user:=joinmarket}"
 
@@ -108,17 +104,17 @@ source /home/joinmarket/joinin.conf
 # create user if not default
 if [ "${user}" != "joinmarket" ]; then
   echo "# add the '${user}' user"
-  adduser --disabled-password --gecos "" ${user}
-  adduser ${user} sudo
+  sudo adduser --disabled-password --gecos "" ${user}
+  sudo adduser ${user} sudo
   # configure for usage without password entry
-  echo "${user} ALL=(ALL) NOPASSWD:ALL" | EDITOR='tee -a' visudo
+  echo "${user} ALL=(ALL) NOPASSWD:ALL" | EDITOR='tee -a' sudo visudo
 fi
 
 # installJoinMarket [update|testPR <PRnumber>|commit]
 function installJoinMarket() {
   cpu=$(uname -m)
   cd /home/${user} || exit 1
-  if [ "${qt-gui}" = "true" ]; then
+  if [ "${qtgui}" = "true" ]; then
     # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
     echo "# Installing ARM specific dependencies to run the QT GUI"
     sudo apt install -y python3-pyside2.qtcore python3-pyside2.qtgui \
@@ -209,7 +205,7 @@ function installJoinMarket() {
     sudo -u ${user} sed -i "s#PyQt5!=5.15.0,!=5.15.1,!=5.15.2,!=6.0##g" jmqtui/setup.py
   fi
 
-  if [ "${qt-gui}" = "false" ]; then
+  if [ "${qtgui}" = "false" ]; then
     GUIchoice="--without-qt"
   else
     GUIchoice="--with-qt"

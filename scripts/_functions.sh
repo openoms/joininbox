@@ -186,10 +186,10 @@ function copyJoininboxScripts() {
   fi
 }
 
-# updateJoininBox <reset|commit>
+# updateJoininBox <reset|commit|pr[PRnumber]>
 function updateJoininBox() {
   cd /home/joinmarket || exit 1
-  if [ "$1" = "reset" ];then
+  if [ "$1" = "reset" ] ||  [ "$1" = "pr" ];then
     echo "# Removing the joininbox source code"
     sudo rm -rf /home/joinmarket/joininbox
     echo "# Downloading the latest joininbox source code"
@@ -207,6 +207,13 @@ function updateJoininBox() {
   if [ "$1" = "commit" ]; then
     TAG=$(git describe --tags)
     echo "# Updating to the latest commit in the default branch"
+  elif [ "$1" = "pr" ]; then
+    PRnumber=$2
+    echo "# Using the PR:"
+    echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/$PRnumber"
+    sudo -u joinmarket git fetch origin pull/$PRnumber/head:pr$PRnumber
+    sudo -u joinmarket git checkout pr$PRnumber
+    TAG=$(git describe --tags)
   else
     TAG=$(git tag | sort -V | tail -1)
     # unset $1
@@ -217,8 +224,8 @@ function updateJoininBox() {
     if [ $LOCAL = $REMOTE ]; then
       echo "# You are up-to-date on version" $TAG
     fi
+    sudo -u joinmarket git reset --hard $TAG
   fi
-  sudo -u joinmarket git reset --hard $TAG
   echo "# Current version: $TAG"
   copyJoininboxScripts
 }

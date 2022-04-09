@@ -3,9 +3,9 @@
 source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
-HEIGHT=15
+HEIGHT=16
 WIDTH=60
-CHOICE_HEIGHT=6
+CHOICE_HEIGHT=7
 TITLE="Advanced update options"
 MENU="
 Current JoininBox version: $currentJBcommit
@@ -16,6 +16,7 @@ BACKTITLE="JoininBox GUI"
 # Basic Options
 OPTIONS+=(\
   JBCOMMIT "Update JoininBox to the latest commit"
+  JBPR "Test a JoininBox pull request"
   JBRESET "Reinstall the JoininBox scripts and menu"
   JMCUSTOM "Update JoinMarket to a custom version"
   JMPR "Test a JoinMarket pull request"
@@ -36,6 +37,18 @@ CHOICE=$(dialog --clear \
 case $CHOICE in
   JBRESET)
       updateJoininBox reset
+      errorOnInstall $?
+      echo
+      echo "Press ENTER to return to the menu"
+      read key
+      ;;
+  JBPR)
+      echo
+      read -p "Enter the number of the pull request to be tested: " PRnumber
+      read -p "Continue to install the PR:
+https://github.com/openoms/joininbox/pull/$PRnumber
+(Y/N)? " confirm && [[ $confirm == [yY]||$confirm == [yY][eE][sS] ]]||exit 1
+      updateJoininBox pr $PRnumber
       errorOnInstall $?
       echo
       echo "Press ENTER to return to the menu"
