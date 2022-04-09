@@ -88,7 +88,7 @@ https://github.com/JoinMarket-Org/joinmarket-clientserver/releases/tag/${updateV
 https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber
 (Y/N)? " confirm && [[ $confirm == [yY]||$confirm == [yY][eE][sS] ]]||exit 1
       stopYG
-      /home/joinmarket/install.joinmarket.sh -i testPR -p $PRnumber
+      /home/joinmarket/install.joinmarket.sh -i testPR -v $PRnumber
       errorOnInstall $?
       echo
       menu_resetJMconfig
