@@ -16,7 +16,7 @@ OPTIONS=()
 
 # Basic Options
 OPTIONS+=(START   "Quickstart with JoinMarket")
-if [ "${QTGUI}" != "without-qt"  ]; then
+if [ "${qtgui}" = "true"  ]; then
   OPTIONS+=(QTGUI   "Show how to open the JoinMarketQT GUI")
   HEIGHT=$((HEIGHT+1))
   CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))

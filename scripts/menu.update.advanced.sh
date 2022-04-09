@@ -56,7 +56,7 @@ case $CHOICE in
 https://github.com/JoinMarket-Org/joinmarket-clientserver/releases/tag/${updateVersion}
 (Y/N)? " confirm && [[ $confirm == [yY]||$confirm == [yY][eE][sS] ]]||exit 1
       stopYG
-      /home/joinmarket/install.joinmarket.sh update $updateVersion
+      /home/joinmarket/install.joinmarket.sh -i update -v $updateVersion
       errorOnInstall $?
       echo
       menu_resetJMconfig
@@ -75,7 +75,7 @@ https://github.com/JoinMarket-Org/joinmarket-clientserver/releases/tag/${updateV
 https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber
 (Y/N)? " confirm && [[ $confirm == [yY]||$confirm == [yY][eE][sS] ]]||exit 1
       stopYG
-      /home/joinmarket/install.joinmarket.sh testPR $PRnumber
+      /home/joinmarket/install.joinmarket.sh -i testPR -p $PRnumber
       errorOnInstall $?
       echo
       menu_resetJMconfig
@@ -87,7 +87,7 @@ https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber
       read key
       ;;
   JMCOMMIT)
-      /home/joinmarket/install.joinmarket.sh commit
+      /home/joinmarket/install.joinmarket.sh -p commit
       errorOnInstall $?
       echo
       menu_resetJMconfig

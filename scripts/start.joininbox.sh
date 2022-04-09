@@ -86,7 +86,7 @@ if [ "$setupStep" -lt 100 ];then
     sed -i  "s#setupStep=.*#setupStep=4#g" $joininConfPath
 
     # check if JoinMarket is installed
-    /home/joinmarket/install.joinmarket.sh install
+    /home/joinmarket/install.joinmarket.sh -i install
     sed -i  "s#setupStep=.*#setupStep=5#g" $joininConfPath
   fi
   # change the ssh password if standalone

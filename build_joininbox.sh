@@ -620,16 +620,17 @@ echo "######################"
 echo "# Install JoinMarket"
 echo "######################"
 
-checkEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | \
-grep -c "QTGUI")
+
+qtgui=true
+checkEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | grep -c "qtgui")
 if [ ${checkEntry} -eq 0 ]; then
-  echo "QTGUI=on" | tee -a /home/joinmarket/joinin.conf
+  echo "qtgui=true" | tee -a /home/joinmarket/joinin.conf
 fi
 if [ "$3" = "without-qt" ]; then
- QTGUI="--without-qt"
- sed -i "s/^QTGUI=.*/QTGUI=without-qt/g" /home/joinmarket/joinin.conf
+ qtgui="false"
+ sed -i "s/^qtgui=.*/qtgui=false/g" /home/joinmarket/joinin.conf
 fi
-sudo -u joinmarket /home/joinmarket/install.joinmarket.sh install "$QTGUI"
+sudo -u joinmarket /home/joinmarket/install.joinmarket.sh -i install -q "$qtgui"
 
 echo
 echo "###########################"

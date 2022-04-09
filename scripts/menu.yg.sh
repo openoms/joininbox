@@ -55,7 +55,7 @@ case $CHOICE in
   MAKER)
     menu_MAKER;;
   JMCONF)
-    /home/joinmarket/install.joinmarket.sh config
+    /home/joinmarket/install.joinmarket.sh -i config
     echo "Returning to the menu..."
     sleep 1
     /home/joinmarket/menu.yg.sh;;
