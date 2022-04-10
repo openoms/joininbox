@@ -97,14 +97,6 @@ range_argument qtgui "0" "1" "false" "true"
 
 : "${user:=joinmarket}"
 
-checkEntry=$(sudo -u ${user} cat /home/${user}/joinin.conf | grep -c "qtgui")
-if [ ${checkEntry} -eq 0 ]; then
-  echo "qtgui=true" | sudo -u ${user} tee -a /home/${user}/joinin.conf
-fi
-if [ "${qtgui}" = "false" ]; then
-  sudo -u ${user} sed -i "s/^qtgui=.*/qtgui=false/g" /home/${user}/joinin.conf
-fi
-
 source /home/joinmarket/_functions.sh
 source /home/joinmarket/joinin.conf
 
@@ -131,6 +123,15 @@ if [ -f \"/home/${user}/joinmarket-clientserver/jmvenv/bin/activate\" ]; then
 fi
 " | sudo -u ${user} tee -a /home/${user}/.bashrc
   fi
+fi
+
+# qtgui entry in joinin.conf
+checkEntry=$(sudo -u ${user} cat /home/${user}/joinin.conf | grep -c "qtgui")
+if [ ${checkEntry} -eq 0 ]; then
+  echo "qtgui=true" | sudo -u ${user} tee -a /home/${user}/joinin.conf
+fi
+if [ "${qtgui}" = "false" ]; then
+  sudo -u ${user} sed -i "s/^qtgui=.*/qtgui=false/g" /home/${user}/joinin.conf
 fi
 
 # installJoinMarket [update|testPR <PRnumber>|commit]
