@@ -625,21 +625,25 @@ Alternatively to a pruned node there could be a larger >400 GB storage connected
 
 ## Install JoinMarket without the QT GUI and dependencies
 * Run the build script with the options `BRANCH` `GITHUBUSER` `without-qt`:
-```
-sudo bash build_joininbox.sh master openoms without-qt
-```
+  ```
+  sudo bash build_joininbox.sh openoms master without-qt
+  ```
+* or in the JoininBox terminal install JoinMarket with the option `--qtgui false`:
+  ```
+  /home/joinmarket/install.joinmarket.sh --qtgui false
+  ```
 
 ## Run the JoinMarket-QT GUI from a different user on the same Linux desktop where JoininBox is installed
 
 * To disable the display access control of the xserver open a new terminal on the desktop and type:
-```
-xhost +
-```
+  ```
+  xhost +
+  ```
 * use the shortcut in the JoininBox terminal to open the JoinMarket-QT GUI:
-```
-qtgui
-```
+  ```
+  qtgui
+  ```
 * re-enable the access control with:
-```
-xhost -
-```
+  ```
+  xhost -
+  ```

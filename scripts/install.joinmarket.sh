@@ -5,22 +5,140 @@ PGPsigner="waxwing"
 PGPpkeys="https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc"
 PGPcheck="2B6FC204D9BF332D062B461A141001A1AF77F20B"
 
-# command info
-if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
- echo "a script to install, update or configure JoinMarket"
- echo "install.joinmarket.sh [install|config|update|testPR <PRnumber>|commit] <without-qt>"
- echo "the latest tested version: $testedJMversion is installed by default with the QT GUI"
- exit 1
+me="${0##/*}"
+
+nocolor="\033[0m"
+red="\033[31m"
+
+## see https://github.com/rootzoll/raspiblitz/blob/v1.7/build_sdcard.sh for code comments
+usage(){
+  printf %s"${me} [--option <argument>]
+
+a script to install, update or configure JoinMarket
+the latest tested version: $testedJMversion is installed by default with the QT GUI
+
+Options:
+-h, --help                                           this help info
+-i, --install [install|config|update|testPR|commit]  install options, use 'commit' for the latest master
+-v, --version [version|number-of-PR]                 the version to install or PR to test (default: ${testedJMversion})
+-q, --qtgui [0|1]                                    install the QT GUI and dependencies (default: 1)
+-u, --user [user]                                    the linux user to install with (default: joinmarket)
+
+Notes:
+  all options, long and short accept --opt=value mode also
+  [0|1] can also be referenced as [false|true]
+
+"
+  exit 1
+}
+if [ $# -lt 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+  usage
 fi
+
+error_msg(){ printf %s"${red}${me}: ${1}${nocolor}\n"; exit 1; }
+assign_value(){
+  case "${2}" in
+    --*) value="${2#--}";;
+    -*) value="${2#-}";;
+    *) value="${2}"
+  esac
+  case "${value}" in
+    0) value="false";;
+    1) value="true";;
+  esac
+  eval "${1}"="\"${value}\""
+}
+
+get_arg(){
+  case "${3}" in
+    ""|-*) error_msg "Option '${2}' requires an argument.";;
+  esac
+  assign_value "${1}" "${3}"
+}
+
+range_argument(){
+  name="${1}"
+  eval var='$'"${1}"
+  shift
+  if [ -n "${var:-}" ]; then
+    success=0
+    for tests in "${@}"; do
+      [ "${var}" = "${tests}" ] && success=1
+    done
+    [ ${success} -ne 1 ] && error_msg "Option '--${name}' cannot be '${var}'! It can only be: ${*}."
+  fi
+}
+
+while :; do
+  case "${1}" in
+    -*=*) opt="${1%=*}"; arg="${1#*=}"; shift_n=1;;
+    -*) opt="${1}"; arg="${2}"; shift_n=2;;
+    *) opt="${1}"; arg="${2}"; shift_n=1;;
+  esac
+  case "${opt}" in
+    -i|-i=*|--install|--install=*) get_arg install "${opt}" "${arg}";;
+    -v|-v=*|--version|--version=*) get_arg version "${opt}" "${arg}";;
+    -q|-q=*|--qtgui|--qtgui=*) get_arg qtgui "${opt}" "${arg}";;
+    -u|-u=*|--user|--user=*) get_arg user "${opt}" "${arg}";;
+    "") break;;
+    *) error_msg "Invalid option: ${opt}";;
+  esac
+  shift "${shift_n}"
+done
+
+: "${install:=install}"
+range_argument install "install" "config" "update" "testPR" "commit"
+
+: "${version:=${testedJMversion}}"
+curl -s "https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/${version}" | grep -q "\"message\": \"Version not found\"" && error_msg "'There is no: https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/${version}'"
+
+: "${qtgui:=true}"
+range_argument qtgui "0" "1" "false" "true"
+
+: "${user:=joinmarket}"
 
 source /home/joinmarket/_functions.sh
 source /home/joinmarket/joinin.conf
 
+# create user if not default
+if [ "${user}" != "joinmarket" ]; then
+  echo "# add the '${user}' user"
+  sudo adduser --disabled-password --gecos "" ${user}
+  sudo adduser ${user} sudo
+  # add user to Tor group
+  sudo usermod -a -G debian-tor ${user}
+  # configure for usage without password entry
+  checkEntry=$(sudo cat /etc/sudoers | grep -c "${user} ALL=(ALL) NOPASSWD:ALL")
+  if [ ${checkEntry} -eq 0 ]; then
+   echo "${user} ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers
+  fi
+  # Autostart
+  checkEntry=$(sudo -u ${user} cat /home/${user}/.bashrc | grep -c "jmvenv/bin/activate")
+  if [ ${checkEntry} -eq 0 ]; then
+    echo "
+if [ -f \"/home/${user}/joinmarket-clientserver/jmvenv/bin/activate\" ]; then
+  . /home/${user}/joinmarket-clientserver/jmvenv/bin/activate
+  /home/${user}/joinmarket-clientserver/jmvenv/bin/python -c \"import PySide2\"
+  cd /home/${user}/joinmarket-clientserver/scripts/
+fi
+" | sudo -u ${user} tee -a /home/${user}/.bashrc
+  fi
+fi
+
+# qtgui entry in joinin.conf
+checkEntry=$(sudo -u ${user} cat /home/${user}/joinin.conf | grep -c "qtgui")
+if [ ${checkEntry} -eq 0 ]; then
+  echo "qtgui=true" | sudo -u ${user} tee -a /home/${user}/joinin.conf
+fi
+if [ "${qtgui}" = "false" ]; then
+  sudo -u ${user} sed -i "s/^qtgui=.*/qtgui=false/g" /home/${user}/joinin.conf
+fi
+
 # installJoinMarket [update|testPR <PRnumber>|commit]
 function installJoinMarket() {
   cpu=$(uname -m)
-  cd /home/joinmarket || exit 1
-  if [ "$2" != "without-qt" ] || [ "${QTGUI}" != "without-qt" ]; then
+  cd /home/${user} || exit 1
+  if [ "${qtgui}" = "true" ]; then
     # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
     echo "# Installing ARM specific dependencies to run the QT GUI"
     sudo apt install -y python3-pyside2.qtcore python3-pyside2.qtgui \
@@ -28,33 +146,33 @@ function installJoinMarket() {
   fi
   # https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/668#issuecomment-717815719
   sudo apt -y install build-essential automake pkg-config libffi-dev python3-dev
-  sudo -u joinmarket pip install libtool asn1crypto cffi pycparser coincurve
+  sudo -u ${user} pip install libtool asn1crypto cffi pycparser coincurve
   echo "# Installing JoinMarket"
 
-  if [ "$1" = "update" ] || [ "$1" = "testPR" ] || [ "$1" = "commit" ]; then
+  if [ "$install" = "update" ] || [ "$install" = "testPR" ] || [ "$install" = "commit" ]; then
     echo "# Deleting the old source code (joinmarket-clientserver directory)"
-    sudo rm -rf /home/joinmarket/joinmarket-clientserver
+    sudo rm -rf /home/${user}/joinmarket-clientserver
   fi
 
-  sudo -u joinmarket git clone https://github.com/Joinmarket-Org/joinmarket-clientserver
+  sudo -u ${user} git clone https://github.com/Joinmarket-Org/joinmarket-clientserver
   cd joinmarket-clientserver || exit 1
 
-  if [ "$1" = "testPR" ]; then
+  if [ "$install" = "testPR" ]; then
     PRnumber=$2
     echo "# Using the PR:"
     echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/$PRnumber"
     git fetch origin pull/$PRnumber/head:pr$PRnumber
     git checkout pr$PRnumber
-  elif [ "$1" = "commit" ]; then
+  elif [ "$install" = "commit" ]; then
     echo "# Updating to the latest commit in:"
     echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver"
-  elif [ "$1" = "update" ] && [ ${#2} -gt 0 ]; then
+  elif [ "$install" = "update" ] && [ ${#2} -gt 0 ]; then
     updateVersion="$2"
-    sudo -u joinmarket git reset --hard $updateVersion
+    sudo -u ${user} git reset --hard $updateVersion
   else
-    sudo -u joinmarket git reset --hard $testedJMversion
+    sudo -u ${user} git reset --hard $testedJMversion
 
-    sudo -u joinmarket wget -O "pgp_keys.asc" ${PGPpkeys}
+    sudo -u ${user} wget -O "pgp_keys.asc" ${PGPpkeys}
     gpg --import --import-options show-only ./pgp_keys.asc
     fingerprint=$(gpg "pgp_keys.asc" 2>/dev/null | grep "${PGPcheck}" -c)
     if [ ${fingerprint} -lt 1 ]; then
@@ -91,39 +209,39 @@ function installJoinMarket() {
     python_args="--python=${JM_PYTHON}"
   fi
   # do not clear screen during installation
-  sudo -u joinmarket sed -i 's/clear//g' install.sh
+  sudo -u ${user} sed -i 's/clear//g' install.sh
   # do not stop at installing Debian dependencies
-  sudo -u joinmarket sed -i \
+  sudo -u ${user} sed -i \
   "s#^        if ! sudo apt-get install \${deb_deps\[@\]}; then#\
         if ! sudo apt-get install -y \${deb_deps\[@\]}; then#g" install.sh
 
   if [ ${cpu} != "x86_64" ]; then
     echo "# Make install.sh set up jmvenv with -- system-site-packages on arm"
     # and import the PySide2 armf package from the system
-    sudo -u joinmarket sed -i "s#^    virtualenv -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1#\
+    sudo -u ${user} sed -i "s#^    virtualenv -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1#\
       virtualenv --system-site-packages -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1 ;\
-    /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python -c \'import PySide2\'\
+    /home/${user}/joinmarket-clientserver/jmvenv/bin/python -c \'import PySide2\'\
     #g" install.sh
     # don't install PySide2 - using the system-site-package instead
-    sudo -u joinmarket sed -i "s#^PySide2.*##g" requirements/gui.txt
+    sudo -u ${user} sed -i "s#^PySide2.*##g" requirements/gui.txt
     # don't install PyQt5 - using the system package instead
-    sudo -u joinmarket sed -i "s#^PyQt5.*##g" requirements/gui.txt
-    sudo -u joinmarket sed -i "s#PyQt5!=5.15.0,!=5.15.1,!=5.15.2,!=6.0##g" jmqtui/setup.py
+    sudo -u ${user} sed -i "s#^PyQt5.*##g" requirements/gui.txt
+    sudo -u ${user} sed -i "s#PyQt5!=5.15.0,!=5.15.1,!=5.15.2,!=6.0##g" jmqtui/setup.py
   fi
 
-  if [ "$2" = "without-qt" ] || [ "${QTGUI}" = "without-qt" ]; then
+  if [ "${qtgui}" = "false" ]; then
     GUIchoice="--without-qt"
   else
     GUIchoice="--with-qt"
   fi
 
-  if [ "$1" = "update" ] || [ "$1" = "testPR" ] || [ "$1" = "commit" ]; then
+  if [ "$install" = "update" ] || [ "$install" = "testPR" ] || [ "$install" = "commit" ]; then
     # do not run libsecp256k1 test
-    sudo -u joinmarket ./install.sh "${GUIchoice}" --disable-secp-check "$python_args" || exit 1
+    sudo -u ${user} ./install.sh "${GUIchoice}" --disable-secp-check "$python_args" || exit 1
   else
-    sudo -u joinmarket ./install.sh "${GUIchoice}" "$python_args" || exit 1
+    sudo -u ${user} ./install.sh "${GUIchoice}" "$python_args" || exit 1
   fi
-  currentJMversion=$(cd /home/joinmarket/joinmarket-clientserver 2>/dev/null; \
+  currentJMversion=$(cd /home/${user}/joinmarket-clientserver 2>/dev/null; \
     git describe --tags 2>/dev/null)
   echo
   echo "# installed JoinMarket $currentJMversion"
@@ -132,7 +250,7 @@ function installJoinMarket() {
   echo
 }
 
-if [ "$1" = "config" ]; then
+if [ "$install" = "config" ]; then
   if [ ! -f "$JMcfgPath" ]; then
     generateJMconfig
   fi
@@ -142,13 +260,13 @@ if [ "$1" = "config" ]; then
   --exit-label "Continue to edit the joinmarket.cfg" \
   --textbox "/home/joinmarket/info.conf.txt" 43 108
   # edit joinmarket.cfg
-  /home/joinmarket/set.conf.sh $JMcfgPath
+  /home/${user}/set.conf.sh $JMcfgPath
   exit 0
 fi
 
-if [ "$1" = "install" ]; then
+if [ "$install" = "install" ]; then
   # install joinmarket
-  if [ ! -f "/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate" ] ; then
+  if [ ! -f "/home/${user}/joinmarket-clientserver/jmvenv/bin/activate" ] ; then
     echo
     echo "# JoinMarket is not yet installed - proceeding now"
     echo
@@ -175,21 +293,21 @@ if [ "$1" = "install" ]; then
   exit 0
 fi
 
-if [ "$1" = "update" ]; then
+if [ "$install" = "update" ]; then
   stopYG
   installJoinMarket "update" "$2"
   errorOnInstall $?
   exit 0
 fi
 
-if [ "$1" = "testPR" ]; then
+if [ "$install" = "testPR" ]; then
   stopYG
   installJoinMarket testPR $2
   errorOnInstall $?
   exit 0
 fi
 
-if [ "$1" = "commit" ]; then
+if [ "$install" = "commit" ]; then
   stopYG
   installJoinMarket commit
   errorOnInstall $?

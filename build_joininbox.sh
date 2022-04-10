@@ -15,7 +15,7 @@
 # command info
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
   echo "JoininBox Build Script"
-  echo "Usage: sudo bash build_joininbox.sh <branch> <github user> <without-qt>"
+  echo "Usage: sudo bash build_joininbox.sh <github user> <branch> <without-qt>"
   echo "Example: 'sudo bash build_joininbox.sh dev openoms --without-qt' to install from the dev branch without the QT GUI"
   echo "By default uses https://github.com/openoms/joininbox/tree/master and installs the QT GUI"
   exit 1
@@ -34,15 +34,15 @@ echo "# JOININBOX BUILD SCRIPT"
 echo "##########################"
 echo
 
-echo "# Check the command options"
-wantedBranch="$1"
-if [ ${#wantedBranch} -eq 0 ]; then
-  wantedBranch="master"
-fi
-
-githubUser="$2"
+githubUser="$1"
 if [ ${#githubUser} -eq 0 ]; then
   githubUser="openoms"
+fi
+
+echo "# Check the command options"
+wantedBranch="$2"
+if [ ${#wantedBranch} -eq 0 ]; then
+  wantedBranch="master"
 fi
 
 echo "
@@ -620,16 +620,16 @@ echo "######################"
 echo "# Install JoinMarket"
 echo "######################"
 
-checkEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | \
-grep -c "QTGUI")
+qtgui=true
+checkEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | grep -c "qtgui")
 if [ ${checkEntry} -eq 0 ]; then
-  echo "QTGUI=on" | tee -a /home/joinmarket/joinin.conf
+  echo "qtgui=true" | tee -a /home/joinmarket/joinin.conf
 fi
 if [ "$3" = "without-qt" ]; then
- QTGUI="--without-qt"
- sed -i "s/^QTGUI=.*/QTGUI=without-qt/g" /home/joinmarket/joinin.conf
+ qtgui="false"
+ sed -i "s/^qtgui=.*/qtgui=false/g" /home/joinmarket/joinin.conf
 fi
-sudo -u joinmarket /home/joinmarket/install.joinmarket.sh install "$QTGUI"
+sudo -u joinmarket /home/joinmarket/install.joinmarket.sh -i install -q "$qtgui"
 
 echo
 echo "###########################"

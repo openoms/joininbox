@@ -37,7 +37,7 @@ case $CHOICE in
       echo "Press ENTER to return to the menu"
       read key;;
   JOINMARKET)
-      /home/joinmarket/install.joinmarket.sh update
+      /home/joinmarket/install.joinmarket.sh -i update
       errorOnInstall $?
       echo
       menu_resetJMconfig

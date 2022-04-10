@@ -100,7 +100,7 @@ CHOICE=$(dialog --clear \
 
 case $CHOICE in
   JMCONF)
-    /home/joinmarket/install.joinmarket.sh config
+    /home/joinmarket/install.joinmarket.sh -i config
     echo "Returning to the menu..."
     sleep 1
     /home/joinmarket/menu.sh;;
