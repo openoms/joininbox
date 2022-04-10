@@ -24,7 +24,10 @@ BACKTITLE="JoininBox GUI"
 
 # Basic Options
 OPTIONS+=(
+    TUMBLE "Start the Tumbler"
     SCHEDULE "Display the current schedule"
+    LOGS "Display the Tumbler logs"
+    RESTART "Restart an interrupted schedule"
 )
 
 CHOICE=$(dialog \
