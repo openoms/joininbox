@@ -100,7 +100,7 @@ https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber
       read key
       ;;
   JMCOMMIT)
-      /home/joinmarket/install.joinmarket.sh -p commit
+      /home/joinmarket/install.joinmarket.sh -i commit
       errorOnInstall $?
       echo
       menu_resetJMconfig
