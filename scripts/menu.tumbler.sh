@@ -25,7 +25,7 @@ BACKTITLE="JoininBox GUI"
 # Basic Options
 OPTIONS+=(
     TUMBLE "Start the Tumbler"
-    SCHEDULE "Display the current schedule"
+    SCHEDULE "Display and edit the schedule"
     LOGS "Display the Tumbler logs"
     RESTART "Restart an interrupted schedule"
 )
@@ -47,7 +47,7 @@ SCHEDULE)
   # [mixdepth, amount-fraction, N-counterparties (requested), destination address, wait time in minutes, rounding, flag indicating incomplete/broadcast/completed (0/txid/1)]
   dialog \
    --title "Tumbler schedule"  \
-   --prgbox "(echo 'mixdepth,amount-fraction,N-counterparties,destination address,wait time in minutes,rounding,flag (0/txid/1)' ;cat /home/joinmarket/.joinmarket/logs/TUMBLE.schedule) | column -t -s, 2>/dev/null" 20 110
+   --prgbox "(echo 'mixdepth,amount-fraction,N-counterparties,destination address,wait time in minutes,rounding,flag (0/txid/1)' ;cat /home/joinmarket/.joinmarket/logs/TUMBLE.schedule) | column -t -s, 2>/dev/null" 30 120
    ;;
 
 esac
