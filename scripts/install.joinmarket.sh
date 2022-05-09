@@ -161,8 +161,8 @@ function installJoinMarket() {
     PRnumber=$2
     echo "# Using the PR:"
     echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/$PRnumber"
-    git fetch origin pull/$PRnumber/head:pr$PRnumber
-    git checkout pr$PRnumber
+    sudo -u ${user} git fetch origin pull/$PRnumber/head:pr$PRnumber
+    sudo -u ${user} git checkout pr$PRnumber
   elif [ "$install" = "commit" ]; then
     echo "# Updating to the latest commit in:"
     echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver"
@@ -173,8 +173,8 @@ function installJoinMarket() {
     sudo -u ${user} git reset --hard $testedJMversion
 
     sudo -u ${user} wget -O "pgp_keys.asc" ${PGPpkeys}
-    gpg --import --import-options show-only ./pgp_keys.asc
-    fingerprint=$(gpg "pgp_keys.asc" 2>/dev/null | grep "${PGPcheck}" -c)
+    sudo -u ${user} gpg --import --import-options show-only ./pgp_keys.asc
+    fingerprint=$(sudo -u ${user} gpg "pgp_keys.asc" 2>/dev/null | grep "${PGPcheck}" -c)
     if [ ${fingerprint} -lt 1 ]; then
       echo
       echo "# !!! WARNING --> the PGP fingerprint is not as expected for ${PGPsigner}"
@@ -182,9 +182,9 @@ function installJoinMarket() {
       echo "# PRESS ENTER to TAKE THE RISK if you think all is OK"
       read key
     fi
-    gpg --import ./pgp_keys.asc
+    sudo -u ${user} gpg --import ./pgp_keys.asc
 
-    verifyResult=$(git verify-tag $testedJMversion 2>&1)
+    verifyResult=$(sudo -u ${user} git verify-tag $testedJMversion 2>&1)
 
     goodSignature=$(echo ${verifyResult} | grep 'Good signature' -c)
     echo "# goodSignature(${goodSignature})"
@@ -197,7 +197,7 @@ function installJoinMarket() {
     else
       echo
       echo "#########################################################"
-      echo "# OK --> the PGP signature of the $testedJMversion tag is correct #"
+      echo "# OK --> the PGP signature of the $testedJMversion tag is correct"
       echo "#########################################################"
       echo
     fi
