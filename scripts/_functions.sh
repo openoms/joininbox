@@ -271,7 +271,11 @@ function generateJMconfig() {
     echo "# The joinmarket.cfg is present"
     echo
   fi
-  setIRCtoTor
+  if [ $(echo $currentJMversion | cut -d'v' -f2 | awk -F'.' '{print $1$2$3}' ) -lt 96 ];then
+    setIRCtoTor
+  else
+    echo "# Since JoinMarket v0.9.6 the Tor connection is default for IRC servers."
+  fi
   # set strict permission to joinmarket.cfg
   sudo chmod 600 $JMcfgPath || exit 1
   if [ -f "/mnt/hdd/bitcoin/bitcoin.conf" ];then

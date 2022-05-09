@@ -60,11 +60,11 @@ function menu_resetJMconfig {
   dialog --backtitle "Reset the joinmarket.cfg" \
   --title "Reset the joinmarket.cfg" \
   --yesno "
-A new JoinMarket version might introduce new IRC servers and other settings.
+A new JoinMarket version might introduce new options and changed defaults.
 It is best to reset the joinmarket.cfg after every install.
 (can be done any time from the menu CONFIG -> RESET)
 
-Do you want to reset the joinmarket.cfg to the defaults (with Tor settings) now?
+Do you want to reset the joinmarket.cfg to the defaults now?
 " 12 65
   # make decison
   pressed=$?

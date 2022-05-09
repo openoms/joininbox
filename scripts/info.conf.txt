@@ -35,4 +35,4 @@ size_factor = 0.1
 gaplimit = 6
 
 Find all the defaults at:
-https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/jmclient/jmclient/configure.py#L95
+https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/jmclient/jmclient/configure.py#L101
