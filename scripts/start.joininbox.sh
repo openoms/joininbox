@@ -158,11 +158,11 @@ fi
 isMainnet=$(grep -c "network = mainnet" < $JMcfgPath)
 isSignet=$(grep -c "network = signet" < $JMcfgPath)
 isTestnet=$(grep -c "network = testnet" < $JMcfgPath)
-if [ $isMainnet -gt 0 ];then
+if [ "$isMainnet" -gt 0 ];then
   sed -i "s#^network=.*#network=mainnet#g" $joininConfPath
-elif [ $isSignet -gt 0 ];then
+elif [ "$isSignet" -gt 0 ];then
   sed -i "s#^network=.*#network=signet#g" $joininConfPath
-elif [ $isTestnet -gt 0 ];then
+elif [ "$isTestnet" -gt 0 ];then
   sed -i "s#^network=.*#network=testnet#g" $joininConfPath
 else
   sed -i "s#^network=.*#network=unknown#g" $joininConfPath
