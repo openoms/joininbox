@@ -6,7 +6,7 @@ Tested on:
 
 ### Set up Armbian
 * Download the SDcard image:  
-https://dl.armbian.com/odroidxu4/Buster_legacy  
+https://dl.armbian.com/odroidxu4/Buster_legacy
 * Verify  
 https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authenticity
 
@@ -22,7 +22,7 @@ https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authe
     Primary key fingerprint: DF00 FAF1 C577 104B 50BF  1D00 93D6 889F 9F0E 78D5
     ```
 
-* Preparation  
+* Preparation
 
     Make sure you have a good & reliable SD card and a proper power supply. Archives can be uncompressed with 7-Zip on Windows, Keka on OS X and 7z on Linux (apt-get install p7zip-full). RAW images can be written with Etcher (all OS).
 
@@ -37,7 +37,7 @@ https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authe
 * Change the password.
 * Create a new user called `joinmarket` and set the password.  
  Keep pressing [ENTER] to use the default user information.
- 
+
 ### Preparations
 * Configure sudo without password for the joinmarket user
     ```bash
@@ -134,7 +134,7 @@ https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authe
     ```
 
 * Edit the joinmarket.cfg  
-    `$ nano ~/.joinmarket/joinmarket.cfg` 
+    `$ nano ~/.joinmarket/joinmarket.cfg`
 
     Fill in the values in CAPITALs
 
@@ -164,7 +164,7 @@ https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authe
     #for tor
     host = epynixtbonxn4odv34z4eqnlamnpuwfz6uwmsamcqd62si7cbix5hqad.onion
     socks5 = true
-    
+
     ...
 
     #for tor
@@ -181,7 +181,7 @@ chmod -R +x ./joininbox/
 cp ./joininbox/scripts/* ~/
 ```
 
-* Try the JoininBox menu 
+* Try the JoininBox menu
 ```bash
 $ /home/joinmarket/menu.sh
 ```
