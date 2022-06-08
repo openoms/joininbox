@@ -146,7 +146,7 @@ function installJoinMarket() {
   fi
   # https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/668#issuecomment-717815719
   sudo apt -y install build-essential automake pkg-config libffi-dev python3-dev
-  sudo -u ${user} pip install libtool asn1crypto cffi pycparser coincurve
+  sudo -u ${user} pip install libtool asn1crypto cffi pycparser
   echo "# Installing JoinMarket"
 
   if [ "$install" = "update" ] || [ "$install" = "testPR" ] || [ "$install" = "commit" ]; then

@@ -88,7 +88,7 @@ echo "# Preparing the base image"
 echo "############################"
 echo
 
-echo "# Prepare ${baseImage} "
+echo "# Prepare ${baseimage} "
 # special prepare on RPi
 if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ]; then
 
@@ -252,42 +252,46 @@ echo "##########"
 echo "# Python"
 echo "##########"
 echo
-#if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
-#  if [ ! -f "/usr/bin/python3.7" ]; then
-#    # install python37
-#    pythonVersion="3.7.9"
-#    majorPythonVersion=$(echo "$pythonVersion" | awk -F. '{print $1"."$2}' )
-#    # dependencies
-#    sudo apt install wget software-properties-common build-essential libnss3-dev zlib1g-dev libgdbm-dev libncurses5-dev libssl-dev libffi-dev libreadline-dev libsqlite3-dev libbz2-dev -y
-#    # download
-#    wget https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz
-#    # optional signature for verification
-#    wget https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz.asc
-#    # get PGP pubkey of Ned Deily (Python release signing key) <nad@python.org>
-#    gpg --recv-k#ey 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
-#    # check for: Good signature from "Pablo Galindo Salgado <pablogsal@gmail.com>"
-#    gpg --verify Python-${pythonVersion}.tgz.asc || (echo "# PGP verfication failed"; exit 1)
-#    # unzip
-#    tar xvf Python-${pythonVersion}.tgz
-#    cd Python-${pythonVersion} || (echo "# Pyhton37 was not downloaded"; exit 1)
-#    # configure
-#    ./configure --enable-optimizations
-#    # install
-#    make altinstall
-#    # move the python binary to the expected directory
-#    mv "$(which python${majorPythonVersion})" /usr/bin/
-#    # check
-#    ls -la /usr/bin/python${majorPythonVersion} || (echo "# Python37 was not installed"; exit 1)
-#    # clean
-#    cd ..
-#    rm Python-${pythonVersion}.tgz
-#    rm -rf Python-${pythonVersion}
-#  fi
-#  update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
-#  echo "# python calls python3.7"
-#  update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1
-#  echo "# python3 calls python3.7"
-#else
+if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
+  if [ ! -f "/usr/bin/python3.7" ]; then
+    rm /usr/bin/python3.*
+    # install python37
+    pythonVersion="3.7.9"
+    majorPythonVersion=$(echo "$pythonVersion" | awk -F. '{print $1"."$2}' )
+    # dependencies
+    sudo apt install wget software-properties-common build-essential libnss3-dev zlib1g-dev libgdbm-dev libncurses5-dev libssl-dev libffi-dev libreadline-dev libsqlite3-dev libbz2-dev -y
+    # download
+    wget https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz
+    # optional signature for verification
+    wget https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz.asc
+    # get PGP pubkey of Ned Deily (Python release signing key) <nad@python.org>
+    gpg --recv-k#ey 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
+    # check for: Good signature from "Pablo Galindo Salgado <pablogsal@gmail.com>"
+    gpg --verify Python-${pythonVersion}.tgz.asc || (echo "# PGP verfication failed"; exit 1)
+    # unzip
+    tar xvf Python-${pythonVersion}.tgz
+    cd Python-${pythonVersion} || (echo "# Pyhton37 was not downloaded"; exit 1)
+    # configure
+    ./configure --enable-optimizations
+    # install
+    make altinstall
+    # move the python binary to the expected directory
+    mv "$(which python${majorPythonVersion})" /usr/bin/
+    # check
+    ls -la /usr/bin/python${majorPythonVersion} || (echo "# Python37 was not installed"; exit 1)
+    # clean
+    cd ..
+    rm Python-${pythonVersion}.tgz
+    rm -rf Python-${pythonVersion}
+  fi
+  update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+  echo "# python calls python3.7"
+  update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1
+  echo "# python3 calls python3.7"
+  update-alternatives --install /usr/bin/python3-config python3-config /usr/bin/arm-linux-gnueabihf-python3-config 1
+  # fix 'lsb_release -a' error
+  sudo ln -s /usr/share/pyshared/lsb_release.py /usr/local/lib/python3.7/site-packages/lsb_release.py
+else
   if [ -f "/usr/bin/python3.10" ]; then
     # use python 3.10 if available
     update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
@@ -309,7 +313,7 @@ echo
     echo "There is no tested version of python present"
     exit 1
   fi
-#fi
+fi
 
 echo
 echo "##########################"
@@ -460,8 +464,7 @@ then
     echo "# Tor key is available"
   fi
   echo "# Adding Tor Sources to sources.list"
-  torSourceListAvailable=$(cat /etc/apt/sources.list | grep -c \
-  'https://deb.torproject.org/torproject.org')
+  torSourceListAvailable=$(grep -c 'https://deb.torproject.org/torproject.org' < /etc/apt/sources.list)
   echo "torSourceListAvailable=${torSourceListAvailable}"
   if [ ${torSourceListAvailable} -eq 0 ]; then
     echo "Adding Tor sources ..."
