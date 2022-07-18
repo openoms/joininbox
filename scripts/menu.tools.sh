@@ -66,8 +66,8 @@ isLocalBitcoinCLI=$(sudo -u bitcoin bitcoin-cli -version|grep -c "Bitcoin Core R
 isTxindex=$(sudo -u bitcoin cat /home/bitcoin/.bitcoin/bitcoin.conf | grep -c "txindex=1")
 
 # BASIC MENU INFO
-HEIGHT=11
-WIDTH=60
+HEIGHT=13
+WIDTH=61
 CHOICE_HEIGHT=5
 TITLE="Tools"
 MENU=""
@@ -113,7 +113,9 @@ if [ "${runningEnv}" != standalone ]; then
       HEIGHT=$((HEIGHT+1)); CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
 fi
 OPTIONS+=(
-    LOGS "Show the bitcoind logs on $network")
+    LOGS "Show the bitcoind logs on $network"
+    API "Start the jmwalletd.py as a systemd service"
+    FULLYNODED "Connect Fully Noded with a QRcode")
 
 CHOICE=$(dialog \
           --clear \
@@ -223,6 +225,17 @@ Input how many previous blocks from the tip you want to scan" 14 108
       sudo /home/joinmarket/set.ssh.sh on
     fi
     echo
+    echo "Press ENTER to return to the menu..."
+    read key;;
+  API)
+    clear
+    echo
+    /home/joinmarket/install.joinmarket-api.sh on
+    echo "Press ENTER to return to the menu..."
+    read key;;
+  FULLYNODED)
+    clear
+    /home/joinmarket/install.joinmarket-api.sh connect
     echo "Press ENTER to return to the menu..."
     read key;;
 esac

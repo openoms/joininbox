@@ -83,7 +83,7 @@ fi
 
 if [ "${runBehindTor}" = "on" ]; then
 
-  # delete any old entry for that servive
+  # delete any old entry for that service
   sudo sed -i "/# Hidden Service for ${service}/,/^\s*$/{d}" /etc/tor/torrc
 
   # make new entry for that service
@@ -106,11 +106,11 @@ HiddenServicePort $toPort 127.0.0.1:$fromPort" | sudo tee -a /etc/tor/torrc
     fi
   fi
 
-  # restart tor
+  # reload tor
   echo
   echo "Reloading Tor to activate the Hidden Service..."
   sudo chmod 644 /etc/tor/torrc
-  sudo pkill -sighup tor
+  sudo systemctl reload tor
   sleep 10
 
   # show the Hidden Service address
@@ -124,7 +124,7 @@ HiddenServicePort $toPort 127.0.0.1:$fromPort" | sudo tee -a /etc/tor/torrc
       exit 1
     fi
   fi
-  echo ""
+  echo
   echo "The Tor Hidden Service address for $service is:"
   echo "$TOR_ADDRESS"
   echo "use with the port: $toPort"
@@ -134,6 +134,7 @@ HiddenServicePort $toPort 127.0.0.1:$fromPort" | sudo tee -a /etc/tor/torrc
       echo "or the port: $toPort2"
     fi
   fi
+
 else
   echo "Tor is not active"
   exit 1
