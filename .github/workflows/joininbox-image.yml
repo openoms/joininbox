@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  packer:
+  arm64-image-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -33,9 +33,13 @@ jobs:
         run: ./.github/scripts/build.sh
         shell: bash
 
+      # Find the image
+      - name: Find image
+        run: find / -name joininbox-arm64.img
+        shell: bash
+
       - name: Upload image
         uses: actions/upload-artifact@v3
         with:
           name: Joininbox
           path: ${{ github.workspace }}/joininbox-arm64.img
-
