@@ -24,7 +24,7 @@ echo -e "\nMoving json file to packer folder..."
 wget --progress=bar:force https://downloads.raspberrypi.org/raspios_full_arm64/images/raspios_full_arm64-2022-01-28/2022-01-28-raspios-bullseye-arm64-full.zip
 wget https://raw.githubusercontent.com/openoms/joininbox/packer/.github/scripts/joininbox.json
 wget https://raw.githubusercontent.com/openoms/joininbox/packer/.github/scripts/packages.config
-wget -O post-install.sh https://raw.githubusercontent.com/openoms/joininbox/packer/build_joininbox.sh
+wget https://raw.githubusercontent.com/openoms/joininbox/packer/.github/scripts/post-install.sh
 
 # Build packer
 echo -e "\nBuilding packer image..."
