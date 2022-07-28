@@ -320,28 +320,17 @@ function backupJMconf() {
 function updateTor() {
   # as in https://2019.www.torproject.org/docs/debian#source
   # https://github.com/rootzoll/raspiblitz/blob/82e0d6c3714ce1b2878780c4bdef72a6417f71c7/home.admin/config.scripts/internet.tor.sh#L493
-  echo "# Adding tor-nightly-master to sources.list"
-  torSourceListAvailable=$(sudo cat /etc/apt/sources.list | grep -c \
-  'tor-nightly-master')
-  echo "torSourceListAvailable=${torSourceListAvailable}"
-  if [ ${torSourceListAvailable} -eq 0 ]; then
-    echo "Adding Tor sources ..."
-    if [ "${baseImage}" = "raspbian" ]||[ "${baseImage}" = "buster" ]||[ "${baseImage}" = "dietpi" ]; then
-      distro="buster"
-    elif [ "${baseImage}" = "bionic" ]; then
-      distro="bionic"
-    elif [ "${baseImage}" = "focal" ]; then
-      distro="focal"
-    fi
-    echo "
-deb https://deb.torproject.org/torproject.org tor-nightly-master-$distro main
-deb-src https://deb.torproject.org/torproject.org tor-nightly-master-$distro main" \
-    | sudo tee -a  /etc/apt/sources.list
-  fi
+  echo "# Adding tor-nightly-master to /etc/apt/sources.list.d/tor.list"
+  arch=$(dpkg --print-architecture)
+  distro=$(lsb_release -sc)
+  echo "\
+deb [arch=${arch}] https://deb.torproject.org/torproject.org tor-nightly-master-$distro main
+deb-src [arch=${arch}] https://deb.torproject.org/torproject.org tor-nightly-master-$distro main" \
+  | sudo tee /etc/apt/sources.list.d/tor.list
   echo "# Running apt update"
   sudo apt update
-  if [ ${cpu} = "x86_64" ]; then
-    echo "# CPU is x86_64 - updating to the latest alpha binary"
+  if [ ${arch} = "amd64" ] || [ ${arch} = "arm64" ]; then
+    echo "# CPU is ${arch} - updating to the latest alpha binary"
     sudo apt install -y tor
     echo "# Restarting the tor.service "
     sudo systemctl restart tor

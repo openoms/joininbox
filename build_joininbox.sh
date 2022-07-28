@@ -464,15 +464,18 @@ then
   echo "torSourceListAvailable=${torSourceListAvailable}"
   if [ ${torSourceListAvailable} -eq 0 ]; then
     echo "Adding Tor sources ..."
-    distribution=$(lsb_release -sc)
-    echo "deb https://deb.torproject.org/torproject.org ${distribution} main" | tee -a /etc/apt/sources.list
-    echo "deb-src https://deb.torproject.org/torproject.org ${distribution} main" | tee -a /etc/apt/sources.list
+    arch=$(dpkg --print-architecture)
+    distro=$(lsb_release -sc)
+    echo "\
+deb [arch=${arch}] https://deb.torproject.org/torproject.org ${distro} main
+deb-src [arch=${arch}] https://deb.torproject.org/torproject.org ${distro} main" \
+    | sudo tee /etc/apt/sources.list.d/tor.list
     echo "OK"
   else
     echo "Tor sources are available"
   fi
   apt update
-  if [ "${cpu}" = "armv6l" ]; then
+  if [ "${arch}" = "armhf" ]; then
     # https://2019.www.torproject.org/docs/debian#source
     echo "# running on armv6l - need to compile Tor from source"
     apt install -y build-essential fakeroot devscripts
