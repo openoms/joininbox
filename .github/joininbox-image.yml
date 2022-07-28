@@ -1,0 +1,41 @@
+# This is a basic workflow to help you get started with Actions
+
+name: joininbox-image
+
+on:
+  push:
+    branches: [ "packer" ]
+    paths-ignore:
+      - '*.md'
+      - '.gitignore'
+  pull_request:
+    branches: [ "packer" ]
+    paths-ignore:
+      - '*.md'
+      - '.gitignore'
+  workflow_dispatch:
+
+jobs:
+  packer:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Hello Joininbox
+        run: echo Building the JoininBox Image!
+
+      # Add permissions to file
+      - name: Add executable
+        run: chmod +x "${GITHUB_WORKSPACE}/.github/scripts/build.sh"
+
+      # Run the build script
+      - name: Build script
+        run: ./.github/scripts/build.sh
+        shell: bash
+
+      - name: Upload image
+        uses: actions/upload-artifact@v3
+        with:
+          name: Joininbox
+          path: ${{ github.workspace }}/joininbox-arm64.img
+
