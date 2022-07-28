@@ -7,7 +7,7 @@ sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(l
 sudo apt-get update -y && sudo apt-get install packer -y
 
 echo -e "Installing GO..."
-wget https://go.dev/dl/go1.18.4.linux-arm64.tar.gz
+wget --progress=bar:force https://go.dev/dl/go1.18.4.linux-arm64.tar.gz
 sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.18.4.linux-arm64.tar.gz
 sudo rm -rf go1.18.4.linux-arm64.tar.gz
 export PATH=$PATH:/usr/local/go/bin
@@ -22,9 +22,9 @@ go build
 # Move json file to packer folder
 echo -e "\nMoving json file to packer folder..."
 wget --progress=bar:force https://downloads.raspberrypi.org/raspios_full_arm64/images/raspios_full_arm64-2022-01-28/2022-01-28-raspios-bullseye-arm64-full.zip
-wget https://raw.githubusercontent.com/openoms/joininbox/packer/.github/scripts/joininbox.json
-wget https://raw.githubusercontent.com/openoms/joininbox/packer/.github/scripts/packages.config
-wget https://raw.githubusercontent.com/openoms/joininbox/packer/.github/scripts/post-install.sh
+wget --progress=bar:force https://raw.githubusercontent.com/openoms/joininbox/packer/.github/scripts/joininbox.json
+wget --progress=bar:force https://raw.githubusercontent.com/openoms/joininbox/packer/.github/scripts/packages.config
+wget --progress=bar:force https://raw.githubusercontent.com/openoms/joininbox/packer/.github/scripts/post-install.sh
 
 # Build packer
 echo -e "\nBuilding packer image..."
