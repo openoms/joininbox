@@ -2,13 +2,13 @@
     "variables": {},
     "builders": [{
       "type": "arm",
-      "file_urls": ["2022-01-28-raspios-bullseye-arm64-full.zip"],
-      "file_checksum_url": "https://downloads.raspberrypi.org/raspios_full_arm64/images/raspios_full_arm64-2022-01-28/2022-01-28-raspios-bullseye-arm64-full.zip.sha256",
+      "file_urls": ["20220121_raspi_4_bullseye.img.xz"],
+      "file_checksum_url": "https://raspi.debian.net/tested/20220121_raspi_4_bullseye.img.xz.sha256",
       "file_checksum_type": "sha256",
-      "file_target_extension": "zip",
+      "file_target_extension": "xz",
       "image_build_method": "resize",
       "image_path": "joininbox-arm64.img",
-      "image_size": "8G",
+      "image_size": "G",
       "image_type": "dos",
       "image_partitions": [
         {

@@ -635,6 +635,9 @@ if [ "$3" = "without-qt" ]; then
 fi
 sudo -u joinmarket /home/joinmarket/install.joinmarket.sh -i install -q "$qtgui"
 
+echo "# Enable the ssh.service"
+systemctl enable ssh
+
 echo
 echo "###########################"
 echo "# The base image is ready"
