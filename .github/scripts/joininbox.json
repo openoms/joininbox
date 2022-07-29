@@ -6,6 +6,7 @@
       "file_checksum_url": "https://raspi.debian.net/tested/20220121_raspi_4_bullseye.img.xz.sha256",
       "file_checksum_type": "sha256",
       "file_target_extension": "xz",
+      "file_unarchive_cmd": ["xz", "--decompress", "$ARCHIVE_PATH"],
       "image_build_method": "resize",
       "image_path": "joininbox-arm64.img",
       "image_size": "8G",
