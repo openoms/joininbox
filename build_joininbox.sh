@@ -115,15 +115,13 @@ fi
 
 if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ]; then
   echo -e "\n*** PREPARE RASPBERRY OS VARIANTS ***"
-  sudo apt install -y raspi-config
-  # do memory split (16MB)
-  sudo raspi-config nonint do_memory_split 16
-  # set to wait until network is available on boot (0 seems to yes)
-  sudo raspi-config nonint do_boot_wait 0
-  # set WIFI country so boot does not block
-  # this will undo the softblock of rfkill on RaspiOS
-  [ "${wifi_region}" != "off" ] && sudo raspi-config nonint do_wifi_country $wifi_region
-  # see https://github.com/rootzoll/raspiblitz/issues/428#issuecomment-472822840
+  if apt list | grep "raspi-config"; then
+    sudo apt install -y raspi-config
+    # do memory split (16MB)
+    sudo raspi-config nonint do_memory_split 16
+    # set to wait until network is available on boot (0 seems to yes)
+    sudo raspi-config nonint do_boot_wait 0
+  fi
 
   configFile="/boot/config.txt"
   max_usb_current="max_usb_current=1"
@@ -131,7 +129,7 @@ if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ]; then
 
   if [ ${max_usb_currentDone} -eq 0 ]; then
     echo | sudo tee -a $configFile
-    echo "# Raspiblitz" | sudo tee -a $configFile
+    echo "# JoininBox" | sudo tee -a $configFile
     echo "$max_usb_current" | sudo tee -a $configFile
   else
     echo "$max_usb_current already in $configFile"
