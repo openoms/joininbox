@@ -8,7 +8,7 @@
       "file_target_extension": "xz",
       "image_build_method": "resize",
       "image_path": "joininbox-arm64.img",
-      "image_size": "G",
+      "image_size": "8G",
       "image_type": "dos",
       "image_partitions": [
         {
