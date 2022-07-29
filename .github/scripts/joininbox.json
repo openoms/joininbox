@@ -52,6 +52,7 @@
         "type": "shell",
         "inline": [
           "export DEBIAN_FRONTEND=noninteractive",
+          "echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4' | tee -a /etc/resolv.conf",
           "apt-get update -y",
           "apt-get upgrade -y",
           "apt-get install $(cat /tmp/packages.config) -y"
