@@ -2,7 +2,7 @@
     "variables": {},
     "builders": [{
       "type": "arm",
-      "file_urls": ["20220121_raspi_4_bullseye.img.xz"],
+      "file_urls": ["https://raspi.debian.net/tested/20220121_raspi_4_bullseye.img.xz"],
       "file_checksum_url": "https://raspi.debian.net/tested/20220121_raspi_4_bullseye.img.xz.sha256",
       "file_checksum_type": "sha256",
       "file_target_extension": "xz",
@@ -58,7 +58,7 @@
       },
       {
         "type": "shell",
-        "script": "post-install.sh"
+        "script": "build_joininbox.sh"
       }
     ]
   }

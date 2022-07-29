@@ -356,6 +356,28 @@ deb-src [arch=${arch}] https://deb.torproject.org/torproject.org tor-nightly-mas
   fi
 }
 
+# torTest - unused, moved from the build script to not break github actions
+function torTest() {
+  tries=0
+  while [ "${torTest}" != "Congratulations. This browser is configured to use Tor." ]
+  do
+    echo "# waiting another 10 seconds for Tor"
+    echo "# press CTRL + C to abort"
+    sleep 10
+    tries=$((tries+1))
+    if [ $tries = 100 ]; then
+      echo "# FAIL - Tor was not set up successfully"
+      exit 1
+    fi
+    torTest=$(curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s \
+    https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
+  done
+  echo
+  echo "# $torTest"
+  echo
+  echo "# Tor has been tested successfully"
+}
+
 # https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/docs/USAGE.md#co-signing-a-psbt
 function signPSBT() {
   chooseWallet

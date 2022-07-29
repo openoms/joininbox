@@ -495,27 +495,7 @@ deb-src [arch=${arch}] https://deb.torproject.org/torproject.org ${distro} main"
   fi
 fi
 
-# test Tor
-tries=0
-while [ "${torTest}" != "Congratulations. This browser is configured to use Tor." ]
-do
-  echo "# waiting another 10 seconds for Tor"
-  echo "# press CTRL + C to abort"
-  sleep 10
-  tries=$((tries+1))
-  if [ $tries = 100 ]; then
-    echo "# FAIL - Tor was not set up successfully"
-    exit 1
-  fi
-  torTest=$(curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s \
-  https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
-done
-echo
-echo "# $torTest"
-echo
-echo "# Tor has been tested successfully"
-echo
-echo "# install torsocks and nyx"
+echo "# Install torsocks and nyx"
 apt install -y torsocks tor-arm
 
 # Tor config
@@ -633,6 +613,9 @@ if [ "$3" = "without-qt" ]; then
  sed -i "s/^qtgui=.*/qtgui=false/g" /home/joinmarket/joinin.conf
 fi
 sudo -u joinmarket /home/joinmarket/install.joinmarket.sh -i install -q "$qtgui"
+
+echo "# Enable the ssh.service"
+systemctl enable ssh
 
 echo
 echo "###########################"
