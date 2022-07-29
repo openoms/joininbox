@@ -234,6 +234,6 @@ WantedBy=multi-user.target
   if [ ! -f /home/bitcoin/.bitcoin/mainnet/wallets/wallet.dat/wallet.dat ];then
     echo "# Create wallet.dat ..."
     sleep 10
-    sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli createwallet wallet.dat
+    sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli -named createwallet wallet_name=wallet.dat descriptors=false
   fi
 }

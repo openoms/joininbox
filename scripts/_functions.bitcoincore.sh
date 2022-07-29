@@ -291,7 +291,16 @@ function checkRPCwallet {
   walletFound=$(customRPC "# Check wallet" "listwallets" 2>$connectionOutput | grep -c "$rpc_wallet")
   if [ $walletFound -eq 0 ]; then
     echo "# Setting a watch only wallet for the remote Bitcoin Core named $rpc_wallet"
-    customRPC "# Create the bitcoind wallet" "createwallet" "$rpc_wallet"
+    tor=""
+    if [ $(echo $rpc_host | grep -c .onion) -gt 0 ]; then
+      tor="torsocks"
+      echo "# Connecting over Tor..."
+      echo
+    fi
+    #TODO rewrite customRPC to support multiple params
+    $tor curl -sS --data-binary \
+    '{"jsonrpc": "1.0", "id":"# Create the bitcoind wallet", "method": "createwallet", "params": {"wallet_name":"'"$rpc_wallet"'","descriptors":false}}' \
+     http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/wallet/$rpc_wallet  | jq .
     echo
     walletFound=$(customRPC "# Check wallet" "listwallets" 2>$connectionOutput | grep -c "$rpc_wallet")
     if [ $walletFound -eq 0 ]; then
