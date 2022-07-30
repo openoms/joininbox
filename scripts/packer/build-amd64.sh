@@ -14,7 +14,7 @@ echo -e "\nInstalling packer..."
 sudo apt-get install -y packer
 
 echo -e "\nInstalling virtualbox..."
-sudo apt-get install -y virtualbox-5.2
+sudo apt-get install -y virtualbox
 
 # Build the image
 echo -e "\nBuilding packer image..."

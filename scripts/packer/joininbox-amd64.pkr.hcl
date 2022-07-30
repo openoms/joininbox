@@ -11,25 +11,25 @@ variable "github_user" {
 
 variable "iso_checksum" {
   type    = string
-  default = "b85286d9855f549ed9895763519f6a295a7698fb9c5c5345811b3eefadfb6f07"
+  default = "eeab770236777e588f6ce0f984a7f3e85d86295625010e78a0fca3e873f78188af7966b53319dde3ddcaaaa5d6b9c803e4d80470755e75796fbf0e96c973507f"
 }
 
 variable "iso_checksum_type" {
   type    = string
-  default = "sha256"
+  default = "sha512"
 }
 
 variable "iso_url" {
   type    = string
-  default = "https://releases.ubuntu.com/22.04/ubuntu-22.04-desktop-amd64.iso"
+  default = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.4.0-amd64-netinst.iso"
 }
 
 source "virtualbox-iso" "joininbox-amd64" {
   boot_command     = ["<esc><wait>", "auto ", "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<wait>", "<enter>"]
   boot_wait        = "5s"
   disk_size        = "16384"
-  guest_os_type    = "Ubuntu_64"
-  headless         = true
+  guest_os_type    = "Debian_64"
+  headless         = false
   nested_virt      = true
   http_directory   = "http"
   iso_checksum     = "${var.iso_checksum_type}:${var.iso_checksum}"
@@ -39,7 +39,7 @@ source "virtualbox-iso" "joininbox-amd64" {
   ssh_port         = 22
   ssh_timeout      = "30m"
   ssh_username     = "vagrant"
-  vboxmanage       = [["modifyvm", "{{ .Name }}", "--memory", "1024"], ["modifyvm", "{{ .Name }}", "--cpus", "1"]]
+  vboxmanage       = [["modifyvm", "{{ .Name }}", "--memory", "2048"], ["modifyvm", "{{ .Name }}", "--cpus", "1"]]
   vm_name          = "joininbox-amd64"
 }
 
