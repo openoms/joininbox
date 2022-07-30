@@ -31,11 +31,11 @@ function downloadBitcoinCore() {
 
   # download signed binary sha256 hash sum file
   if [ ! -f SHA256SUMS ]; then
-    sudo -u joinmarket wget https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS
+    sudo -u joinmarket wget --progress=bar:force https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS
   fi
   # download signed binary sha256 hash sum file and check
   if [ ! -f SHA256SUMS.asc ]; then
-    sudo -u joinmarket wget https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS.asc
+    sudo -u joinmarket wget --progress=bar:force https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS.asc
   fi
   verifyResult=$(gpg --verify SHA256SUMS.asc 2>&1)
   goodSignature=$(echo ${verifyResult} | grep 'Good signature' -c)
@@ -75,7 +75,7 @@ function downloadBitcoinCore() {
   # download resources
   binaryName="bitcoin-${bitcoinVersion}-${bitcoinOSversion}.tar.gz"
   if [ ! -f "./${binaryName}" ]; then
-     sudo -u joinmarket wget https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/${binaryName}
+     sudo -u joinmarket wget --progress=bar:force https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/${binaryName}
   fi
   if [ ! -f "./${binaryName}" ]; then
     echo "!!! FAIL !!! Could not download the BITCOIN BINARY"
