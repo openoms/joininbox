@@ -16,7 +16,7 @@ variable "iso_checksum" {
 
 variable "iso_checksum_type" {
   type    = string
-  default = "sha256"
+  default = "sha512"
 }
 
 variable "iso_url" {

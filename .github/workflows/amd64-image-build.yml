@@ -6,11 +6,15 @@ on:
     paths-ignore:
       - '*.md'
       - '.gitignore'
+      - 'scripts/packer/build-arm64-rpi.sh'
+      - 'scripts/packer/joininbox-arm64-rpi.pkr.hcl'
   pull_request:
     branches: [ "packer" ]
     paths-ignore:
       - '*.md'
       - '.gitignore'
+      - 'scripts/packer/build-arm64-rpi.sh'
+      - 'scripts/packer/joininbox-arm64-rpi.pkr.hcl'
   workflow_dispatch:
 
 jobs:
