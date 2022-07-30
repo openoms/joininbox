@@ -19,22 +19,23 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Hello Joininbox
-        run: VERSION=$(git describe --tags)
-        run: DATE=$(date +"%Y-%m-%d"))
-        run: echo Building the JoininBox Image ${VERSION}!
+      - name: Set values
+        run: |
+          echo "BUILD_VERSION=$(git describe --always --tags)" >> $GITHUB_ENV
+          echo "BUILD_DATE=$(date +"%Y-%m-%d"))" >> $GITHUB_ENV
 
-      # Add permissions to file
+      - name: Hello Joininbox
+        run: echo "Building the joininbox-arm64-image-${{ env.BUILD_VERSION }}-${{ env.BUILD_DATE }}"
+
       - name: Add executable
         run: chmod +x "${GITHUB_WORKSPACE}/.github/scripts/build.sh"
 
-      # Run the build script
-      - name: Build script
+      - name: Run the build script
         run: ./.github/scripts/build.sh
         shell: bash
 
-      - name: Upload image
+      - name: Upload the image
         uses: actions/upload-artifact@v3
         with:
-          name: joininbox-arm64-image-${VERSION}-${DATE}
+          name: joininbox-arm64-image-${{ env.BUILD_VERSION }}-${{ env.BUILD_DATE }}
           path: ${{ github.workspace }}/packer-builder-arm/joininbox-arm64.img

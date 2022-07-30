@@ -21,7 +21,7 @@ go build
 
 # Move json file to packer folder
 echo -e "\nMoving json file and scripts to the packer folder..."
-wget --progress=bar:force https://raw.githubusercontent.com/openoms/joininbox/packer/.github/scripts/joininbox.json
+wget --progress=bar:force https://raw.githubusercontent.com/openoms/joininbox/packer/.github/scripts/joininbox-arm64.json
 wget --progress=bar:force https://raw.githubusercontent.com/openoms/joininbox/packer/.github/scripts/packages.config
 wget --progress=bar:force https://raw.githubusercontent.com/openoms/joininbox/packer/build_joininbox.sh
 
