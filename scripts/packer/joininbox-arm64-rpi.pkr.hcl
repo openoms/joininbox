@@ -33,6 +33,11 @@ source "arm" "joininbox-arm64" {
 build {
   sources = ["source.arm.joininbox-arm64"]
 
+  provisioner "file" {
+    source      = "scripts/resizerootfs"
+    destination = "/tmp"
+  }
+
   provisioner "shell" {
     script = "scripts/bootstrap_resizerootfs.sh"
   }

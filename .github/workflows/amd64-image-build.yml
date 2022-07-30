@@ -30,7 +30,7 @@ jobs:
       - name: Run the build script
         run: |
           cd scripts/packer
-          bash build-arm64-rpi.sh
+          bash build-amd64-rpi.sh
 
       - name: Upload the image
         uses: actions/upload-artifact@v3
