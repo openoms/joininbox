@@ -246,45 +246,12 @@ apt-get update -y
 apt-get upgrade -f -y
 
 echo
-echo "##########################"
-echo "# Tools and dependencies"
-echo "##########################"
-echo
-apt-get install -y htop git curl bash-completion vim jq bsdmainutils lsb-core
-# prepare for display graphics mode
-# see https://github.com/rootzoll/raspiblitz/pull/334
-apt-get install -y fbi
-# check for dependencies on DietPi, Ubuntu, Armbian
-apt-get install -y build-essential
-# dependencies for python
-apt-get install -y python3 virtualenv python3-venv python3-dev python3-wheel python3-jinja2 \
-python3-pip
-# make sure /usr/bin/pip exists (and calls pip3)
-update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
-# install ifconfig
-apt-get install -y net-tools
-# to display hex codes
-apt-get install -y xxd
-# setuptools needed for Nyx
-pip install setuptools
-# netcat
-apt-get install -y netcat
-# install killall, fuser
-apt-get install -y psmisc
-# dialog
-apt-get install -y dialog
-# qrencode
-apt-get install -y qrencode
-# unzip for the pruned node snapshot
-apt-get install -y unzip
-apt-get clean
-apt-get -y autoremove
-
-echo
 echo "##########"
 echo "# Python"
 echo "##########"
 echo
+# apt dependencies for python
+apt-get install -y python3 virtualenv python3-venv python3-dev python3-wheel python3-jinja2 python3-pip
 if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
   if [ ! -f "/usr/bin/python3.7" ]; then
     # install python37
@@ -293,9 +260,9 @@ if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
     # dependencies
     sudo apt-get install software-properties-common build-essential libnss3-dev zlib1g-dev libgdbm-dev libncurses5-dev libssl-dev libffi-dev libreadline-dev libsqlite3-dev libbz2-dev -y
     # download
-    wget https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz
+    wget --progress=bar:force https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz
     # optional signature for verification
-    wget https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz.asc
+    wget --progress=bar:force https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz.asc
     # get PGP pubkey of Ned Deily (Python release signing key) <nad@python.org>
     gpg --recv-key 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
     # check for: Good signature from "Pablo Galindo Salgado <pablogsal@gmail.com>"
@@ -342,6 +309,40 @@ else
     exit 1
   fi
 fi
+
+# make sure /usr/bin/pip exists (and calls pip3)
+update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+# setuptools needed for Nyx
+pip install setuptools
+
+echo
+echo "##########################"
+echo "# apt-get packages"
+echo "##########################"
+echo
+# system
+apt-get install -y htop git curl bash-completion vim jq bsdmainutils lsb-core
+# prepare for display graphics mode
+# see https://github.com/rootzoll/raspiblitz/pull/334
+apt-get install -y fbi
+# check for dependencies on DietPi, Ubuntu, Armbian
+apt-get install -y build-essential
+# install ifconfig
+apt-get install -y net-tools
+# to display hex codes
+apt-get install -y xxd
+# netcat
+apt-get install -y netcat
+# install killall, fuser
+apt-get install -y psmisc
+# dialog
+apt-get install -y dialog
+# qrencode
+apt-get install -y qrencode
+# unzip for the pruned node snapshot
+apt-get install -y unzip
+apt-get clean
+apt-get -y autoremove
 
 echo
 echo "#############"
