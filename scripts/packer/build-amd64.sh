@@ -15,6 +15,8 @@ sudo apt-get install -y packer
 
 echo -e "\nInstalling virtualbox..."
 sudo apt-get install -y virtualbox-6.1
+sudo apt-get autoremove -y virtualbox-dkms
+sudo apt-get install -y build-essential linux-headers-`uname -r` dkms virtualbox-dkms
 
 # Build the image in docker
 echo -e "\nBuilding packer image..."
