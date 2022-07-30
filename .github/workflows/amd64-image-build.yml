@@ -24,8 +24,7 @@ jobs:
           echo "BUILD_DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
           echo "BUILD_VERSION=$(git describe --always --tags)" >> $GITHUB_ENV
           cat $GITHUB_ENV
-          cat $GITHUB_ENV
-          cat $GITHUB_WORKSPACE
+          echo $GITHUB_WORKSPACE
           pwd
 
       - name: Hello Joininbox
