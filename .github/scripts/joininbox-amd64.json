@@ -1,0 +1,82 @@
+{
+    "variables": {
+      "branch": "packer",
+      "github_user": "openoms",
+      "iso_checksum": "eeab770236777e588f6ce0f984a7f3e85d86295625010e78a0fca3e873f78188af7966b53319dde3ddcaaaa5d6b9c803e4d80470755e75796fbf0e96c973507f",
+      "iso_checksum_type": "sha256",
+      "iso_url": "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.4.0-amd64-netinst.iso",
+      "packerstarttime": "{{isotime \"2006-01-02T03-04-05Z\"}}"
+    },
+    "builders": [
+      {
+        "boot_command": [
+          "<esc><wait>",
+          "auto ",
+          "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<wait>",
+          "<enter>"
+        ],
+        "boot_wait": "5s",
+        "disk_size": "16384",
+        "guest_os_type": "Debian_64",
+        "headless": false,
+        "http_directory": "http",
+        "iso_checksum": "{{ user `iso_checksum_type` }}:{{ user `iso_checksum` }}",
+        "iso_url": "{{ user `iso_url` }}",
+        "shutdown_command": "echo 'vagrant'|sudo -S shutdown -P now",
+        "ssh_password": "vagrant",
+        "ssh_port": 22,
+        "ssh_timeout": "30m",
+        "ssh_username": "vagrant",
+        "type": "virtualbox-iso",
+        "vboxmanage": [
+          [
+            "modifyvm",
+            "{{.Name}}",
+            "--memory",
+            "1024"
+          ],
+          [
+            "modifyvm",
+            "{{.Name}}",
+            "--cpus",
+            "1"
+          ]
+        ],
+        "vm_name": "joininbox-amd64-{{ user `packerstarttime` }}"
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "file",
+        "source": "packages.config",
+        "destination": "/tmp/packages.config"
+      },
+      {
+        "type": "shell",
+        "inline": [
+          "echo set debconf to Noninteractive",
+          "echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections"
+        ]
+      },
+      {
+        "type": "shell",
+        "inline": [
+          "echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4' | tee -a /etc/resolv.conf",
+          "apt-get update -y",
+          "apt-get upgrade -y",
+          "apt-get install $(cat /tmp/packages.config) -y"
+        ]
+      },
+      {
+        "type": "shell",
+        "script": "build_joininbox.sh"
+      }
+    ],
+    "post-processors": [
+      {
+        "compression_level": "8",
+        "output": "output/joininbox-amd64-{{ user `packerstarttime` }}.box",
+        "type": "vagrant"
+      }
+    ]
+  }

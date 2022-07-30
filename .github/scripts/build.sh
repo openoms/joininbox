@@ -27,4 +27,4 @@ wget --progress=bar:force https://raw.githubusercontent.com/openoms/joininbox/pa
 
 # Build packer
 echo -e "\nBuilding packer image..."
-docker run --rm --privileged -v /dev:/dev -v ${PWD}:/build mkaczanowski/packer-builder-arm build joininbox.json
+docker run --rm --privileged -v /dev:/dev -v ${PWD}:/build mkaczanowski/packer-builder-arm build joininbox-arm64.json
