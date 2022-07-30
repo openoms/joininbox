@@ -246,6 +246,41 @@ apt-get update -y
 apt-get upgrade -f -y
 
 echo
+echo "##########################"
+echo "# Tools and dependencies"
+echo "##########################"
+echo
+apt-get install -y htop git curl bash-completion vim jq bsdmainutils
+# prepare for display graphics mode
+# see https://github.com/rootzoll/raspiblitz/pull/334
+apt-get install -y fbi
+# check for dependencies on DietPi, Ubuntu, Armbian
+apt install -y build-essential
+# dependencies for python
+apt install -y python3 python3-venv python3-dev python3-wheel python3-jinja2 \
+python3-pip
+# make sure /usr/bin/pip exists (and calls pip3)
+update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+# install ifconfig
+apt install -y net-tools
+# to display hex codes
+apt install -y xxd
+# setuptools needed for Nyx
+pip install setuptools
+# netcat
+apt install -y netcat
+# install killall, fuser
+apt-get install -y psmisc
+# dialog
+apt install -y dialog
+# qrencode
+apt install -y qrencode
+# unzip for the pruned node snapshot
+apt install -y unzip
+apt-get clean
+apt-get -y autoremove
+
+echo
 echo "##########"
 echo "# Python"
 echo "##########"
@@ -307,41 +342,6 @@ else
     exit 1
   fi
 fi
-
-echo
-echo "##########################"
-echo "# Tools and dependencies"
-echo "##########################"
-echo
-apt-get install -y htop git curl bash-completion vim jq bsdmainutils
-# prepare for display graphics mode
-# see https://github.com/rootzoll/raspiblitz/pull/334
-apt-get install -y fbi
-# check for dependencies on DietPi, Ubuntu, Armbian
-apt install -y build-essential
-# dependencies for python
-apt install -y python3-venv python3-dev python3-wheel python3-jinja2 \
-python3-pip
-# make sure /usr/bin/pip exists (and calls pip3)
-update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
-# install ifconfig
-apt install -y net-tools
-# to display hex codes
-apt install -y xxd
-# setuptools needed for Nyx
-pip install setuptools
-# netcat
-apt install -y netcat
-# install killall, fuser
-apt-get install -y psmisc
-# dialog
-apt install -y dialog
-# qrencode
-apt install -y qrencode
-# unzip for the pruned node snapshot
-apt install -y unzip
-apt-get clean
-apt-get -y autoremove
 
 echo
 echo "#############"
