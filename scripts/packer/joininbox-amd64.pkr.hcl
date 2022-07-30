@@ -23,11 +23,6 @@ variable "iso_url" {
   type    = string
   default = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.4.0-amd64-netinst.iso"
 }
-# The "legacy_isotime" function has been provided for backwards compatability, but we recommend switching to the timestamp and formatdate functions.
-
-locals {
-  packerstarttime = "${legacy_isotime("2006-01-02T03-04-05Z")}"
-}
 
 source "virtualbox-iso" "joininbox-amd64" {
   boot_command     = ["<esc><wait>", "auto ", "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<wait>", "<enter>"]
@@ -44,7 +39,7 @@ source "virtualbox-iso" "joininbox-amd64" {
   ssh_timeout      = "30m"
   ssh_username     = "vagrant"
   vboxmanage       = [["modifyvm", "{{ .Name }}", "--memory", "1024"], ["modifyvm", "{{ .Name }}", "--cpus", "1"]]
-  vm_name          = "joininbox-amd64-${local.packerstarttime}"
+  vm_name          = "joininbox-amd64"
 }
 
 build {

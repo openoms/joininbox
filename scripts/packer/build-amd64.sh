@@ -15,8 +15,7 @@ sudo apt-get install -y packer
 
 echo -e "\nInstalling virtualbox..."
 sudo apt-get install -y virtualbox
-sudo apt-get install -y virtualbox-dkms
 
-# Build the image in docker
+# Build the image
 echo -e "\nBuilding packer image..."
 packer build joininbox-amd64.pkr.hcl
