@@ -11,24 +11,24 @@ variable "github_user" {
 
 variable "iso_checksum" {
   type    = string
-  default = "eeab770236777e588f6ce0f984a7f3e85d86295625010e78a0fca3e873f78188af7966b53319dde3ddcaaaa5d6b9c803e4d80470755e75796fbf0e96c973507f"
+  default = "b85286d9855f549ed9895763519f6a295a7698fb9c5c5345811b3eefadfb6f07"
 }
 
 variable "iso_checksum_type" {
   type    = string
-  default = "sha512"
+  default = "sha256"
 }
 
 variable "iso_url" {
   type    = string
-  default = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.4.0-amd64-netinst.iso"
+  default = "https://releases.ubuntu.com/22.04/ubuntu-22.04-desktop-amd64.iso"
 }
 
 source "virtualbox-iso" "joininbox-amd64" {
   boot_command     = ["<esc><wait>", "auto ", "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<wait>", "<enter>"]
   boot_wait        = "5s"
   disk_size        = "16384"
-  guest_os_type    = "Debian_64"
+  guest_os_type    = "Ubuntu_64"
   headless         = true
   nested_virt      = true
   http_directory   = "http"
