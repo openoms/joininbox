@@ -321,7 +321,8 @@ echo "# apt-get packages"
 echo "##########################"
 echo
 # system
-apt-get install -y htop git curl bash-completion vim jq bsdmainutils lsb-core
+apt-get install -y lsb-release
+apt-get install -y htop git curl bash-completion vim jq bsdmainutils
 # prepare for display graphics mode
 # see https://github.com/rootzoll/raspiblitz/pull/334
 apt-get install -y fbi
