@@ -257,7 +257,7 @@ apt-get install -y fbi
 # check for dependencies on DietPi, Ubuntu, Armbian
 apt install -y build-essential
 # dependencies for python
-apt install -y python3 python3-venv python3-dev python3-wheel python3-jinja2 \
+apt install -y python3 virtualenv python3-venv python3-dev python3-wheel python3-jinja2 \
 python3-pip
 # make sure /usr/bin/pip exists (and calls pip3)
 update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
@@ -291,7 +291,7 @@ if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
     pythonVersion="3.7.9"
     majorPythonVersion=$(echo "$pythonVersion" | awk -F. '{print $1"."$2}' )
     # dependencies
-    sudo apt install wget software-properties-common build-essential libnss3-dev zlib1g-dev libgdbm-dev libncurses5-dev libssl-dev libffi-dev libreadline-dev libsqlite3-dev libbz2-dev -y
+    sudo apt install software-properties-common build-essential libnss3-dev zlib1g-dev libgdbm-dev libncurses5-dev libssl-dev libffi-dev libreadline-dev libsqlite3-dev libbz2-dev -y
     # download
     wget https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz
     # optional signature for verification
@@ -523,7 +523,7 @@ echo "# Hardening"
 echo "#############"
 echo
 # install packages
-apt install -y virtualenv fail2ban ufw
+apt install -y fail2ban ufw
 # autostart fail2ban
 systemctl enable fail2ban
 
