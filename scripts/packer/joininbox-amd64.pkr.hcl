@@ -30,6 +30,7 @@ source "virtualbox-iso" "joininbox-amd64" {
   disk_size        = "16384"
   guest_os_type    = "Debian_64"
   headless         = true
+  nested_virt      = true
   http_directory   = "http"
   iso_checksum     = "${var.iso_checksum_type}:${var.iso_checksum}"
   iso_url          = "${var.iso_url}"
