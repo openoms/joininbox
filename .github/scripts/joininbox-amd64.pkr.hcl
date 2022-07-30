@@ -68,12 +68,12 @@ build {
 
   post-processor "compress" {
     compression_level = 9
-    output = "{{.BuildName}}.tar.gz"
+    output            = "{{.BuildName}}.tar.gz"
   }
 
   post-processor "checksum" {
-    checksum_types = [ "sha256" ]
-    output = "{{.BuildName}}.tar.gz.{{.ChecksumType}}"
+    checksum_types      = ["sha256"]
+    output              = "{{.BuildName}}.tar.gz.{{.ChecksumType}}"
     keep_input_artifact = true
   }
 }
