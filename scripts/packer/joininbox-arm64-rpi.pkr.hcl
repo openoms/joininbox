@@ -46,11 +46,11 @@ build {
   }
 
   provisioner "shell" {
-    inline = ["apt-get update -y", "apt-get upgrade -y", "apt-get install $(cat ${var.github_workspace}/.github/scripts/packages.config) -y"]
+    inline = ["apt-get update -y", "apt-get upgrade -y", "apt-get install -y sudo wget"]
   }
 
   provisioner "shell" {
-    script = "${var.github_workspace}/build_joininbox.sh"
+    script = "../../build_joininbox.sh"
   }
 
   post-processor "compress" {
@@ -58,7 +58,7 @@ build {
     output            = "{{.BuildName}}.tar.gz"
   }
 
-  post-processor "checksum" { # checksum image
+  post-processor "checksum" {
     checksum_types      = ["sha256"]
     output              = "{{.BuildName}}.tar.gz.{{.ChecksumType}}"
     keep_input_artifact = true

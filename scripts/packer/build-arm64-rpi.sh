@@ -23,5 +23,4 @@ go build
 echo -e "\nBuilding packer image..."
 docker run --rm --privileged -v /dev:/dev -v \
  ${PWD}:/build mkaczanowski/packer-builder-arm build \
- -var "github_workspace=${GITHUB_WORKSPACE}" \
- ${GITHUB_WORKSPACE}/.github/scripts/joininbox-arm64-rpi.pkr.hcl
+ joininbox-arm64-rpi.pkr.hcl

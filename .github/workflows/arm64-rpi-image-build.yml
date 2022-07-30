@@ -23,18 +23,14 @@ jobs:
         run: |
           echo "BUILD_DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
           echo "BUILD_VERSION=$(git describe --always --tags)" >> $GITHUB_ENV
-          cat $GITHUB_ENV
-          echo $GITHUB_WORKSPACE
-          pwd
 
       - name: Hello Joininbox
         run: echo "Building the joininbox-arm64-rpi-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}"
 
       - name: Run the build script
         run: |
-          chmod +x ./.github/scripts/build-arm64-rpi.sh
-          ./.github/scripts/build-arm64-rpi.sh
-        shell: bash
+          cd scripts/packer
+          bash build-arm64-rpi.sh
 
       - name: Upload the image
         uses: actions/upload-artifact@v3

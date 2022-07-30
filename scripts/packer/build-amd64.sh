@@ -9,5 +9,4 @@ sudo apt-get update -y && sudo apt-get install packer -y
 # Build the image in docker
 echo -e "\nBuilding packer image..."
 packer build \
- -var "github_workspace=${GITHUB_WORKSPACE}" \
- ${GITHUB_WORKSPACE}/.github/scripts/joininbox-amd64.pkr.hcl 
+ ${GITHUB_WORKSPACE}/.github/scripts/joininbox-amd64.pkr.hcl
