@@ -33,30 +33,24 @@ source "arm" "joininbox-arm64" {
 build {
   sources = ["source.arm.joininbox-arm64"]
 
-  provisioner "file" {
-    destination = "/tmp"
-    source      = "scripts/resizerootfs"
-  }
-
   provisioner "shell" {
     script = "scripts/bootstrap_resizerootfs.sh"
   }
 
-  provisioner "file" {
-    destination = "/tmp/packages.config"
-    source      = "packages.config"
+  provisioner "shell" {
+    inline = ["echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections"]
   }
 
   provisioner "shell" {
-    inline = ["echo set debconf to Noninteractive", "echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections"]
+    inline = ["echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4' | tee -a /etc/resolv.conf"]
   }
 
   provisioner "shell" {
-    inline = ["echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4' | tee -a /etc/resolv.conf", "apt-get update -y", "apt-get upgrade -y", "apt-get install $(cat /tmp/packages.config) -y"]
+    inline = ["apt-get update -y", "apt-get upgrade -y", "apt-get install $(cat ${var.github_workspace}/.github/scripts/packages.config) -y"]
   }
 
   provisioner "shell" {
-    script = "build_joininbox.sh"
+    script = "${var.github_workspace}/build_joininbox.sh"
   }
 
   post-processor "compress" {

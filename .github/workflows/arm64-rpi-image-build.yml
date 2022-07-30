@@ -1,4 +1,4 @@
-name: joininbox-amd64-image-build
+name: arm64-rpi-image-build
 
 on:
   push:
@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  arm64-image-build:
+  arm64-rpi-image-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -23,19 +23,19 @@ jobs:
         run: |
           echo "BUILD_DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
           echo "BUILD_VERSION=$(git describe --always --tags)" >> $GITHUB_ENV
+          echo "$GITHUB_ENV"
 
       - name: Hello Joininbox
-        run: echo "Building the joininbox-amd64-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}"
-
-      - name: Add executable
-        run: chmod +x "${GITHUB_WORKSPACE}/.github/scripts/build-amd64.sh"
+        run: echo "Building the joininbox-arm64-rpi-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}"
 
       - name: Run the build script
-        run: ./.github/scripts/build-amd64.sh
+        run: |
+          chmod +x ./.github/scripts/build-arm64-rpi.sh
+          ./.github/scripts/build-arm64-rpi.sh
         shell: bash
 
       - name: Upload the image
         uses: actions/upload-artifact@v3
         with:
-          name: joininbox-amd64-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}
-          path: ${{ github.workspace }}/*.tar.gz*
+          name: joininbox-arm64-rpi-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}
+          path: ${{ github.workspace }}/packer-builder-arm/*.tar.gz*
