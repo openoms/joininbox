@@ -97,7 +97,7 @@ if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ]; then
   # https://daker.me/2014/10/how-to-fix-perl-warning-setting-locale-failed-in-raspbian.html
   # https://stackoverflow.com/questions/38188762/generate-all-locales-in-a-docker-image
   echo "# FIXING LOCALES FOR BUILD "
-  apt install -y locales
+  apt-get install -y locales
   sed -i "s/^# en_US.UTF-8 UTF-8.*/en_US.UTF-8 UTF-8/g" /etc/locale.gen
   sed -i "s/^# en_US ISO-8859-1.*/en_US ISO-8859-1/g" /etc/locale.gen
   locale-gen
@@ -115,8 +115,8 @@ fi
 
 if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ]; then
   echo -e "\n*** PREPARE RASPBERRY OS VARIANTS ***"
-  if apt list | grep "raspi-config"; then
-    sudo apt install -y raspi-config
+  if apt-get list | grep "raspi-config"; then
+    sudo apt-get install -y raspi-config
     # do memory split (16MB)
     sudo raspi-config nonint do_memory_split 16
     # set to wait until network is available on boot (0 seems to yes)
@@ -239,7 +239,7 @@ service rsyslog restart
 
 echo
 echo "########################"
-echo "# Apt update & upgrade"
+echo "# apt-get update & upgrade"
 echo "########################"
 echo
 apt-get update -y
@@ -250,33 +250,33 @@ echo "##########################"
 echo "# Tools and dependencies"
 echo "##########################"
 echo
-apt-get install -y htop git curl bash-completion vim jq bsdmainutils
+apt-get install -y htop git curl bash-completion vim jq bsdmainutils lsb-core
 # prepare for display graphics mode
 # see https://github.com/rootzoll/raspiblitz/pull/334
 apt-get install -y fbi
 # check for dependencies on DietPi, Ubuntu, Armbian
-apt install -y build-essential
+apt-get install -y build-essential
 # dependencies for python
-apt install -y python3 virtualenv python3-venv python3-dev python3-wheel python3-jinja2 \
+apt-get install -y python3 virtualenv python3-venv python3-dev python3-wheel python3-jinja2 \
 python3-pip
 # make sure /usr/bin/pip exists (and calls pip3)
 update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 # install ifconfig
-apt install -y net-tools
+apt-get install -y net-tools
 # to display hex codes
-apt install -y xxd
+apt-get install -y xxd
 # setuptools needed for Nyx
 pip install setuptools
 # netcat
-apt install -y netcat
+apt-get install -y netcat
 # install killall, fuser
 apt-get install -y psmisc
 # dialog
-apt install -y dialog
+apt-get install -y dialog
 # qrencode
-apt install -y qrencode
+apt-get install -y qrencode
 # unzip for the pruned node snapshot
-apt install -y unzip
+apt-get install -y unzip
 apt-get clean
 apt-get -y autoremove
 
@@ -291,7 +291,7 @@ if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
     pythonVersion="3.7.9"
     majorPythonVersion=$(echo "$pythonVersion" | awk -F. '{print $1"."$2}' )
     # dependencies
-    sudo apt install software-properties-common build-essential libnss3-dev zlib1g-dev libgdbm-dev libncurses5-dev libssl-dev libffi-dev libreadline-dev libsqlite3-dev libbz2-dev -y
+    sudo apt-get install software-properties-common build-essential libnss3-dev zlib1g-dev libgdbm-dev libncurses5-dev libssl-dev libffi-dev libreadline-dev libsqlite3-dev libbz2-dev -y
     # download
     wget https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz
     # optional signature for verification
@@ -442,7 +442,7 @@ then
   echo "# install the Tor repo"
   echo
   echo "# Install dirmngr"
-  apt install -y dirmngr apt-transport-https
+  apt-get install -y dirmngr apt-transport-https
   echo
   echo "# Adding KEYS deb.torproject.org "
   torKeyAvailable=$(gpg --list-keys | grep -c \
@@ -472,14 +472,14 @@ deb-src [arch=${arch}] https://deb.torproject.org/torproject.org ${distro} main"
   else
     echo "Tor sources are available"
   fi
-  apt update
+  apt-get update
   if [ "${arch}" = "armhf" ]; then
     # https://2019.www.torproject.org/docs/debian#source
     echo "# running on armv6l - need to compile Tor from source"
-    apt install -y build-essential fakeroot devscripts
-    apt build-dep -y tor deb.torproject.org-keyring
+    apt-get install -y build-essential fakeroot devscripts
+    apt-get build-dep -y tor deb.torproject.org-keyring
     mkdir ~/debian-packages; cd ~/debian-packages
-    apt source tor
+    apt-get source tor
     cd tor-* || exit 1
     debuild -rfakeroot -uc -us
     cd .. || exit 1
@@ -489,12 +489,12 @@ deb-src [arch=${arch}] https://deb.torproject.org/torproject.org ${distro} main"
     tor &
   else
     echo "# Install Tor"
-    apt install -y tor
+    apt-get install -y tor
   fi
 fi
 
 echo "# Install torsocks and nyx"
-apt install -y torsocks tor-arm
+apt-get install -y torsocks tor-arm
 
 # Tor config
 # torrc
@@ -523,7 +523,7 @@ echo "# Hardening"
 echo "#############"
 echo
 # install packages
-apt install -y fail2ban ufw
+apt-get install -y fail2ban ufw
 # autostart fail2ban
 systemctl enable fail2ban
 
@@ -564,12 +564,12 @@ echo "##########"
 echo
 
 # install a command-line fuzzy finder (https://github.com/junegunn/fzf)
-apt -y install fzf
+apt-get -y install fzf
 bash -c "echo 'source /usr/share/doc/fzf/examples/key-bindings.bash' >> \
 /home/joinmarket/.bashrc"
 
 # install tmux
-apt -y install tmux
+apt-get -y install tmux
 
 echo
 echo "#############"

@@ -51,7 +51,21 @@
       {
         "type": "shell",
         "inline": [
-          "export DEBIAN_FRONTEND=noninteractive",
+          "echo set debconf to Noninteractive",
+          "echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections"
+        ]
+      },
+      {
+        "type": "shell",
+        "inline": [
+          "echo fix hostname",
+          "HOSTNAME=$(cat /etc/hostname)",
+          "echo 127.0.0.1 $HOSTNAME | tee -a /etc/hosts"
+        ]
+      },
+      {
+        "type": "shell",
+        "inline": [
           "echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4' | tee -a /etc/resolv.conf",
           "apt-get update -y",
           "apt-get upgrade -y",
