@@ -1,0 +1,41 @@
+name: joininbox-amd64-image-build
+
+on:
+  push:
+    branches: [ "packer" ]
+    paths-ignore:
+      - '*.md'
+      - '.gitignore'
+  pull_request:
+    branches: [ "packer" ]
+    paths-ignore:
+      - '*.md'
+      - '.gitignore'
+  workflow_dispatch:
+
+jobs:
+  arm64-image-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set values
+        run: |
+          echo "BUILD_DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
+          echo "BUILD_VERSION=$(git describe --always --tags)" >> $GITHUB_ENV
+
+      - name: Hello Joininbox
+        run: echo "Building the joininbox-amd64-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}"
+
+      - name: Add executable
+        run: chmod +x "${GITHUB_WORKSPACE}/.github/scripts/build-amd64.sh"
+
+      - name: Run the build script
+        run: ./.github/scripts/build-amd64.sh
+        shell: bash
+
+      - name: Upload the image
+        uses: actions/upload-artifact@v3
+        with:
+          name: joininbox-amd64-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}
+          path: ${{ github.workspace }}/*.tar.gz*

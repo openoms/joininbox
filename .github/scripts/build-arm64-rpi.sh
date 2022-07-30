@@ -21,10 +21,10 @@ go build
 
 # Move json file to packer folder
 echo -e "\nMoving json file and scripts to the packer folder..."
-wget --progress=bar:force https://raw.githubusercontent.com/openoms/joininbox/packer/.github/scripts/joininbox-arm64.pkr.hcl
+wget --progress=bar:force https://raw.githubusercontent.com/openoms/joininbox/packer/.github/scripts/joininbox-arm64-rpi.pkr.hcl
 wget --progress=bar:force https://raw.githubusercontent.com/openoms/joininbox/packer/.github/scripts/packages.config
 wget --progress=bar:force https://raw.githubusercontent.com/openoms/joininbox/packer/build_joininbox.sh
 
 # Build the image in docker
 echo -e "\nBuilding packer image..."
-docker run --rm --privileged -v /dev:/dev -v ${PWD}:/build mkaczanowski/packer-builder-arm build joininbox-arm64.pkr.hcl
+docker run --rm --privileged -v /dev:/dev -v ${PWD}:/build mkaczanowski/packer-builder-arm build joininbox-arm64-rpi.pkr.hcl
