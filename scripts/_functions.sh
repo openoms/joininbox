@@ -327,22 +327,22 @@ function updateTor() {
 deb [arch=${arch}] https://deb.torproject.org/torproject.org tor-nightly-master-$distro main
 deb-src [arch=${arch}] https://deb.torproject.org/torproject.org tor-nightly-master-$distro main" \
   | sudo tee /etc/apt/sources.list.d/tor.list
-  echo "# Running apt update"
-  sudo apt update
+  echo "# Running apt-get update"
+  sudo apt-get update
   if [ ${arch} = "amd64" ] || [ ${arch} = "arm64" ]; then
     echo "# CPU is ${arch} - updating to the latest alpha binary"
-    sudo apt install -y tor
+    sudo apt-get install -y tor
     echo "# Restarting the tor.service "
     sudo systemctl restart tor
   else
     echo "# Install the dependencies for building from source"
-    sudo apt install -y build-essential fakeroot devscripts
-    sudo apt build-dep -y tor deb.torproject.org-keyring
+    sudo apt-get install -y build-essential fakeroot devscripts
+    sudo apt-get build-dep -y tor deb.torproject.org-keyring
     rm -rf $HOME//download/debian-packages
     mkdir -p $HOME/download/debian-packages
     cd $HOME/download/debian-packages || exit 1
     echo "# Building Tor from the source code ..."
-    apt source tor
+    apt-get source tor
     cd tor-* || exit 1
     debuild -rfakeroot -uc -us
     cd .. || exit 1

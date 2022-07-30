@@ -62,8 +62,8 @@ Detailed guide: <https://pimylifeup.com/setup-2fa-ssh/>
 See all the options at: <https://www.mankier.com/1/google-authenticator#Options>
 * Commands:
   ```
-  sudo apt update
-  sudo apt install libpam-google-authenticator
+  sudo apt-get update
+  sudo apt-get install libpam-google-authenticator
   google-authenticator --time-based --force --disallow-reuse --qr-mode=UTF8 --rate-limit=3 --rate-time=30 --window-size=3
 
   echo "auth required pam_google_authenticator.so" | sudo tee -a /etc/pam.d/sshd
@@ -103,9 +103,9 @@ On a RaspiBlitz
 
 On a Debian based Linux Desktop (Ubuntu, Debian, MX Linux etc.)
 * needs Tor running on your desktop:  
-`sudo apt install tor`
+`sudo apt-get install tor`
 * might need to add:  
-`sudo apt install torsocks` 
+`sudo apt-get install torsocks` 
 
 * edit the Tor config file:  
 `sudo nano /etc/tor/torrc`
@@ -349,8 +349,8 @@ https://2019.www.torproject.org/docs/debian#source
     ```
 * Install basic dependencies
     ```bash
-    apt update
-    apt install sudo wget
+    apt-get update
+    apt-get install sudo wget
     ```
 ### Install Joininbox
 * Download and run the build script

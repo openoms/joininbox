@@ -6,7 +6,7 @@ USERNAME=joinmarket
 HOME_DIR=/home/$USERNAME
 
 if [ ! -f ${HOME_DIR}/selfsignedcert/cert.pem ] || [ ! -f ${HOME_DIR}/selfsignedcert/key.pem ];then
-  sudo apt install openssl
+  sudo apt-get install openssl
 
   sudo -u ${USERNAME} mkdir ${HOME_DIR}/selfsignedcert
   cd ${HOME_DIR}/selfsignedcert || exit 1

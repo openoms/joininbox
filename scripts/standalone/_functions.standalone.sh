@@ -112,7 +112,7 @@ function downloadSnapShot() {
     /home/bitcoin/.bitcoin/bitcoin.conf.backup
   fi
   echo "# Check unzip"
-  sudo apt install -y unzip
+  sudo apt-get install -y unzip
   sudo unzip -o $downloadFileName -d /home/store/app-data/.bitcoin
   if [ -f /home/bitcoin/.bitcoin/bitcoin.conf.backup ];then
     echo "# Restore bitcoin.conf"
