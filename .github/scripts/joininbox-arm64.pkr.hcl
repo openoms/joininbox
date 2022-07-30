@@ -59,18 +59,14 @@ build {
     script = "build_joininbox.sh"
   }
 
-  post-processor "compress"{
-    "type": "compress",
-    "output": "{{.BuildName}}_{{.BuilderType}}.tar.gz",
-    "compression_level": 9
+  post-processor "compress" {
+    compression_level = 9
+    output            = "{{.BuildName}}_{{.BuilderType}}.tar.gz"
   }
 
   post-processor "checksum" { # checksum image
-    checksum_types = [ "sha256" ]
-    output = "{{.BuildName}}_{{.BuilderType}}.tar.gz{{.ChecksumType}}"
+    checksum_types      = ["sha256"]
+    output              = "{{.BuildName}}_{{.BuilderType}}.tar.gz{{.ChecksumType}}"
     keep_input_artifact = true
-  }
-
-  post-processor "amazon-import" { # upload image to AWS
   }
 }
