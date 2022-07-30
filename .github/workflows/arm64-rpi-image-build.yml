@@ -23,7 +23,9 @@ jobs:
         run: |
           echo "BUILD_DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
           echo "BUILD_VERSION=$(git describe --always --tags)" >> $GITHUB_ENV
-          echo "$GITHUB_ENV"
+          cat $GITHUB_ENV
+          cat $GITHUB_WORKSPACE
+          pwd
 
       - name: Hello Joininbox
         run: echo "Building the joininbox-arm64-rpi-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}"
