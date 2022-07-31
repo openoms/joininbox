@@ -42,4 +42,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: joininbox-arm64-rpi-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}
-          path: ${{ github.workspace }}/scripts/packer/packer-builder-arm/*.tar.gz*
+          path: |
+            ${{ github.workspace }}/scripts/packer/packer-builder-arm/joininbox-arm64-rpi.img
+            ${{ github.workspace }}/scripts/packer/packer-builder-arm/joininbox-arm64-rpi.img.sha256

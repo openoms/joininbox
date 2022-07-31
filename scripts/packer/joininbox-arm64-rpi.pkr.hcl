@@ -1,5 +1,5 @@
 
-source "arm" "joininbox-arm64" {
+source "arm" "joininbox-arm64-rpi" {
   file_checksum_type    = "sha256"
   file_checksum_url     = "https://raspi.debian.net/tested/20220121_raspi_4_bullseye.img.xz.sha256"
   file_target_extension = "xz"
@@ -23,7 +23,7 @@ source "arm" "joininbox-arm64" {
     start_sector = "532480"
     type         = "83"
   }
-  image_path                   = "joininbox-arm64.img"
+  image_path                   = "joininbox-arm64-rpi.img"
   image_size                   = "8G"
   image_type                   = "dos"
   qemu_binary_destination_path = "/usr/bin/qemu-arm-static"
@@ -31,7 +31,7 @@ source "arm" "joininbox-arm64" {
 }
 
 build {
-  sources = ["source.arm.joininbox-arm64"]
+  sources = ["source.arm.joininbox-arm64-rpi"]
 
   provisioner "file" {
     source      = "scripts/resizerootfs"
@@ -58,14 +58,9 @@ build {
     script = "build_joininbox.sh"
   }
 
-  post-processor "compress" {
-    compression_level = 9
-    output            = "{{.BuildName}}.tar.gz"
-  }
-
   post-processor "checksum" {
     checksum_types      = ["sha256"]
-    output              = "{{.BuildName}}.tar.gz.{{.ChecksumType}}"
+    output              = "{{.BuildName}}.img.{{.ChecksumType}}"
     keep_input_artifact = true
   }
 }
