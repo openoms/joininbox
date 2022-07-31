@@ -13,4 +13,4 @@ sudo apt-get install -y qemu-system
 
 # Build the image
 echo -e "\nBuilding packer image..."
-packer build joininbox-amd64.pkr.hcl
+PACKER_LOG=1 packer build joininbox-amd64.pkr.hcl

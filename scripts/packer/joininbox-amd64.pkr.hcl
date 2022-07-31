@@ -29,11 +29,10 @@ source "qemu" "joininbox-amd64" {
   iso_url          = "${var.iso_url}"
   disk_size        = "16384"
   format           = "qcow2"
-  accelerator      = "kvm"
   http_directory   = "http"
-  shutdown_command = "echo 'joinmarket' | sudo -S shutdown -P now"
-  ssh_username     = "joinmarket"
-  ssh_password     = "joininbox"
+  shutdown_command = "echo 'vagrant' | sudo -S shutdown -P now"
+  ssh_username     = "vagrant"
+  ssh_password     = "packer"
   ssh_timeout      = "30m"
   vm_name          = "joininbox-amd64"
   net_device       = "virtio-net"
@@ -41,6 +40,10 @@ source "qemu" "joininbox-amd64" {
   boot_wait        = "10s"
   boot_command     = ["<esc><wait>", "auto ", "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<wait>", "<enter>"]
   headless         = true
+  qemuargs = [
+    ["--no-acpi", ""],
+    ["--enable-kvm", ""]
+  ]
 }
 
 build {
