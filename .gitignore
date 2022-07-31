@@ -1,2 +1,2 @@
 scripts/wallets
-scripts/packer/packer-builder-arm
+scripts/packer/arm64-rpi/packer-builder-arm
