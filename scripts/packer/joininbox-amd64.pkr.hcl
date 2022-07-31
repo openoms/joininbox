@@ -40,9 +40,9 @@ source "qemu" "joininbox-amd64" {
   boot_wait        = "10s"
   boot_command     = ["<esc><wait>", "auto ", "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<wait>", "<enter>"]
   headless         = true
+  accelerator      = "tcg"
   qemuargs = [
     ["--no-acpi", ""],
-    ["--enable-kvm", ""]
   ]
 }
 
