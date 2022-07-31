@@ -24,27 +24,27 @@ variable "iso_url" {
   default = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.4.0-amd64-netinst.iso"
 }
 
-source "virtualbox-iso" "joininbox-amd64" {
-  boot_command     = ["<esc><wait>", "auto ", "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<wait>", "<enter>"]
-  boot_wait        = "5s"
-  disk_size        = "16384"
-  guest_os_type    = "Debian_64"
-  headless         = true
-  nested_virt      = true
-  http_directory   = "http"
+source "qemu" "joininbox-amd64" {
   iso_checksum     = "${var.iso_checksum_type}:${var.iso_checksum}"
   iso_url          = "${var.iso_url}"
-  shutdown_command = "echo 'vagrant'|sudo -S shutdown -P now"
-  ssh_password     = "vagrant"
-  ssh_port         = 22
+  disk_size        = "16384"
+  format           = "qcow2"
+  accelerator      = "kvm"
+  http_directory   = "http"
+  shutdown_command = "echo 'joinmarket' | sudo -S shutdown -P now"
+  ssh_username     = "joinmarket"
+  ssh_password     = "joininbox"
   ssh_timeout      = "30m"
-  ssh_username     = "vagrant"
-  vboxmanage       = [["modifyvm", "{{ .Name }}", "--memory", "2048"], ["modifyvm", "{{ .Name }}", "--cpus", "1"]]
   vm_name          = "joininbox-amd64"
+  net_device       = "virtio-net"
+  disk_interface   = "virtio"
+  boot_wait        = "10s"
+  boot_command     = ["<esc><wait>", "auto ", "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<wait>", "<enter>"]
+  headless         = true
 }
 
 build {
-  sources = ["source.virtualbox-iso.joininbox-amd64"]
+  sources = ["source.qemu.joininbox-amd64"]
 
   provisioner "shell" {
     inline = ["echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections"]
