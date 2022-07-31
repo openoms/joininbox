@@ -6,17 +6,13 @@ on:
     paths-ignore:
       - '*.md'
       - '.gitignore'
-      - 'scripts/packer/build-amd64.sh'
-      - 'scripts/packer/joininbox-amd64.pkr.hcl'
-      - 'scripts/packer/http'
+      - 'scripts/packer/amd64'
   pull_request:
     branches: [ "packer" ]
     paths-ignore:
       - '*.md'
       - '.gitignore'
-      - 'scripts/packer/build-amd64.sh'
-      - 'scripts/packer/joininbox-amd64.pkr.hcl'
-      - 'scripts/packer/http'
+      - 'scripts/packer/amd64'
   workflow_dispatch:
 
 jobs:
@@ -35,13 +31,13 @@ jobs:
 
       - name: Run the build script
         run: |
-          cd scripts/packer
-          bash build-arm64-rpi.sh
+          cd scripts/packer/arm64-rpi
+          bash arm64-rpi.sh
 
       - name: Upload the image
         uses: actions/upload-artifact@v3
         with:
           name: joininbox-arm64-rpi-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}
           path: |
-            ${{ github.workspace }}/scripts/packer/packer-builder-arm/joininbox-arm64-rpi.img
-            ${{ github.workspace }}/scripts/packer/packer-builder-arm/joininbox-arm64-rpi.img.sha256
+            ${{ github.workspace }}/scripts/packer/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img
+            ${{ github.workspace }}/scripts/packer/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.sha256

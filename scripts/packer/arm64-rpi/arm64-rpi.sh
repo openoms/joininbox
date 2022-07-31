@@ -20,11 +20,11 @@ go mod download
 go build
 
 # copy the scripts to the packer-builder-arm directory
-cp ../joininbox-arm64-rpi.pkr.hcl ./
-cp ../../../build_joininbox.sh ./
+cp ../arm64-rpi.pkr.hcl ./
+cp ../../../../build_joininbox.sh ./
 
 # Build the image in docker
 echo -e "\nBuilding packer image..."
 docker run --rm --privileged -v /dev:/dev -v \
  ${PWD}:/build mkaczanowski/packer-builder-arm \
- build joininbox-arm64-rpi.pkr.hcl
+ build arm64-rpi.pkr.hcl
