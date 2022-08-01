@@ -58,9 +58,13 @@ build {
     script = "build_joininbox.sh"
   }
 
+  post-processor "artifice" {
+    files = ["joininbox-arm64-rpi.img"]
+  }
+
   post-processor "checksum" {
     checksum_types      = ["sha256"]
-    output              = "{{.BuildName}}.img.{{.ChecksumType}}"
+    output              = "joininbox-arm64-rpi.img.{{.ChecksumType}}"
     keep_input_artifact = true
   }
 }
