@@ -43,28 +43,24 @@ build {
   }
 
   provisioner "shell" {
-    inline = ["echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections"]
-  }
-
-  provisioner "shell" {
-    inline = ["echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4' | tee -a /etc/resolv.conf"]
-  }
-
-  provisioner "shell" {
-    inline = ["apt-get update -y", "apt-get upgrade -y", "apt-get install -y sudo wget"]
+    inline = [
+      "echo 'nameserver 1.1.1.1' > /etc/resolv.conf",
+      "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf",
+      "echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections",
+      "apt-get update",
+      "apt-get upgrade -y",
+      "apt-get install -y sudo wget",
+      "apt-get -y autoremove",
+      "apt-get -y clean",
+    ]
   }
 
   provisioner "shell" {
     script = "build_joininbox.sh"
   }
 
-  post-processor "artifice" {
-    files = ["joininbox-arm64-rpi.img"]
-  }
-
   post-processor "checksum" {
-    checksum_types      = ["sha256"]
-    output              = "joininbox-arm64-rpi.img.{{.ChecksumType}}"
-    keep_input_artifact = true
+    checksum_types = ["sha256"]
+    output         = "joininbox-arm64-rpi.img.sha256"
   }
 }
