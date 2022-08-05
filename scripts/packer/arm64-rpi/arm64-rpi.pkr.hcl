@@ -33,10 +33,6 @@ source "arm" "joininbox-arm64-rpi" {
 build {
   sources = ["source.arm.joininbox-arm64-rpi"]
 
-  provisioner "shell" {
-    script = "echo 'skip'"
-  }
-
   post-processors {
     post-processor "checksum" {
       checksum_types      = ["sha256"]
