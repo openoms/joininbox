@@ -33,7 +33,7 @@ source "arm" "joininbox-arm64-rpi" {
 build {
   sources = ["source.arm.joininbox-arm64-rpi"]
 
-  post-processors [
+  post-processors {
     post-processor "artifice" {
       files = ["joininbox-arm64-rpi.img"]
     }
