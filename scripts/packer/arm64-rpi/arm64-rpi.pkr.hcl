@@ -60,10 +60,7 @@ build {
   }
   
   post-processors {
-    post-processor "artifice" {
-      files = ["joininbox-arm64-rpi.img"]
-      keep_input_artifact = true
-    }
+
     post-processor "checksum" {
       checksum_types      = ["sha256"]
       output              = "joininbox-arm64-rpi.img.sha256"
