@@ -59,12 +59,15 @@ build {
     script = "build_joininbox.sh"
   }
   
-  post-processors {
-
-    post-processor "checksum" {
-      checksum_types      = ["sha256"]
-      output              = "joininbox-arm64-rpi.img.sha256"
-      keep_input_artifact = true
-    }
+  post-processor "manifest" {
+    output      = "manifest.json"
+    strip_path  = true
   }
+  
+  post-processor "checksum" {
+    checksum_types      = ["sha256"]
+    output              = "joininbox-arm64-rpi.img.sha256"
+    keep_input_artifact = true
+  }
+
 }
