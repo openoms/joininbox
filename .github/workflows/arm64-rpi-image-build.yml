@@ -41,3 +41,5 @@ jobs:
           path: |
             ${{ github.workspace }}/**/*.img
             ${{ github.workspace }}/**/*.img.sha256
+            ${{ github.workspace }}/**/*.json
+
