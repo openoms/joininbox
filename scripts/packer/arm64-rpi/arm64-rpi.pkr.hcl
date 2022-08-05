@@ -33,40 +33,19 @@ source "arm" "joininbox-arm64-rpi" {
 build {
   sources = ["source.arm.joininbox-arm64-rpi"]
 
-  provisioner "file" {
-    source      = "scripts/resizerootfs"
-    destination = "/tmp"
-  }
-
   provisioner "shell" {
-    script = "scripts/bootstrap_resizerootfs.sh"
-  }
-
-  provisioner "shell" {
-    inline = [
-      "echo 'nameserver 1.1.1.1' > /etc/resolv.conf",
-      "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf",
-      "echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections",
-      "apt-get update",
-      "apt-get upgrade -y",
-      "apt-get install -y sudo wget",
-      "apt-get -y autoremove",
-      "apt-get -y clean",
-    ]
-  }
-
-  provisioner "shell" {
-    script = "build_joininbox.sh"
+    script = "echo 'skip'"
   }
 
   post-processors {
-    post-processor "artifice" {
-      files = ["joininbox-arm64-rpi.img"]
-    }
-
     post-processor "checksum" {
       checksum_types      = ["sha256"]
+      output              = "joininbox-arm64-rpi.img.checksum"
       keep_input_artifact = true
+    }
+    
+    post-processor "artifice" {
+      files = ["joininbox-arm64-rpi.img", "joininbox-arm64-rpi.img.checksum"]
     }
   }
 }
