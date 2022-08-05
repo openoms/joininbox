@@ -37,7 +37,7 @@ jobs:
       - name: Compute Checksum
         run: |
           cd scripts/packer/arm64-rpi/packer-builder-arm/
-          sha256sum joininbox-arm64-rpi.img.sha256
+          sha256sum joininbox-arm64-rpi.img > joininbox-arm64-rpi.img.sha256
           
       - name: Upload the image
         uses: actions/upload-artifact@v3
