@@ -33,13 +33,13 @@ source "arm" "joininbox-arm64-rpi" {
 build {
   sources = ["source.arm.joininbox-arm64-rpi"]
 
-  post-processors {
+  post-processors [
     post-processor "artifice" {
-      files = ["joininbox-arm64-rpi.img", "joininbox-arm64-rpi.img.checksum"]
+      files = ["joininbox-arm64-rpi.img"]
     }
     post-processor "checksum" {
       checksum_types      = ["sha256"]
-      output              = "joininbox-arm64-rpi.img.checksum"
+      output              = "joininbox-arm64-rpi.img.sha256"
       keep_input_artifact = true
     }
   }
