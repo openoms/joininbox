@@ -33,17 +33,28 @@ jobs:
         run: |
           cd scripts/packer/arm64-rpi
           bash arm64-rpi.sh
-          
-      - name: Compute Checksum
+
+      - name: Compute checksum of the raw iamge
         run: |
           cd scripts/packer/arm64-rpi/packer-builder-arm/
           sha256sum joininbox-arm64-rpi.img > joininbox-arm64-rpi.img.sha256
-          
-      - name: Upload the image
+
+      - name: Compress image
+        run: |
+          cd scripts/packer/arm64-rpi/packer-builder-arm/
+          tar -czvf joininbox-arm64-rpi.img.tar.gz joininbox-arm64-rpi.img
+
+      - name: Compute checksum of the compressed image
+        run: |
+          cd scripts/packer/arm64-rpi/packer-builder-arm/
+          sha256sum joininbox-arm64-rpi.img.tar.gz > joininbox-arm64-rpi.img.tar.gz.sha256
+
+      - name: Upload the image and checksums
         uses: actions/upload-artifact@v3
         with:
           name: joininbox-arm64-rpi-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}
           path: |
-            ${{ github.workspace }}/scripts/packer/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img
             ${{ github.workspace }}/scripts/packer/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.sha256
+            ${{ github.workspace }}/scripts/packer/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.tar.gz
+            ${{ github.workspace }}/scripts/packer/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.tar.gz.sha256
 
