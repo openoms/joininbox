@@ -32,7 +32,7 @@ source "arm" "joininbox-arm64-rpi" {
 
 build {
   sources = ["source.arm.joininbox-arm64-rpi"]
-
+  
   provisioner "file" {
     source      = "scripts/resizerootfs"
     destination = "/tmp"
@@ -57,16 +57,5 @@ build {
 
   provisioner "shell" {
     script = "build_joininbox.sh"
-  }
-
-  post-processors {
-    post-processor "artifice" {
-      files = ["joininbox-arm64-rpi.img"]
-    }
-
-    post-processor "checksum" {
-      checksum_types      = ["sha256"]
-      keep_input_artifact = true
-    }
   }
 }
