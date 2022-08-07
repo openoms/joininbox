@@ -26,7 +26,7 @@ jobs:
           echo "BUILD_DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
           echo "BUILD_VERSION=$(git describe --always --tags)" >> $GITHUB_ENV
 
-      - name: Hello Joininbox
+      - name: Hello JoininBox
         run: echo "Building the joininbox-arm64-rpi-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}"
 
       - name: Run the build script
@@ -34,7 +34,7 @@ jobs:
           cd scripts/packer/arm64-rpi
           bash arm64-rpi.sh
 
-      - name: Compute checksum of the raw iamge
+      - name: Compute checksum of the raw image
         run: |
           cd scripts/packer/arm64-rpi/packer-builder-arm/
           sha256sum joininbox-arm64-rpi.img > joininbox-arm64-rpi.img.sha256
@@ -42,7 +42,7 @@ jobs:
       - name: Compress image
         run: |
           cd scripts/packer/arm64-rpi/packer-builder-arm/
-          xz -v joininbox-arm64-rpi.img
+          xz -zkf9ev joininbox-arm64-rpi.img
 
       - name: Compute checksum of the compressed image
         run: |
@@ -57,4 +57,3 @@ jobs:
             ${{ github.workspace }}/scripts/packer/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.sha256
             ${{ github.workspace }}/scripts/packer/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.xz
             ${{ github.workspace }}/scripts/packer/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.xz.sha256
-
