@@ -14,6 +14,9 @@ fi
 source $HOME_DIR/joinin.conf
 
 function joinmarketApiServiceOn() {
+
+  $HOME_DIR/install.selfsignedcert.sh
+
   if ! systemctl is-active --quiet joinmarket-api; then
     echo "# Install joinmarket-api.service"
     echo "# joinmarket-api.service
@@ -46,7 +49,6 @@ WantedBy=multi-user.target
   fi
 }
 
-
 if [ "$1" = on ]; then
 
   joinmarketApiServiceOn
@@ -55,17 +57,13 @@ elif [ "$1" = connect ]; then
 
   joinmarketApiServiceOn
 
-  # https://github.com/openoms/joininbox/issues/78
-  # A self signed cert.pem file in base64 text
-  $HOME_DIR/install.selfsignedcert.sh
-
   # add hidden service
   $HOME_DIR/install.hiddenservice.sh joinmarket-api 28183 28183
 
   # A QR code which displays the textual representation of a url in the following format:"
   #http://<hostname>.onion:28183?cert=<base64cert>
   torAddress=$(sudo cat /mnt/hdd/tor/joinmarket-api/hostname)
-  base64cert=$(base64 -w 0 ${HOME_DIR}/selfsignedcert/cert.pem)
+  base64cert=$(base64 -w 0 ${HOME_DIR}/.joinmarket/ssl/cert.pem)
   url="http://${torAddress}:28183?cert=${base64cert}"
 
   if [ "$runningEnv" = raspiblitz ];then
