@@ -22,7 +22,7 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 
 - [Features](#features)
 - [Required Hardware](#required-hardware)
-- [Set up from an SDcard image](#set-up-from-an-sdcard-image)
+- [Set up using an SDcard image](#set-up-using-an-sdcard-image)
 - [Set up JoininBox on Linux](#set-up-joininbox-on-linux)
   - [Tested environments](#tested-environments)
   - [Install JoininBox](#install-joininbox)
@@ -57,7 +57,7 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 
 **JoininBox operates on the minimum viable hardware under the assumption that the seed (and passphrase) of the wallets used is safely backed up and can be used to recover the funds!**
 
-## Set using an SDcard image
+## Set up using an SDcard image
 * Download the latest SDcard image for the Raspberry Pi 4 or 3 generated with Packer in GitHub actions
   * Download link: <https://github.com/openoms/joininbox/suites/7702238931/artifacts/322134211>
   * Details of the build: <https://github.com/openoms/joininbox/actions/runs/2812704764>
