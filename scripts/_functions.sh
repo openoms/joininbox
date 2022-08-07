@@ -327,22 +327,22 @@ function updateTor() {
 deb [arch=${arch}] https://deb.torproject.org/torproject.org tor-nightly-master-$distro main
 deb-src [arch=${arch}] https://deb.torproject.org/torproject.org tor-nightly-master-$distro main" \
   | sudo tee /etc/apt/sources.list.d/tor.list
-  echo "# Running apt update"
-  sudo apt update
+  echo "# Running apt-get update"
+  sudo apt-get update
   if [ ${arch} = "amd64" ] || [ ${arch} = "arm64" ]; then
     echo "# CPU is ${arch} - updating to the latest alpha binary"
-    sudo apt install -y tor
+    sudo apt-get install -y tor
     echo "# Restarting the tor.service "
     sudo systemctl restart tor
   else
     echo "# Install the dependencies for building from source"
-    sudo apt install -y build-essential fakeroot devscripts
-    sudo apt build-dep -y tor deb.torproject.org-keyring
+    sudo apt-get install -y build-essential fakeroot devscripts
+    sudo apt-get build-dep -y tor deb.torproject.org-keyring
     rm -rf $HOME//download/debian-packages
     mkdir -p $HOME/download/debian-packages
     cd $HOME/download/debian-packages || exit 1
     echo "# Building Tor from the source code ..."
-    apt source tor
+    apt-get source tor
     cd tor-* || exit 1
     debuild -rfakeroot -uc -us
     cd .. || exit 1
@@ -354,6 +354,28 @@ deb-src [arch=${arch}] https://deb.torproject.org/torproject.org tor-nightly-mas
     sudo systemctl start tor
     echo "# Installed $(tor --version)"
   fi
+}
+
+# torTest - unused, moved from the build script to not break github actions
+function torTest() {
+  tries=0
+  while [ "${torTest}" != "Congratulations. This browser is configured to use Tor." ]
+  do
+    echo "# waiting another 10 seconds for Tor"
+    echo "# press CTRL + C to abort"
+    sleep 10
+    tries=$((tries+1))
+    if [ $tries = 100 ]; then
+      echo "# FAIL - Tor was not set up successfully"
+      exit 1
+    fi
+    torTest=$(curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s \
+    https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
+  done
+  echo
+  echo "# $torTest"
+  echo
+  echo "# Tor has been tested successfully"
 }
 
 # https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/docs/USAGE.md#co-signing-a-psbt

@@ -144,8 +144,8 @@ if [ "$1" = "1" ] || [ "$1" = "on" ]; then
   if [ ${isInstalled} -eq 0 ]; then
 
     echo "# Installing prerequisites"
-    sudo apt update
-    sudo apt install -y libusb-1.0.0-dev libudev-dev virtualenv libffi-dev
+    sudo apt-get update
+    sudo apt-get install -y libusb-1.0.0-dev libudev-dev virtualenv libffi-dev
 
     addUserStore
 

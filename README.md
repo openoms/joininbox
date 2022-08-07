@@ -1,3 +1,5 @@
+[![arm64-rpi-image-build](https://github.com/openoms/joininbox/actions/workflows/arm64-rpi-image-build.yml/badge.svg?branch=packer)](https://github.com/openoms/joininbox/actions/workflows/arm64-rpi-image-build.yml)
+
 <!-- omit in toc -->
 # JoininBox
 
@@ -20,7 +22,7 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 
 - [Features](#features)
 - [Required Hardware](#required-hardware)
-- [Set up with an SDcard image](#set-up-with-an-sdcard-image)
+- [Set up from an SDcard image](#set-up-from-an-sdcard-image)
 - [Set up JoininBox on Linux](#set-up-joininbox-on-linux)
   - [Tested environments](#tested-environments)
   - [Install JoininBox](#install-joininbox)
@@ -49,29 +51,36 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 * RaspberryPi 4 ([alternatively any other computer running a Debian Linux flavour](#tested-environments))
 * Power supply (5V 3A and above recommended)
 * Heatsink case
-* 16GB SDcard (minimum)
+* 16GB SDcard (minimum) - 32GB to use a pruned node
 * [(USB SSD to run a pruned bitcoin node locally)](FAQ.md#usb-ssd-recommendation)
 * [other tested hardware ](#tested-environments)
-  
+
 **JoininBox operates on the minimum viable hardware under the assumption that the seed (and passphrase) of the wallets used is safely backed up and can be used to recover the funds!**
 
-## Set up with an SDcard image
-* Download and verify the latest prebuilt image for the Raspberry Pi 4:
-  * Download link: <https://mega.nz/folder/BkFlgShZ#lVEGJmrM8cEdJINQaHEUrg>
-  * Alternative: <https://keybase.pub/oms/joininbox-v0.5.0-2021-06-21/>
-  * [How to verify the downloaded image](FAQ.md#verify-the-downloaded-the-image)
-  
-* Write to the SDcard with [Balena Etcher](https://www.balena.io/etcher/)
+## Set using an SDcard image
+* Download the latest SDcard image for the Raspberry Pi 4 or 3 generated with Packer in GitHub actions
+  * Download link: <https://github.com/openoms/joininbox/suites/7702238931/artifacts/322134211>
+  * Details of the build: <https://github.com/openoms/joininbox/actions/runs/2812704764>
+* unzip and check the sha256sum verifying the .gz file integrity
+  ```
+  sha256sum -c joininbox-arm64-rpi.img.gz.sha256
+  joininbox-arm64-rpi.img.gz: OK
+  ```
+
+* Write the joininbox-arm64-rpi.img.gz file to the SDcard with [Balena Etcher](https://www.balena.io/etcher/) - no need to decompress further
 * Assemble the RaspberryPi and connect with a LAN cable to the internet
 * Make sure that your laptop and the RPi are on the same local network
 * Boot by connecting the power cable
-* Open a terminal ([OSX](https://www.youtube.com/watch?v=5XgBd6rjuDQ)/[Win10](https://www.howtogeek.com/336775/how-to-enable-and-use-windows-10s-built-in-ssh-commands/)) and connect with ssh.  
-  Use the hostname of the latest SDcard image (`rpi4-20210210`) or to find the IP address to connect to:  
+* Open a terminal ([OSX](https://www.youtube.com/watch?v=5XgBd6rjuDQ)/[Win10](https://www.howtogeek.com/336775/how-to-enable-and-use-windows-10s-built-in-ssh-commands/)) and connect with ssh:
+  ```
+  ssh joinmarket@rpi4-20220121
+  ```
+   → the password on the first boot is: `joininbox`
+* Use the hostname of the latest SDcard image (`rpi4-20220121`) or to find the IP address to connect to:  
   * scan with the [AngryIP Scanner](https://angryip.org/)
   * use `sudo arp -a` or
-  * check the router interface 
+  * check the router interface
 
-  `ssh joinmarket@rpi4-20210210` → use the password: `joininbox`
 * after the first login will be prompted to change the password to access the menu.
   ![password change](/images/password.change.png)
 
@@ -81,7 +90,7 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
   * Start a pruned node from [prunednode.today](https://prunednode.today)
   * Edit the joinmarket.cfg manually
   * Update JoininBox or JoinMarket
-  
+
   ![config menu](/images/menu.startup.png)
 
 * Update to the latest version of JoininBox and update JoinMarket if the latest version is newer than the one installed on the SDcard
@@ -105,7 +114,7 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 `$ sudo - su`
 
 * Run the [build script](https://github.com/openoms/joininbox/blob/master/build_joininbox.sh):
-  ```bash 
+  ```bash
   # download
   wget https://raw.githubusercontent.com/openoms/joininbox/master/build_joininbox.sh
   # inspect the script
@@ -124,7 +133,7 @@ the default password is: `joininbox` - will be prompted to change it on the firs
 ---
 
 ## More info
-* [Video demonstration](https://www.youtube.com/watch?v=uGHRjilMhwY) / [slides](https://keybase.pub/oms/slides/RaspiBlitz_Tech_DeepDive/Running_JoinMarket_on_the_RaspiBlitz.pdf) of running JoinMarket with JoininBox on the RaspiBlitz 
+* [Video demonstration](https://www.youtube.com/watch?v=uGHRjilMhwY) / [slides](https://keybase.pub/oms/slides/RaspiBlitz_Tech_DeepDive/Running_JoinMarket_on_the_RaspiBlitz.pdf) of running JoinMarket with JoininBox on the RaspiBlitz
 * How to [prepare a remote node to accept the JoinMarket connection](prepare_remote_node.md)
 * [Frequently Asked Questions and notes](FAQ.md)
 

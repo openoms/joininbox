@@ -1,0 +1,61 @@
+name: arm64-rpi-image-build
+
+on:
+  push:
+    branches: [ "packer" ]
+    paths-ignore:
+      - '*.md'
+      - '*.png'
+      - '.gitignore'
+      - 'scripts/packer/amd64'
+  pull_request:
+    branches: [ "packer" ]
+    paths-ignore:
+      - '*.md'
+      - '*.png'
+      - '.gitignore'
+      - 'scripts/packer/amd64'
+  workflow_dispatch:
+
+jobs:
+  arm64-rpi-image-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set values
+        run: |
+          echo "BUILD_DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
+          echo "BUILD_VERSION=$(git describe --always --tags)" >> $GITHUB_ENV
+
+      - name: Hello JoininBox
+        run: echo "Building the joininbox-arm64-rpi-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}"
+
+      - name: Run the build script
+        run: |
+          cd scripts/packer/arm64-rpi
+          bash arm64-rpi.sh
+
+      - name: Compute checksum of the raw image
+        run: |
+          cd scripts/packer/arm64-rpi/packer-builder-arm/
+          sha256sum joininbox-arm64-rpi.img > joininbox-arm64-rpi.img.sha256
+
+      - name: Compress image
+        run: |
+          cd scripts/packer/arm64-rpi/packer-builder-arm/
+          gzip -v9 joininbox-arm64-rpi.img
+
+      - name: Compute checksum of the compressed image
+        run: |
+          cd scripts/packer/arm64-rpi/packer-builder-arm/
+          sha256sum joininbox-arm64-rpi.img.gz > joininbox-arm64-rpi.img.gz.sha256
+
+      - name: Upload the image and checksums
+        uses: actions/upload-artifact@v3
+        with:
+          name: joininbox-arm64-rpi-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}
+          path: |
+            ${{ github.workspace }}/scripts/packer/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.sha256
+            ${{ github.workspace }}/scripts/packer/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.gz
+            ${{ github.workspace }}/scripts/packer/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.gz.sha256

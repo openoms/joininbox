@@ -97,7 +97,7 @@ if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ]; then
   # https://daker.me/2014/10/how-to-fix-perl-warning-setting-locale-failed-in-raspbian.html
   # https://stackoverflow.com/questions/38188762/generate-all-locales-in-a-docker-image
   echo "# FIXING LOCALES FOR BUILD "
-  apt install -y locales
+  apt-get install -y locales
   sed -i "s/^# en_US.UTF-8 UTF-8.*/en_US.UTF-8 UTF-8/g" /etc/locale.gen
   sed -i "s/^# en_US ISO-8859-1.*/en_US ISO-8859-1/g" /etc/locale.gen
   locale-gen
@@ -115,15 +115,13 @@ fi
 
 if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ]; then
   echo -e "\n*** PREPARE RASPBERRY OS VARIANTS ***"
-  sudo apt install -y raspi-config
-  # do memory split (16MB)
-  sudo raspi-config nonint do_memory_split 16
-  # set to wait until network is available on boot (0 seems to yes)
-  sudo raspi-config nonint do_boot_wait 0
-  # set WIFI country so boot does not block
-  # this will undo the softblock of rfkill on RaspiOS
-  [ "${wifi_region}" != "off" ] && sudo raspi-config nonint do_wifi_country $wifi_region
-  # see https://github.com/rootzoll/raspiblitz/issues/428#issuecomment-472822840
+  if apt-get list | grep "raspi-config"; then
+    sudo apt-get install -y raspi-config
+    # do memory split (16MB)
+    sudo raspi-config nonint do_memory_split 16
+    # set to wait until network is available on boot (0 seems to yes)
+    sudo raspi-config nonint do_boot_wait 0
+  fi
 
   configFile="/boot/config.txt"
   max_usb_current="max_usb_current=1"
@@ -131,7 +129,7 @@ if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ]; then
 
   if [ ${max_usb_currentDone} -eq 0 ]; then
     echo | sudo tee -a $configFile
-    echo "# Raspiblitz" | sudo tee -a $configFile
+    echo "# JoininBox" | sudo tee -a $configFile
     echo "$max_usb_current" | sudo tee -a $configFile
   else
     echo "$max_usb_current already in $configFile"
@@ -241,7 +239,7 @@ service rsyslog restart
 
 echo
 echo "########################"
-echo "# Apt update & upgrade"
+echo "# apt-get update & upgrade"
 echo "########################"
 echo
 apt-get update -y
@@ -252,17 +250,19 @@ echo "##########"
 echo "# Python"
 echo "##########"
 echo
+# apt dependencies for python
+apt-get install -y python3 virtualenv python3-venv python3-dev python3-wheel python3-jinja2 python3-pip
 if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
   if [ ! -f "/usr/bin/python3.7" ]; then
     # install python37
     pythonVersion="3.7.9"
     majorPythonVersion=$(echo "$pythonVersion" | awk -F. '{print $1"."$2}' )
     # dependencies
-    sudo apt install wget software-properties-common build-essential libnss3-dev zlib1g-dev libgdbm-dev libncurses5-dev libssl-dev libffi-dev libreadline-dev libsqlite3-dev libbz2-dev -y
+    sudo apt-get install software-properties-common build-essential libnss3-dev zlib1g-dev libgdbm-dev libncurses5-dev libssl-dev libffi-dev libreadline-dev libsqlite3-dev libbz2-dev -y
     # download
-    wget https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz
+    wget --progress=bar:force https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz
     # optional signature for verification
-    wget https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz.asc
+    wget --progress=bar:force https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz.asc
     # get PGP pubkey of Ned Deily (Python release signing key) <nad@python.org>
     gpg --recv-key 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
     # check for: Good signature from "Pablo Galindo Salgado <pablogsal@gmail.com>"
@@ -310,38 +310,38 @@ else
   fi
 fi
 
+# make sure /usr/bin/pip exists (and calls pip3)
+update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+# setuptools needed for Nyx
+pip install setuptools
+
 echo
 echo "##########################"
-echo "# Tools and dependencies"
+echo "# apt-get packages"
 echo "##########################"
 echo
+# system
+apt-get install -y lsb-release
 apt-get install -y htop git curl bash-completion vim jq bsdmainutils
 # prepare for display graphics mode
 # see https://github.com/rootzoll/raspiblitz/pull/334
 apt-get install -y fbi
 # check for dependencies on DietPi, Ubuntu, Armbian
-apt install -y build-essential
-# dependencies for python
-apt install -y python3-venv python3-dev python3-wheel python3-jinja2 \
-python3-pip
-# make sure /usr/bin/pip exists (and calls pip3)
-update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+apt-get install -y build-essential
 # install ifconfig
-apt install -y net-tools
+apt-get install -y net-tools
 # to display hex codes
-apt install -y xxd
-# setuptools needed for Nyx
-pip install setuptools
+apt-get install -y xxd
 # netcat
-apt install -y netcat
+apt-get install -y netcat
 # install killall, fuser
 apt-get install -y psmisc
 # dialog
-apt install -y dialog
+apt-get install -y dialog
 # qrencode
-apt install -y qrencode
+apt-get install -y qrencode
 # unzip for the pruned node snapshot
-apt install -y unzip
+apt-get install -y unzip
 apt-get clean
 apt-get -y autoremove
 
@@ -444,7 +444,7 @@ then
   echo "# install the Tor repo"
   echo
   echo "# Install dirmngr"
-  apt install -y dirmngr apt-transport-https
+  apt-get install -y dirmngr apt-transport-https
   echo
   echo "# Adding KEYS deb.torproject.org "
   torKeyAvailable=$(gpg --list-keys | grep -c \
@@ -474,14 +474,14 @@ deb-src [arch=${arch}] https://deb.torproject.org/torproject.org ${distro} main"
   else
     echo "Tor sources are available"
   fi
-  apt update
+  apt-get update
   if [ "${arch}" = "armhf" ]; then
     # https://2019.www.torproject.org/docs/debian#source
     echo "# running on armv6l - need to compile Tor from source"
-    apt install -y build-essential fakeroot devscripts
-    apt build-dep -y tor deb.torproject.org-keyring
+    apt-get install -y build-essential fakeroot devscripts
+    apt-get build-dep -y tor deb.torproject.org-keyring
     mkdir ~/debian-packages; cd ~/debian-packages
-    apt source tor
+    apt-get source tor
     cd tor-* || exit 1
     debuild -rfakeroot -uc -us
     cd .. || exit 1
@@ -491,32 +491,12 @@ deb-src [arch=${arch}] https://deb.torproject.org/torproject.org ${distro} main"
     tor &
   else
     echo "# Install Tor"
-    apt install -y tor
+    apt-get install -y tor
   fi
 fi
 
-# test Tor
-tries=0
-while [ "${torTest}" != "Congratulations. This browser is configured to use Tor." ]
-do
-  echo "# waiting another 10 seconds for Tor"
-  echo "# press CTRL + C to abort"
-  sleep 10
-  tries=$((tries+1))
-  if [ $tries = 100 ]; then
-    echo "# FAIL - Tor was not set up successfully"
-    exit 1
-  fi
-  torTest=$(curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s \
-  https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
-done
-echo
-echo "# $torTest"
-echo
-echo "# Tor has been tested successfully"
-echo
-echo "# install torsocks and nyx"
-apt install -y torsocks tor-arm
+echo "# Install torsocks and nyx"
+apt-get install -y torsocks tor-arm
 
 # Tor config
 # torrc
@@ -545,7 +525,7 @@ echo "# Hardening"
 echo "#############"
 echo
 # install packages
-apt install -y virtualenv fail2ban ufw
+apt-get install -y fail2ban ufw
 # autostart fail2ban
 systemctl enable fail2ban
 
@@ -586,12 +566,12 @@ echo "##########"
 echo
 
 # install a command-line fuzzy finder (https://github.com/junegunn/fzf)
-apt -y install fzf
+apt-get -y install fzf
 bash -c "echo 'source /usr/share/doc/fzf/examples/key-bindings.bash' >> \
 /home/joinmarket/.bashrc"
 
 # install tmux
-apt -y install tmux
+apt-get -y install tmux
 
 echo
 echo "#############"
@@ -633,6 +613,9 @@ if [ "$3" = "without-qt" ]; then
  sed -i "s/^qtgui=.*/qtgui=false/g" /home/joinmarket/joinin.conf
 fi
 sudo -u joinmarket /home/joinmarket/install.joinmarket.sh -i install -q "$qtgui"
+
+echo "# Enable the ssh.service"
+systemctl enable ssh
 
 echo
 echo "###########################"

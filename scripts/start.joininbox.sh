@@ -77,11 +77,11 @@ if [ "$setupStep" -lt 100 ];then
 
     # check for dialog
     if [ "$(dialog | grep -c "ComeOn Dialog!")" -eq 0 ];then
-      sudo apt install -y dialog
+      sudo apt-get install -y dialog
     fi
     # check for qrencode
     if [ "$(qrencode -V 2>&1 | grep -c "not found")" -gt 0 ];then
-      sudo apt install -y qrencode
+      sudo apt-get install -y qrencode
     fi
     sed -i  "s#setupStep=.*#setupStep=4#g" $joininConfPath
 
