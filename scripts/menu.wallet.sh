@@ -14,9 +14,9 @@ fi
 checkRPCwallet
 
 # BASIC MENU INFO
-HEIGHT=18
+HEIGHT=19
 WIDTH=53
-CHOICE_HEIGHT=12
+CHOICE_HEIGHT=13
 TITLE="Wallet management options"
 BACKTITLE="Wallet management options"
 MENU=""
@@ -25,6 +25,7 @@ OPTIONS=()
 # Basic Options
 OPTIONS+=(
   DISPLAY "Show the contents of all mixdepths"
+  LABEL "Add or edit a label to an address"
   UTXOS "Show all the coins in the wallet"
   HISTORY "Show all past transactions"
   XPUBS "Show the master public keys"
@@ -55,6 +56,44 @@ case $CHOICE in
     menu_GEN;;
   DISPLAY)
     menu_DISPLAY;;
+  LABEL)
+    # wallet
+    chooseWallet
+    # address
+    trap 'rm -f "$address"' EXIT
+    address=$(mktemp -p /dev/shm/)
+    dialog --backtitle "Choose the address" \
+     --title "Choose the address" \
+     --inputbox "
+Paste the address to be labeled
+from the wallet: $walletFileName
+    " 11 69 2> "$address"
+    openMenuIfCancelled $?
+    # label
+    trap 'rm -f "$label"' EXIT
+    label=$(mktemp -p /dev/shm/)
+    dialog --backtitle "Choose the label" \
+     --title "Choose the label" \
+     --inputbox "
+Type or paste the label for the address:
+$(cat "$address")
+from the wallet: $walletFileName
+    " 12 69 2> "$label"
+    openMenuIfCancelled $?
+    # display
+    clear
+    echo
+    echo "Running the command:
+$tor python wallet-tool.py \
+$(cat "$wallet") setlabel $(cat "$address") $(cat "$label")
+    "
+    # run
+    . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate &&
+    $tor python ~/joinmarket-clientserver/scripts/wallet-tool.py \
+     $(cat $wallet) "setlabel" "$(cat "$address")" "$(cat "$label")"
+    echo
+    echo "Press ENTER to return to the menu"
+    read key;;
   HISTORY)
     activateJMvenv
     if [ "$(pip list | grep -c scipy)" -eq 0 ];then
