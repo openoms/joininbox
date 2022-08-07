@@ -5,12 +5,14 @@ on:
     branches: [ "packer" ]
     paths-ignore:
       - '*.md'
+      - '*.png'
       - '.gitignore'
       - 'scripts/packer/amd64'
   pull_request:
     branches: [ "packer" ]
     paths-ignore:
       - '*.md'
+      - '*.png'
       - '.gitignore'
       - 'scripts/packer/amd64'
   workflow_dispatch:
