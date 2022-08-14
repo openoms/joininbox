@@ -224,6 +224,9 @@ WantedBy=multi-user.target
     sudo bash -c "echo 'alias bitcoind=\"sudo -u bitcoin /home/bitcoin/bitcoin/bitcoind\"' >> /home/joinmarket/_aliases.sh"
   fi
 
+  # set joinin.conf value
+  /home/joinmarket/set.value.sh set network mainnet ${joininConfPath}
+
   sudo systemctl start bitcoind
   echo
   echo "# Installed $(/home/bitcoin/bitcoin/bitcoind --version | grep version)"

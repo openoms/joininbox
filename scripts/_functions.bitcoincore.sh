@@ -248,6 +248,9 @@ setJMconfigToSignet() {
   # minimum_makers
   sed -i "s/^minimum_makers =.*/minimum_makers = 1/g" $JMcfgPath
   echo "# minimum_makers = 1"
+
+  # set joinin.conf value
+  /home/joinmarket/set.value.sh set network signet ${joininConfPath}
 }
 
 function showBitcoinLogs() {
@@ -393,7 +396,10 @@ function connectLocalNode() {
     rpc_pass=$(sudo cat /home/bitcoin/.bitcoin/bitcoin.conf|grep rpcpassword|cut -c 13-)
   fi
   # set.bitcoinrpc.py
-  python /home/joinmarket/set.bitcoinrpc.py --network=mainnet \
+  python /home/joinmarket/set.bitcoinrpc.py --network=${network} \
   --rpc_user="$rpc_user" --rpc_pass="$rpc_pass" --rpc_host=$rpc_host \
   --rpc_port=$rpc_port --rpc_wallet=$rpc_wallet
+
+  # set joinin.conf value
+  /home/joinmarket/set.value.sh set network ${network} ${joininConfPath}
 }

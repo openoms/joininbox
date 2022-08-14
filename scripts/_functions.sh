@@ -278,7 +278,12 @@ function generateJMconfig() {
   fi
   # set strict permission to joinmarket.cfg
   sudo chmod 600 $JMcfgPath || exit 1
-  if [ -f "/mnt/hdd/bitcoin/bitcoin.conf" ];then
+
+  if [ "${network}" = "signet" ]; then
+
+    setJMconfigToSignet
+
+  elif [ -f "/mnt/hdd/bitcoin/bitcoin.conf" ]; then
     echo
     echo "## editing the joinmarket.cfg with the local bitcoin RPC settings."
 
@@ -299,6 +304,9 @@ function generateJMconfig() {
 
     sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/g" $JMcfgPath
     echo "# using the bitcoind wallet: wallet.dat"
+
+    # set joinin.conf value
+    /home/joinmarket/set.value.sh set network mainnet ${joininConfPath}
   fi
  }
 

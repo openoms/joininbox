@@ -32,6 +32,10 @@ elif [ "$1" = "signetOff" ]; then
   else
     echo "# Signet is not set in joinmarket.cfg, leaving settings in place"
   fi
+
+  # set joinin.conf value
+  /home/joinmarket/set.value.sh set network mainnet ${joininConfPath}
+
   generateJMconfig
 elif [ "$1" = "downloadCoreOnly" ]; then
   downloadBitcoinCore

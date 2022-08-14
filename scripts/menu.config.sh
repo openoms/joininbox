@@ -114,6 +114,8 @@ case $CHOICE in
   CONNECT)
     /home/joinmarket/install.bitcoincore.sh signetOff
     /home/joinmarket/menu.bitcoinrpc.sh
+    # set joinin.conf value
+    /home/joinmarket/set.value.sh set network mainnet ${joininConfPath}
     echo
     echo "Press ENTER to return to the menu..."
     read key;;
@@ -146,7 +148,12 @@ case $CHOICE in
     echo "Press ENTER to return to the menu..."
     read key;;
   BTCCONF)
-    if /home/joinmarket/set.conf.sh "/home/bitcoin/.bitcoin/bitcoin.conf" "bitcoin"
+    if [ ${#network} -eq 0 ] || [ ${network} = "mainnet" ]; then
+      bictoinUser="bitcoin"
+    elif [ ${network} = "signet" ]; then
+      bictoinUser="joinmarket"
+    fi
+    if /home/joinmarket/set.conf.sh "/home/${bictoinUser}/.bitcoin/bitcoin.conf" "${bictoinUser}"
     then
       echo "# Restarting bitcoind"
       sudo systemctl restart bitcoind
