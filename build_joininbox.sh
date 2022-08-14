@@ -90,8 +90,8 @@ echo
 
 echo "# Prepare ${baseImage} "
 # special prepare on RPi
-if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ]; then
-
+if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ] || \
+   [ "${baseimage}" = "armbian" ]; then
   # fixing locales for build
   # https://github.com/rootzoll/raspiblitz/issues/138
   # https://daker.me/2014/10/how-to-fix-perl-warning-setting-locale-failed-in-raspbian.html
@@ -105,6 +105,8 @@ if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ]; then
   export LANG=en_US.UTF-8
   # https://github.com/rootzoll/raspiblitz/issues/684
   sed -i "s/^    SendEnv LANG LC.*/#   SendEnv LANG LC_*/g" /etc/ssh/ssh_config
+fi
+if [ "${baseimage}" = "raspios" ]; then
   # only on RaspberryOS
   # remove unnecessary files
   rm -rf /home/pi/MagPi
