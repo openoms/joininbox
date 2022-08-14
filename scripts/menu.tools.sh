@@ -68,7 +68,7 @@ isTxindex=$(sudo -u bitcoin cat /home/bitcoin/.bitcoin/bitcoin.conf | grep -c "t
 # BASIC MENU INFO
 HEIGHT=13
 WIDTH=61
-CHOICE_HEIGHT=5
+CHOICE_HEIGHT=7
 TITLE="Tools"
 MENU=""
 OPTIONS=()
