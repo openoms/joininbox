@@ -192,8 +192,18 @@ WantedBy=multi-user.target
   sudo systemctl enable signetd
   echo "# OK - the bitcoin daemon on signet service is now enabled"
 
+  if [ $(sudo cat /home/joinmarket/.bitcoin/bitcoin.conf | grep -c "signet.addnode") -eq 0 ]; then
+    echo "\
+signet.addnode=s7fcvn5rblem7tiquhhr7acjdhu7wsawcph7ck44uxyd6sismumemcyd.onion:38333
+signet.addnode=6megrst422lxzsqvshkqkg6z2zhunywhyrhy3ltezaeyfspfyjdzr3qd.onion:38333
+signet.addnode=jahtu4veqnvjldtbyxjiibdrltqiiighauai7hmvknwxhptsb4xat4qd.onion:38333
+signet.addnode=f4kwoin7kk5a5kqpni7yqe25z66ckqu6bv37sqeluon24yne5rodzkqd.onion:38333
+signet.addnode=nsgyo7begau4yecc46ljfecaykyzszcseapxmtu6adrfagfrrzrlngyd.onion:38333"|\
+    sudo tee -a /home/joinmarket/.bitcoin/bitcoin.conf
+  fi
+
   # add to path
-  if ! sudo grep -Eq "/home/joinmarket/bitcoin/" < /etc/profile; then
+  if [ $(sudo cat /etc/profile | grep -c "/home/joinmarket/bitcoin/") -eq 0 ]; then
     echo "PATH=\$PATH:/home/joinmarket/bitcoin/" | sudo tee -a /etc/profile
   fi
 
