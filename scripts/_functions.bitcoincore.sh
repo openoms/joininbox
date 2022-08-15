@@ -109,26 +109,26 @@ function downloadBitcoinCore() {
 }
 
 function installBitcoinCore() {
-  downloadBitcoinCore
-
-  echo "# Installing Bitcoin Core v${bitcoinVersion}"
-  sudo -u joinmarket mkdir -p /home/joinmarket/bitcoin
-  cd /home/joinmarket/download/bitcoin-${bitcoinVersion}/bin/ || exit 1
-  sudo install -m 0755 -o root -g root -t /home/joinmarket/bitcoin ./*
-
-  if [ "$(grep -c "/home/joinmarket/bitcoin" < /home/joinmarket/.profile)" -eq 0 ];then
-    echo "# Add /home/joinmarket/bitcoin to the local PATH"
-    echo "PATH=/home/joinmarket/bitcoin:$PATH" | sudo tee -a /home/joinmarket/.profile
-  fi
-  installed=$(/home/joinmarket/bitcoin/bitcoind --version | grep -c "Bitcoin Core version")
-  if [ ${installed} -lt 1 ]; then
-    echo
-    echo "!!! BUILD FAILED --> Was not able to install Bitcoin Core"
-    exit 1
-  fi
-
-  # bitcoin.conf
   if [ ${runningEnv} != "raspiblitz" ]; then
+    downloadBitcoinCore
+
+    echo "# Installing Bitcoin Core v${bitcoinVersion}"
+    sudo -u joinmarket mkdir -p /home/joinmarket/bitcoin
+    cd /home/joinmarket/download/bitcoin-${bitcoinVersion}/bin/ || exit 1
+    sudo install -m 0755 -o root -g root -t /home/joinmarket/bitcoin ./*
+
+    if [ "$(grep -c "/home/joinmarket/bitcoin" < /home/joinmarket/.profile)" -eq 0 ];then
+      echo "# Add /home/joinmarket/bitcoin to the local PATH"
+      echo "PATH=/home/joinmarket/bitcoin:$PATH" | sudo tee -a /home/joinmarket/.profile
+    fi
+    installed=$(/home/joinmarket/bitcoin/bitcoind --version | grep -c "Bitcoin Core version")
+    if [ ${installed} -lt 1 ]; then
+      echo
+      echo "!!! BUILD FAILED --> Was not able to install Bitcoin Core"
+      exit 1
+    fi
+
+    # bitcoin.conf
     if [ ! -f /home/joinmarket/.bitcoin/bitcoin.conf ]; then
       mkdir -p /home/joinmarket/.bitcoin
       randomRPCpass=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c8)
@@ -230,7 +230,7 @@ signet.addnode=nsgyo7begau4yecc46ljfecaykyzszcseapxmtu6adrfagfrrzrlngyd.onion:38
 
 setJMconfigToSignet() {
   echo "## editing the joinmarket.cfg with signet values."
-  if [ "${#network}" -eq 0 ] || [ "${network}" = "mainnet" ] || [ "${runningEnv}" = "raspiblitz" ]; then
+  if [ ${#network} -eq 0 ] || [ "${network}" = "mainnet" ] || [ "${runningEnv}" = "raspiblitz" ]; then
     bitcoinUser="bitcoin"
   elif [ "${network}" = "signet" ]; then
     bitcoinUser="joinmarket"

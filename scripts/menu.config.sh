@@ -120,13 +120,7 @@ case $CHOICE in
     echo "Press ENTER to return to the menu..."
     read key;;
   SIGNET)
-    if [ "${runningEnv}" = "raspiblitz" ] && grep "signet=on" /mnt/hdd/raspiblitz.conf; then
-      echo "There is a signet instance running on the RaspiBlitz already."
-      echo "Please connect manually by editing the joinmarket.cfg."
-      echo "See: https://github.com/openoms/joininbox/issues/72"
-    else
-      /home/joinmarket/install.bitcoincore.sh signetOn
-    fi
+    /home/joinmarket/install.bitcoincore.sh signetOn
     echo
     echo "Press ENTER to return to the menu..."
     read key;;
