@@ -114,17 +114,13 @@ case $CHOICE in
   CONNECT)
     /home/joinmarket/install.bitcoincore.sh signetOff
     /home/joinmarket/menu.bitcoinrpc.sh
+    # set joinin.conf value
+    /home/joinmarket/set.value.sh set network mainnet ${joininConfPath}
     echo
     echo "Press ENTER to return to the menu..."
     read key;;
   SIGNET)
-    if [ "${runningEnv}" = "raspiblitz" ] && grep "signet=on" /mnt/hdd/raspiblitz.conf; then
-      echo "There is a signet instance running on the RaspiBlitz already."
-      echo "Please connect manually by editing the joinmarket.cfg."
-      echo "See: https://github.com/openoms/joininbox/issues/72"
-    else
-      /home/joinmarket/install.bitcoincore.sh signetOn
-    fi
+    /home/joinmarket/install.bitcoincore.sh signetOn
     echo
     echo "Press ENTER to return to the menu..."
     read key;;
@@ -146,7 +142,12 @@ case $CHOICE in
     echo "Press ENTER to return to the menu..."
     read key;;
   BTCCONF)
-    if /home/joinmarket/set.conf.sh "/home/bitcoin/.bitcoin/bitcoin.conf" "bitcoin"
+    if [ ${#network} -eq 0 ] || [ ${network} = "mainnet" ] || [ "${runningEnv}" = "raspiblitz" ]; then
+      bitcoinUser="bitcoin"
+    elif [ ${network} = "signet" ]; then
+      bitcoinUser="joinmarket"
+    fi
+    if /home/joinmarket/set.conf.sh "/home/${bitcoinUser}/.bitcoin/bitcoin.conf" "${bitcoinUser}"
     then
       echo "# Restarting bitcoind"
       sudo systemctl restart bitcoind
