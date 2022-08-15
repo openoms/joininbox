@@ -148,12 +148,12 @@ case $CHOICE in
     echo "Press ENTER to return to the menu..."
     read key;;
   BTCCONF)
-    if [ ${#network} -eq 0 ] || [ ${network} = "mainnet" ]; then
-      bictoinUser="bitcoin"
+    if [ ${#network} -eq 0 ] || [ ${network} = "mainnet" ] || [ "${runningEnv}" = "raspiblitz" ]; then
+      bitcoinUser="bitcoin"
     elif [ ${network} = "signet" ]; then
-      bictoinUser="joinmarket"
+      bitcoinUser="joinmarket"
     fi
-    if /home/joinmarket/set.conf.sh "/home/${bictoinUser}/.bitcoin/bitcoin.conf" "${bictoinUser}"
+    if /home/joinmarket/set.conf.sh "/home/${bitcoinUser}/.bitcoin/bitcoin.conf" "${bitcoinUser}"
     then
       echo "# Restarting bitcoind"
       sudo systemctl restart bitcoind

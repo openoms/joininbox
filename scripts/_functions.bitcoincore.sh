@@ -128,10 +128,11 @@ function installBitcoinCore() {
   fi
 
   # bitcoin.conf
-  if [ ! -f /home/joinmarket/.bitcoin/bitcoin.conf ]; then
-    mkdir -p /home/joinmarket/.bitcoin
-    randomRPCpass=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c8)
-    cat > /home/joinmarket/.bitcoin/bitcoin.conf <<EOF
+  if [ ${runningEnv} != "raspiblitz" ]; then
+    if [ ! -f /home/joinmarket/.bitcoin/bitcoin.conf ]; then
+      mkdir -p /home/joinmarket/.bitcoin
+      randomRPCpass=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c8)
+      cat > /home/joinmarket/.bitcoin/bitcoin.conf <<EOF
 # bitcoind configuration for signet
 
 # Connection settings
@@ -141,8 +142,9 @@ rpcpassword=$randomRPCpass
 onlynet=onion
 proxy=127.0.0.1:9050
 EOF
-  else
-    echo "# /home/joinmarket/.bitcoin/bitcoin.conf is present"
+    else
+      echo "# /home/joinmarket/.bitcoin/bitcoin.conf is present"
+    fi
   fi
 }
 
@@ -156,12 +158,15 @@ function removeSignetdService() {
 }
 
 function installSignet() {
-  # fix permissions
-  sudo chown -R joinmarket:joinmarket /home/joinmarket/.bitcoin/
-  removeSignetdService
+  if [ ${runningEnv} = "raspiblitz" ]; then
+    /home/admin/config.scripts/bitcoin.install.sh on signet
+  else
+    # fix permissions
+    sudo chown -R joinmarket:joinmarket /home/joinmarket/.bitcoin/
+    removeSignetdService
 
-  # /etc/systemd/system/signetd.service
-  echo "
+    # /etc/systemd/system/signetd.service
+    echo "
 [Unit]
 Description=Bitcoin daemon on signet
 
@@ -189,48 +194,53 @@ PrivateDevices=true
 [Install]
 WantedBy=multi-user.target
 " | sudo tee /etc/systemd/system/signetd.service
-  sudo systemctl enable signetd
-  echo "# OK - the bitcoin daemon on signet service is now enabled"
+    sudo systemctl enable signetd
+    echo "# OK - the bitcoin daemon on signet service is now enabled"
 
-  if [ $(sudo cat /home/joinmarket/.bitcoin/bitcoin.conf | grep -c "signet.addnode") -eq 0 ]; then
-    echo "\
+    if [ $(sudo cat /home/joinmarket/.bitcoin/bitcoin.conf | grep -c "signet.addnode") -eq 0 ]; then
+      echo "\
 signet.addnode=s7fcvn5rblem7tiquhhr7acjdhu7wsawcph7ck44uxyd6sismumemcyd.onion:38333
 signet.addnode=6megrst422lxzsqvshkqkg6z2zhunywhyrhy3ltezaeyfspfyjdzr3qd.onion:38333
 signet.addnode=jahtu4veqnvjldtbyxjiibdrltqiiighauai7hmvknwxhptsb4xat4qd.onion:38333
 signet.addnode=f4kwoin7kk5a5kqpni7yqe25z66ckqu6bv37sqeluon24yne5rodzkqd.onion:38333
 signet.addnode=nsgyo7begau4yecc46ljfecaykyzszcseapxmtu6adrfagfrrzrlngyd.onion:38333"|\
-    sudo tee -a /home/joinmarket/.bitcoin/bitcoin.conf
+      sudo tee -a /home/joinmarket/.bitcoin/bitcoin.conf
+    fi
+
+    # add to path
+    if [ $(sudo cat /etc/profile | grep -c "/home/joinmarket/bitcoin/") -eq 0 ]; then
+      echo "PATH=\$PATH:/home/joinmarket/bitcoin/" | sudo tee -a /etc/profile
+    fi
+
+    # add aliases
+    if [ $(alias | grep -c signet) -eq 0 ]; then
+      sudo bash -c "echo 'alias signet-cli=\"/home/joinmarket/bitcoin/bitcoin-cli -signet\"' >> /home/joinmarket/_aliases.sh"
+      sudo bash -c "echo 'alias signetd=\"/home/joinmarket/bitcoin/bitcoind -signet\"' >> /home/joinmarket/_aliases.sh"
+    fi
+
+    sudo systemctl start signetd
+
+    echo
+    echo "# Installed $(/home/joinmarket/bitcoin/bitcoind --version | grep version)"
+    echo
+    echo "# Monitor the signet bitcoind with: tail -f ~/.bitcoin/signet/debug.log"
+    echo
   fi
-
-  # add to path
-  if [ $(sudo cat /etc/profile | grep -c "/home/joinmarket/bitcoin/") -eq 0 ]; then
-    echo "PATH=\$PATH:/home/joinmarket/bitcoin/" | sudo tee -a /etc/profile
-  fi
-
-  # add aliases
-  if [ $(alias | grep -c signet) -eq 0 ]; then
-    sudo bash -c "echo 'alias signet-cli=\"/home/joinmarket/bitcoin/bitcoin-cli -signet\"' >> /home/joinmarket/_aliases.sh"
-    sudo bash -c "echo 'alias signetd=\"/home/joinmarket/bitcoin/bitcoind -signet\"' >> /home/joinmarket/_aliases.sh"
-  fi
-
-  sudo systemctl start signetd
-
-  echo
-  echo "# Installed $(/home/joinmarket/bitcoin/bitcoind --version | grep version)"
-  echo
-  echo "# Monitor the signet bitcoind with: tail -f ~/.bitcoin/signet/debug.log"
-  echo
-
 }
 
 setJMconfigToSignet() {
   echo "## editing the joinmarket.cfg with signet values."
+  if [ "${#network}" -eq 0 ] || [ "${network}" = "mainnet" ] || [ "${runningEnv}" = "raspiblitz" ]; then
+    bitcoinUser="bitcoin"
+  elif [ "${network}" = "signet" ]; then
+    bitcoinUser="joinmarket"
+  fi
   # rpc_user
-  RPCUSERSIGNET=$(sudo cat /home/joinmarket/.bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
+  RPCUSERSIGNET=$(sudo cat /home/${bitcoinUser}/.bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
   sed -i "s/^rpc_user =.*/rpc_user = $RPCUSERSIGNET/g" $JMcfgPath
   echo "# rpc_user = $RPCUSERSIGNET"
   # rpc_password
-  RPCPWSIGNET=$(sudo cat /home/joinmarket/.bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+  RPCPWSIGNET=$(sudo cat /home/${bitcoinUser}/.bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
   sed -i "s/^rpc_password =.*/rpc_password = $RPCPWSIGNET/g" $JMcfgPath
   echo "# rpc_password = $RPCPWSIGNET"
   # rpc_wallet_file
@@ -273,15 +283,21 @@ function showBitcoinLogs() {
     lines="-n $1"
     echo "# Show $lines number of lines"
   fi
-  if [ $network = mainnet ];then
-    logFilePath="/home/bitcoin/.bitcoin/debug.log"
-  elif [ $network = signet ];then
-    logFilePath="/home/joinmarket/.bitcoin/signet/debug.log"
+  source ${joininConfPath}
+  if [ ${#network} -eq 0 ] || [ "${network}" = "mainnet" ] || [ "${runningEnv}" = "raspiblitz" ]; then
+    bitcoinUser="bitcoin"
+  elif [ "${network}" = "signet" ]; then
+    bitcoinUser="joinmarket"
+  fi
+  if [ "${network}" = mainnet ];then
+    logFilePath="/home/${bitcoinUser}/.bitcoin/debug.log"
+  elif [ "${network}" = signet ];then
+    logFilePath="/home/${bitcoinUser}/.bitcoin/signet/debug.log"
   fi
   dialog \
-    --title "Monitoring the $network logs"  \
+    --title "Monitoring the ${network} logs"  \
     --msgbox "
-Will tail the bitcoin $network logfile from:
+Will tail the bitcoin ${network} logfile from:
 
 $logFilePath
 
@@ -384,16 +400,18 @@ fi
 }
 
 function connectLocalNode() {
-  if [ ${#1} -gt 0 ];then
+  if [ ${#1} -gt 0 ]; then
     network=$1
+  else
+    source ${joininConfPath}
   fi
-  echo "# Setting connection to the local Bitcoin node on $network"
+  echo "# Setting connection to the local Bitcoin node on ${network}"
   rpc_host="127.0.0.1"
-  if [ $network = mainnet ];then
+  if [ "${network}" = mainnet ];then
     rpc_port="8332"
-  elif [ $network = signet ];then
+  elif [ "${network}" = signet ];then
     rpc_port="38332"
-  elif [ $network = testnet ];then
+  elif [ "${network}" = testnet ];then
     rpc_port="18332"
   fi
   rpc_wallet="wallet.dat"
