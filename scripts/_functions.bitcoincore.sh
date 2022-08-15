@@ -152,14 +152,15 @@ function removeSignetdService() {
   if [ -f "/etc/systemd/system/signetd.service" ]; then
     sudo systemctl stop signetd
     sudo systemctl disable signetd
-    echo "# Bitcoin Core on signet service is stopped and disabled"
+    sudo rm -f /etc/systemd/system/signetd.service
+    echo "# The signetd service is stopped and removed"
     echo
   fi
 }
 
 function installSignet() {
-  if [ ${runningEnv} = "raspiblitz" ]; then
-    /home/admin/config.scripts/bitcoin.install.sh on signet
+  if [ "${runningEnv}" = "raspiblitz" ]; then
+    sudo -u admin /home/admin/config.scripts/bitcoin.install.sh on signet
   else
     # fix permissions
     sudo chown -R joinmarket:joinmarket /home/joinmarket/.bitcoin/
