@@ -2,7 +2,7 @@
 
 # based on https://github.com/rootzoll/raspiblitz/blob/v1.8/home.admin/config.scripts/blitz.conf.sh
 
-configFile="/mnt/hdd/raspiblitz.conf"
+configFile="/home/joinmarket/joinin.conf"
 
 # command info
 if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ] || [ "$1" = "-help" ]; then
@@ -22,7 +22,7 @@ if [ "$1" = "set" ]; then
 
   # check that key & value are given
   if [ "${keystr}" == "" ] || [ "${valuestr}" == "" ]; then
-    echo "# set.value.sh $@"
+    echo "# set.value.sh $*"
     echo "# FAIL: missing parameter"
     exit 1
   fi
