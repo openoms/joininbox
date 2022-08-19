@@ -235,9 +235,21 @@ echo "	postrotate" >> ./rsyslog
 echo "		invoke-rc.d rsyslog rotate > /dev/null" >> ./rsyslog
 echo "	endscript" >> ./rsyslog
 echo "}" >> ./rsyslog
+mv /etc/logrotate.d/rsyslog /dev/shm/rsyslog.ori
 mv ./rsyslog /etc/logrotate.d/rsyslog
 chown root:root /etc/logrotate.d/rsyslog
 service rsyslog restart
+echo
+echo "Backed up original /etc/logrotate.d/rsyslog to /dev/shm/, installed edited one"
+echo "To restore original version, run"
+echo
+echo "   sudo mv /dev/shm/rsyslog.ori /etc/logrotate.d/rsyslog"
+echo "   sudo service rsyslog restart"
+echo
+echo "if you do not restore it now, the backup will be wiped at reboot"
+echo "so copy if to a safe place if you want to keep it"
+echo
+
 
 echo
 echo "########################"
