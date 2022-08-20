@@ -240,16 +240,12 @@ mv ./rsyslog /etc/logrotate.d/rsyslog
 chown root:root /etc/logrotate.d/rsyslog
 service rsyslog restart
 echo
-echo "Backed up original /etc/logrotate.d/rsyslog to /dev/shm/, installed edited one"
-echo "To restore original version, run"
+echo "# Saved the original /etc/logrotate.d/rsyslog in the memory: /dev/shm/rsyslog.ori"
+echo "# To restore original version run:"
+echo "'sudo mv /dev/shm/rsyslog.ori /etc/logrotate.d/rsyslog'"
+echo "'sudo service rsyslog restart'"
+echo "# if not restored or copied before shutdown the /dev/shm/rsyslog.ori will be wiped."
 echo
-echo "   sudo mv /dev/shm/rsyslog.ori /etc/logrotate.d/rsyslog"
-echo "   sudo service rsyslog restart"
-echo
-echo "if you do not restore it now, the backup will be wiped at reboot"
-echo "so copy if to a safe place if you want to keep it"
-echo
-
 
 echo
 echo "########################"
