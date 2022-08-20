@@ -58,8 +58,9 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 **JoininBox operates on the minimum viable hardware under the assumption that the seed (and passphrase) of the wallets used is safely backed up and can be used to recover the funds!**
 
 ## Set up using an SDcard image
-* Download the zip of the latest successful SDcard image build for the Raspberry Pi 4 or 3 from
-  <https://github.com/openoms/joininbox/actions/workflows/arm64-rpi-image-build.yml>
+* Download the zip of the latest successful SDcard image build for the Raspberry Pi 4 or 3 from  
+  <https://github.com/openoms/joininbox/actions/workflows/arm64-rpi-image-build.yml>  
+  (note that need to be logged in to github to download the artifact image file)
 * unzip and check the sha256sum verifying the .gz file integrity
   ```
   sha256sum -c joininbox-arm64-rpi.img.gz.sha256
