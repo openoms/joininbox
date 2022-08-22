@@ -32,7 +32,7 @@ source "arm" "joininbox-arm64-rpi" {
 
 build {
   sources = ["source.arm.joininbox-arm64-rpi"]
-  
+
   provisioner "file" {
     source      = "scripts/resizerootfs"
     destination = "/tmp"
@@ -57,5 +57,13 @@ build {
 
   provisioner "shell" {
     script = "build_joininbox.sh"
+  }
+
+  provisioner "shell" {
+    inline = [
+      "echo '# Deleting the SSH pub keys (will be recreate on the first boot) ...'",
+      "sudo rm /etc/ssh/ssh_host_*",
+      "echo 'OK'",
+    ]
   }
 }
