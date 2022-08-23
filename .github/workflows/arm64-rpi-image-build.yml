@@ -2,19 +2,19 @@ name: arm64-rpi-image-build
 
 on:
   push:
-    branches: [ "packer" ]
+    branches: [ "master" ]
     paths-ignore:
       - '*.md'
       - '*.png'
       - '.gitignore'
-      - 'scripts/packer/amd64'
+      - 'ci/amd64'
   pull_request:
-    branches: [ "packer" ]
+    branches: [ "master" ]
     paths-ignore:
       - '*.md'
       - '*.png'
       - '.gitignore'
-      - 'scripts/packer/amd64'
+      - 'ci/amd64'
   workflow_dispatch:
 
 jobs:
@@ -33,22 +33,22 @@ jobs:
 
       - name: Run the build script
         run: |
-          cd scripts/packer/arm64-rpi
+          cd ci/arm64-rpi
           bash arm64-rpi.sh
 
       - name: Compute checksum of the raw image
         run: |
-          cd scripts/packer/arm64-rpi/packer-builder-arm/
+          cd ci/arm64-rpi/packer-builder-arm/
           sha256sum joininbox-arm64-rpi.img > joininbox-arm64-rpi.img.sha256
 
       - name: Compress image
         run: |
-          cd scripts/packer/arm64-rpi/packer-builder-arm/
+          cd ci/arm64-rpi/packer-builder-arm/
           gzip -v9 joininbox-arm64-rpi.img
 
       - name: Compute checksum of the compressed image
         run: |
-          cd scripts/packer/arm64-rpi/packer-builder-arm/
+          cd ci/arm64-rpi/packer-builder-arm/
           sha256sum joininbox-arm64-rpi.img.gz > joininbox-arm64-rpi.img.gz.sha256
 
       - name: Upload the image and checksums
@@ -56,6 +56,6 @@ jobs:
         with:
           name: joininbox-arm64-rpi-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}
           path: |
-            ${{ github.workspace }}/scripts/packer/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.sha256
-            ${{ github.workspace }}/scripts/packer/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.gz
-            ${{ github.workspace }}/scripts/packer/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.gz.sha256
+            ${{ github.workspace }}/ci/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.sha256
+            ${{ github.workspace }}/ci/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.gz
+            ${{ github.workspace }}/ci/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.gz.sha256

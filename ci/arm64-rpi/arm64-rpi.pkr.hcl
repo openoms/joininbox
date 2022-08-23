@@ -62,7 +62,7 @@ build {
   provisioner "shell" {
     inline = [
       "echo '# Deleting the SSH pub keys (will be recreate on the first boot) ...'",
-      "sudo rm /etc/ssh/ssh_host_*",
+      "rm /etc/ssh/ssh_host_*",
       "echo 'OK'",
     ]
   }
