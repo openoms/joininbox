@@ -8,6 +8,7 @@ sudo apt-get update -y && sudo apt-get install packer -y
 
 echo -e "Installing Go..."
 wget --progress=bar:force https://go.dev/dl/go1.18.4.linux-arm64.tar.gz
+echo "35014d92b50d97da41dade965df7ebeb9a715da600206aa59ce1b2d05527421f go1.18.4.linux-arm64.tar.gz" | sha256sum -c -
 sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.18.4.linux-arm64.tar.gz
 sudo rm -rf go1.18.4.linux-arm64.tar.gz
 export PATH=$PATH:/usr/local/go/bin
@@ -16,12 +17,14 @@ export PATH=$PATH:/usr/local/go/bin
 echo -e "\nInstalling Packer Arm Plugin..."
 git clone https://github.com/mkaczanowski/packer-builder-arm
 cd packer-builder-arm
+# pin to commit hash https://github.com/mkaczanowski/packer-builder-arm/commits/master
+git reset --hard 0eb143167ad45ce44a21b6848fea9ccf0e15aa8b
 go mod download
 go build
 
 # copy the scripts to the packer-builder-arm directory
 cp ../arm64-rpi.pkr.hcl ./
-cp ../../../../build_joininbox.sh ./
+cp ../../../build_joininbox.sh ./
 
 # Build the image in docker
 echo -e "\nBuilding packer image..."
