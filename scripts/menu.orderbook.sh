@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# menu.orderbook.sh -> starts the menu
+# menu.orderbook.sh startOrderBookService starts the orderBookService
+
 source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
 
@@ -30,7 +33,7 @@ function showOrderBookAddress() {
   fi
 }
 
-function startOrderBook() {
+function orderBookService() {
   stopOrderBook
   activateJMvenv
   if [ "$(pip list | grep -c matplotlib)" -eq 0 ];then
@@ -56,7 +59,7 @@ User=joinmarket
 Group=joinmarket
 Type=simple
 TimeoutSec=600
-Restart=no
+Restart=on-failure
 
 # Hardening measures
 PrivateTmp=true
@@ -69,6 +72,12 @@ WantedBy=multi-user.target
 " | sudo tee /etc/systemd/system/ob-watcher.service 1>/dev/null
   sudo systemctl enable ob-watcher 2>/dev/null
   sudo systemctl start ob-watcher
+  echo "# Started the ob-watcher.service on the local port 62601"
+}
+
+function startOrderBook() {
+
+  orderBookService
 
   # create the Hidden Service
   /home/joinmarket/install.hiddenservice.sh ob-watcher 80 62601
@@ -82,6 +91,13 @@ WantedBy=multi-user.target
   --title "Monitoring the ob-watcher - press CTRL+C to exit"  \
   --prgbox "sudo journalctl -fn20 -u ob-watcher" 30 200
 }
+
+if [ "$1" = startOrderBookService ]; then
+
+  orderBookService
+
+  exit 0
+fi
 
 # BASIC MENU INFO
 HEIGHT=9
