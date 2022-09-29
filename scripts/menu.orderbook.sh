@@ -59,7 +59,8 @@ User=joinmarket
 Group=joinmarket
 Type=simple
 TimeoutSec=600
-Restart=on-failure
+Restart=always
+RestartSec=60
 
 # Hardening measures
 PrivateTmp=true
