@@ -5,7 +5,7 @@ USERNAME=jam
 
 sudo apt install nginx
 
-if [ ! -f  /home/jam/nginx/tls.cert ] || [ ! -f  /home/jam/nginx/tls.key ];then
+if ! sudo ls /home/jam/nginx/tls.cert || ! sudo ls  /home/jam/nginx/tls.key; then
   sudo apt-get install openssl
 
   subj="/C=US/ST=Utah/L=Lehi/O=Your Company, Inc./OU=IT/CN=example.com"
@@ -15,9 +15,9 @@ if [ ! -f  /home/jam/nginx/tls.cert ] || [ ! -f  /home/jam/nginx/tls.key ];then
    && popd || exit 1
 
 else
-  echo " /home/jam/nginx/cert.pem and key.pem is already present"
+  echo " /home/jam/nginx/tls.key and tls.cert are already present"
 fi
 
-if [ ! -f /etc/ssl/certs/dhparam.pem ]; then
+if ! sudo ls /etc/ssl/certs/dhparam.pem; then
   sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 fi

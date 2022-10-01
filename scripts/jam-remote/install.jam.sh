@@ -6,7 +6,7 @@ USERNAME=jam
 HOME_DIR=/home/$USERNAME
 REPO=joinmarket-webui/joinmarket-webui
 APP_DIR=webui
-WEBUI_VERSION=0.0.10
+WEBUI_VERSION=0.1.0
 SOURCEDIR=$(pwd)
 
 # command info
@@ -81,11 +81,11 @@ if [ "$1" = "1" ] || [ "$1" = "on" ]; then
     sudo cp -r ${SOURCEDIR}/nginx/snippets /etc/nginx/
     sudo ln -sf /etc/nginx/sites-available/jam_ssl.conf /etc/nginx/sites-enabled/
 
+    bash ${SOURCEDIR}/install.selfsignedcert.sh
+
     sudo nginx -t
     sudo systemctl reload nginx
 
-
-    bash ${SOURCEDIR}/install.selfsignedcert.sh
 
   fi
   bash ${SOURCEDIR}/install.jam.sh menu
