@@ -5,7 +5,8 @@
 - [Signet links](#signet-links)
 - [SSH hardening options](#ssh-hardening-options)
   - [SSH key authentication](#ssh-key-authentication)
-  - [Two factor authenetication (2FA) for SSH](#two-factor-authenetication-2fa-for-ssh)
+  - [2FA with TOTP](#2fa-with-totp)
+  - [2FA with Yubikey](#2fa-with-yubikey)
   - [Log in through SSH using a hardware wallet](#log-in-through-ssh-using-a-hardware-wallet)
 - [SSH through Tor from Linux](#ssh-through-tor-from-linux)
 - [Allow Tor to connect to localhost](#allow-tor-to-connect-to-localhost)
@@ -38,11 +39,11 @@
 - [Run the JoinMarket-QT GUI from a different user on the same Linux desktop where JoininBox is installed](#run-the-joinmarket-qt-gui-from-a-different-user-on-the-same-linux-desktop-where-joininbox-is-installed)
 
 ## Public JoinMarket Order Book links
-* <https://nixbitcoin.org/obwatcher/>  
+* <https://nixbitcoin.org/obwatcher/>
 * <https://ttbit.mine.bz/orderbook>
 
 ## Signet links
-* Faucets (free signet coins): 
+* Faucets (free signet coins):
   * https://signet.bc-2.jp
   * https://signetfaucet.bublina.eu.org/
 * Block Explorer:
@@ -57,9 +58,9 @@
 ### SSH key authentication
 * <https://raspibolt.org/guide/raspberry-pi/security.html#login-with-ssh-keys>
 
-### Two factor authenetication (2FA) for SSH
-Detailed guide: <https://pimylifeup.com/setup-2fa-ssh/>  
-See all the options at: <https://www.mankier.com/1/google-authenticator#Options>
+### 2FA with TOTP
+* Detailed guide: <https://pimylifeup.com/setup-2fa-ssh/>  
+* See all the options at: <https://www.mankier.com/1/google-authenticator#Options>
 * Commands:
   ```
   sudo apt-get update
@@ -83,6 +84,26 @@ See all the options at: <https://www.mankier.com/1/google-authenticator#Options>
   sudo systemctl restart sshd
   ```
 
+### 2FA with Yubikey
+* for recent linux and Mac clients
+* based on https://rameerez.com/how-to-use-yubikey-to-log-in-via-ssh-to-server/
+  ```
+  # Check the OpenSSH version is above: 8.2 (https://www.openssh.com/txt/release-8.2)
+  ssh -V
+
+  # Check is allowed to generate -sk (security key) type keys (see the article above for Mac) 
+  ssh-keygen help
+  # should show the line:  [-t dsa | ecdsa | ecdsa-sk | ed25519 | ed25519-sk | rsa]
+
+  # generate key
+  ssh-keygen -t ecdsa-sk -f ~/.ssh/yubikey
+
+  # copy with:
+  ssh-copy-id -i ~/.ssh/yubikey user@host
+  # or display to be copied manually to the ~/.ssh/authorized_keys file on the server:
+  cat ~/.ssh/yubikey.pub
+  ```
+
 ### Log in through SSH using a hardware wallet
 * See the official pages for:
     * [Trezor](https://wiki.trezor.io/Apps:SSH_agent)
@@ -96,8 +117,8 @@ See all the options at: <https://www.mankier.com/1/google-authenticator#Options>
 
 ## SSH through Tor from Linux
 On a RaspiBlitz
-* since v1.4 there is a script to create a hidden service on your blitz:  
-`./config.scripts/internet.hiddenservice.sh ssh 22 22`  
+* use the existing script to create a hidden service on your blitz:  
+`./config.scripts/tor.onion-service.sh ssh 22 22`  
 * get the Hidden Service address to connect to with:  
 `sudo cat /mnt/hdd/tor/ssh/hostname`  
 
