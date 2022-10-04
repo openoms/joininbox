@@ -3,7 +3,7 @@
 # https://github.com/joinmarket-webui/joinmarket-webui
 
 USERNAME=jam
-HOME_DIR=/home/$USERNAME
+HOME_DIR=/home/${USERNAME}
 REPO=joinmarket-webui/joinmarket-webui
 APP_DIR=webui
 WEBUI_VERSION=0.1.0
@@ -21,7 +21,7 @@ if [ "$1" = "menu" ]; then
   isInstalled=$(sudo ls $HOME_DIR 2>/dev/null | grep -c "$APP_DIR")
   if [ ${isInstalled} -eq 1 ]; then
     # get network info
-    fingerprint=$(openssl x509 -in /home/jam/nginx/tls.cert -fingerprint -noout | cut -d"=" -f2)
+    fingerprint=$(openssl x509 -in /home/${USERNAME}/nginx/tls.cert -fingerprint -noout | cut -d"=" -f2)
     whiptail --title " JAM " --msgbox "Open in your local web browser & accept self-signed cert:
 https://localhost:7501\n
 with Fingerprint:
@@ -41,14 +41,14 @@ if [ "$1" = "1" ] || [ "$1" = "on" ]; then
 
     echo "*** INSTALL JAM ***"
 
-    echo "# Creating the electrs user"
+    echo "# Creating the ${USERNAME} user"
     echo
-    sudo adduser --disabled-password --gecos "" jam
+    sudo adduser --disabled-password --gecos "" ${USERNAME}
 
     # install nodeJS
     bash ${SOURCEDIR}/bonus.nodejs.sh on
 
-    # install JAM
+    # install Jam
     cd $HOME_DIR || exit 1
 
     sudo -u $USERNAME git clone https://github.com/$REPO
@@ -154,10 +154,10 @@ if [ "$1" = "0" ] || [ "$1" = "off" ]; then
     echo "*** UNINSTALL JAM ***"
 
     # close ports on firewall
-    sudo ufw delete allow from any to any port 7500 comment 'allow JAM HTTP'
-    sudo ufw delete allow from any to any port 7501 comment 'allow JAM HTTPS'
+    sudo ufw delete allow from any to any port 7500 comment 'allow Jam HTTP'
+    sudo ufw delete allow from any to any port 7501 comment 'allow Jam HTTPS'
 
-    # remove nginx symlinks
+    # remove nginx symlinks and config
     sudo rm -f /etc/nginx/sites-enabled/jam*
     sudo rm -f /etc/nginx/sites-available/jam*
     sudo nginx -t
