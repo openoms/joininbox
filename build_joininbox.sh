@@ -389,8 +389,7 @@ fi
 sudo -u joinmarket gpg --import ./pgp_keys.asc
 trap 'rm -f "$_temp"' EXIT
 _temp="$(mktemp -p /dev/shm/)"
-commitHash="$(sudo -u joinmarket git log --oneline | head -1 | awk '{print $1}')"
-gitCommand="sudo -u joinmarket git verify-commit $commitHash"
+gitCommand="sudo -u joinmarket git verify-tag $TAG"
 if ${gitCommand} 2>&1 >&"$_temp"; then
   goodSignature=1
 else
@@ -407,9 +406,9 @@ if [ "${correctKey}" -lt 1 ] || [ "${goodSignature}" -lt 1 ]; then
   exit 1
 else
   echo
-  echo "##########################################################################"
-  echo "# OK --> the PGP signature of the checked out $commitHash commit is correct"
-  echo "##########################################################################"
+  echo "######################################################################"
+  echo "# OK --> the PGP signature of the checked out $TAG tag is correct"
+  echo "######################################################################"
   echo
 fi
 
