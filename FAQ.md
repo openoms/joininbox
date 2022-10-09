@@ -38,6 +38,7 @@
 - [Install JoinMarket without the QT GUI and dependencies](#install-joinmarket-without-the-qt-gui-and-dependencies)
 - [Run the JoinMarket-QT GUI from a different user on the same Linux desktop where JoininBox is installed](#run-the-joinmarket-qt-gui-from-a-different-user-on-the-same-linux-desktop-where-joininbox-is-installed)
 - [Install Jam on a linux desktop and connect to a remote Joininbox](#install-jam-on-a-linux-desktop-and-connect-to-a-remote-joininbox)
+- [Signing strategy for releases](#signing-strategy-for-releases)
 
 
 ## Public JoinMarket Order Book links
@@ -672,3 +673,8 @@ Alternatively to a pruned node there could be a larger >400 GB storage connected
   ```
 ## Install Jam on a linux desktop and connect to a remote Joininbox
 * described in [scripts/jam-remote/README.txt](scripts/jam-remote/README.txt)
+
+## Signing strategy for releases
+From: https://github.com/joinmarket-webui/jam/issues/142#issuecomment-1109780879
+* Instead of creating the release tag using the GitHub UI, the signer creates it on his machine and pushes it to GitHub via: git tag -s v0.7.4 && git push origin v0.7.4. More infos on signing tags and setting up GPG with Git [here](https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work).
+* The signer creates a [release from the signed tag using the GitHub UI](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release) with changelog, rich title, etc. just like we had it for the past releases.
