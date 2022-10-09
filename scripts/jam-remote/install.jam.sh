@@ -3,15 +3,15 @@
 # https://github.com/joinmarket-webui/jam
 
 USERNAME=jam
-HOME_DIR=/home/${USERNAME}
-REPO=joinmarket-webui/jam
-APP_DIR=webui
 WEBUI_VERSION=0.1.1
+REPO=joinmarket-webui/jam
+HOME_DIR=/home/${USERNAME}
+APP_DIR=webui
 SOURCEDIR=$(pwd)
 
-GITHUB_SIGN_AUTHOR="web-flow"
-GITHUB_SIGN_PUBKEYLINK="https://github.com/web-flow.gpg"
-GITHUB_SIGN_FINGERPRINT="4AEE18F83AFDEB23"
+PGPsigner="dergigi"
+PGPpubkeyLink="https://github.com/${PGPsigner}.gpg"
+PGPpubkeyFingerprint="89C4A25E69A5DE7F"
 
 # command info
 if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
@@ -32,7 +32,7 @@ with Fingerprint:
 ${fingerprint}\n
 " 15 57
   else
-    echo "*** JAM NOT INSTALLED ***"
+    echo "*** JAM IS NOT INSTALLED ***"
   fi
 exit 0
 fi
@@ -61,7 +61,7 @@ if [ "$1" = "on" ]; then
     sudo -u $USERNAME git reset --hard v${WEBUI_VERSION}
 
     sudo -u $USERNAME bash ${SOURCEDIR}/../verify.git.sh \
-     "${GITHUB_SIGN_AUTHOR}" "${GITHUB_SIGN_PUBKEYLINK}" "${GITHUB_SIGN_FINGERPRINT}" || exit 1
+     "${PGPsigner}" "${PGPpubkeyLink}" "${PGPpubkeyFingerprint}" "v${WEBUI_VERSION}" || exit 1
 
     cd $HOME_DIR || exit 1
     sudo -u $USERNAME mv jam $APP_DIR
@@ -99,51 +99,44 @@ if [ "$1" = "update" ]; then
   isInstalled=$(sudo ls $HOME_DIR 2>/dev/null | grep -c "$APP_DIR")
   if [ ${isInstalled} -gt 0 ]; then
     echo "*** UPDATE JAM ***"
-    cd $HOME_DIR
+    cd $HOME_DIR || exit 1
 
     if [ "$2" = "commit" ]; then
-      echo "# Updating to the latest commit in the default branch"
-      sudo -u $USERNAME wget https://github.com/$REPO/archive/refs/heads/master.tar.gz
-      sudo -u $USERNAME tar -xzf master.tar.gz
-      sudo -u $USERNAME rm -rf master.tar.gz
-      sudo -u $USERNAME mv jam-master $APP_DIR-update
+      echo "# Remove old source code"
+      sudo rm -rf jam
+      echo "# Downloading the latest commit in the default branch of $REPO"
+      sudo -u $USERNAME git clone https://github.com/$REPO
     else
       version=$(curl --silent "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
-      cd $APP_DIR
+      cd $APP_DIR || exit 1
       current=$(node -p "require('./package.json').version")
       cd ..
       if [ "$current" = "$version" ]; then
-        echo "*** JAM IS ALREADY UPDATED TO LATEST VERSION ***"
+        echo "*** JAM IS ALREADY UPDATED TO LATEST RELEASE ***"
         exit 0
       fi
-      sudo -u $USERNAME wget https://github.com/$REPO/archive/refs/tags/v$version.tar.gz
-      sudo -u $USERNAME tar -xzf v$version.tar.gz
-      sudo -u $USERNAME rm v$version.tar.gz
-      sudo -u $USERNAME mv jam-$version $APP_DIR-update
+
+      echo "# Remove old source code"
+      sudo rm -rf jam
+      sudo -u $USERNAME git clone https://github.com/$REPO
+      cd jam || exit 1
+      sudo -u $USERNAME git reset --hard v${version}
+
+      sudo -u $USERNAME bash ${SOURCEDIR}/../verify.git.sh \
+       "${PGPsigner}" "${PGPpubkeyLink}" "${PGPpubkeyFingerprint}" "v${version}" || exit 1
+
+      cd $HOME_DIR || exit 1
+      sudo -u $USERNAME mv jam $APP_DIR
+      cd $APP_DIR || exit 1
+      sudo -u $USERNAME rm -rf docker
+      if ! sudo -u $USERNAME npm install; then
+        echo "FAIL - npm install did not run correctly, aborting"
+        exit 1
+      fi
+
+      sudo -u $USERNAME npm run build
+      echo "*** JAM UPDATED to $version ***"
     fi
-
-    cd $APP_DIR-update || exit 1
-
-    sudo -u $USERNAME bash ${SOURCEDIR}/../verify.git.sh \
-     "${GITHUB_SIGN_AUTHOR}" "${GITHUB_SIGN_PUBKEYLINK}" "${GITHUB_SIGN_FINGERPRINT}" || exit 1
-
-    sudo -u $USERNAME rm -rf docker
-    sudo -u $USERNAME npm install
-    if ! [ $? -eq 0 ]; then
-      echo "FAIL - npm install did not run correctly, aborting"
-      exit 1
-    fi
-
-    sudo -u $USERNAME npm run build
-    if ! [ $? -eq 0 ]; then
-      echo "FAIL - npm run build did not run correctly, aborting"
-      exit 1
-    fi
-    cd ..
-    sudo -u $USERNAME rm -rf $APP_DIR
-    sudo -u $USERNAME mv $APP_DIR-update $APP_DIR
-
-    echo "*** JAM UPDATED ***"
   else
     echo "*** JAM NOT INSTALLED ***"
   fi
@@ -174,8 +167,8 @@ if [ "$1" = "off" ]; then
     # remove SSL
     sudo rm -rf $HOME_DIR/.joinmarket/ssl
 
-    sudo userdel -rf jam
-    echo "OK JAM removed."
+    sudo userdel -rf jam 2>/dev/null
+    echo "OK Jam is removed."
   else
     echo "*** JAM NOT INSTALLED ***"
   fi
