@@ -1,18 +1,22 @@
 #!/bin/bash
 
-# https://github.com/joinmarket-webui/joinmarket-webui
+# https://github.com/joinmarket-webui/jam
 
 USERNAME=jam
 HOME_DIR=/home/${USERNAME}
-REPO=joinmarket-webui/joinmarket-webui
+REPO=joinmarket-webui/jam
 APP_DIR=webui
-WEBUI_VERSION=0.1.0
+WEBUI_VERSION=0.1.1
 SOURCEDIR=$(pwd)
+
+GITHUB_SIGN_AUTHOR="web-flow"
+GITHUB_SIGN_PUBKEYLINK="https://github.com/web-flow.gpg"
+GITHUB_SIGN_FINGERPRINT="4AEE18F83AFDEB23"
 
 # command info
 if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
   echo "config script to switch jam on or off"
-  echo "bonus.joinmarket-webui.sh [on|off|menu|update|update commit|precheck]"
+  echo "install.jam.sh [on|off|menu|update|update commit|precheck]"
   exit 1
 fi
 
@@ -35,7 +39,7 @@ fi
 
 
 # switch on
-if [ "$1" = "1" ] || [ "$1" = "on" ]; then
+if [ "$1" = "on" ]; then
   isInstalled=$(sudo ls $HOME_DIR 2>/dev/null | grep -c "$APP_DIR")
   if [ ${isInstalled} -eq 0 ]; then
 
@@ -53,17 +57,14 @@ if [ "$1" = "1" ] || [ "$1" = "on" ]; then
 
     sudo -u $USERNAME git clone https://github.com/$REPO
 
-    cd joinmarket-webui || exit 1
+    cd jam || exit 1
     sudo -u $USERNAME git reset --hard v${WEBUI_VERSION}
 
-    GITHUB_SIGN_AUTHOR="web-flow"
-    GITHUB_SIGN_PUBKEYLINK="https://github.com/web-flow.gpg"
-    GITHUB_SIGN_FINGERPRINT="4AEE18F83AFDEB23"
     sudo -u $USERNAME bash ${SOURCEDIR}/../verify.git.sh \
      "${GITHUB_SIGN_AUTHOR}" "${GITHUB_SIGN_PUBKEYLINK}" "${GITHUB_SIGN_FINGERPRINT}" || exit 1
 
     cd $HOME_DIR || exit 1
-    sudo -u $USERNAME mv joinmarket-webui $APP_DIR
+    sudo -u $USERNAME mv jam $APP_DIR
     cd $APP_DIR || exit 1
     sudo -u $USERNAME rm -rf docker
     if ! sudo -u $USERNAME npm install; then
@@ -96,7 +97,7 @@ fi
 # update
 if [ "$1" = "update" ]; then
   isInstalled=$(sudo ls $HOME_DIR 2>/dev/null | grep -c "$APP_DIR")
-  if [ ${isInstalled} -eq 1 ]; then
+  if [ ${isInstalled} -gt 0 ]; then
     echo "*** UPDATE JAM ***"
     cd $HOME_DIR
 
@@ -105,7 +106,7 @@ if [ "$1" = "update" ]; then
       sudo -u $USERNAME wget https://github.com/$REPO/archive/refs/heads/master.tar.gz
       sudo -u $USERNAME tar -xzf master.tar.gz
       sudo -u $USERNAME rm -rf master.tar.gz
-      sudo -u $USERNAME mv joinmarket-webui-master $APP_DIR-update
+      sudo -u $USERNAME mv jam-master $APP_DIR-update
     else
       version=$(curl --silent "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
       cd $APP_DIR
@@ -118,10 +119,14 @@ if [ "$1" = "update" ]; then
       sudo -u $USERNAME wget https://github.com/$REPO/archive/refs/tags/v$version.tar.gz
       sudo -u $USERNAME tar -xzf v$version.tar.gz
       sudo -u $USERNAME rm v$version.tar.gz
-      sudo -u $USERNAME mv joinmarket-webui-$version $APP_DIR-update
+      sudo -u $USERNAME mv jam-$version $APP_DIR-update
     fi
 
     cd $APP_DIR-update || exit 1
+
+    sudo -u $USERNAME bash ${SOURCEDIR}/../verify.git.sh \
+     "${GITHUB_SIGN_AUTHOR}" "${GITHUB_SIGN_PUBKEYLINK}" "${GITHUB_SIGN_FINGERPRINT}" || exit 1
+
     sudo -u $USERNAME rm -rf docker
     sudo -u $USERNAME npm install
     if ! [ $? -eq 0 ]; then
@@ -148,9 +153,9 @@ fi
 
 
 # switch off
-if [ "$1" = "0" ] || [ "$1" = "off" ]; then
+if [ "$1" = "off" ]; then
   isInstalled=$(sudo ls $HOME_DIR 2>/dev/null | grep -c "$APP_DIR")
-  if [ "${isInstalled}" -eq 1 ]; then
+  if [ "${isInstalled}" -gt 0 ]; then
     echo "*** UNINSTALL JAM ***"
 
     # close ports on firewall
