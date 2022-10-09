@@ -8,13 +8,14 @@ on:
       - '*.png'
       - '.gitignore'
       - 'ci/amd64'
+      - 'scripts/jam-remote'
   pull_request:
     branches: [ "master" ]
     paths-ignore:
       - '*.md'
       - '*.png'
       - '.gitignore'
-      - 'ci/amd64'
+      - 'scripts/jam-remote'
   workflow_dispatch:
 
 jobs:

@@ -37,6 +37,8 @@
 - [IRC server settings](#irc-server-settings)
 - [Install JoinMarket without the QT GUI and dependencies](#install-joinmarket-without-the-qt-gui-and-dependencies)
 - [Run the JoinMarket-QT GUI from a different user on the same Linux desktop where JoininBox is installed](#run-the-joinmarket-qt-gui-from-a-different-user-on-the-same-linux-desktop-where-joininbox-is-installed)
+- [Install Jam on a linux desktop and connect to a remote Joininbox](#install-jam-on-a-linux-desktop-and-connect-to-a-remote-joininbox)
+
 
 ## Public JoinMarket Order Book links
 * <https://nixbitcoin.org/obwatcher/>
@@ -668,3 +670,5 @@ Alternatively to a pruned node there could be a larger >400 GB storage connected
   ```
   xhost -
   ```
+## Install Jam on a linux desktop and connect to a remote Joininbox
+* described in [scripts/jam-remote/README.txt](scripts/jam-remote/README.txt)
