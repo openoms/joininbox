@@ -3,7 +3,7 @@
 # https://github.com/joinmarket-webui/jam
 
 USERNAME=jam
-WEBUI_VERSION=0.1.1
+WEBUI_VERSION=0.1.2
 REPO=joinmarket-webui/jam
 HOME_DIR=/home/${USERNAME}
 APP_DIR=webui
@@ -34,7 +34,7 @@ ${fingerprint}\n
   else
     echo "*** JAM IS NOT INSTALLED ***"
   fi
-exit 0
+  exit 0
 fi
 
 
@@ -87,9 +87,10 @@ if [ "$1" = "on" ]; then
     sudo nginx -t
     sudo systemctl reload nginx
 
-
   fi
+
   bash ${SOURCEDIR}/install.jam.sh menu
+
   exit 0
 fi
 
@@ -104,6 +105,7 @@ if [ "$1" = "update" ]; then
     if [ "$2" = "commit" ]; then
       echo "# Remove old source code"
       sudo rm -rf jam
+      sudo rm -rf $APP_DIR
       echo "# Downloading the latest commit in the default branch of $REPO"
       sudo -u $USERNAME git clone https://github.com/$REPO
     else
@@ -118,6 +120,7 @@ if [ "$1" = "update" ]; then
 
       echo "# Remove old source code"
       sudo rm -rf jam
+      sudo rm -rf $APP_DIR
       sudo -u $USERNAME git clone https://github.com/$REPO
       cd jam || exit 1
       sudo -u $USERNAME git reset --hard v${version}
@@ -147,31 +150,32 @@ fi
 
 # switch off
 if [ "$1" = "off" ]; then
-  isInstalled=$(sudo ls $HOME_DIR 2>/dev/null | grep -c "$APP_DIR")
-  if [ "${isInstalled}" -gt 0 ]; then
-    echo "*** UNINSTALL JAM ***"
+  echo "*** UNINSTALL JAM ***"
 
-    # close ports on firewall
-    sudo ufw delete allow from any to any port 7500 comment 'allow Jam HTTP'
-    sudo ufw delete allow from any to any port 7501 comment 'allow Jam HTTPS'
-
-    # remove nginx symlinks and config
-    sudo rm -f /etc/nginx/sites-enabled/jam*
-    sudo rm -f /etc/nginx/sites-available/jam*
-    sudo nginx -t
-    sudo systemctl reload nginx
-
-    # remove the app
-    sudo rm -rf $HOME_DIR/$APP_DIR
-
-    # remove SSL
-    sudo rm -rf $HOME_DIR/.joinmarket/ssl
-
+  if [ -d /home/jam ]; then
     sudo userdel -rf jam 2>/dev/null
-    echo "OK Jam is removed."
+    echo "Removed the jam user"
   else
-    echo "*** JAM NOT INSTALLED ***"
+    echo "There is no /home/jam present"
   fi
+
+  # close ports on firewall
+  sudo ufw delete allow from any to any port 7500
+  sudo ufw delete allow from any to any port 7501
+
+  # remove nginx symlinks and config
+  sudo rm -f /etc/nginx/sites-enabled/jam*
+  sudo rm -f /etc/nginx/sites-available/jam*
+  sudo nginx -t
+  sudo systemctl reload nginx
+
+  # remove the app
+  sudo rm -rf $HOME_DIR/$APP_DIR 2>/dev/null
+
+  # remove SSL
+  sudo rm -rf $HOME_DIR/.joinmarket/ssl
+
+  echo "OK Jam is removed."
 
   exit 0
 fi
