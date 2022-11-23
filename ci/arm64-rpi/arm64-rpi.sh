@@ -29,5 +29,5 @@ cp ../../../build_joininbox.sh ./
 # Build the image in docker
 echo -e "\nBuilding packer image..."
 docker run --rm --privileged -v /dev:/dev -v \
- ${PWD}:/build mkaczanowski/packer-builder-arm \
+ ${PWD}:/build mkaczanowski/packer-builder-arm:1.0.0 \
  build arm64-rpi.pkr.hcl
