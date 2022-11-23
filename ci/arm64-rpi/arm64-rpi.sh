@@ -14,11 +14,13 @@ sudo rm -rf go1.18.4.linux-arm64.tar.gz
 export PATH=$PATH:/usr/local/go/bin
 
 # Install Packer Arm Plugin
+# clean for reruns
+rm -rf packer-builder-arm
 echo -e "\nInstalling Packer Arm Plugin..."
 git clone https://github.com/mkaczanowski/packer-builder-arm
 cd packer-builder-arm
 # pin to commit hash https://github.com/mkaczanowski/packer-builder-arm/commits/master
-git reset --hard 0eb143167ad45ce44a21b6848fea9ccf0e15aa8b
+git reset --hard e5d1defe92f0672765d6ef57bd0e22b571797049
 go mod download
 go build
 
