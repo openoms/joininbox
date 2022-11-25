@@ -7,13 +7,16 @@ sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(l
 sudo apt-get update -y && sudo apt-get install packer -y
 
 echo -e "Installing Go..."
-wget --progress=bar:force https://go.dev/dl/go1.18.4.linux-arm64.tar.gz
-echo "35014d92b50d97da41dade965df7ebeb9a715da600206aa59ce1b2d05527421f go1.18.4.linux-arm64.tar.gz" | sha256sum -c -
-sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.18.4.linux-arm64.tar.gz
-sudo rm -rf go1.18.4.linux-arm64.tar.gz
+# from https://go.dev/dl/
+wget --progress=bar:force https://go.dev/dl/go1.19.3.linux-arm64.tar.gz
+echo "99de2fe112a52ab748fb175edea64b313a0c8d51d6157dba683a6be163fd5eab go1.19.3.linux-arm64.tar.gz" | sha256sum -c -
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.19.3.linux-arm64.tar.gz
+sudo rm -rf go1.19.3.linux-arm64.tar.gz
 export PATH=$PATH:/usr/local/go/bin
 
 # Install Packer Arm Plugin
+# clean for reruns
+sudo rm -rf packer-builder-arm
 echo -e "\nInstalling Packer Arm Plugin..."
 git clone https://github.com/mkaczanowski/packer-builder-arm
 cd packer-builder-arm
@@ -29,5 +32,5 @@ cp ../../../build_joininbox.sh ./
 # Build the image in docker
 echo -e "\nBuilding packer image..."
 docker run --rm --privileged -v /dev:/dev -v \
- ${PWD}:/build mkaczanowski/packer-builder-arm:1.0.0 \
+ ${PWD}:/build mkaczanowski/packer-builder-arm:latest \
  build arm64-rpi.pkr.hcl
