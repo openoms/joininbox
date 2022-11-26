@@ -33,15 +33,6 @@ source "arm" "joininbox-arm64-rpi" {
 build {
   sources = ["source.arm.joininbox-arm64-rpi"]
 
-  provisioner "file" {
-    source      = "scripts/resizerootfs"
-    destination = "/tmp"
-  }
-
-  provisioner "shell" {
-    script = "scripts/bootstrap_resizerootfs.sh"
-  }
-
   provisioner "shell" {
     inline = [
       "echo 'nameserver 1.1.1.1' > /etc/resolv.conf",
