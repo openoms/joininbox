@@ -5,16 +5,16 @@ on:
     branches: [ "master" ]
     paths-ignore:
       - '*.md'
-      - '*.png'
       - '.gitignore'
+      - 'images'
       - 'ci/amd64'
       - 'scripts/jam-remote'
   pull_request:
     branches: [ "master" ]
     paths-ignore:
       - '*.md'
-      - '*.png'
       - '.gitignore'
+      - 'images'
       - 'ci/amd64'
       - 'scripts/jam-remote'
   workflow_dispatch:
