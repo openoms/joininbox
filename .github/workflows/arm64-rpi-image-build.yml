@@ -15,6 +15,7 @@ on:
       - '*.md'
       - '*.png'
       - '.gitignore'
+      - 'ci/amd64'
       - 'scripts/jam-remote'
   workflow_dispatch:
 
