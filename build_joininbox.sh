@@ -623,8 +623,12 @@ if [ "$3" = "without-qt" ]; then
 fi
 sudo -u joinmarket /home/joinmarket/install.joinmarket.sh -i install -q "$qtgui"
 
-echo "# Enable the ssh.service"
-systemctl enable ssh
+echo "###################"
+echo "# bootstrap.service"
+echo "###################"
+sudo chmod +x /home/joinmarket/standalone/bootstrap.sh
+sudo cp /home/joinmarket/standalone/bootstrap.service /etc/systemd/system/bootstrap.service
+sudo systemctl enable bootstrap
 
 echo
 echo "###########################"
