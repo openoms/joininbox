@@ -8,13 +8,13 @@ arm64-rpi-image:
 	bash arm64-rpi.sh $(GITHUB_USER) $(CURRENT_BRANCH)
 
 	# Compute checksum of the raw image
-	cd ci/arm64-rpi&& \
+	cd ci/arm64-rpi && \
 	sha256sum joininbox-arm64-rpi.img > joininbox-arm64-rpi.img.sha256
 
 	# Compress image
-	cd ci/arm64-rpi&& \
+	cd ci/arm64-rpi && \
 	gzip -v9 joininbox-arm64-rpi.img
 
 	# Compute checksum of the compressed image
-	cd ci/arm64-rpi&& \
+	cd ci/arm64-rpi && \
 	sha256sum joininbox-arm64-rpi.img.gz > joininbox-arm64-rpi.img.gz.sha256
