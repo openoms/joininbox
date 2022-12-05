@@ -40,17 +40,17 @@ jobs:
 
       - name: Compute checksum of the raw image
         run: |
-          cd builds/packer-debian-11.5-amd64-qemu/
+          cd ci/amd64/builds/packer-debian-11.5-amd64-qemu/
           sha256sum debian-11.5-amd64.qcow2 > debian-11.5-amd64.qcow2.sha256
 
       - name: Compress image
         run: |
-          cd builds/packer-debian-11.5-amd64-qemu/
+          cd ci/amd64/builds/packer-debian-11.5-amd64-qemu/
           gzip -v9 debian-11.5-amd64.qcow2
 
       - name: Compute checksum of the compressed image
         run: |
-          cd builds/packer-debian-11.5-amd64-qemu/
+          cd ci/amd64/builds/packer-debian-11.5-amd64-qemu/
           sha256sum debian-11.5-amd64.qcow2.gz > debian-11.5-amd64.qcow2.gz.sha256
 
       - name: Upload the image and checksums
@@ -58,6 +58,6 @@ jobs:
         with:
           name: joininbox-amd64-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}
           path: |
-            ${{ github.workspace }}/builds/packer-debian-11.5-amd64-qemu/debian-11.5-amd64.qcow2.sha256
-            ${{ github.workspace }}/builds/packer-debian-11.5-amd64-qemu/debian-11.5-amd64.qcow2.gz
-            ${{ github.workspace }}/builds/packer-debian-11.5-amd64-qemu/debian-11.5-amd64.qcow2.gz.sha256
+            ${{ github.workspace }}/ci/amd64/builds/packer-debian-11.5-amd64-qemu/debian-11.5-amd64.qcow2.sha256
+            ${{ github.workspace }}/ci/amd64/builds/packer-debian-11.5-amd64-qemu/debian-11.5-amd64.qcow2.gz
+            ${{ github.workspace }}/ci/amd64/builds/packer-debian-11.5-amd64-qemu/debian-11.5-amd64.qcow2.gz.sha256
