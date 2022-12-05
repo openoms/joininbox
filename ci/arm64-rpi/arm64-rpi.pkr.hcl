@@ -1,5 +1,3 @@
-variable "branch" {}
-variable "github_user" {}
 
 source "arm" "joininbox-arm64-rpi" {
   file_checksum_type    = "sha256"
@@ -58,10 +56,6 @@ build {
   }
 
   provisioner "shell" {
-    environment_vars =  [
-        "github_user={{user `github_user`}}",
-        "branch={{user `branch`}}"
-      ]
     script = "build_joininbox.sh"
   }
 
@@ -69,7 +63,7 @@ build {
     inline = [
       "echo '# Deleting the SSH pub keys (will be recreate on the first boot) ...'",
       "rm /etc/ssh/ssh_host_*",
-      "echo 'OK'"
+      "echo 'OK'",
     ]
   }
 }
