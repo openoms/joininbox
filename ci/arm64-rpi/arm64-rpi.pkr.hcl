@@ -50,10 +50,10 @@ build {
 
   provisioner "shell" {
     environment_vars =  [
-      "github_user={{user `github_user`}}",
-      "branch={{user `branch`}}"
+      "github_user=${var.github_user}",
+      "branch=${var.branch}"
     ]
-    script = "joininbox.sh"
+    script = "./joininbox.sh"
   }
 
   provisioner "shell" {
