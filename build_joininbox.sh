@@ -16,7 +16,7 @@
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
   echo "JoininBox Build Script"
   echo "Usage: sudo bash build_joininbox.sh <github user> <branch> <without-qt>"
-  echo "Example: 'sudo bash build_joininbox.sh dev openoms --without-qt' to install from the dev branch without the QT GUI"
+  echo "Example: 'sudo bash build_joininbox.sh openoms master --without-qt' to install from the dev branch without the QT GUI"
   echo "By default uses https://github.com/openoms/joininbox/tree/master and installs the QT GUI"
   exit 1
 fi

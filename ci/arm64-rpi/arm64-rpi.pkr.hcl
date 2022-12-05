@@ -1,3 +1,5 @@
+variable "branch" {}
+variable "github_user" {}
 
 source "arm" "joininbox-arm64-rpi" {
   file_checksum_type    = "sha256"
@@ -26,8 +28,8 @@ source "arm" "joininbox-arm64-rpi" {
   image_path                   = "joininbox-arm64-rpi.img"
   image_size                   = "8G"
   image_type                   = "dos"
-  qemu_binary_destination_path = "/usr/bin/qemu-aarch64-static"
-  qemu_binary_source_path      = "/usr/bin/qemu-aarch64-static"
+  qemu_binary_destination_path = "/usr/bin/qemu-arm-static"
+  qemu_binary_source_path      = "/usr/bin/qemu-arm-static"
 }
 
 build {
@@ -56,6 +58,10 @@ build {
   }
 
   provisioner "shell" {
+    environment_vars =  [
+        "github_user={{user `github_user`}}",
+        "branch={{user `branch`}}"
+      ]
     script = "build_joininbox.sh"
   }
 
@@ -63,7 +69,7 @@ build {
     inline = [
       "echo '# Deleting the SSH pub keys (will be recreate on the first boot) ...'",
       "rm /etc/ssh/ssh_host_*",
-      "echo 'OK'",
+      "echo 'OK'"
     ]
   }
 }

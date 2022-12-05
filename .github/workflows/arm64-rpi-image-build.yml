@@ -36,7 +36,7 @@ jobs:
       - name: Run the build script
         run: |
           cd ci/arm64-rpi
-          bash arm64-rpi.sh
+          bash arm64-rpi.sh $GITHUB_ACTOR $GITHUB_HEAD_REF
 
       - name: Compute checksum of the raw image
         run: |
