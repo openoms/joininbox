@@ -32,6 +32,11 @@ jobs:
       - name: Hello JoininBox
         run: echo "Building the joininbox-arm64-rpi-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}"
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: linux/amd64,linux/arm64
+
       - name: Run the build script
         run: |
           cd ci/arm64-rpi

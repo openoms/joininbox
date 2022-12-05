@@ -6,5 +6,5 @@ cp ../../build_joininbox.sh ./
 echo -e "\nBuild Packer image..."
 # from https://hub.docker.com/r/mkaczanowski/packer-builder-arm/tags
 docker run --rm --privileged -v /dev:/dev -v ${PWD}:/build \
- mkaczanowski/packer-builder-arm:master@sha256:1c5b6a23bf7e5a02413bd2bb094422ce6bb3ea94f6873a70aacdad25c767df54 \
+ mkaczanowski/packer-builder-arm:1.0.4@sha256:df09a8e249a292f10ca9b8cfd73420f5b987b6ac337d4ef28b6f4a8e61118822 \
  build arm64-rpi.pkr.hcl
