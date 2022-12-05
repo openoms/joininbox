@@ -1,3 +1,5 @@
+variable "github_user" {}
+variable "branch" {}
 
 source "arm" "joininbox-arm64-rpi" {
   file_checksum_type    = "sha256"
@@ -47,7 +49,11 @@ build {
   }
 
   provisioner "shell" {
-    script = "build_joininbox.sh"
+    environment_vars =  [
+      "github_user={{user `github_user`}}",
+      "branch={{user `branch`}}"
+    ]
+    script = "joininbox.sh"
   }
 
   provisioner "shell" {
