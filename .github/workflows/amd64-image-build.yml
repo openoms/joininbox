@@ -31,33 +31,33 @@ jobs:
           echo "BUILD_VERSION=$(git describe --always --tags)" >> $GITHUB_ENV
 
       - name: Hello JoininBox
-        run: echo "Building the debian-11.5-amd64-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }} at "
+        run: echo "Building the joininbox-amd64-debian-11.5-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }} at "
 
       - name: Run the build script
         run: |
           cd ci/amd64
-          bash packer.build.amd64.sh $GITHUB_ACTOR $GITHUB_HEAD_REF
+          bash packer.build.amd64-debian.sh $GITHUB_ACTOR $GITHUB_HEAD_REF
 
       - name: Compute checksum of the raw image
         run: |
-          cd ci/amd64/builds/packer-debian-11.5-amd64-qemu/
-          sha256sum debian-11.5-amd64.qcow2 > debian-11.5-amd64.qcow2.sha256
+          cd ci/amd64/builds/joininbox-amd64-debian-11.5-qemu/
+          sha256sum joininbox-amd64-debian-11.5.qcow2 > joininbox-amd64-debian-11.5.qcow2.sha256
 
       - name: Compress image
         run: |
-          cd ci/amd64/builds/packer-debian-11.5-amd64-qemu/
-          gzip -v9 debian-11.5-amd64.qcow2
+          cd ci/amd64/builds/joininbox-amd64-debian-11.5-qemu/
+          gzip -v9 joininbox-amd64-debian-11.5.qcow2
 
       - name: Compute checksum of the compressed image
         run: |
-          cd ci/amd64/builds/packer-debian-11.5-amd64-qemu/
-          sha256sum debian-11.5-amd64.qcow2.gz > debian-11.5-amd64.qcow2.gz.sha256
+          cd ci/amd64/builds/joininbox-amd64-debian-11.5-qemu/
+          sha256sum joininbox-amd64-debian-11.5.qcow2.gz > joininbox-amd64-debian-11.5.qcow2.gz.sha256
 
       - name: Upload the image and checksums
         uses: actions/upload-artifact@v3
         with:
           name: joininbox-amd64-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}
           path: |
-            ${{ github.workspace }}/ci/amd64/builds/packer-debian-11.5-amd64-qemu/debian-11.5-amd64.qcow2.sha256
-            ${{ github.workspace }}/ci/amd64/builds/packer-debian-11.5-amd64-qemu/debian-11.5-amd64.qcow2.gz
-            ${{ github.workspace }}/ci/amd64/builds/packer-debian-11.5-amd64-qemu/debian-11.5-amd64.qcow2.gz.sha256
+            ${{ github.workspace }}/ci/amd64/builds/joininbox-amd64-debian-11.5-qemu/joininbox-amd64-debian-11.5.qcow2.sha256
+            ${{ github.workspace }}/ci/amd64/builds/joininbox-amd64-debian-11.5-qemu/joininbox-amd64-debian-11.5.qcow2.gz
+            ${{ github.workspace }}/ci/amd64/builds/joininbox-amd64-debian-11.5-qemu/joininbox-amd64-debian-11.5.qcow2.gz.sha256
