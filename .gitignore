@@ -1,3 +1,3 @@
 scripts/wallets
-ci/arm64-rpi/packer-builder-arm
-/builds/
+ci/arm64-rpi/.packer*
+ci/arm64-rpi/joininbox-arm64-rpi*

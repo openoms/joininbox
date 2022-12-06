@@ -9,6 +9,7 @@ on:
       - 'images'
       - 'ci/amd64'
       - 'scripts/jam-remote'
+      - 'Makefile'
   pull_request:
     branches: [ "master" ]
     paths-ignore:
@@ -17,6 +18,7 @@ on:
       - 'images'
       - 'ci/amd64'
       - 'scripts/jam-remote'
+      - 'Makefile'
   workflow_dispatch:
 
 jobs:
@@ -33,6 +35,11 @@ jobs:
       - name: Hello JoininBox
         run: echo "Building the joininbox-arm64-rpi-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}"
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: linux/amd64,linux/arm64
+
       - name: Run the build script
         run: |
           cd ci/arm64-rpi
@@ -40,17 +47,17 @@ jobs:
 
       - name: Compute checksum of the raw image
         run: |
-          cd ci/arm64-rpi/packer-builder-arm/
+          cd ci/arm64-rpi
           sha256sum joininbox-arm64-rpi.img > joininbox-arm64-rpi.img.sha256
 
       - name: Compress image
         run: |
-          cd ci/arm64-rpi/packer-builder-arm/
+          cd ci/arm64-rpi
           gzip -v9 joininbox-arm64-rpi.img
 
       - name: Compute checksum of the compressed image
         run: |
-          cd ci/arm64-rpi/packer-builder-arm/
+          cd ci/arm64-rpi
           sha256sum joininbox-arm64-rpi.img.gz > joininbox-arm64-rpi.img.gz.sha256
 
       - name: Upload the image and checksums
@@ -58,6 +65,6 @@ jobs:
         with:
           name: joininbox-arm64-rpi-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}
           path: |
-            ${{ github.workspace }}/ci/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.sha256
-            ${{ github.workspace }}/ci/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.gz
-            ${{ github.workspace }}/ci/arm64-rpi/packer-builder-arm/joininbox-arm64-rpi.img.gz.sha256
+            ${{ github.workspace }}/ci/arm64-rpi/joininbox-arm64-rpi.img.sha256
+            ${{ github.workspace }}/ci/arm64-rpi/joininbox-arm64-rpi.img.gz
+            ${{ github.workspace }}/ci/arm64-rpi/joininbox-arm64-rpi.img.gz.sha256
