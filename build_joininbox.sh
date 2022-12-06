@@ -16,7 +16,7 @@
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
   echo "JoininBox Build Script"
   echo "Usage: sudo bash build_joininbox.sh <github user> <branch> <without-qt>"
-  echo "Example: 'sudo bash build_joininbox.sh dev openoms --without-qt' to install from the dev branch without the QT GUI"
+  echo "Example: 'sudo bash build_joininbox.sh openoms master --without-qt' to install from the dev branch without the QT GUI"
   echo "By default uses https://github.com/openoms/joininbox/tree/master and installs the QT GUI"
   exit 1
 fi
@@ -623,8 +623,12 @@ if [ "$3" = "without-qt" ]; then
 fi
 sudo -u joinmarket /home/joinmarket/install.joinmarket.sh -i install -q "$qtgui"
 
-echo "# Enable the ssh.service"
-systemctl enable ssh
+echo "###################"
+echo "# bootstrap.service"
+echo "###################"
+sudo chmod +x /home/joinmarket/standalone/bootstrap.sh
+sudo cp /home/joinmarket/standalone/bootstrap.service /etc/systemd/system/bootstrap.service
+sudo systemctl enable bootstrap
 
 echo
 echo "###########################"

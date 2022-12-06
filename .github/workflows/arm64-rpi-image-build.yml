@@ -5,8 +5,8 @@ on:
     branches: [ "master" ]
     paths-ignore:
       - '*.md'
-      - '*.png'
       - '.gitignore'
+      - 'images'
       - 'ci/amd64'
       - 'scripts/jam-remote'
       - 'Makefile'
@@ -14,8 +14,9 @@ on:
     branches: [ "master" ]
     paths-ignore:
       - '*.md'
-      - '*.png'
       - '.gitignore'
+      - 'images'
+      - 'ci/amd64'
       - 'scripts/jam-remote'
       - 'Makefile'
   workflow_dispatch:
