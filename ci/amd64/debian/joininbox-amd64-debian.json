@@ -1,7 +1,7 @@
 {
   "variables": {
   "box_basename": "debian-11.5",
-  "build_directory": "builds",
+  "build_directory": "../builds",
   "build_timestamp": "{{isotime \"20060102150405\"}}",
   "cpus": "2",
   "disk_size": "30000",

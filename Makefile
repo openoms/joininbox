@@ -5,7 +5,7 @@ CURRENT_BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 amd64-image:
 	# build image
 	cd ci/amd64 && \
-	bash packer.build.amd64.sh $(GITHUB_USER) $(CURRENT_BRANCH)
+	bash packer.build.amd64-debian.sh $(GITHUB_USER) $(CURRENT_BRANCH)
 
 	# Compute checksum of the raw image
 	cd ci/amd64/builds/joininbox-amd64-debian-11.5-qemu && \
