@@ -1,3 +1,5 @@
+variable "github_user" {}
+variable "branch" {}
 
 source "arm" "joininbox-arm64-rpi" {
   file_checksum_type    = "sha256"
@@ -26,21 +28,12 @@ source "arm" "joininbox-arm64-rpi" {
   image_path                   = "joininbox-arm64-rpi.img"
   image_size                   = "8G"
   image_type                   = "dos"
-  qemu_binary_destination_path = "/usr/bin/qemu-arm-static"
-  qemu_binary_source_path      = "/usr/bin/qemu-arm-static"
+  qemu_binary_destination_path = "/usr/bin/qemu-aarch64-static"
+  qemu_binary_source_path      = "/usr/bin/qemu-aarch64-static"
 }
 
 build {
   sources = ["source.arm.joininbox-arm64-rpi"]
-
-  provisioner "file" {
-    source      = "scripts/resizerootfs"
-    destination = "/tmp"
-  }
-
-  provisioner "shell" {
-    script = "scripts/bootstrap_resizerootfs.sh"
-  }
 
   provisioner "shell" {
     inline = [
@@ -56,7 +49,11 @@ build {
   }
 
   provisioner "shell" {
-    script = "build_joininbox.sh"
+    environment_vars =  [
+      "github_user=${var.github_user}",
+      "branch=${var.branch}"
+    ]
+    script = "./joininbox.sh"
   }
 
   provisioner "shell" {
