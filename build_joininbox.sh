@@ -627,7 +627,8 @@ echo "###################"
 echo "# bootstrap.service"
 echo "###################"
 sudo chmod +x /home/joinmarket/standalone/bootstrap.sh
-sudo cp /home/joinmarket/standalone/bootstrap.service /etc/systemd/system/bootstrap.service
+sudo cp /home/joinmarket/joininbox/scripts/standalone/bootstrap.service \
+ /etc/systemd/system/bootstrap.service
 sudo systemctl enable bootstrap
 
 echo
