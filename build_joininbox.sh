@@ -15,8 +15,10 @@
 # command info
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
   echo "JoininBox Build Script"
-  echo "Usage: sudo bash build_joininbox.sh <github user> <branch> <without-qt>"
-  echo "Example: 'sudo bash build_joininbox.sh openoms master --without-qt' to install from the dev branch without the QT GUI"
+  echo "Usage: sudo bash build_joininbox.sh <github user> <branch> <tag|commit> <without-qt>"
+  echo "Example:"
+  echo "'sudo bash build_joininbox.sh openoms master commit without-qt'"
+  echo "to install from the master branch latest commit without the QT GUI"
   echo "By default uses https://github.com/openoms/joininbox/tree/master and installs the QT GUI"
   exit 1
 fi
@@ -364,52 +366,28 @@ echo "# add the 'joinmarket' user"
 adduser --disabled-password --gecos "" joinmarket
 
 echo "# clone the joininbox repo and copy the scripts"
-cd /home/joinmarket || (echo "# User wasn't created" ;exit 1)
+cd /home/joinmarket || (echo "# User wasn't created"; exit 1)
 sudo -u joinmarket git clone -b ${wantedBranch} https://github.com/${githubUser}/joininbox.git
 
-cd /home/joinmarket/joininbox || (echo "# Failed git clone" ;exit 1)
-
-# reset to the last release # be aware this is alphabetical (use one digit versions)
-TAG=$(git tag | sort -V | tail -1)
-sudo -u joinmarket git reset --hard $TAG
+cd /home/joinmarket/joininbox || (echo "# Failed git clone"; exit 1)
 
 PGPsigner="openoms"
 PGPpubkeyLink="https://github.com/openoms.gpg"
 PGPpubkeyFingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
-sudo -u joinmarket wget -O pgp_keys.asc "${PGPpubkeyLink}"
-sudo -u joinmarket gpg --import --import-options show-only ./pgp_keys.asc
-fingerprint=$(sudo -u joinmarket gpg pgp_keys.asc 2>/dev/null | grep "${PGPpubkeyFingerprint}" -c)
-if [ "${fingerprint}" -lt 1 ]; then
-  echo
-  echo "# !!! WARNING --> the PGP fingerprint is not as expected for ${PGPsigner}" >&2
-  echo "# Should contain PGP: ${PGPpubkeyFingerprint}" >&2
-  echo "# Exiting" >&2
-  exit 7
-fi
-sudo -u joinmarket gpg --import ./pgp_keys.asc
-trap 'rm -f "$_temp"' EXIT
-_temp="$(mktemp -p /dev/shm/)"
-gitCommand="sudo -u joinmarket git verify-tag $TAG"
-if ${gitCommand} 2>&1 >&"$_temp"; then
-  goodSignature=1
+
+if [ $# -lt 3 ] || [ "$3" = tag ]; then
+  # use the latest tag
+  tag=$(git tag | sort -V | tail -1)
+  # reset to the last release # be aware this is alphabetical (use one digit versions)
+  sudo -u joinmarket git reset --hard ${tag}
+  # verify the tag
+  /home/joininbox/verify.git.sh ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag} || exit 1
 else
-  goodSignature=0
-fi
-echo
-cat "$_temp"
-echo "# goodSignature(${goodSignature})"
-correctKey=$(tr -d " \t\n\r" < "$_temp" | grep "${PGPpubkeyFingerprint}" -c)
-echo "# correctKey(${correctKey})"
-if [ "${correctKey}" -lt 1 ] || [ "${goodSignature}" -lt 1 ]; then
-  echo
-  echo "# !!! BUILD FAILED --> PGP verification not OK / signature(${goodSignature}) verify(${correctKey})"
-  exit 1
-else
-  echo
-  echo "######################################################################"
-  echo "# OK --> the PGP signature of the checked out $TAG tag is correct"
-  echo "######################################################################"
-  echo
+  if [ $# -gt 2 ]; then
+    sudo -u joinmarket git reset --hard $3
+  fi
+  # verify the commit
+  /home/joininbox/verify.git.sh ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} || exit 1
 fi
 
 sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/
@@ -617,7 +595,7 @@ checkEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | grep -c "qtgu
 if [ ${checkEntry} -eq 0 ]; then
   echo "qtgui=true" | tee -a /home/joinmarket/joinin.conf
 fi
-if [ "$3" = "without-qt" ]; then
+if [ "$4" = "without-qt" ]; then
  qtgui="false"
  sed -i "s/^qtgui=.*/qtgui=false/g" /home/joinmarket/joinin.conf
 fi
