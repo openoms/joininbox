@@ -388,7 +388,7 @@ fi
 sudo -u joinmarket gpg --import ./pgp_keys.asc
 
 if [ $# -lt 3 ] || [ "$3" = tag ]; then
-  # use the latest tag
+  # use the latest tag by default
   tag=$(git tag | sort -V | tail -1)
   # reset to the last release # be aware this is alphabetical (use one digit versions)
   sudo -u joinmarket git reset --hard ${tag}
@@ -397,7 +397,7 @@ if [ $# -lt 3 ] || [ "$3" = tag ]; then
   commitOrTag="${tag} tag"
 
 else
-  if [ $# -gt 2 ]; then
+  if [ $# -gt 2 ] && [ "$3" != commit ]; then
     # reset to named commit if given
     sudo -u joinmarket git reset --hard $3
   fi
