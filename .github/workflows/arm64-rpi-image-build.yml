@@ -23,7 +23,7 @@ on:
 
 jobs:
   arm64-rpi-image-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
 
