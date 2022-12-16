@@ -6,9 +6,9 @@ if [ $# -lt 3 ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
   echo "Usage:"
   echo "Run after 'git reset --hard VERSION' with the user running the installation"
   echo "To verify the checked out commit:"
-  echo "blitz.git-verify.sh [PGPsigner] [PGPpubkeyLink] [PGPpubkeyFingerprint]"
+  echo "verify.git.sh [PGPsigner] [PGPpubkeyLink] [PGPpubkeyFingerprint]"
   echo "To use 'git verify-tag' add the 'tag':"
-  echo "blitz.git-verify.sh [PGPsigner] [PGPpubkeyLink] [PGPpubkeyFingerprint] <tag>"
+  echo "verify.git.sh [PGPsigner] [PGPpubkeyLink] [PGPpubkeyFingerprint] <tag>"
   exit 1
 fi
 
@@ -23,7 +23,7 @@ fi
 # PGPpubkeyFingerprint="F579929B39B119CC7B0BB71FB326ACF51F317B69"
 
 # Run with the installing user to clear permissions:
-# sudo -u btcrpcexplorer /home/admin/config.scripts/blitz.git-verify.sh \
+# sudo -u btcrpcexplorer /home/admin/config.scripts/verify.git.sh \
 #  "${PGPsigner}" "${PGPpubkeyLink}" "${PGPpubkeyFingerprint}" || exit 1
 
 PGPsigner="$1"

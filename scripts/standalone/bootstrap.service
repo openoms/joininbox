@@ -10,7 +10,7 @@ User=root
 Group=root
 Type=oneshot
 RemainAfterExit=true
-ExecStart=/home/joinmarket/scripts/standalone/bootstrap.sh
+ExecStart=/home/joinmarket/standalone/bootstrap.sh
 StandardOutput=journal
 StandardError=journal
 
