@@ -31,7 +31,7 @@ jobs:
           echo "BUILD_VERSION=$(git describe --always --tags)" >> $GITHUB_ENV
 
       - name: Hello JoininBox
-        run: echo "Building the joininbox-amd64-debian-11.5-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }} at "
+        run: echo "Building the joininbox-amd64-debian-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}"
 
       - name: Run the build script
         run: |
@@ -40,17 +40,17 @@ jobs:
 
       - name: Compute checksum of the raw image
         run: |
-          cd ci/amd64/builds/joininbox-amd64-debian-11.5-qemu/
+          cd ci/amd64/builds/joininbox-amd64-debian-qemu/
           sha256sum joininbox-amd64-debian-11.5.qcow2 > joininbox-amd64-debian-11.5.qcow2.sha256
 
       - name: Compress image
         run: |
-          cd ci/amd64/builds/joininbox-amd64-debian-11.5-qemu/
+          cd ci/amd64/builds/joininbox-amd64-debian-qemu/
           gzip -v9 joininbox-amd64-debian-11.5.qcow2
 
       - name: Compute checksum of the compressed image
         run: |
-          cd ci/amd64/builds/joininbox-amd64-debian-11.5-qemu/
+          cd ci/amd64/builds/joininbox-amd64-debian-qemu/
           sha256sum joininbox-amd64-debian-11.5.qcow2.gz > joininbox-amd64-debian-11.5.qcow2.gz.sha256
 
       - name: Upload the image and checksums
@@ -58,6 +58,6 @@ jobs:
         with:
           name: joininbox-amd64-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}
           path: |
-            ${{ github.workspace }}/ci/amd64/builds/joininbox-amd64-debian-11.5-qemu/joininbox-amd64-debian-11.5.qcow2.sha256
-            ${{ github.workspace }}/ci/amd64/builds/joininbox-amd64-debian-11.5-qemu/joininbox-amd64-debian-11.5.qcow2.gz
-            ${{ github.workspace }}/ci/amd64/builds/joininbox-amd64-debian-11.5-qemu/joininbox-amd64-debian-11.5.qcow2.gz.sha256
+            ${{ github.workspace }}/ci/amd64/builds/joininbox-amd64-debian-qemu/joininbox-amd64-debian-11.5.qcow2.sha256
+            ${{ github.workspace }}/ci/amd64/builds/joininbox-amd64-debian-qemu/joininbox-amd64-debian-11.5.qcow2.gz
+            ${{ github.workspace }}/ci/amd64/builds/joininbox-amd64-debian-qemu/joininbox-amd64-debian-11.5.qcow2.gz.sha256
