@@ -73,7 +73,11 @@ function passwordToFile() {
       touch /dev/shm/.pw
       chmod 600 /dev/shm/.pw
       tee /dev/shm/.pw 1>/dev/null < "$data"
-      shred "$data"
+      if [ "${keepPasswordInRAM}" = "on" ]; then
+        echo "# The password is kept in the RAM until powered off"
+      else
+        shred "$data"
+      fi
       ;;
     1)
       shred "$data"
