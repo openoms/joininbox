@@ -1,4 +1,4 @@
-[![arm64-rpi-image-build](https://github.com/openoms/joininbox/actions/workflows/arm64-rpi-image-build.yml/badge.svg?branch=packer)](https://github.com/openoms/joininbox/actions/workflows/arm64-rpi-image-build.yml)
+[![arm64-rpi-image-build](https://github.com/openoms/joininbox/actions/workflows/arm64-rpi-image-build.yml/badge.svg)](https://github.com/openoms/joininbox/actions/workflows/arm64-rpi-image-build.yml) [![amd64-image-build](https://github.com/openoms/joininbox/actions/workflows/amd64-image-build.yml/badge.svg)](https://github.com/openoms/joininbox/actions/workflows/amd64-image-build.yml)
 
 <!-- omit in toc -->
 # JoininBox
