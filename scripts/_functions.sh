@@ -328,12 +328,12 @@ function backupJMconf() {
 function updateTor() {
   # as in https://2019.www.torproject.org/docs/debian#source
   # https://github.com/rootzoll/raspiblitz/blob/82e0d6c3714ce1b2878780c4bdef72a6417f71c7/home.admin/config.scripts/internet.tor.sh#L493
-  echo "# Adding tor-nightly-master to /etc/apt/sources.list.d/tor.list"
+  echo "# Adding tor-nightly-main to /etc/apt/sources.list.d/tor.list"
   arch=$(dpkg --print-architecture)
   distro=$(lsb_release -sc)
   echo "\
-deb [arch=${arch}] https://deb.torproject.org/torproject.org tor-nightly-master-$distro main
-deb-src [arch=${arch}] https://deb.torproject.org/torproject.org tor-nightly-master-$distro main" \
+deb [arch=${arch}] https://deb.torproject.org/torproject.org tor-nightly-main-$distro main
+deb-src [arch=${arch}] https://deb.torproject.org/torproject.org tor-nightly-main-$distro main" \
   | sudo tee /etc/apt/sources.list.d/tor.list
   echo "# Running apt-get update"
   sudo apt-get update
