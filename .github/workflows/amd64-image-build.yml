@@ -7,7 +7,7 @@ on:
       - '*.md'
       - '.gitignore'
       - 'images'
-      - 'ci/arm64-rpi'
+      - 'ci/arm64-rpi/**'
       - 'scripts/jam-remote'
   pull_request:
     branches: [ "master" ]
@@ -15,7 +15,7 @@ on:
       - '*.md'
       - '.gitignore'
       - 'images'
-      - 'ci/arm64-rpi'
+      - 'ci/arm64-rpi/**'
       - 'scripts/jam-remote'
   workflow_dispatch:
 

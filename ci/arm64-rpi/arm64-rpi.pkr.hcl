@@ -49,18 +49,11 @@ build {
   }
 
   provisioner "shell" {
-    environment_vars =  [
+    environment_vars = [
       "github_user=${var.github_user}",
       "branch=${var.branch}"
     ]
     script = "./joininbox.sh"
   }
 
-  provisioner "shell" {
-    inline = [
-      "echo '# Deleting the SSH pub keys (will be recreate on the first boot) ...'",
-      "rm /etc/ssh/ssh_host_*",
-      "echo 'OK'",
-    ]
-  }
 }
