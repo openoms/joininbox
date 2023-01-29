@@ -369,6 +369,9 @@ echo "# clone the joininbox repo and copy the scripts"
 cd /home/joinmarket || (echo "# User wasn't created"; exit 1)
 sudo -u joinmarket git clone -b ${wantedBranch} https://github.com/${githubUser}/joininbox.git
 
+# related issue: https://github.com/openoms/joininbox/issues/102
+git config --global --add safe.directory /home/joinmarket/joininbox
+
 cd /home/joinmarket/joininbox || (echo "# Failed git clone"; exit 1)
 
 PGPsigner="openoms"
