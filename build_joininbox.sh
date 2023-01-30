@@ -611,7 +611,7 @@ echo "#############"
 echo "
 if [ -f \"/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate\" ]; then
   . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
-  /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python -c \"import PySide2\"
+  /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python
   cd /home/joinmarket/joinmarket-clientserver/scripts/
 fi
 # shortcut commands
