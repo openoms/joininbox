@@ -382,61 +382,21 @@ PGPsigner="openoms"
 PGPpubkeyLink="https://github.com/openoms.gpg"
 PGPpubkeyFingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
 
-sudo -u joinmarket wget -O pgp_keys.asc "${PGPpubkeyLink}"
-sudo -u joinmarket gpg --import --import-options show-only ./pgp_keys.asc
-fingerprint=$(sudo -u joinmarket gpg pgp_keys.asc 2>/dev/null | grep "${PGPpubkeyFingerprint}" -c)
-if [ "${fingerprint}" -lt 1 ]; then
-  echo
-  echo "# !!! WARNING --> the PGP fingerprint is not as expected for ${PGPsigner}" >&2
-  echo "# Should contain PGP: ${PGPpubkeyFingerprint}" >&2
-  echo "# Exiting" >&2
-  exit 7
-fi
-sudo -u joinmarket gpg --import ./pgp_keys.asc
-
 if [ $# -lt 3 ] || [ "$3" = tag ]; then
   # use the latest tag by default
   tag=$(git tag | sort -V | tail -1)
   # reset to the last release # be aware this is alphabetical (use one digit versions)
   sudo -u joinmarket git reset --hard ${tag}
-  # verify the tag
-  gitCommand="sudo -u joinmarket git verify-tag ${tag}"
-  commitOrTag="${tag} tag"
 
 else
   if [ $# -gt 2 ] && [ "$3" != commit ]; then
     # reset to named commit if given
     sudo -u joinmarket git reset --hard $3
   fi
-  commitHash="$(git log --oneline | head -1 | awk '{print $1}')"
-  # verify the commit
-  gitCommand="sudo -u joinmarket git verify-commit $commitHash"
-  commitOrTag="$commitHash commit"
 fi
 
-trap 'rm -f "$_temp"' EXIT
-_temp="$(mktemp -p /dev/shm/)"
-if ${gitCommand} 2>&1 >&"$_temp"; then
-  goodSignature=1
-else
-  goodSignature=0
-fi
-echo
-cat "$_temp"
-echo "# goodSignature(${goodSignature})"
-correctKey=$(tr -d " \t\n\r" < "$_temp" | grep "${PGPpubkeyFingerprint}" -c)
-echo "# correctKey(${correctKey})"
-if [ "${correctKey}" -lt 1 ] || [ "${goodSignature}" -lt 1 ]; then
-  echo
-  echo "# !!! BUILD FAILED --> PGP verification not OK / signature(${goodSignature}) verify(${correctKey})"
-  exit 1
-else
-  echo
-  echo "##########################################################################"
-  echo "# OK --> the PGP signature of the checked out ${commitOrTag} is correct"
-  echo "##########################################################################"
-  echo
-fi
+sudo -u joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh \
+ ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag} || exit 1
 
 sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/
 sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
