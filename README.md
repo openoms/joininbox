@@ -59,7 +59,7 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 
 ## Set up using an SDcard image
 * Download the zip of the latest successful SDcard image build for the Raspberry Pi 4 or 3 from  
-  <https://github.com/openoms/joininbox/actions/workflows/arm64-rpi-image-build.yml>  
+  <https://github.com/openoms/joininbox/actions?query=workflow%3Aarm64-rpi-image-build++branch%3Amaster+is%3Asuccess++>  
   (note that need to be logged in to github to download the artifact image file)
 * unzip and check the sha256sum verifying the .gz file integrity
   ```
@@ -102,8 +102,11 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 * Find [more info on the usage](#more-info) and [community help](#forums) at the end of this readme
 ## Set up JoininBox on Linux
 ### Tested environments
-  * Debian Buster X86_64 desktop
-  * Ubuntu 20.04 X86_64 desktop (virtual machine)
+* Latest
+  * Debian Bullseye X86_64 desktop ([images and logs available in GitHub actions](https://github.com/openoms/joininbox/actions?query=workflow%3Aamd64-image-build++branch%3Amaster+is%3Asuccess))
+  * Raspberry Pi 4 running 64bit Debian Bullseye ([images and logs available in GitHub actions](https://github.com/openoms/joininbox/actions?query=workflow%3Aarm64-rpi-image-build++branch%3Amaster+is%3Asuccess++))
+  * Ubuntu 22.04 X86_64 desktop (virtual machine)
+* Previous versions tested
   * [Raspberry Pi 4 running 64bit Debian Buster](FAQ.md#build-the-sdcard-image)
   * [Hardkernel Odroid XU4/HC1 running 32bit Armbian Buster](FAQ.md#set-up-armbian-on-the-hardkernel-odroid-xu4)
   * Hardkernel Odroid C4 running 64bit Armbian Focal and Buster
