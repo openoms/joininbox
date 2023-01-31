@@ -395,6 +395,8 @@ else
   fi
 fi
 
+sudo chmod 777 /dev/shm
+
 sudo -u joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh \
  ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag} || exit 1
 
