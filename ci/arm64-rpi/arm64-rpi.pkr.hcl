@@ -41,7 +41,6 @@ build {
       "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf",
       "echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections",
       "apt-get update",
-      "apt-get upgrade -y",
       "apt-get install -y sudo wget",
       "apt-get -y autoremove",
       "apt-get -y clean",
