@@ -57,7 +57,7 @@ if [ $# -eq 3 ]; then
   commitHash="$(git log --oneline | head -1 | awk '{print $1}')"
   gitCommand="git verify-commit $commitHash"
   commitOrTag="$commitHash commit"
-elif [ $# -eq 4 ]; then
+elif [ $# -eq 4 ] && [ -n "$4" ]; then
   gitCommand="git verify-tag $4"
   commitOrTag="$4 tag"
 fi
