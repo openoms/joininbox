@@ -53,7 +53,7 @@ rm /dev/shm/pgp_keys_${PGPsigner}.asc
 trap 'rm -f "$_temp"' EXIT
 _temp="$(mktemp -p /dev/shm/)"
 
-if [ $# -eq 3 ]; then
+if [ $# -eq 3 ] || [ -z "$4" ]; then
   commitHash="$(git log --oneline | head -1 | awk '{print $1}')"
   gitCommand="git verify-commit $commitHash"
   commitOrTag="$commitHash commit"
