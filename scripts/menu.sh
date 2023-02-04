@@ -16,7 +16,11 @@ OPTIONS=()
 
 # Basic Options
 OPTIONS+=(START "Quickstart with JoinMarket")
-if [ "${qtgui}" = "true" ]; then
+if [ "${runningEnv}" = raspiblitz ] && [ $(lsb_release -sc) = bullseye ]; then
+  OPTIONS+=(JAM "JoinMarket Web UI options")
+  HEIGHT=$((HEIGHT + 1))
+  CHOICE_HEIGHT=$((CHOICE_HEIGHT + 1))
+elif [ "${qtgui}" = "true" ]; then
   OPTIONS+=(QTGUI "Show how to open the JoinMarketQT GUI")
   HEIGHT=$((HEIGHT + 1))
   CHOICE_HEIGHT=$((CHOICE_HEIGHT + 1))
@@ -71,6 +75,10 @@ WALLET)
   ;;
 QTGUI)
   /home/joinmarket/info.qtgui.sh
+  /home/joinmarket/menu.sh
+  ;;
+JAM)
+  /home/joinmarket/menu.jam.sh
   /home/joinmarket/menu.sh
   ;;
 MAKER)
