@@ -385,10 +385,10 @@ cd /home/joinmarket || (
   echo "# User wasn't created"
   exit 1
 )
-runuser joinmarket -pc "git clone -b ${wantedBranch} https://github.com/${githubUser}/joininbox.git"
+sudo -Eu joinmarket git clone -b ${wantedBranch} https://github.com/${githubUser}/joininbox.git
 
 # related issue: https://github.com/openoms/joininbox/issues/102
-runuser joinmarket -pc "git config --global --add safe.directory /home/joinmarket/joininbox"
+sudo -Eu joinmarket git config --global --add safe.directory /home/joinmarket/joininbox
 
 cd /home/joinmarket/joininbox || (
   echo "# Failed git clone"
@@ -399,11 +399,11 @@ if [ $# -lt 3 ] || [ "$3" = tag ]; then
   # use the latest tag by default
   tag=$(git tag | sort -V | tail -1)
   # reset to the last release # be aware this is alphabetical (use one digit versions)
-  runuser joinmarket -pc "git reset --hard ${tag}"
+  sudo -Eu joinmarket git reset --hard ${tag}
 else
   if [ $# -gt 2 ] && [ "$3" != commit ]; then
     # reset to named commit if given
-    runuser joinmarket -pc "git reset --hard $3"
+    sudo -Eu joinmarket git reset --hard $3
   fi
 fi
 
@@ -426,10 +426,10 @@ echo "running: ${command}"
 chmod 777 /dev/shm
 ${command} || exit 1
 
-runuser joinmarket -pc "cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/"
-runuser joinmarket -pc "cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null"
+runuser joinmarket -c "cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/"
+runuser joinmarket -c "cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null"
 chmod +x /home/joinmarket/*.sh
-runuser joinmarket -pc "cp -r /home/joinmarket/joininbox/scripts/standalone /home/joinmarket/"
+runuser joinmarket -c "cp -r /home/joinmarket/joininbox/scripts/standalone /home/joinmarket/"
 chmod +x /home/joinmarket/standalone/*.sh
 
 echo "# set the default password 'joininbox' for the users 'pi', \
@@ -446,7 +446,7 @@ if [ $(grep -c pi </etc/passwd) -gt 0 ]; then
 fi
 
 echo "# create the joinin.conf"
-runuser joinmarket -pc "touch /home/joinmarket/joinin.conf"
+runuser joinmarket -c "touch /home/joinmarket/joinin.conf"
 
 echo
 echo "#######"
@@ -454,7 +454,7 @@ echo "# Tor"
 echo "#######"
 echo
 # add default value to joinin config if needed
-checkTorEntry=$(runuser joinmarket -pc "cat /home/joinmarket/joinin.conf |
+checkTorEntry=$(runuser joinmarket -c "cat /home/joinmarket/joinin.conf |
   grep -c runBehindTor")
 if [ ${checkTorEntry} -eq 0 ]; then
   echo "runBehindTor=off" | tee -a /home/joinmarket/joinin.conf
@@ -571,7 +571,7 @@ systemctl enable ufw
 ufw status
 
 # make a folder for authorized keys
-runuser joinmarket -pc "mkdir -p /home/joinmarket/.ssh"
+runuser joinmarket -c "mkdir -p /home/joinmarket/.ssh"
 chmod -R 700 /home/joinmarket/.ssh
 
 # deny root login via ssh
@@ -613,7 +613,7 @@ source /home/joinmarket/_commands.sh
 if [ -z \"\$TMUX\" ]; then
   /home/joinmarket/menu.sh
 fi
-" | runuser joinmarket -pc "tee -a /home/joinmarket/.bashrc"
+" | runuser joinmarket -c "tee -a /home/joinmarket/.bashrc"
 
 echo "#########################"
 echo "# Download Bitcoin Core"
@@ -627,7 +627,7 @@ echo "# Install JoinMarket"
 echo "######################"
 
 qtgui=true
-checkEntry=$(runuser joinmarket -pc "cat /home/joinmarket/joinin.conf | grep -c qtgui")
+checkEntry=$(runuser joinmarket -c "cat /home/joinmarket/joinin.conf | grep -c qtgui")
 if [ ${checkEntry} -eq 0 ]; then
   echo "qtgui=true" | tee -a /home/joinmarket/joinin.conf
 fi
