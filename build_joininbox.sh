@@ -407,7 +407,7 @@ else
   fi
 fi
 
-lastCommit=$(runuser joinmarket -pc "git log --show-signature --oneline | head -n3")
+lastCommit=$(sudo -Eu joinmarket git log --show-signature --oneline | head -n3)
 echo ${lastCommit}
 if echo "${lastCommit}" | grep 13C688DB5B9C745DE4D2E4545BFB77609B081B65; then
   PGPsigner="openoms"
@@ -419,9 +419,11 @@ elif echo "${lastCommit}" | grep 4AEE18F83AFDEB23; then
   PGPpubkeyLink="https://github.com/${PGPsigner}.gpg"
   PGPpubkeyFingerprint="4AEE18F83AFDEB23"
 fi
-command="sudo -Eu joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag}"
+
+command="sudo -Eu joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh \
+  ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag})"
 echo "running: ${command}"
-sudo chmod 777 /dev/shm
+chmod 777 /dev/shm
 ${command} || exit 1
 
 runuser joinmarket -pc "cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/"
@@ -489,7 +491,7 @@ if [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]; 
     echo "\
 deb [arch=${arch}] https://deb.torproject.org/torproject.org ${distro} main
 deb-src [arch=${arch}] https://deb.torproject.org/torproject.org ${distro} main" |
-      sudo tee /etc/apt/sources.list.d/tor.list
+      tee /etc/apt/sources.list.d/tor.list
     echo "OK"
   else
     echo "Tor sources are available"
@@ -617,7 +619,7 @@ echo "#########################"
 echo "# Download Bitcoin Core"
 echo "#########################"
 echo
-runuser joinmarket -pc "/home/joinmarket/install.bitcoincore.sh downloadCoreOnly" || exit 1
+sudo -u joinmarket /home/joinmarket/install.bitcoincore.sh downloadCoreOnly || exit 1
 
 echo
 echo "######################"
@@ -633,15 +635,15 @@ if [ "$4" = "without-qt" ]; then
   qtgui="false"
   sed -i "s/^qtgui=.*/qtgui=false/g" /home/joinmarket/joinin.conf
 fi
-runuser joinmarket -pc "/home/joinmarket/install.joinmarket.sh -i install -q $qtgui" || exit 1
+sudo -u joinmarket /home/joinmarket/install.joinmarket.sh -i install -q $qtgui || exit 1
 
 echo "###################"
 echo "# bootstrap.service"
 echo "###################"
-sudo chmod +x /home/joinmarket/standalone/bootstrap.sh
-sudo cp /home/joinmarket/joininbox/scripts/standalone/bootstrap.service \
+chmod +x /home/joinmarket/standalone/bootstrap.sh
+cp /home/joinmarket/joininbox/scripts/standalone/bootstrap.service \
   /etc/systemd/system/bootstrap.service
-sudo systemctl enable bootstrap
+systemctl enable bootstrap
 
 echo
 echo "###########################"
