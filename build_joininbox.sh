@@ -92,8 +92,8 @@ echo
 
 echo "# Prepare ${baseImage} "
 # special prepare on RPi
-if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ] || \
-   [ "${baseimage}" = "armbian" ]; then
+if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ] ||
+  [ "${baseimage}" = "armbian" ]; then
   # fixing locales for build
   # https://github.com/rootzoll/raspiblitz/issues/138
   # https://daker.me/2014/10/how-to-fix-perl-warning-setting-locale-failed-in-raspbian.html
@@ -174,69 +174,69 @@ fi
 echo
 echo "# Change log rotates"
 # see https://github.com/rootzoll/raspiblitz/issues/394#issuecomment-471535483
-echo "/var/log/syslog" >> ./rsyslog
-echo "{" >> ./rsyslog
-echo "	rotate 7" >> ./rsyslog
-echo "	daily" >> ./rsyslog
-echo "	missingok" >> ./rsyslog
-echo "	notifempty" >> ./rsyslog
-echo "	delaycompress" >> ./rsyslog
-echo "	compress" >> ./rsyslog
-echo "	postrotate" >> ./rsyslog
-echo "		invoke-rc.d rsyslog rotate > /dev/null" >> ./rsyslog
-echo "	endscript" >> ./rsyslog
-echo "}" >> ./rsyslog
-echo "" >> ./rsyslog
-echo "/var/log/mail.info" >> ./rsyslog
-echo "/var/log/mail.warn" >> ./rsyslog
-echo "/var/log/mail.err" >> ./rsyslog
-echo "/var/log/mail.log" >> ./rsyslog
-echo "/var/log/daemon.log" >> ./rsyslog
-echo "{" >> ./rsyslog
-echo "        rotate 4" >> ./rsyslog
-echo "        size=100M" >> ./rsyslog
-echo "        missingok" >> ./rsyslog
-echo "        notifempty" >> ./rsyslog
-echo "        compress" >> ./rsyslog
-echo "        delaycompress" >> ./rsyslog
-echo "        sharedscripts" >> ./rsyslog
-echo "        postrotate" >> ./rsyslog
-echo "                invoke-rc.d rsyslog rotate > /dev/null" >> ./rsyslog
-echo "        endscript" >> ./rsyslog
-echo "}" >> ./rsyslog
-echo "" >> ./rsyslog
-echo "/var/log/kern.log" >> ./rsyslog
-echo "/var/log/auth.log" >> ./rsyslog
-echo "{" >> ./rsyslog
-echo "        rotate 4" >> ./rsyslog
-echo "        size=100M" >> ./rsyslog
-echo "        missingok" >> ./rsyslog
-echo "        notifempty" >> ./rsyslog
-echo "        compress" >> ./rsyslog
-echo "        delaycompress" >> ./rsyslog
-echo "        sharedscripts" >> ./rsyslog
-echo "        postrotate" >> ./rsyslog
-echo "                invoke-rc.d rsyslog rotate > /dev/null" >> ./rsyslog
-echo "        endscript" >> ./rsyslog
-echo "}" >> ./rsyslog
-echo "" >> ./rsyslog
-echo "/var/log/user.log" >> ./rsyslog
-echo "/var/log/lpr.log" >> ./rsyslog
-echo "/var/log/cron.log" >> ./rsyslog
-echo "/var/log/debug" >> ./rsyslog
-echo "/var/log/messages" >> ./rsyslog
-echo "{" >> ./rsyslog
-echo "	rotate 4" >> ./rsyslog
-echo "	weekly" >> ./rsyslog
-echo "	missingok" >> ./rsyslog
-echo "	notifempty" >> ./rsyslog
-echo "	compress" >> ./rsyslog
-echo "	delaycompress" >> ./rsyslog
-echo "	sharedscripts" >> ./rsyslog
-echo "	postrotate" >> ./rsyslog
-echo "		invoke-rc.d rsyslog rotate > /dev/null" >> ./rsyslog
-echo "	endscript" >> ./rsyslog
-echo "}" >> ./rsyslog
+echo "/var/log/syslog" >>./rsyslog
+echo "{" >>./rsyslog
+echo "	rotate 7" >>./rsyslog
+echo "	daily" >>./rsyslog
+echo "	missingok" >>./rsyslog
+echo "	notifempty" >>./rsyslog
+echo "	delaycompress" >>./rsyslog
+echo "	compress" >>./rsyslog
+echo "	postrotate" >>./rsyslog
+echo "		invoke-rc.d rsyslog rotate > /dev/null" >>./rsyslog
+echo "	endscript" >>./rsyslog
+echo "}" >>./rsyslog
+echo "" >>./rsyslog
+echo "/var/log/mail.info" >>./rsyslog
+echo "/var/log/mail.warn" >>./rsyslog
+echo "/var/log/mail.err" >>./rsyslog
+echo "/var/log/mail.log" >>./rsyslog
+echo "/var/log/daemon.log" >>./rsyslog
+echo "{" >>./rsyslog
+echo "        rotate 4" >>./rsyslog
+echo "        size=100M" >>./rsyslog
+echo "        missingok" >>./rsyslog
+echo "        notifempty" >>./rsyslog
+echo "        compress" >>./rsyslog
+echo "        delaycompress" >>./rsyslog
+echo "        sharedscripts" >>./rsyslog
+echo "        postrotate" >>./rsyslog
+echo "                invoke-rc.d rsyslog rotate > /dev/null" >>./rsyslog
+echo "        endscript" >>./rsyslog
+echo "}" >>./rsyslog
+echo "" >>./rsyslog
+echo "/var/log/kern.log" >>./rsyslog
+echo "/var/log/auth.log" >>./rsyslog
+echo "{" >>./rsyslog
+echo "        rotate 4" >>./rsyslog
+echo "        size=100M" >>./rsyslog
+echo "        missingok" >>./rsyslog
+echo "        notifempty" >>./rsyslog
+echo "        compress" >>./rsyslog
+echo "        delaycompress" >>./rsyslog
+echo "        sharedscripts" >>./rsyslog
+echo "        postrotate" >>./rsyslog
+echo "                invoke-rc.d rsyslog rotate > /dev/null" >>./rsyslog
+echo "        endscript" >>./rsyslog
+echo "}" >>./rsyslog
+echo "" >>./rsyslog
+echo "/var/log/user.log" >>./rsyslog
+echo "/var/log/lpr.log" >>./rsyslog
+echo "/var/log/cron.log" >>./rsyslog
+echo "/var/log/debug" >>./rsyslog
+echo "/var/log/messages" >>./rsyslog
+echo "{" >>./rsyslog
+echo "	rotate 4" >>./rsyslog
+echo "	weekly" >>./rsyslog
+echo "	missingok" >>./rsyslog
+echo "	notifempty" >>./rsyslog
+echo "	compress" >>./rsyslog
+echo "	delaycompress" >>./rsyslog
+echo "	sharedscripts" >>./rsyslog
+echo "	postrotate" >>./rsyslog
+echo "		invoke-rc.d rsyslog rotate > /dev/null" >>./rsyslog
+echo "	endscript" >>./rsyslog
+echo "}" >>./rsyslog
 mv /etc/logrotate.d/rsyslog /dev/shm/rsyslog.ori
 mv ./rsyslog /etc/logrotate.d/rsyslog
 chown root:root /etc/logrotate.d/rsyslog
@@ -268,7 +268,7 @@ if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
   if [ ! -f "/usr/bin/python3.7" ]; then
     # install python37
     pythonVersion="3.7.9"
-    majorPythonVersion=$(echo "$pythonVersion" | awk -F. '{print $1"."$2}' )
+    majorPythonVersion=$(echo "$pythonVersion" | awk -F. '{print $1"."$2}')
     # dependencies
     sudo apt-get install software-properties-common build-essential libnss3-dev zlib1g-dev libgdbm-dev libncurses5-dev libssl-dev libffi-dev libreadline-dev libsqlite3-dev libbz2-dev -y
     # download
@@ -278,10 +278,16 @@ if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
     # get PGP pubkey of Ned Deily (Python release signing key) <nad@python.org>
     gpg --recv-key 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
     # check for: Good signature from "Pablo Galindo Salgado <pablogsal@gmail.com>"
-    gpg --verify Python-${pythonVersion}.tgz.asc || (echo "# PGP verfication failed"; exit 1)
+    gpg --verify Python-${pythonVersion}.tgz.asc || (
+      echo "# PGP verfication failed"
+      exit 1
+    )
     # unzip
     tar xvf Python-${pythonVersion}.tgz
-    cd Python-${pythonVersion} || (echo "# Pyhton37 was not downloaded"; exit 1)
+    cd Python-${pythonVersion} || (
+      echo "# Pyhton37 was not downloaded"
+      exit 1
+    )
     # configure
     ./configure --enable-optimizations
     # install
@@ -289,7 +295,10 @@ if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
     # move the python binary to the expected directory
     mv "$(which python${majorPythonVersion})" /usr/bin/
     # check
-    ls -la /usr/bin/python${majorPythonVersion} || (echo "# Python37 was not installed"; exit 1)
+    ls -la /usr/bin/python${majorPythonVersion} || (
+      echo "# Python37 was not installed"
+      exit 1
+    )
     # clean
     cd ..
     rm Python-${pythonVersion}.tgz
@@ -370,17 +379,30 @@ echo "# add the 'joinmarket' user"
 adduser --disabled-password --gecos "" joinmarket
 
 echo "# clone the joininbox repo and copy the scripts"
-cd /home/joinmarket || (echo "# User wasn't created"; exit 1)
+cd /home/joinmarket || (
+  echo "# User wasn't created"
+  exit 1
+)
 sudo -u joinmarket git clone -b ${wantedBranch} https://github.com/${githubUser}/joininbox.git
 
 # related issue: https://github.com/openoms/joininbox/issues/102
 git config --global --add safe.directory /home/joinmarket/joininbox
 
-cd /home/joinmarket/joininbox || (echo "# Failed git clone"; exit 1)
+cd /home/joinmarket/joininbox || (
+  echo "# Failed git clone"
+  exit 1
+)
 
-PGPsigner="openoms"
-PGPpubkeyLink="https://github.com/openoms.gpg"
-PGPpubkeyFingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
+if git log --show-signature --oneline | head -n3 | grep 5BFB77609B081B65; then
+  PGPsigner="openoms"
+  PGPpubkeyLink="https://github.com/openoms.gpg"
+  PGPpubkeyFingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
+elif git log --show-signature --oneline | head -n3 | grep 4AEE18F83AFDEB23; then
+  echo "# The last commit was made on GitHub and is signed with the GitHub PGP key."
+  PGPsigner="web-flow"
+  PGPpubkeyLink="https://github.com/${PGPsigner}.gpg"
+  PGPpubkeyFingerprint="4AEE18F83AFDEB23"
+fi
 
 if [ $# -lt 3 ] || [ "$3" = tag ]; then
   # use the latest tag by default
@@ -398,7 +420,7 @@ fi
 sudo chmod 777 /dev/shm
 
 sudo -u joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh \
- ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag} || exit 1
+  ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag} || exit 1
 
 sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/
 sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
@@ -415,7 +437,7 @@ adduser joinmarket sudo
 echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
 echo "root:joininbox" | chpasswd
 echo "joinmarket:joininbox" | chpasswd
-if [ $(grep -c pi  < /etc/passwd) -gt 0 ];then
+if [ $(grep -c pi </etc/passwd) -gt 0 ]; then
   echo "pi:joininbox" | chpasswd
 fi
 
@@ -428,16 +450,15 @@ echo "# Tor"
 echo "#######"
 echo
 # add default value to joinin config if needed
-checkTorEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | \
-grep -c "runBehindTor")
+checkTorEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf |
+  grep -c "runBehindTor")
 if [ ${checkTorEntry} -eq 0 ]; then
   echo "runBehindTor=off" | tee -a /home/joinmarket/joinin.conf
 fi
 
 torTest=$(curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s \
-https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
-if [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]
-then
+  https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs)
+if [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]; then
   echo "# install the Tor repo"
   echo
   echo "# Install dirmngr"
@@ -445,7 +466,7 @@ then
   echo
   echo "# Adding KEYS deb.torproject.org "
   torKeyAvailable=$(gpg --list-keys | grep -c \
-  "A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89")
+    "A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89")
   echo "torKeyAvailable=${torKeyAvailable}"
   if [ ${torKeyAvailable} -eq 0 ]; then
     # https://support.torproject.org/apt/tor-deb-repo/
@@ -457,7 +478,7 @@ then
   fi
   echo "# Adding Tor Sources to sources.list"
   torSourceListAvailable=$(cat /etc/apt/sources.list | grep -c \
-  'https://deb.torproject.org/torproject.org')
+    'https://deb.torproject.org/torproject.org')
   echo "torSourceListAvailable=${torSourceListAvailable}"
   if [ ${torSourceListAvailable} -eq 0 ]; then
     echo "Adding Tor sources ..."
@@ -465,8 +486,8 @@ then
     distro=$(lsb_release -sc)
     echo "\
 deb [arch=${arch}] https://deb.torproject.org/torproject.org ${distro} main
-deb-src [arch=${arch}] https://deb.torproject.org/torproject.org ${distro} main" \
-    | sudo tee /etc/apt/sources.list.d/tor.list
+deb-src [arch=${arch}] https://deb.torproject.org/torproject.org ${distro} main" |
+      sudo tee /etc/apt/sources.list.d/tor.list
     echo "OK"
   else
     echo "Tor sources are available"
@@ -477,7 +498,8 @@ deb-src [arch=${arch}] https://deb.torproject.org/torproject.org ${distro} main"
     echo "# running on armv6l - need to compile Tor from source"
     apt-get install -y build-essential fakeroot devscripts
     apt-get build-dep -y tor deb.torproject.org-keyring
-    mkdir ~/debian-packages; cd ~/debian-packages
+    mkdir ~/debian-packages
+    cd ~/debian-packages
     apt-get source tor
     cd tor-* || exit 1
     debuild -rfakeroot -uc -us
@@ -552,7 +574,7 @@ chmod -R 700 /home/joinmarket/.ssh
 if grep -Eq "^PermitRootLogin" /etc/ssh/sshd_config; then
   sed -i "s/^PermitRootLogin.*/PermitRootLogin  no/g" /etc/ssh/sshd_config
 else
-  echo "PermitRootLogin  no" >> /etc/ssh/sshd_config
+  echo "PermitRootLogin  no" >>/etc/ssh/sshd_config
 fi
 systemctl restart ssh
 
@@ -606,8 +628,8 @@ if [ ${checkEntry} -eq 0 ]; then
   echo "qtgui=true" | tee -a /home/joinmarket/joinin.conf
 fi
 if [ "$4" = "without-qt" ]; then
- qtgui="false"
- sed -i "s/^qtgui=.*/qtgui=false/g" /home/joinmarket/joinin.conf
+  qtgui="false"
+  sed -i "s/^qtgui=.*/qtgui=false/g" /home/joinmarket/joinin.conf
 fi
 sudo -u joinmarket /home/joinmarket/install.joinmarket.sh -i install -q "$qtgui" || exit 1
 
@@ -616,7 +638,7 @@ echo "# bootstrap.service"
 echo "###################"
 sudo chmod +x /home/joinmarket/standalone/bootstrap.sh
 sudo cp /home/joinmarket/joininbox/scripts/standalone/bootstrap.service \
- /etc/systemd/system/bootstrap.service
+  /etc/systemd/system/bootstrap.service
 sudo systemctl enable bootstrap
 
 echo

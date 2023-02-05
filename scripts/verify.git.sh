@@ -30,13 +30,6 @@ PGPsigner="$1"
 PGPpubkeyLink="$2"
 PGPpubkeyFingerprint="$3"
 
-if git log --show-signature --oneline | head -n3 | grep 4AEE18F83AFDEB23 1>/dev/null; then
-  echo "# The last commit was made on GitHub and is signed with the GitHub PGP key."
-  PGPsigner="web-flow"
-  PGPpubkeyLink="https://github.com/${PGPsigner}.gpg"
-  PGPpubkeyFingerprint="4AEE18F83AFDEB23"
-fi
-
 wget -O /dev/shm/pgp_keys_${PGPsigner}.asc "${PGPpubkeyLink}"
 gpg --import --import-options show-only /dev/shm/pgp_keys_${PGPsigner}.asc
 fingerprint=$(gpg --show-keys /dev/shm/pgp_keys_${PGPsigner}.asc 2>/dev/null | grep "${PGPpubkeyFingerprint}" -c)
