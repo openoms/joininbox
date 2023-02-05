@@ -237,6 +237,7 @@ echo "	postrotate" >>./rsyslog
 echo "		invoke-rc.d rsyslog rotate > /dev/null" >>./rsyslog
 echo "	endscript" >>./rsyslog
 echo "}" >>./rsyslog
+mkdir /etc/logrotate.d/
 mv /etc/logrotate.d/rsyslog /dev/shm/rsyslog.ori
 mv ./rsyslog /etc/logrotate.d/rsyslog
 chown root:root /etc/logrotate.d/rsyslog
