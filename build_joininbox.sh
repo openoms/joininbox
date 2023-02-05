@@ -120,11 +120,11 @@ fi
 if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ]; then
   echo -e "\n*** PREPARE RASPBERRY OS VARIANTS ***"
   if apt-get list | grep "raspi-config"; then
-    sudo apt-get install -y raspi-config
+    apt-get install -y raspi-config
     # do memory split (16MB)
-    sudo raspi-config nonint do_memory_split 16
+    raspi-config nonint do_memory_split 16
     # set to wait until network is available on boot (0 seems to yes)
-    sudo raspi-config nonint do_boot_wait 0
+    raspi-config nonint do_boot_wait 0
   fi
 
   configFile="/boot/config.txt"
@@ -132,9 +132,9 @@ if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ]; then
   max_usb_currentDone=$(grep -c "$max_usb_current" $configFile)
 
   if [ ${max_usb_currentDone} -eq 0 ]; then
-    echo | sudo tee -a $configFile
-    echo "# JoininBox" | sudo tee -a $configFile
-    echo "$max_usb_current" | sudo tee -a $configFile
+    echo | tee -a $configFile
+    echo "# JoininBox" | tee -a $configFile
+    echo "$max_usb_current" | tee -a $configFile
   else
     echo "$max_usb_current already in $configFile"
   fi
@@ -145,7 +145,7 @@ if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ]; then
   # use command to check last fsck check: sudo tune2fs -l /dev/mmcblk0p2
   if [ "${tweak_boot_drive}" == "true" ]; then
     echo "* running tune2fs"
-    sudo tune2fs -c 1 /dev/mmcblk0p2
+    tune2fs -c 1 /dev/mmcblk0p2
   else
     echo "* skipping tweak_boot_drive"
   fi
@@ -158,13 +158,13 @@ if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ]; then
   fsOption2InFile=$(grep -c ${fsOption2} ${kernelOptionsFile})
 
   if [ ${fsOption1InFile} -eq 0 ]; then
-    sudo sed -i "s/^/$fsOption1 /g" "$kernelOptionsFile"
+    sed -i "s/^/$fsOption1 /g" "$kernelOptionsFile"
     echo "$fsOption1 added to $kernelOptionsFile"
   else
     echo "$fsOption1 already in $kernelOptionsFile"
   fi
   if [ ${fsOption2InFile} -eq 0 ]; then
-    sudo sed -i "s/^/$fsOption2 /g" "$kernelOptionsFile"
+    sed -i "s/^/$fsOption2 /g" "$kernelOptionsFile"
     echo "$fsOption2 added to $kernelOptionsFile"
   else
     echo "$fsOption2 already in $kernelOptionsFile"
@@ -253,7 +253,7 @@ service rsyslog restart
 
 echo
 echo "########################"
-echo "# apt-get update & upgrade"
+echo "# apt-get update" # & upgrade
 echo "########################"
 echo
 apt-get update -y
@@ -272,7 +272,7 @@ if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
     pythonVersion="3.7.9"
     majorPythonVersion=$(echo "$pythonVersion" | awk -F. '{print $1"."$2}')
     # dependencies
-    sudo apt-get install software-properties-common build-essential libnss3-dev zlib1g-dev libgdbm-dev libncurses5-dev libssl-dev libffi-dev libreadline-dev libsqlite3-dev libbz2-dev -y
+    apt-get install software-properties-common build-essential libnss3-dev zlib1g-dev libgdbm-dev libncurses5-dev libssl-dev libffi-dev libreadline-dev libsqlite3-dev libbz2-dev -y
     # download
     wget --progress=bar:force https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz
     # optional signature for verification
@@ -385,10 +385,10 @@ cd /home/joinmarket || (
   echo "# User wasn't created"
   exit 1
 )
-sudo -u joinmarket git clone -b ${wantedBranch} https://github.com/${githubUser}/joininbox.git
+runuser joinmarket -pc "git clone -b ${wantedBranch} https://github.com/${githubUser}/joininbox.git"
 
 # related issue: https://github.com/openoms/joininbox/issues/102
-sudo -u joinmarket git config --global --add safe.directory /home/joinmarket/joininbox
+runuser joinmarket -pc "git config --global --add safe.directory /home/joinmarket/joininbox"
 
 cd /home/joinmarket/joininbox || (
   echo "# Failed git clone"
@@ -399,15 +399,15 @@ if [ $# -lt 3 ] || [ "$3" = tag ]; then
   # use the latest tag by default
   tag=$(git tag | sort -V | tail -1)
   # reset to the last release # be aware this is alphabetical (use one digit versions)
-  sudo -u joinmarket git reset --hard ${tag}
+  runuser joinmarket -pc "git reset --hard ${tag}"
 else
   if [ $# -gt 2 ] && [ "$3" != commit ]; then
     # reset to named commit if given
-    sudo -u joinmarket git reset --hard $3
+    runuser joinmarket -pc "git reset --hard $3"
   fi
 fi
 
-lastCommit=$(git log --show-signature --oneline | head -n3)
+lastCommit=$(runuser joinmarket -pc "git log --show-signature --oneline | head -n3")
 echo ${lastCommit}
 if echo "${lastCommit}" | grep 13C688DB5B9C745DE4D2E4545BFB77609B081B65; then
   PGPsigner="openoms"
@@ -419,15 +419,15 @@ elif echo "${lastCommit}" | grep 4AEE18F83AFDEB23; then
   PGPpubkeyLink="https://github.com/${PGPsigner}.gpg"
   PGPpubkeyFingerprint="4AEE18F83AFDEB23"
 fi
-command="sudo -u joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag}"
+command="sudo -Eu joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag}"
 echo "running: ${command}"
 sudo chmod 777 /dev/shm
 ${command} || exit 1
 
-sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/
-sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
+runuser joinmarket -pc "cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/"
+runuser joinmarket -pc "cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null"
 chmod +x /home/joinmarket/*.sh
-sudo -u joinmarket cp -r /home/joinmarket/joininbox/scripts/standalone /home/joinmarket/
+runuser joinmarket -pc "cp -r /home/joinmarket/joininbox/scripts/standalone /home/joinmarket/"
 chmod +x /home/joinmarket/standalone/*.sh
 
 echo "# set the default password 'joininbox' for the users 'pi', \
@@ -444,7 +444,7 @@ if [ $(grep -c pi </etc/passwd) -gt 0 ]; then
 fi
 
 echo "# create the joinin.conf"
-sudo -u joinmarket touch /home/joinmarket/joinin.conf
+runuser joinmarket -pc "touch /home/joinmarket/joinin.conf"
 
 echo
 echo "#######"
@@ -452,8 +452,8 @@ echo "# Tor"
 echo "#######"
 echo
 # add default value to joinin config if needed
-checkTorEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf |
-  grep -c "runBehindTor")
+checkTorEntry=$(runuser joinmarket -pc "cat /home/joinmarket/joinin.conf |
+  grep -c runBehindTor")
 if [ ${checkTorEntry} -eq 0 ]; then
   echo "runBehindTor=off" | tee -a /home/joinmarket/joinin.conf
 fi
@@ -569,7 +569,7 @@ systemctl enable ufw
 ufw status
 
 # make a folder for authorized keys
-sudo -u joinmarket mkdir -p /home/joinmarket/.ssh
+runuser joinmarket -pc "mkdir -p /home/joinmarket/.ssh"
 chmod -R 700 /home/joinmarket/.ssh
 
 # deny root login via ssh
@@ -611,13 +611,13 @@ source /home/joinmarket/_commands.sh
 if [ -z \"\$TMUX\" ]; then
   /home/joinmarket/menu.sh
 fi
-" | sudo -u joinmarket tee -a /home/joinmarket/.bashrc
+" | runuser joinmarket -pc "tee -a /home/joinmarket/.bashrc"
 
 echo "#########################"
 echo "# Download Bitcoin Core"
 echo "#########################"
 echo
-sudo -u joinmarket /home/joinmarket/install.bitcoincore.sh downloadCoreOnly || exit 1
+runuser joinmarket -pc "/home/joinmarket/install.bitcoincore.sh downloadCoreOnly" || exit 1
 
 echo
 echo "######################"
@@ -625,7 +625,7 @@ echo "# Install JoinMarket"
 echo "######################"
 
 qtgui=true
-checkEntry=$(sudo -u joinmarket cat /home/joinmarket/joinin.conf | grep -c "qtgui")
+checkEntry=$(runuser joinmarket -pc "cat /home/joinmarket/joinin.conf | grep -c qtgui")
 if [ ${checkEntry} -eq 0 ]; then
   echo "qtgui=true" | tee -a /home/joinmarket/joinin.conf
 fi
@@ -633,7 +633,7 @@ if [ "$4" = "without-qt" ]; then
   qtgui="false"
   sed -i "s/^qtgui=.*/qtgui=false/g" /home/joinmarket/joinin.conf
 fi
-sudo -u joinmarket /home/joinmarket/install.joinmarket.sh -i install -q "$qtgui" || exit 1
+runuser joinmarket -pc "/home/joinmarket/install.joinmarket.sh -i install -q $qtgui" || exit 1
 
 echo "###################"
 echo "# bootstrap.service"
