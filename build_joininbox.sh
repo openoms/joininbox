@@ -398,7 +398,6 @@ if [ $# -lt 3 ] || [ "$3" = tag ]; then
   tag=$(git tag | sort -V | tail -1)
   # reset to the last release # be aware this is alphabetical (use one digit versions)
   sudo -u joinmarket git reset --hard ${tag}
-
 else
   if [ $# -gt 2 ] && [ "$3" != commit ]; then
     # reset to named commit if given
@@ -417,10 +416,9 @@ elif echo "${lastCommit}" | grep 4AEE18F83AFDEB23; then
   PGPpubkeyLink="https://github.com/${PGPsigner}.gpg"
   PGPpubkeyFingerprint="4AEE18F83AFDEB23"
 fi
+command="sudo -u joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag}"
+echo "running: ${command}"
 sudo chmod 777 /dev/shm
-command="sudo -u joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh \
-  ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag}"
-echo "running ${command}"
 ${command} || exit 1
 
 sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/
