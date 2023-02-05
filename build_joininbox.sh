@@ -386,7 +386,7 @@ cd /home/joinmarket || (
 sudo -u joinmarket git clone -b ${wantedBranch} https://github.com/${githubUser}/joininbox.git
 
 # related issue: https://github.com/openoms/joininbox/issues/102
-git config --global --add safe.directory /home/joinmarket/joininbox
+sudo -u joinmarket git config --global --add safe.directory /home/joinmarket/joininbox
 
 cd /home/joinmarket/joininbox || (
   echo "# Failed git clone"
@@ -407,19 +407,20 @@ else
 fi
 
 if sudo -u joinmarket git log --show-signature --oneline | head -n3 | grep 5BFB77609B081B65; then
-  export PGPsigner="openoms"
-  export PGPpubkeyLink="https://github.com/openoms.gpg"
-  export PGPpubkeyFingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
+  PGPsigner="openoms"
+  PGPpubkeyLink="https://github.com/openoms.gpg"
+  PGPpubkeyFingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
 elif sudo -u joinmarket git log --show-signature --oneline | head -n3 | grep 4AEE18F83AFDEB23; then
   echo "# The last commit was made on GitHub and is signed with the GitHub PGP key."
-  export PGPsigner="web-flow"
-  export PGPpubkeyLink="https://github.com/${PGPsigner}.gpg"
-  export PGPpubkeyFingerprint="4AEE18F83AFDEB23"
+  PGPsigner="web-flow"
+  PGPpubkeyLink="https://github.com/${PGPsigner}.gpg"
+  PGPpubkeyFingerprint="4AEE18F83AFDEB23"
 fi
-
 sudo chmod 777 /dev/shm
-sudo -u joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh \
-  ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag} || exit 1
+command="sudo -u joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh \
+  ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag}"
+echo "running ${command}"
+${command} || exit 1
 
 sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/
 sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
