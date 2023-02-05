@@ -406,11 +406,12 @@ else
   fi
 fi
 
-if sudo -u joinmarket git log --show-signature --oneline | head -n3 | grep 5BFB77609B081B65; then
+lastCommit=$(sudo -u joinmarket git log --show-signature --oneline | head -n3)
+if echo "${lastCommit}" | grep 13C688DB5B9C745DE4D2E4545BFB77609B081B65; then
   PGPsigner="openoms"
   PGPpubkeyLink="https://github.com/openoms.gpg"
   PGPpubkeyFingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
-elif sudo -u joinmarket git log --show-signature --oneline | head -n3 | grep 4AEE18F83AFDEB23; then
+elif echo "${lastCommit}" | grep 4AEE18F83AFDEB23; then
   echo "# The last commit was made on GitHub and is signed with the GitHub PGP key."
   PGPsigner="web-flow"
   PGPpubkeyLink="https://github.com/${PGPsigner}.gpg"
