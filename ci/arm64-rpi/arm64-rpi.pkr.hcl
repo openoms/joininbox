@@ -39,6 +39,7 @@ build {
     inline = [
       "echo 'nameserver 1.1.1.1' > /etc/resolv.conf",
       "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf",
+      "echo $(hostname -I | awk '{print $1}') $(hostname) | sudo -h 127.0.0.1 tee -a /etc/hosts",
       "echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections",
       "apt-get update",
       "apt-get install -y sudo wget",
