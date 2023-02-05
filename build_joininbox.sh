@@ -385,10 +385,10 @@ cd /home/joinmarket || (
   echo "# User wasn't created"
   exit 1
 )
-sudo -Eu joinmarket git clone -b ${wantedBranch} https://github.com/${githubUser}/joininbox.git
+sudo -u joinmarket git clone -b ${wantedBranch} https://github.com/${githubUser}/joininbox.git
 
 # related issue: https://github.com/openoms/joininbox/issues/102
-sudo -Eu joinmarket git config --global --add safe.directory /home/joinmarket/joininbox
+sudo -u joinmarket git config --global --add safe.directory /home/joinmarket/joininbox
 
 cd /home/joinmarket/joininbox || (
   echo "# Failed git clone"
@@ -399,15 +399,15 @@ if [ $# -lt 3 ] || [ "$3" = tag ]; then
   # use the latest tag by default
   tag=$(git tag | sort -V | tail -1)
   # reset to the last release # be aware this is alphabetical (use one digit versions)
-  sudo -Eu joinmarket git reset --hard ${tag}
+  sudo -u joinmarket git reset --hard ${tag}
 else
   if [ $# -gt 2 ] && [ "$3" != commit ]; then
     # reset to named commit if given
-    sudo -Eu joinmarket git reset --hard $3
+    sudo -u joinmarket git reset --hard $3
   fi
 fi
 
-lastCommit=$(sudo -Eu joinmarket git log --show-signature --oneline | head -n3)
+lastCommit=$(sudo -u joinmarket git log --show-signature --oneline | head -n3)
 echo ${lastCommit}
 if echo "${lastCommit}" | grep 13C688DB5B9C745DE4D2E4545BFB77609B081B65; then
   PGPsigner="openoms"
@@ -420,8 +420,8 @@ elif echo "${lastCommit}" | grep 4AEE18F83AFDEB23; then
   PGPpubkeyFingerprint="4AEE18F83AFDEB23"
 fi
 
-command="sudo -Eu joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh \
-  ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag})"
+command="sudo -u joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh \
+  ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag}"
 echo "running: ${command}"
 chmod 777 /dev/shm
 ${command} || exit 1
