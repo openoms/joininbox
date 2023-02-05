@@ -280,16 +280,10 @@ if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
     # get PGP pubkey of Ned Deily (Python release signing key) <nad@python.org>
     gpg --recv-key 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
     # check for: Good signature from "Pablo Galindo Salgado <pablogsal@gmail.com>"
-    gpg --verify Python-${pythonVersion}.tgz.asc || (
-      echo "# PGP verfication failed"
-      exit 1
-    )
+    gpg --verify Python-${pythonVersion}.tgz.asc || exit 1
     # unzip
     tar xvf Python-${pythonVersion}.tgz
-    cd Python-${pythonVersion} || (
-      echo "# Pyhton37 was not downloaded"
-      exit 1
-    )
+    cd Python-${pythonVersion} || exit 1
     # configure
     ./configure --enable-optimizations
     # install
@@ -297,10 +291,7 @@ if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
     # move the python binary to the expected directory
     mv "$(which python${majorPythonVersion})" /usr/bin/
     # check
-    ls -la /usr/bin/python${majorPythonVersion} || (
-      echo "# Python37 was not installed"
-      exit 1
-    )
+    ls -la /usr/bin/python${majorPythonVersion} || exit 1
     # clean
     cd ..
     rm Python-${pythonVersion}.tgz
@@ -381,19 +372,13 @@ echo "# add the 'joinmarket' user"
 adduser --disabled-password --gecos "" joinmarket
 
 echo "# clone the joininbox repo and copy the scripts"
-cd /home/joinmarket || (
-  echo "# User wasn't created"
-  exit 1
-)
+cd /home/joinmarket || exit 1
 sudo -u joinmarket git clone -b ${wantedBranch} https://github.com/${githubUser}/joininbox.git
 
 # related issue: https://github.com/openoms/joininbox/issues/102
 sudo -u joinmarket git config --global --add safe.directory /home/joinmarket/joininbox
 
-cd /home/joinmarket/joininbox || (
-  echo "# Failed git clone"
-  exit 1
-)
+cd /home/joinmarket/joininbox || exit 1
 
 if [ $# -lt 3 ] || [ "$3" = tag ]; then
   # use the latest tag by default
