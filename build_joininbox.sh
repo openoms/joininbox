@@ -253,11 +253,11 @@ service rsyslog restart
 
 echo
 echo "########################"
-echo "# apt-get update" # & upgrade
+echo "# apt-get update & upgrade"
 echo "########################"
 echo
 apt-get update -y
-#apt-get upgrade -f -y
+apt-get upgrade -f -y
 
 echo
 echo "##########"
@@ -408,7 +408,7 @@ else
 fi
 
 echo "# Checking which key signed the last commit"
-lastCommit=$(sudo -u joinmarket git log --show-signature --oneline | head -n3)
+lastCommit=$(sudo -u joinmarket git log --show-signature --oneline | head -n6)
 echo ${lastCommit}
 if echo "${lastCommit}" | grep 13C688DB5B9C745DE4D2E4545BFB77609B081B65; then
   PGPsigner="openoms"
@@ -419,13 +419,16 @@ elif echo "${lastCommit}" | grep 4AEE18F83AFDEB23; then
   PGPsigner="web-flow"
   PGPpubkeyLink="https://github.com/${PGPsigner}.gpg"
   PGPpubkeyFingerprint="4AEE18F83AFDEB23"
+else
+  echo "# No known PGP key found"
+  exit 1
 fi
 
 command="sudo -u joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh \
   ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag}"
 echo "running: ${command}"
 chmod 777 /dev/shm
-${command} || (echo "PGP verification failed"; exit 1)
+${command} || exit 1
 
 runuser joinmarket -c "cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/"
 runuser joinmarket -c "cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null"
