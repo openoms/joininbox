@@ -257,7 +257,7 @@ echo "# apt-get update & upgrade"
 echo "########################"
 echo
 apt-get update -y
-apt-get upgrade -f -y
+#apt-get upgrade -f -y
 
 echo
 echo "##########"
@@ -407,7 +407,8 @@ else
   fi
 fi
 
-lastCommit=$(sudo -u joinmarket git log --show-signature --oneline | head -n3)
+lastCommit=$(git log --show-signature --oneline | head -n3)
+echo ${lastCommit}
 if echo "${lastCommit}" | grep 13C688DB5B9C745DE4D2E4545BFB77609B081B65; then
   PGPsigner="openoms"
   PGPpubkeyLink="https://github.com/openoms.gpg"
