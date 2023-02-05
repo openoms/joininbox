@@ -407,6 +407,7 @@ else
   fi
 fi
 
+echo "# Checking which key signed the last commit"
 lastCommit=$(sudo -u joinmarket git log --show-signature --oneline | head -n3)
 echo ${lastCommit}
 if echo "${lastCommit}" | grep 13C688DB5B9C745DE4D2E4545BFB77609B081B65; then
@@ -424,7 +425,7 @@ command="sudo -u joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.s
   ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag}"
 echo "running: ${command}"
 chmod 777 /dev/shm
-${command} || exit 1
+${command} || (echo "PGP verification failed"; exit 1)
 
 runuser joinmarket -c "cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/"
 runuser joinmarket -c "cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null"
