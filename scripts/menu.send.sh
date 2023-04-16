@@ -21,8 +21,10 @@ coinjoin: $makercountMessage
 miner fee: $txfeeMessage
 destination address:
 $(cat "$address")
+change address (optional):
+$changeAddressMessage
 
-Enter a number between 0 to 4 to choose the mixdepth" 17 69 2> "$mixdepth"
+Enter a number between 0 to 4 to choose the mixdepth" 19 69 2> "$mixdepth"
 openMenuIfCancelled $?
 
 # amount
@@ -38,9 +40,11 @@ coinjoin: $makercountMessage
 miner fee: $txfeeMessage
 destination address:
 $(cat "$address")
+change address (optional):
+$changeAddressMessage
 
 Enter the amount to send in satoshis
-Use 0 to sweep the mixdepth without a change output" 18 69 2> "$amount"
+Use 0 to sweep the mixdepth without a change output" 20 69 2> "$amount"
 openMenuIfCancelled $?
 amountsats="$(cat "$amount") sats"
 
@@ -57,10 +61,12 @@ coinjoin: $makercountMessage
 miner fee: $txfeeMessage
 destination address:
 $(cat "$address")
+change address (optional):
+$changeAddressMessage
 
 Enter the number of makers to coinjoin with (min 4)
 Leave empty for the default 5-9 (randomized)
-Enter 0 to send without a coinjoin." 19 69 2> "$makercount"
+Enter 0 to send without a coinjoin." 21 69 2> "$makercount"
 openMenuIfCancelled $?
 varMakercount=$(cat "$makercount")
 if [ ${#varMakercount} -eq 0 ]; then
@@ -73,7 +79,6 @@ else
   makercountMessage="with $varMakercount makers"
   makercountOption="-N $varMakercount"
 fi
-
 
 # txfee
 trap 'rm -f "$txfee"' EXIT
@@ -88,9 +93,11 @@ coinjoin: $makercountMessage
 miner fee: $txfeeMessage
 destination address:
 $(cat "$address")
+change address (optional):
+$changeAddressMessage
 
 Enter the miner fee to be used for the transaction in sat/byte
-Leave empty to use the default fee (set in the joinmarket.cfg)" 18 69 2> "$txfee"
+Leave empty to use the default fee (set in the joinmarket.cfg)" 20 69 2> "$txfee"
 openMenuIfCancelled $?
 varTxfee=$(cat "$txfee")
 if [ ${#varTxfee} -eq 0 ]; then
@@ -119,9 +126,44 @@ coinjoin: $makercountMessage
 miner fee: $txfeeMessage
 destination address:
 $(cat "$address")
+change address (optional):
+$changeAddressMessage
 
-Paste the destination address" 17 69 2> "$address"
+Paste the destination address" 19 69 2> "$address"
 openMenuIfCancelled $?
+
+# changeAddress
+trap 'rm -f "$changeAdress"' EXIT
+changeAddress=$(mktemp -p /dev/shm/)
+if [ "$amountsats" != "0 sats" ]; then
+  dialog --backtitle "Custom change address" \
+  --title "Custom change address" \
+  --inputbox "
+From the wallet: $walletFileName
+mixdepth: $(cat "$mixdepth")
+send: $amountsats
+coinjoin: $makercountMessage
+miner fee: $txfeeMessage
+destination address:
+$(cat "$address")
+change address (optional):
+$changeAddressMessage
+
+Paste the address to receive the change to
+or leave empty to use an internal address in the mixdepth$(cat $mixdepth)" 20 69 2> "$changeAddress"
+openMenuIfCancelled $?
+fi
+varChangeAddress=$(cat "$changeAddress")
+if [ "$amountsats" = "0 sats" ]; then
+  changeAddressMessage="none"
+  changeAddressOption=""
+elif [ ${#varChangeAddress} -eq 0 ]; then
+  changeAddressMessage="internal address in m$(cat $mixdepth)"
+  changeAddressOption=""
+else
+  changeAddressMessage="$varChangeAddress"
+  changeAddressOption="--custom-change $varChangeAddress"
+fi
 
 if [ "${RPCoverTor}" = "on" ]; then
   tor="torsocks"
@@ -139,7 +181,9 @@ send: $amountsats
 coinjoin: $makercountMessage
 miner fee: $txfeeMessage
 destination address:
-$(cat "$address")" 15 69
+$(cat "$address")
+change address (optional):
+$changeAddressMessage" 17 69
 
 # make decison
 pressed=$?
@@ -150,12 +194,12 @@ case $pressed in
     echo "Running the command:
 $tor python sendpayment.py \
 -m $(cat "$mixdepth") $makercountOption $(sed "s#$walletPath##g" < "$wallet" ) \
-$(cat "$amount") $(cat "$address") $txfeeOption
+$(cat "$amount") $(cat "$address") $txfeeOption $changeAddressOption
 "
     # run
     $tor python ~/joinmarket-clientserver/scripts/sendpayment.py \
     -m "$(cat "$mixdepth")" $makercountOption "$(cat "$wallet")" \
-    "$(cat "$amount")" "$(cat "$address")" $txfeeOption
+    "$(cat "$amount")" "$(cat "$address")" $txfeeOption $changeAddressOption
     ;;
   1)
     echo "Cancelled"
