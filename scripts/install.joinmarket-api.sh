@@ -3,7 +3,7 @@
 USERNAME=joinmarket
 HOME_DIR=/home/$USERNAME
 
-if [ ${#1} -eq 0 ]||[ "$1" = "-h" ]||[ "$1" = "--help" ];then
+if [ ${#1} -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
   echo "Script to start/stop the joinmarket-api.service."
   echo "Usage:"
   echo "start.joinmarket-api.sh [on|off]"
@@ -64,7 +64,7 @@ elif [ "$1" = connect ]; then
   base64cert=$(base64 -w 0 ${HOME_DIR}/.joinmarket/ssl/cert.pem)
   url="http://${torAddress}:28183?cert=${base64cert}"
 
-  if [ "$runningEnv" = raspiblitz ];then
+  if [ "$runningEnv" = raspiblitz ]; then
     sudo /home/admin/config.scripts/blitz.display.sh qr "${url}"
   fi
   echo
@@ -80,14 +80,14 @@ elif [ "$1" = connect ]; then
   echo "If the Qrcode is still too large shrink the letters by pressing the keys:"
   echo "Ctrl and Minus (or Cmd and Minus if you are on a Mac)"
   echo
-  if [ $runningEnv = raspiblitz ];then
+  if [ $runningEnv = raspiblitz ]; then
     echo "# Press enter to hide the QRcode from the LCD"
     read key
     sudo /home/admin/config.scripts/blitz.display.sh hide
   fi
   exit 0
 
-elif [ "$1" = off ];then
+elif [ "$1" = off ]; then
   # remove hidden service
   $HOME_DIR/install.hiddenservice.sh off joinmarket-api
 

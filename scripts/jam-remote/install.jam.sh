@@ -3,7 +3,7 @@
 # https://github.com/joinmarket-webui/jam
 
 USERNAME=jam
-WEBUI_VERSION=0.1.4
+WEBUI_VERSION=0.1.5
 REPO=joinmarket-webui/jam
 HOME_DIR=/home/${USERNAME}
 APP_DIR=webui
@@ -37,7 +37,6 @@ ${fingerprint}\n
   exit 0
 fi
 
-
 # switch on
 if [ "$1" = "on" ]; then
   isInstalled=$(sudo ls $HOME_DIR 2>/dev/null | grep -c "$APP_DIR")
@@ -61,7 +60,7 @@ if [ "$1" = "on" ]; then
     sudo -u $USERNAME git reset --hard v${WEBUI_VERSION}
 
     sudo -u $USERNAME bash ${SOURCEDIR}/../verify.git.sh \
-     "${PGPsigner}" "${PGPpubkeyLink}" "${PGPpubkeyFingerprint}" "v${WEBUI_VERSION}" || exit 1
+      "${PGPsigner}" "${PGPpubkeyLink}" "${PGPpubkeyFingerprint}" "v${WEBUI_VERSION}" || exit 1
 
     cd $HOME_DIR || exit 1
     sudo -u $USERNAME mv jam $APP_DIR
@@ -94,7 +93,6 @@ if [ "$1" = "on" ]; then
   exit 0
 fi
 
-
 # update
 if [ "$1" = "update" ]; then
   isInstalled=$(sudo ls $HOME_DIR 2>/dev/null | grep -c "$APP_DIR")
@@ -126,7 +124,7 @@ if [ "$1" = "update" ]; then
       sudo -u $USERNAME git reset --hard v${version}
 
       sudo -u $USERNAME bash ${SOURCEDIR}/../verify.git.sh \
-       "${PGPsigner}" "${PGPpubkeyLink}" "${PGPpubkeyFingerprint}" "v${version}" || exit 1
+        "${PGPsigner}" "${PGPpubkeyLink}" "${PGPpubkeyFingerprint}" "v${version}" || exit 1
 
       cd $HOME_DIR || exit 1
       sudo -u $USERNAME mv jam $APP_DIR
@@ -146,7 +144,6 @@ if [ "$1" = "update" ]; then
 
   exit 0
 fi
-
 
 # switch off
 if [ "$1" = "off" ]; then
