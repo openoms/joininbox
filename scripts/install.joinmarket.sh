@@ -11,7 +11,7 @@ nocolor="\033[0m"
 red="\033[31m"
 
 ## see https://github.com/rootzoll/raspiblitz/blob/v1.7/build_sdcard.sh for code comments
-usage(){
+usage() {
   printf %s"${me} [--option <argument>]
 
 a script to install, update or configure JoinMarket
@@ -35,28 +35,31 @@ if [ $# -lt 1 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
   usage
 fi
 
-error_msg(){ printf %s"${red}${me}: ${1}${nocolor}\n"; exit 1; }
-assign_value(){
+error_msg() {
+  printf %s"${red}${me}: ${1}${nocolor}\n"
+  exit 1
+}
+assign_value() {
   case "${2}" in
-    --*) value="${2#--}";;
-    -*) value="${2#-}";;
-    *) value="${2}"
+  --*) value="${2#--}" ;;
+  -*) value="${2#-}" ;;
+  *) value="${2}" ;;
   esac
   case "${value}" in
-    0) value="false";;
-    1) value="true";;
+  0) value="false" ;;
+  1) value="true" ;;
   esac
   eval "${1}"="\"${value}\""
 }
 
-get_arg(){
+get_arg() {
   case "${3}" in
-    ""|-*) error_msg "Option '${2}' requires an argument.";;
+  "" | -*) error_msg "Option '${2}' requires an argument." ;;
   esac
   assign_value "${1}" "${3}"
 }
 
-range_argument(){
+range_argument() {
   name="${1}"
   eval var='$'"${1}"
   shift
@@ -71,17 +74,29 @@ range_argument(){
 
 while :; do
   case "${1}" in
-    -*=*) opt="${1%=*}"; arg="${1#*=}"; shift_n=1;;
-    -*) opt="${1}"; arg="${2}"; shift_n=2;;
-    *) opt="${1}"; arg="${2}"; shift_n=1;;
+  -*=*)
+    opt="${1%=*}"
+    arg="${1#*=}"
+    shift_n=1
+    ;;
+  -*)
+    opt="${1}"
+    arg="${2}"
+    shift_n=2
+    ;;
+  *)
+    opt="${1}"
+    arg="${2}"
+    shift_n=1
+    ;;
   esac
   case "${opt}" in
-    -i|-i=*|--install|--install=*) get_arg install "${opt}" "${arg}";;
-    -v|-v=*|--version|--version=*) get_arg version "${opt}" "${arg}";;
-    -q|-q=*|--qtgui|--qtgui=*) get_arg qtgui "${opt}" "${arg}";;
-    -u|-u=*|--user|--user=*) get_arg user "${opt}" "${arg}";;
-    "") break;;
-    *) error_msg "Invalid option: ${opt}";;
+  -i | -i=* | --install | --install=*) get_arg install "${opt}" "${arg}" ;;
+  -v | -v=* | --version | --version=*) get_arg version "${opt}" "${arg}" ;;
+  -q | -q=* | --qtgui | --qtgui=*) get_arg qtgui "${opt}" "${arg}" ;;
+  -u | -u=* | --user | --user=*) get_arg user "${opt}" "${arg}" ;;
+  "") break ;;
+  *) error_msg "Invalid option: ${opt}" ;;
   esac
   shift "${shift_n}"
 done
@@ -110,7 +125,7 @@ if [ "${user}" != "joinmarket" ]; then
   # configure for usage without password entry
   checkEntry=$(sudo cat /etc/sudoers | grep -c "${user} ALL=(ALL) NOPASSWD:ALL")
   if [ ${checkEntry} -eq 0 ]; then
-   echo "${user} ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers
+    echo "${user} ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers
   fi
   # Autostart
   checkEntry=$(sudo -u ${user} cat /home/${user}/.bashrc | grep -c "jmvenv/bin/activate")
@@ -142,7 +157,7 @@ function installJoinMarket() {
     # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
     echo "# Installing ARM specific dependencies to run the QT GUI"
     sudo apt-get install -y python3-pyside2.qtcore python3-pyside2.qtgui \
-     python3-pyside2.qtwidgets zlib1g-dev libjpeg-dev python3-pyqt5 libltdl-dev
+      python3-pyside2.qtwidgets zlib1g-dev libjpeg-dev python3-pyqt5 libltdl-dev
   fi
   # https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/668#issuecomment-717815719
   sudo apt-get install -y build-essential automake pkg-config libffi-dev python3-dev
@@ -205,14 +220,14 @@ function installJoinMarket() {
 
   # Use specific python version, if set
   python_args=""
-  if [[ ! -z "${JM_PYTHON}" ]]; then
+  if [[ -n "${JM_PYTHON}" ]]; then
     python_args="--python=${JM_PYTHON}"
   fi
   # do not clear screen during installation
   sudo -u ${user} sed -i 's/clear//g' install.sh
   # do not stop at installing Debian dependencies
   sudo -u ${user} sed -i \
-  "s#^        if ! sudo apt-get install \${deb_deps\[@\]}; then#\
+    "s#^        if ! sudo apt-get install \${deb_deps\[@\]}; then#\
         if ! sudo apt-get install -y \${deb_deps\[@\]}; then#g" install.sh
 
   if [ ${cpu} != "x86_64" ]; then
@@ -229,6 +244,12 @@ function installJoinMarket() {
     sudo -u ${user} sed -i "s#PyQt5!=5.15.0,!=5.15.1,!=5.15.2,!=6.0##g" jmqtui/setup.py
   fi
 
+  # pin werkzeug dependency to 2.2.0 as in:
+  # https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/1485/files
+  if ! grep 'werkzeug==' jmclient/setup.py; then
+    sed -i "s/autobahn==20.12.3/&', 'werkzeug==2.2.0/g" jmclient/setup.py
+  fi
+
   if [ "${qtgui}" = "false" ]; then
     GUIchoice="--without-qt"
   else
@@ -241,8 +262,10 @@ function installJoinMarket() {
   else
     sudo -u ${user} ./install.sh "${GUIchoice}" "$python_args" || exit 1
   fi
-  currentJMversion=$(cd /home/${user}/joinmarket-clientserver 2>/dev/null; \
-    git describe --tags 2>/dev/null)
+  currentJMversion=$(
+    cd /home/${user}/joinmarket-clientserver 2>/dev/null
+    git describe --tags 2>/dev/null
+  )
   echo
   echo "# installed JoinMarket $currentJMversion"
   echo
@@ -256,9 +279,9 @@ if [ "$install" = "config" ]; then
   fi
   # show info
   dialog \
-  --title "Configure JoinMarket" \
-  --exit-label "Continue to edit the joinmarket.cfg" \
-  --textbox "/home/joinmarket/info.conf.txt" 43 108
+    --title "Configure JoinMarket" \
+    --exit-label "Continue to edit the joinmarket.cfg" \
+    --textbox "/home/joinmarket/info.conf.txt" 43 108
   # edit joinmarket.cfg
   /home/${user}/set.conf.sh $JMcfgPath
   exit 0
@@ -266,7 +289,7 @@ fi
 
 if [ "$install" = "install" ]; then
   # install joinmarket
-  if [ ! -f "/home/${user}/joinmarket-clientserver/jmvenv/bin/activate" ] ; then
+  if [ ! -f "/home/${user}/joinmarket-clientserver/jmvenv/bin/activate" ]; then
     echo
     echo "# JoinMarket is not yet installed - proceeding now"
     echo
@@ -274,10 +297,10 @@ if [ "$install" = "install" ]; then
     errorOnInstall $?
     echo "# Check for optional dependencies: matplotlib and scipy"
     activateJMvenv
-    if [ "$(pip list | grep -c matplotlib)" -eq 0 ];then
+    if [ "$(pip list | grep -c matplotlib)" -eq 0 ]; then
       pip install matplotlib
     fi
-    if [ "$(pip list | grep -c scipy)" -eq 0 ];then
+    if [ "$(pip list | grep -c scipy)" -eq 0 ]; then
       # https://stackoverflow.com/questions/7496547/does-python-scipy-need-blas
       sudo apt-get install -y gfortran libopenblas-dev liblapack-dev
       # fix 'No space left on device' with 2GB RAM
