@@ -24,7 +24,7 @@ function downloadBitcoinCore() {
   # receive signer key
   if ! gpg -k | grep "${PGPpubkey}"; then
     if ! gpg --keyserver hkp://keyserver.ubuntu.com --recv-key "${PGPpubkey}"; then
-      echo "# !!! FAIL !!! Couldn't download ${PGPname}'s PGP pubkey"
+      echo "# FAIL - Couldn't download ${PGPname}'s PGP pubkey"
       exit 1
     fi
   fi
@@ -44,7 +44,7 @@ function downloadBitcoinCore() {
   echo "correctKey(${correctKey})"
   if [ ${correctKey} -lt 1 ] || [ ${goodSignature} -lt 1 ]; then
     echo
-    echo "# !!! BUILD FAILED --> the PGP verification failed / signature(${goodSignature}) verify(${correctKey})"
+    echo "# BUILD FAILED --> the PGP verification failed / signature(${goodSignature}) verify(${correctKey})"
     echo "# Removing the conflicting files"
     echo "# This is normal after an update - try to choose the option / run the script again."
     sudo rm -f SHA256SUMS
@@ -75,10 +75,10 @@ function downloadBitcoinCore() {
   # download resources
   binaryName="bitcoin-${bitcoinVersion}-${bitcoinOSversion}.tar.gz"
   if [ ! -f "./${binaryName}" ]; then
-     sudo -u joinmarket wget --progress=bar:force https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/${binaryName}
+    sudo -u joinmarket wget --progress=bar:force https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/${binaryName}
   fi
   if [ ! -f "./${binaryName}" ]; then
-    echo "!!! FAIL !!! Could not download the BITCOIN BINARY"
+    echo "# FAIL - Could not download the BITCOIN BINARY"
     exit 1
   else
     # check binary checksum test
@@ -89,7 +89,7 @@ function downloadBitcoinCore() {
     echo "Valid SHA256 checksum should be: ${bitcoinSHA256}"
     echo "Downloaded binary SHA256 checksum: ${binaryChecksum}"
     if [ "${binaryChecksum}" != "${bitcoinSHA256}" ]; then
-      echo "!!! FAIL !!! Downloaded BITCOIN BINARY not matching SHA256 checksum: ${bitcoinSHA256}"
+      echo "# FAIL - Downloaded BITCOIN BINARY does not match SHA256 checksum: ${bitcoinSHA256}"
       rm -v ./${binaryName}
       exit 1
     else
@@ -117,22 +117,22 @@ function installBitcoinCore() {
     cd /home/joinmarket/download/bitcoin-${bitcoinVersion}/bin/ || exit 1
     sudo install -m 0755 -o root -g root -t /home/joinmarket/bitcoin ./*
 
-    if [ "$(grep -c "/home/joinmarket/bitcoin" < /home/joinmarket/.profile)" -eq 0 ];then
+    if [ "$(grep -c "/home/joinmarket/bitcoin" </home/joinmarket/.profile)" -eq 0 ]; then
       echo "# Add /home/joinmarket/bitcoin to the local PATH"
       echo "PATH=/home/joinmarket/bitcoin:$PATH" | sudo tee -a /home/joinmarket/.profile
     fi
     installed=$(/home/joinmarket/bitcoin/bitcoind --version | grep -c "Bitcoin Core version")
     if [ ${installed} -lt 1 ]; then
       echo
-      echo "!!! BUILD FAILED --> Was not able to install Bitcoin Core"
+      echo "# BUILD FAILED --> Was not able to install Bitcoin Core"
       exit 1
     fi
 
     # bitcoin.conf
     if [ ! -f /home/joinmarket/.bitcoin/bitcoin.conf ]; then
       mkdir -p /home/joinmarket/.bitcoin
-      randomRPCpass=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c8)
-      cat > /home/joinmarket/.bitcoin/bitcoin.conf <<EOF
+      randomRPCpass=$(tr </dev/urandom -dc _A-Z-a-z-0-9 | head -c8)
+      cat >/home/joinmarket/.bitcoin/bitcoin.conf <<EOF
 # bitcoind configuration for signet
 
 # Connection settings
@@ -204,8 +204,8 @@ signet.addnode=s7fcvn5rblem7tiquhhr7acjdhu7wsawcph7ck44uxyd6sismumemcyd.onion:38
 signet.addnode=6megrst422lxzsqvshkqkg6z2zhunywhyrhy3ltezaeyfspfyjdzr3qd.onion:38333
 signet.addnode=jahtu4veqnvjldtbyxjiibdrltqiiighauai7hmvknwxhptsb4xat4qd.onion:38333
 signet.addnode=f4kwoin7kk5a5kqpni7yqe25z66ckqu6bv37sqeluon24yne5rodzkqd.onion:38333
-signet.addnode=nsgyo7begau4yecc46ljfecaykyzszcseapxmtu6adrfagfrrzrlngyd.onion:38333"|\
-      sudo tee -a /home/joinmarket/.bitcoin/bitcoin.conf
+signet.addnode=nsgyo7begau4yecc46ljfecaykyzszcseapxmtu6adrfagfrrzrlngyd.onion:38333" |
+        sudo tee -a /home/joinmarket/.bitcoin/bitcoin.conf
     fi
 
     # add to path
@@ -263,14 +263,14 @@ setJMconfigToSignet() {
   echo "# Set signet directory nodes"
   # comment mainnet
   sed -i \
-"s/^directory_nodes = 3kxw6lf5vf6y26emzwgibzhrzhmhqiw6ekrek3nqfjjmhwznb2moonad.onion:5222,jmdirjmioywe2s5jad7ts6kgcqg66rj6wujj6q77n6wbdrgocqwexzid.onion:5222,bqlpq6ak24mwvuixixitift4yu42nxchlilrcqwk2ugn45tdclg42qid.onion:5222/\
+    "s/^directory_nodes = 3kxw6lf5vf6y26emzwgibzhrzhmhqiw6ekrek3nqfjjmhwznb2moonad.onion:5222,jmdirjmioywe2s5jad7ts6kgcqg66rj6wujj6q77n6wbdrgocqwexzid.onion:5222,bqlpq6ak24mwvuixixitift4yu42nxchlilrcqwk2ugn45tdclg42qid.onion:5222/\
 #directory_nodes = 3kxw6lf5vf6y26emzwgibzhrzhmhqiw6ekrek3nqfjjmhwznb2moonad.onion:5222,jmdirjmioywe2s5jad7ts6kgcqg66rj6wujj6q77n6wbdrgocqwexzid.onion:5222,bqlpq6ak24mwvuixixitift4yu42nxchlilrcqwk2ugn45tdclg42qid.onion:5222/g" \
-   $JMcfgPath
+    $JMcfgPath
   # uncomment signet
   sed -i \
-"s/^# directory_nodes = rr6f6qtleiiwic45bby4zwmiwjrj3jsbmcvutwpqxjziaydjydkk5iad.onion:5222,k74oyetjqgcamsyhlym2vgbjtvhcrbxr4iowd4nv4zk5sehw4v665jad.onion:5222,y2ruswmdbsfl4hhwwiqz4m3sx6si5fr6l3pf62d4pms2b53wmagq3eqd.onion:5222/\
+    "s/^# directory_nodes = rr6f6qtleiiwic45bby4zwmiwjrj3jsbmcvutwpqxjziaydjydkk5iad.onion:5222,k74oyetjqgcamsyhlym2vgbjtvhcrbxr4iowd4nv4zk5sehw4v665jad.onion:5222,y2ruswmdbsfl4hhwwiqz4m3sx6si5fr6l3pf62d4pms2b53wmagq3eqd.onion:5222/\
 directory_nodes = rr6f6qtleiiwic45bby4zwmiwjrj3jsbmcvutwpqxjziaydjydkk5iad.onion:5222,k74oyetjqgcamsyhlym2vgbjtvhcrbxr4iowd4nv4zk5sehw4v665jad.onion:5222,y2ruswmdbsfl4hhwwiqz4m3sx6si5fr6l3pf62d4pms2b53wmagq3eqd.onion:5222/g" \
-   $JMcfgPath
+    $JMcfgPath
 
   # set joinin.conf value
   /home/joinmarket/set.value.sh set network signet ${joininConfPath}
@@ -290,13 +290,13 @@ function showBitcoinLogs() {
   elif [ "${network}" = "signet" ]; then
     bitcoinUser="joinmarket"
   fi
-  if [ "${network}" = mainnet ];then
+  if [ "${network}" = mainnet ]; then
     logFilePath="/home/${bitcoinUser}/.bitcoin/debug.log"
-  elif [ "${network}" = signet ];then
+  elif [ "${network}" = signet ]; then
     logFilePath="/home/${bitcoinUser}/.bitcoin/signet/debug.log"
   fi
   dialog \
-    --title "Monitoring the ${network} logs"  \
+    --title "Monitoring the ${network} logs" \
     --msgbox "
 Will tail the bitcoin ${network} logfile from:
 
@@ -309,11 +309,11 @@ Press CTRL+C to exit and type 'menu' for the GUI." 10 54
 # getRPC - reads the RPC settings from the joinmarket.cfg
 function getRPC {
   echo "# Reading the bitcoind RPC settings from the joinmarket.cfg"
-  rpc_user="$(awk '/^rpc_user / {print $3}' < $JMcfgPath)"
-  rpc_pass="$(awk '/^rpc_password / {print $3}' < $JMcfgPath)"
-  rpc_host="$(awk '/^rpc_host / {print $3}' < $JMcfgPath)"
-  rpc_port="$(awk '/^rpc_port / {print $3}' < $JMcfgPath)"
-  rpc_wallet="$(awk '/^rpc_wallet_file / {print $3}' < $JMcfgPath)"
+  rpc_user="$(awk '/^rpc_user / {print $3}' <$JMcfgPath)"
+  rpc_pass="$(awk '/^rpc_password / {print $3}' <$JMcfgPath)"
+  rpc_host="$(awk '/^rpc_host / {print $3}' <$JMcfgPath)"
+  rpc_port="$(awk '/^rpc_port / {print $3}' <$JMcfgPath)"
+  rpc_wallet="$(awk '/^rpc_wallet_file / {print $3}' <$JMcfgPath)"
   if [ ${#1} -gt 0 ] && [ $1 = print ]; then
     echo "$rpc_user $rpc_pass $rpc_host $rpc_port $rpc_wallet"
   fi
@@ -322,7 +322,7 @@ function getRPC {
 # checkRPCwallet <wallet>
 function checkRPCwallet {
   getRPC
-  if [ $# -eq 0 ];then
+  if [ $# -eq 0 ]; then
     rpc_wallet=$rpc_wallet
   else
     rpc_wallet=$1
@@ -341,8 +341,8 @@ function checkRPCwallet {
     fi
     #TODO rewrite customRPC to support multiple params
     $tor curl -sS --data-binary \
-    '{"jsonrpc": "1.0", "id":"# Create the bitcoind wallet", "method": "createwallet", "params": {"wallet_name":"'"$rpc_wallet"'","descriptors":false}}' \
-     http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/wallet/$rpc_wallet  | jq .
+      '{"jsonrpc": "1.0", "id":"# Create the bitcoind wallet", "method": "createwallet", "params": {"wallet_name":"'"$rpc_wallet"'","descriptors":false}}' \
+      http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/wallet/$rpc_wallet | jq .
     echo
     walletFound=$(customRPC "# Check wallet" "listwallets" 2>$connectionOutput | grep -c "$rpc_wallet")
     if [ $walletFound -eq 0 ]; then
@@ -360,23 +360,23 @@ function checkRPCwallet {
 # $1=id $2=method $3=string params $4=print
 function customRPC {
   getRPC
-  if [ ${#4} -eq 0 ];then
+  if [ ${#4} -eq 0 ]; then
     print="no"
   else
     print=$4
   fi
-if [ $print = print ];then
-  echo print
-fi
+  if [ $print = print ]; then
+    echo print
+  fi
   tor=""
   if [ $(echo $rpc_host | grep -c .onion) -gt 0 ]; then
     tor="torsocks"
     echo "# Connecting over Tor..."
     echo
   fi
-  is_int () { test "$@" -eq "$@" 2> /dev/null; }
-  if is_int "$3" ||[ ${#3} -eq 0 ]; then
-    if [ $print = print ];then
+  is_int() { test "$@" -eq "$@" 2>/dev/null; }
+  if is_int "$3" || [ ${#3} -eq 0 ]; then
+    if [ $print = print ]; then
       echo "# Using the RPC command:"
       echo "$tor curl -sS --data-binary\
  '{\"jsonrpc\": \"1.0\", \"id\":\"$1\", \"method\": \"$2\", \"params\": [$3] }'\
@@ -384,10 +384,10 @@ fi
       echo
     fi
     $tor curl -sS --data-binary \
-    '{"jsonrpc": "1.0", "id":"'"$1"'", "method": "'"$2"'", "params": ['"$3"'] }' \
-    http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/wallet/$rpc_wallet  | jq .
+      '{"jsonrpc": "1.0", "id":"'"$1"'", "method": "'"$2"'", "params": ['"$3"'] }' \
+      http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/wallet/$rpc_wallet | jq .
   else
-    if [ $print = print ];then
+    if [ $print = print ]; then
       echo "# Using the RPC command:"
       echo "$tor curl -sS --data-binary\
  '{\"jsonrpc\": \"1.0\", \"id\":\"$1\", \"method\": \"$2\", \"params\": [\"$3\"] }'\
@@ -395,8 +395,8 @@ fi
       echo
     fi
     $tor curl -sS --data-binary \
-    '{"jsonrpc": "1.0", "id":"'"$1"'", "method": "'"$2"'", "params": ["'"$3"'"] }' \
-    http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/wallet/$rpc_wallet | jq .
+      '{"jsonrpc": "1.0", "id":"'"$1"'", "method": "'"$2"'", "params": ["'"$3"'"] }' \
+      http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/wallet/$rpc_wallet | jq .
   fi
 }
 
@@ -408,28 +408,28 @@ function connectLocalNode() {
   fi
   echo "# Setting connection to the local Bitcoin node on ${network}"
   rpc_host="127.0.0.1"
-  if [ "${network}" = mainnet ];then
+  if [ "${network}" = mainnet ]; then
     rpc_port="8332"
-  elif [ "${network}" = signet ];then
+  elif [ "${network}" = signet ]; then
     rpc_port="38332"
-  elif [ "${network}" = testnet ];then
+  elif [ "${network}" = testnet ]; then
     rpc_port="18332"
   fi
   rpc_wallet="wallet.dat"
-  if [ $runningEnv = raspiblitz ];then
+  if [ $runningEnv = raspiblitz ]; then
     rpc_user=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
-    rpc_pass=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf|grep rpcpassword|cut -c 13-)
-  elif [ $runningEnv = mynode ];then
+    rpc_pass=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+  elif [ $runningEnv = mynode ]; then
     rpc_user=mynode
     rpc_pass=$(sudo cat /mnt/hdd/mynode/settings/.btcrpcpw)
-  elif [ $runningEnv = standalone ];then
-    rpc_user=$(sudo cat /home/bitcoin/.bitcoin/bitcoin.conf|grep rpcuser|cut -c 9-)
-    rpc_pass=$(sudo cat /home/bitcoin/.bitcoin/bitcoin.conf|grep rpcpassword|cut -c 13-)
+  elif [ $runningEnv = standalone ]; then
+    rpc_user=$(sudo cat /home/bitcoin/.bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
+    rpc_pass=$(sudo cat /home/bitcoin/.bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
   fi
   # set.bitcoinrpc.py
   python /home/joinmarket/set.bitcoinrpc.py --network=${network} \
-  --rpc_user="$rpc_user" --rpc_pass="$rpc_pass" --rpc_host=$rpc_host \
-  --rpc_port=$rpc_port --rpc_wallet=$rpc_wallet
+    --rpc_user="$rpc_user" --rpc_pass="$rpc_pass" --rpc_host=$rpc_host \
+    --rpc_port=$rpc_port --rpc_wallet=$rpc_wallet
 
   # set joinin.conf value
   /home/joinmarket/set.value.sh set network ${network} ${joininConfPath}

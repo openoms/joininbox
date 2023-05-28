@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # source aliases from /home/joinmarket/_aliases.sh
-if [ -f /home/joinmarket/_aliases.sh ];then
+if [ -f /home/joinmarket/_aliases.sh ]; then
   source /home/joinmarket/_aliases.sh
 fi
 
@@ -14,7 +14,7 @@ function menu() {
 }
 
 # command: newnym
-function newnym(){
+function newnym() {
   if [ "$(cat /home/joinmarket/joinin.conf 2>/dev/null | grep -c "runBehindTor=on")" -eq 1 ]; then
     echo "# Changing Tor circuits..."
     echo "# Savind old ID..."
@@ -26,11 +26,11 @@ function newnym(){
     newID=$(curl --connect-timeout 15 --socks5-hostname 127.0.0.1:9050 ifconfig.me 2>/dev/null)
     echo
     if [ ${oldID} = ${newID} ]; then
-      echo "# !!! FAIL: Identity did not change. Read error message above."
+      echo "# FAIL: Identity did not change. Read error message above."
       echo "# Exiting for precaution."
       exit 0
     else
-      echo "# !!! SUCCESS"
+      echo "# SUCCESS"
       echo "# Old id: " ${oldID}
       echo "# New id: " ${newID}
     fi
@@ -41,7 +41,7 @@ function newnym(){
 
 # command: torthistx
 function torthistx() {
-  if [ "$(cat /home/joinmarket/joinin.conf 2>/dev/null | grep -c "runBehindTor=on")" -eq 1 ];then
+  if [ "$(cat /home/joinmarket/joinin.conf 2>/dev/null | grep -c "runBehindTor=on")" -eq 1 ]; then
     echo
     if [ "$(cat /home/joinmarket/joinin.conf 2>/dev/null | grep -c "network=signet")" -eq 1 ]; then
       newnym

@@ -78,7 +78,7 @@ if [ $(cat /etc/os-release 2>/dev/null | grep -c 'Debian') -gt 0 ]; then
 elif [ $(cat /etc/os-release 2>/dev/null | grep -c 'Ubuntu') -gt 0 ]; then
   baseimage="ubuntu"
 else
-  echo "\n!!! FAIL: Base Image cannot be detected or is not supported."
+  echo "\n# FAIL: Base Image cannot be detected or is not supported."
   cat /etc/os-release 2>/dev/null
   uname -a
   exit 1
@@ -322,8 +322,7 @@ else
     update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1
     echo "# python calls python3.11"
   else
-    echo "!!! FAIL !!!"
-    echo "There is no tested version of python present"
+    echo "# FAIL- there is no tested version of python present"
     exit 1
   fi
 fi

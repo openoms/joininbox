@@ -192,7 +192,7 @@ function installJoinMarket() {
     fingerprint=$(sudo -u ${user} gpg "pgp_keys.asc" 2>/dev/null | grep "${PGPcheck}" -c)
     if [ ${fingerprint} -lt 1 ]; then
       echo
-      echo "# !!! WARNING --> the PGP fingerprint is not as expected for ${PGPsigner}"
+      echo "# WARNING --> the PGP fingerprint is not as expected for ${PGPsigner}"
       echo "# Should contain PGP: ${PGPcheck}"
       echo "# PRESS ENTER to TAKE THE RISK if you think all is OK"
       read key
@@ -207,7 +207,7 @@ function installJoinMarket() {
     echo "# correctKey(${correctKey})"
     if [ ${correctKey} -lt 1 ] || [ ${goodSignature} -lt 1 ]; then
       echo
-      echo "# !!! BUILD FAILED --> PGP verification not OK / signature(${goodSignature}) verify(${correctKey})"
+      echo "# BUILD FAILED --> PGP verification not OK / signature(${goodSignature}) verify(${correctKey})"
       exit 1
     else
       echo
