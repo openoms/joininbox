@@ -149,7 +149,7 @@ function installBitcoinCoreStandalone() {
     echo "# Add /home/bitcoin/bitcoin to global PATH"
     echo "PATH=/home/bitcoin/bitcoin:$PATH" | sudo tee -a /etc/profile
   fi
-  if ! /home/bitcoin/bitcoin/bitcoind --version | grep -c "Bitcoin Core version"; then
+  if ! sudo -u bitcoin /home/bitcoin/bitcoin/bitcoind --version | grep "Bitcoin Core version"; then
     echo
     echo "# BUILD FAILED --> Was not able to install Bitcoin Core)"
     exit 1
