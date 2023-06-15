@@ -34,7 +34,7 @@ function makeEncryptedFolder() {
 
 function downloadSnapShot() {
 
-  if [ $#1 -eq 0 ] || [ "$1" = "pruned.host4coins.net" ]; then
+  if [ $# -eq 0 ] || [ "$1" = "pruned.host4coins.net" ]; then
     hashFileName="sha256sum.txt.asc"
     downloadDomain="pruned.host4coins.net"
     pgpKeyLink="https://keys.openpgp.org/vks/v1/by-fingerprint/440C15769D19E6908CC1DDB23070DE9772DB8A48"
@@ -57,8 +57,8 @@ function downloadSnapShot() {
   sudo -u joinmarket mkdir /home/joinmarket/download 2>/dev/null
   cd /home/joinmarket/download || exit 1
 
-  sudo rm $hashFileName
-  wget https://$downloadDomain/$hashFileName || exit 1
+  sudo rm $hashFileName 2>/dev/null
+  wget --prefer-family=ipv4 -4 https://$downloadDomain/$hashFileName || exit 1
   downloadFileName=$(grep .zip <$hashFileName | awk '{print $2}')
   downloadLink="https://$downloadDomain/$downloadFileName"
 
@@ -79,7 +79,7 @@ function downloadSnapShot() {
     echo
     echo "# Downloading $downloadLink ..."
     echo
-    wget $downloadLink
+    wget --prefer-family=ipv4 $downloadLink
   fi
 
   echo "# Verifying the hash (takes time) ..."

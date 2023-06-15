@@ -187,7 +187,7 @@ function installJoinMarket() {
   else
     sudo -u ${user} git reset --hard $testedJMversion
 
-    sudo -u ${user} wget -O "pgp_keys.asc" ${PGPpkeys}
+    sudo -u ${user} wget --prefer-family=ipv4 -O "pgp_keys.asc" ${PGPpkeys}
     sudo -u ${user} gpg --import --import-options show-only ./pgp_keys.asc
     fingerprint=$(sudo -u ${user} gpg "pgp_keys.asc" 2>/dev/null | grep "${PGPcheck}" -c)
     if [ ${fingerprint} -lt 1 ]; then

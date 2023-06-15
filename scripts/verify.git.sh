@@ -30,7 +30,7 @@ PGPsigner="$1"
 PGPpubkeyLink="$2"
 PGPpubkeyFingerprint="$3"
 
-wget -O /dev/shm/pgp_keys_${PGPsigner}.asc "${PGPpubkeyLink}"
+wget --prefer-family=ipv4 -O /dev/shm/pgp_keys_${PGPsigner}.asc "${PGPpubkeyLink}"
 gpg --import --import-options show-only /dev/shm/pgp_keys_${PGPsigner}.asc
 fingerprint=$(gpg --show-keys /dev/shm/pgp_keys_${PGPsigner}.asc 2>/dev/null | grep "${PGPpubkeyFingerprint}" -c)
 if [ "${fingerprint}" -lt 1 ]; then
