@@ -89,7 +89,10 @@ function downloadSnapShot() {
   fi
 
   echo "# Verifying the hash (takes time) ..."
-  if ! sha256sum -c $hashFileName --ignore-missing; then
+  if sha256sum -c $hashFileName --ignore-missing; then
+    echo
+    echo "# The PGP signature and the hash of the downloaded snapshot is correct"
+  else
     echo
     echo "# Download failed --> the PGP signature did not match / signature(${goodSignature})"
     echo "# Press ENTER to remove the invalid files or CTRL+C to abort."
@@ -98,9 +101,6 @@ function downloadSnapShot() {
     rm -f $hashFileName
     rm -f $downloadFileName
     exit 1
-  else
-    echo
-    echo "# The PGP signature and the hash of the downloaded snapshot is correct"
   fi
 
   echo "# Extracting to /home/store/app-data/.bitcoin ..."
