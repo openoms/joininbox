@@ -4,7 +4,7 @@
 
 ### Download the repo
 ```
-git clone github.com/openoms/joininbox
+git clone https://github.com/openoms/joininbox
 cd joininbox
 ```
 

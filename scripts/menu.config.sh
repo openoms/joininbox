@@ -25,7 +25,7 @@ if [ "$runningEnv" = "standalone" ] && [ "$setupStep" -lt 100 ]; then
 
   # BASIC MENU INFO
   HEIGHT=16
-  WIDTH=64
+  WIDTH=68
   CHOICE_HEIGHT=24
   TITLE="Startup options"
   MENU="
@@ -38,7 +38,7 @@ if [ "$runningEnv" = "standalone" ] && [ "$setupStep" -lt 100 ]; then
   OPTIONS+=(
       CONNECT "Connect to a remote bitcoin node on mainnet"
       SIGNET  "Start on signet with a local Bitcoin Core"
-      PRUNED  "Start a pruned node from prunednode.today")
+      PRUNED  "Start a pruned node from pruned.host4coins.net/blocks")
   if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
     OPTIONS+=(
       LOCAL   "Connect to the local Bitcoin Core on mainnet")
@@ -54,7 +54,7 @@ if [ "$runningEnv" = "standalone" ] && [ "$setupStep" -lt 100 ]; then
 else
   # BASIC MENU INFO
   HEIGHT=12
-  WIDTH=64
+  WIDTH=68
   CHOICE_HEIGHT=20
   TITLE="Configuration options"
   MENU=""
@@ -70,7 +70,7 @@ else
       SIGNET   "Switch to signet with a local Bitcoin Core")
   if [ "${runningEnv}" = standalone ]; then
     OPTIONS+=(
-      PRUNED   "Start a pruned node locally from prunednode.today")
+      PRUNED   "Start a pruned node from pruned.host4coins.net/blocks")
     HEIGHT=$((HEIGHT+1))
     CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
   fi

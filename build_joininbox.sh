@@ -78,7 +78,7 @@ if [ $(cat /etc/os-release 2>/dev/null | grep -c 'Debian') -gt 0 ]; then
 elif [ $(cat /etc/os-release 2>/dev/null | grep -c 'Ubuntu') -gt 0 ]; then
   baseimage="ubuntu"
 else
-  echo "\n!!! FAIL: Base Image cannot be detected or is not supported."
+  echo "\n# FAIL: Base Image cannot be detected or is not supported."
   cat /etc/os-release 2>/dev/null
   uname -a
   exit 1
@@ -274,9 +274,9 @@ if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
     # dependencies
     apt-get install software-properties-common build-essential libnss3-dev zlib1g-dev libgdbm-dev libncurses5-dev libssl-dev libffi-dev libreadline-dev libsqlite3-dev libbz2-dev -y
     # download
-    wget --progress=bar:force https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz
+    wget --prefer-family=ipv4 --progress=bar:force https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz
     # optional signature for verification
-    wget --progress=bar:force https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz.asc
+    wget --prefer-family=ipv4 --progress=bar:force https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz.asc
     # get PGP pubkey of Ned Deily (Python release signing key) <nad@python.org>
     gpg --recv-key 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
     # check for: Good signature from "Pablo Galindo Salgado <pablogsal@gmail.com>"
@@ -322,8 +322,7 @@ else
     update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1
     echo "# python calls python3.11"
   else
-    echo "!!! FAIL !!!"
-    echo "There is no tested version of python present"
+    echo "# FAIL- there is no tested version of python present"
     exit 1
   fi
 fi
@@ -463,7 +462,7 @@ if [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]; 
   echo "torKeyAvailable=${torKeyAvailable}"
   if [ ${torKeyAvailable} -eq 0 ]; then
     # https://support.torproject.org/apt/tor-deb-repo/
-    wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import
+    wget --prefer-family=ipv4 -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import
     gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -
     echo "OK"
   else

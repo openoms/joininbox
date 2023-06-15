@@ -55,9 +55,9 @@ if [ "$1" = "1" ] || [ "$1" = "on" ]; then
     # download
     mkdir download
     cd download || exit 1
-    wget -O node-$VERSION-$DISTRO.tar.xz https://nodejs.org/dist/$VERSION/node-$VERSION-$DISTRO.tar.xz
+    wget --prefer-family=ipv4 -O node-$VERSION-$DISTRO.tar.xz https://nodejs.org/dist/$VERSION/node-$VERSION-$DISTRO.tar.xz
     # checksum
-    wget -O SHASUMS256.txt https://nodejs.org/dist/$VERSION/SHASUMS256.txt
+    wget --prefer-family=ipv4 -O SHASUMS256.txt https://nodejs.org/dist/$VERSION/SHASUMS256.txt
     if ! sha256sum -c SHASUMS256.txt --ignore-missing; then
       echo "FAIL: The checksum of node-$VERSION-$DISTRO.tar.xz is not found in the SHASUMS256.txt"
       rm -f node-$VERSION-$DISTRO.tar.xz*
