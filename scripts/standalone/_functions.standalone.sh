@@ -36,7 +36,7 @@ function downloadSnapShot() {
 
   if [ $# -eq 0 ] || [ "$1" = "pruned.host4coins.net" ]; then
     hashFileName="sha256sum.txt.asc"
-    downloadDomain="pruned.host4coins.net"
+    downloadDomain="pruned.host4coins.net/blocks"
     pgpKeyLink="https://keys.openpgp.org/vks/v1/by-fingerprint/440C15769D19E6908CC1DDB23070DE9772DB8A48"
   elif [ "$1" = "prunednode.today" ]; then
     hashFileName="latest.signed.txt"
@@ -110,7 +110,7 @@ function downloadSnapShot() {
   addUserStore
   if [ ! -d /home/store/app-data/.bitcoin ]; then
     sudo mkdir -p /home/store/app-data/.bitcoin
-  fi 
+  fi
   echo "# Making sure user: bitcoin exists"
   sudo adduser --disabled-password --gecos "" bitcoin
   sudo chown -R bitcoin:bitcoin /home/store/app-data/.bitcoin
