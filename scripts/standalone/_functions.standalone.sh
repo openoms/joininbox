@@ -60,7 +60,7 @@ function downloadSnapShot() {
 
   sudo rm $hashFileName 2>/dev/null
   echo "# Downloading $hashFileName ..."
-  wget --prefer-family=ipv4 https://$downloadDomain/$hashFileName || exit 1
+  wget --prefer-family=ipv4 -O $hashFileName https://$downloadDomain/$hashFileName || exit 1
 
   downloadFileName=$(grep .zip <$hashFileName | awk '{print $2}')
   downloadLink="https://$downloadDomain/$downloadFileName"
@@ -70,7 +70,7 @@ function downloadSnapShot() {
 
   echo "# Verifying the signature of the hash ..."
   if [ ${#hashFileSigName} -gt 0 ]; then
-    wget --prefer-family=ipv4 https://$downloadDomain/$hashFileName || exit 1
+    wget --prefer-family=ipv4 -O $hashFileSigName https://$downloadDomain/$hashFileSigName || exit 1
   fi
   if ! gpg --verify $hashFileSigName $hashFileName; then
     echo "# Invalid signature on $hashFileName"
@@ -85,7 +85,7 @@ function downloadSnapShot() {
     echo
     echo "# Downloading $downloadLink ..."
     echo
-    wget --prefer-family=ipv4 $downloadLink
+    wget --prefer-family=ipv4 -O $downloadFileName $downloadLink || exit 1
   fi
 
   echo "# Verifying the hash (takes time) ..."
@@ -127,7 +127,12 @@ function downloadSnapShot() {
     sudo -u bitcoin mv /home/bitcoin/.bitcoin/bitcoin.conf \
       /home/bitcoin/.bitcoin/bitcoin.conf.backup
   fi
-  echo "# Check unzip"
+
+  echo "# Clean old blocks and chainstate"
+  sudo rm -rf /home/store/app-data/.bitcoin/blocks
+  sudo rm -rf /home/store/app-data/.bitcoin/chainstate
+
+  echo "# Unzip ..."
   sudo apt-get install -y unzip
   sudo -u bitcoin unzip -o $downloadFileName -d /home/store/app-data/.bitcoin
   if [ -f /home/bitcoin/.bitcoin/bitcoin.conf.backup ]; then
