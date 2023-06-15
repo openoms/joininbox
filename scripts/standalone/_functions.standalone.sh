@@ -246,7 +246,7 @@ WantedBy=multi-user.target
 
   sudo systemctl start bitcoind
   echo
-  echo "# Installed $(/home/bitcoin/bitcoin/bitcoind --version | grep version)"
+  echo "# Installed $(sudo -u bitcoin /home/bitcoin/bitcoin/bitcoind --version | grep version)"
   echo
   echo "# Monitor the bitcoind with: sudo tail -f /home/bitcoin/.bitcoin/mainnet/debug.log"
   echo
