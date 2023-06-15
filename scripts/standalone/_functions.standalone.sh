@@ -35,7 +35,8 @@ function makeEncryptedFolder() {
 function downloadSnapShot() {
 
   if [ $# -eq 0 ] || [ "$1" = "pruned.host4coins.net" ]; then
-    hashFileName="sha256sum.txt.asc"
+    hashFileName="sha256sum.txt"
+    hashFileSigName="sha256sum.txt.asc"
     downloadDomain="pruned.host4coins.net/blocks"
     pgpKeyLink="https://keys.openpgp.org/vks/v1/by-fingerprint/440C15769D19E6908CC1DDB23070DE9772DB8A48"
   elif [ "$1" = "prunednode.today" ]; then
@@ -58,7 +59,9 @@ function downloadSnapShot() {
   cd /home/joinmarket/download || exit 1
 
   sudo rm $hashFileName 2>/dev/null
-  wget --prefer-family=ipv4 -4 https://$downloadDomain/$hashFileName || exit 1
+  echo "# Downloading $hashFileName ..."
+  wget --prefer-family=ipv4 https://$downloadDomain/$hashFileName || exit 1
+
   downloadFileName=$(grep .zip <$hashFileName | awk '{print $2}')
   downloadLink="https://$downloadDomain/$downloadFileName"
 
@@ -66,7 +69,10 @@ function downloadSnapShot() {
   curl -sS "$pgpKeyLink" | gpg --import || exit 1
 
   echo "# Verifying the signature of the hash ..."
-  if ! gpg --verify $hashFileName; then
+  if [ ${#hashFileSigName} -gt 0 ]; then
+    wget --prefer-family=ipv4 https://$downloadDomain/$hashFileName || exit 1
+  fi
+  if ! gpg --verify $hashFileSigName $hashFileName; then
     echo "# Invalid signature on $hashFileName"
     echo "# Press ENTER to remove the invalid file or CTRL+C to abort."
     read key
