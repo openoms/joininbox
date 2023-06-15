@@ -9,11 +9,12 @@ joininConfPath="/home/joinmarket/joinin.conf"
 function downloadBitcoinCore() {
   # set version
   # https://bitcoincore.org/en/download/
-  bitcoinVersion="22.0"
+  bitcoinVersion="25.0"
 
-  # https://github.com/laanwj
-  PGPname="Wladimir J. van der Laan"
-  PGPpubkey="74810B012346C9A6"
+  if bitcoin-cli --version | grep $bitcoinVersion >/dev/null; then
+    echo "# Bitcoin Core $bitcoinVersion is already installed"
+    return 0
+  fi
 
   echo
   echo "# *** PREPARING BITCOIN ***"
@@ -21,41 +22,25 @@ function downloadBitcoinCore() {
   sudo -u joinmarket mkdir /home/joinmarket/download 2>/dev/null
   cd /home/joinmarket/download || exit 1
 
-  # receive signer key
-  if ! gpg -k | grep "${PGPpubkey}"; then
-    if ! gpg --keyserver hkp://keyserver.ubuntu.com --recv-key "${PGPpubkey}"; then
-      echo "# FAIL - Couldn't download ${PGPname}'s PGP pubkey"
-      exit 1
-    fi
-  fi
+  echo "# Receive signer keys"
+  curl -s "https://api.github.com/repos/bitcoin-core/guix.sigs/contents/builder-keys" |
+    jq -r '.[].download_url' | while read url; do curl -s "$url" | gpg --import; done
 
   # download signed binary sha256 hash sum file
-  if [ ! -f SHA256SUMS ]; then
-    sudo -u joinmarket wget --prefer-family=ipv4 --progress=bar:force https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS
-  fi
-  # download signed binary sha256 hash sum file and check
-  if [ ! -f SHA256SUMS.asc ]; then
-    sudo -u joinmarket wget --prefer-family=ipv4 --progress=bar:force https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS.asc
-  fi
-  verifyResult=$(gpg --verify SHA256SUMS.asc 2>&1)
-  goodSignature=$(echo ${verifyResult} | grep 'Good signature' -c)
-  echo "goodSignature(${goodSignature})"
-  correctKey=$(echo ${verifyResult} | tr -d " \t\n\r" | grep "${PGPpubkey}" -c)
-  echo "correctKey(${correctKey})"
-  if [ ${correctKey} -lt 1 ] || [ ${goodSignature} -lt 1 ]; then
-    echo
-    echo "# BUILD FAILED --> the PGP verification failed / signature(${goodSignature}) verify(${correctKey})"
-    echo "# Removing the conflicting files"
-    echo "# This is normal after an update - try to choose the option / run the script again."
-    sudo rm -f SHA256SUMS
-    sudo rm -f SHA256SUMS.asc
-    exit 1
-  else
+  sudo -u joinmarket wget --prefer-family=ipv4 --progress=bar:force -O SHA256SUMS https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS
+  # download the signed binary sha256 hash sum file and check
+  sudo -u joinmarket wget --prefer-family=ipv4 --progress=bar:force -O SHA256SUMS.asc https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS.asc
+
+  if gpg --verify SHA256SUMS.asc; then
     echo
     echo "****************************************"
     echo "OK --> BITCOIN MANIFEST IS CORRECT"
     echo "****************************************"
     echo
+  else
+    echo
+    echo "# BUILD FAILED --> the PGP verification failed / signature(${goodSignature}) "
+    exit 1
   fi
 
   # detect CPU architecture & fitting download link
@@ -97,8 +82,6 @@ function downloadBitcoinCore() {
       echo "********************************************"
       echo "OK --> VERIFIED BITCOIN CORE BINARY CHECKSUM"
       echo "********************************************"
-      echo
-      sleep 10
       echo
     fi
     echo
