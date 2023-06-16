@@ -22,6 +22,9 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 
 - [Features](#features)
 - [Required Hardware](#required-hardware)
+  - [A computer running a Debian / Ubuntu Linux flavour.](#a-computer-running-a-debian--ubuntu-linux-flavour)
+  - [RaspberryPi 4 or 3](#raspberrypi-4-or-3)
+  - [VPS eg: host4coins.net](#vps-eg-host4coinsnet)
 - [Set up using an SDcard image](#set-up-using-an-sdcard-image)
 - [Set up JoininBox on Linux](#set-up-joininbox-on-linux)
   - [Tested environments](#tested-environments)
@@ -40,7 +43,7 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 * Connect remotely to a Bitcoin Core node
   * RaspiBlitz over [LAN or Tor](prepare_remote_node.md#raspiblitz)
   * RoninDojo over [LAN or Tor](prepare_remote_node.md#ronindojo)
-* Start a pruned node from https://prunednode.today/
+* Start a pruned node from https://pruned.host4coins.net/blocks
 * JoininBox is part the RaspiBlitz SERVICES
 
 **The addresses, transactions and balances of JoinMarket can be seen in the watch-only wallet of the connected node.**
@@ -48,12 +51,18 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
   * to protect privacy in case of physical access use disk encryption
 
 ## Required Hardware
-* RaspberryPi 4 ([alternatively any other computer running a Debian Linux flavour](#tested-environments))
+### A computer running a Debian / Ubuntu Linux flavour. 
+* See the [tested-environments](#tested-environments).
+### RaspberryPi 4 or 3
 * Power supply (5V 3A and above recommended)
 * Heatsink case
-* 16GB SDcard (minimum) - 32GB to use a pruned node
+* 32 GB Endurence type SDcard
 * [(USB SSD to run a pruned bitcoin node locally)](FAQ.md#usb-ssd-recommendation)
-* [other tested hardware ](#tested-environments)
+### VPS eg: [host4coins.net](https://host4coins.net/)
+Recommended minimum:
+* 1 GB RAM
+* 1 vCPU
+* 32 GB SSD
 
 **JoininBox operates on the minimum viable hardware under the assumption that the seed (and passphrase) of the wallets used is safely backed up and can be used to recover the funds!**
 
@@ -87,7 +96,7 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 * next will be presented with the CONFIG menu to
   * Connect to a remote bitcoin node on mainnet
   * Try JoinMarket on signet
-  * Start a pruned node from [prunednode.today](https://prunednode.today)
+  * Start a pruned node from [pruned.host4coins.net/blocks](https://pruned.host4coins.net/blocks)
   * Edit the joinmarket.cfg manually
   * Update JoininBox or JoinMarket
 
@@ -105,7 +114,7 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 * Latest
   * Debian Bullseye X86_64 desktop ([images and logs available in GitHub actions](https://github.com/openoms/joininbox/actions?query=workflow%3Aamd64-image-build++branch%3Amaster+is%3Asuccess))
   * Raspberry Pi 4 running 64bit Debian Bullseye ([images and logs available in GitHub actions](https://github.com/openoms/joininbox/actions?query=workflow%3Aarm64-rpi-image-build++branch%3Amaster+is%3Asuccess++))
-  * Ubuntu 22.04 X86_64 desktop (virtual machine)
+  * Ubuntu 22.04 Jammy X86_64 desktop (virtual machine)
 * Previous versions tested
   * [Raspberry Pi 4 running 64bit Debian Buster](FAQ.md#build-the-sdcard-image)
   * [Hardkernel Odroid XU4/HC1 running 32bit Armbian Buster](FAQ.md#set-up-armbian-on-the-hardkernel-odroid-xu4)
