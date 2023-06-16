@@ -5,6 +5,8 @@ function addUserStore() {
     echo "# Adding the user: store"
     sudo adduser --disabled-password --gecos "" store
     sudo -u store mkdir /home/store/app-data
+    echo "# Add the joinmarket user to the store group"
+    sudo usermod -aG store joinmarket
   else
     echo "# The folder /home/store/app-data is present already"
   fi
@@ -120,9 +122,11 @@ function downloadSnapShot() {
   echo "# Making sure user: bitcoin exists"
   sudo adduser --disabled-password --gecos "" bitcoin
   sudo chown -R bitcoin:bitcoin /home/store/app-data/.bitcoin
+  echo "# Add the joinmarket user to the bitcoin group"
+  sudo usermod -aG bitcoin joinmarket
   echo "# Make sure bitcoind is not running"
   sudo systemctl stop bitcoind
-  if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ]; then
+  if sudo -u bitcoin ls /home/bitcoin/.bitcoin/bitcoin.conf; then
     echo "# Back up bitcoin.conf"
     sudo -u bitcoin mv /home/bitcoin/.bitcoin/bitcoin.conf \
       /home/bitcoin/.bitcoin/bitcoin.conf.backup
@@ -135,7 +139,7 @@ function downloadSnapShot() {
   echo "# Unzip ..."
   sudo apt-get install -y unzip
   sudo -u bitcoin unzip -o $downloadFileName -d /home/store/app-data/.bitcoin
-  if [ -f /home/bitcoin/.bitcoin/bitcoin.conf.backup ]; then
+  if sudo -u bitcoin ls /home/bitcoin/.bitcoin/bitcoin.conf.backup; then
     echo "# Restore bitcoin.conf"
     sudo -u bitcoin mv -f /home/bitcoin/.bitcoin/bitcoin.conf.backup \
       /home/bitcoin/.bitcoin/bitcoin.conf
@@ -151,6 +155,8 @@ function installBitcoinCoreStandalone() {
   else
     echo "# Adding the user: bitcoin"
     sudo adduser --disabled-password --gecos "" bitcoin
+    echo "# Add the joinmarket user to the bitcoin group"
+    sudo usermod -aG bitcoin joinmarket
     echo "# Installing Bitcoin Core v${bitcoinVersion}"
     sudo -u bitcoin mkdir -p /home/bitcoin/bitcoin
     cd /home/joinmarket/download/bitcoin-${bitcoinVersion}/bin/ || exit 1
@@ -168,7 +174,8 @@ function installBitcoinCoreStandalone() {
 
   # bitcoin.conf
   if [ -f /home/store/app-data/.bitcoin/bitcoin.conf ]; then
-    if [ $(grep -c rpcpassword </home/store/app-data/.bitcoin/bitcoin.conf) -eq 0 ]; then
+    if [ $(sudo -u bitcoin grep -c rpcpassword </home/store/app-data/.bitcoin/bitcoin.conf) -eq 0 ]; then
+      echo "# Removing old bitcoin.conf without rpcpassword configured"
       sudo rm /home/store/app-data/.bitcoin/bitcoin.conf
     fi
   fi
@@ -246,7 +253,7 @@ WantedBy=multi-user.target
 
   sudo systemctl start bitcoind
   echo
-  echo "# Installed $(/home/bitcoin/bitcoin/bitcoind --version | grep version)"
+  echo "# Installed $(sudo -u bitcoin /home/bitcoin/bitcoin/bitcoind --version | grep version)"
   echo
   echo "# Monitor the bitcoind with: sudo tail -f /home/bitcoin/.bitcoin/mainnet/debug.log"
   echo
