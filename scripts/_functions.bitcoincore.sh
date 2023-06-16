@@ -315,7 +315,7 @@ function checkRPCwallet {
   connectionOutput=$(mktemp -p /dev/shm/)
   walletFound=$(customRPC "# Check wallet" "listwallets" 2>$connectionOutput | grep -c "$rpc_wallet")
   if [ $walletFound -eq 0 ]; then
-    echo "# Setting a watch only wallet for the remote Bitcoin Core named $rpc_wallet"
+    echo "# Setting a watch only wallet in Bitcoin Core named $rpc_wallet"
     tor=""
     if [ $(echo $rpc_host | grep -c .onion) -gt 0 ]; then
       tor="torsocks"
