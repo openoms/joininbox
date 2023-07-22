@@ -490,7 +490,7 @@ You need to run rescanblockchain on that wallet in bitcoind after importing the 
 
 * To rescan on the node run (https://developer.bitcoin.org/reference/rpc/rescanblockchain.html?highlight=rescanblockchain):  
 `bitcoin-cli -rpcwallet=joininbox rescanblockchain 477120`  
-Rescanning fom the first SegWit block is sufficient for the default SegWit wallets.
+Rescanning from the first SegWit block is sufficient for the default SegWit wallets.
 
 * Monitor progress (on a RaspiBlitz):  
 `sudo tail -fn 100 /mnt/hdd/bitcoin/debug.log`  

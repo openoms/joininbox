@@ -1,7 +1,7 @@
 <!-- omit in toc -->
 # Prepare a bitcoin node to accept a remote RPC connection
 
-If you have arrived here from runing JoininBox locally on the RaspiBlitz can skip these steps (CTRL+C to exit the connection settings). The connection to the local bitcoin node is set up automatically.
+If you have arrived here from running JoininBox locally on the RaspiBlitz can skip these steps (CTRL+C to exit the connection settings). The connection to the local bitcoin node is set up automatically.
 
 JoinMarket (running in JoininBox) needs to connect to Bitcoin Core via RPC.  
 A pruned node with the **bitcoind wallet enabled** will do and txindex is not required.  
@@ -9,13 +9,13 @@ A pruned node with the **bitcoind wallet enabled** will do and txindex is not re
   - [Enable the bitcoind wallet](#enable-the-bitcoind-wallet)
   - [LAN connection](#lan-connection)
   - [Tor connection](#tor-connection)
-  - [CONFIG -> CONNECT in JoininBox](#config---connect-in-joininbox)
+  - [CONFIG -\> CONNECT in JoininBox](#config---connect-in-joininbox)
 - [RoninDojo](#ronindojo)
   - [Enable the bitcoind wallet](#enable-the-bitcoind-wallet-1)
   - [LAN connection](#lan-connection-1)
   - [Tor connection](#tor-connection-1)
   - [Recompile the Docker containers (takes time)](#recompile-the-docker-containers-takes-time)
-  - [CONFIG -> CONNECT in JoininBox](#config---connect-in-joininbox-1)
+  - [CONFIG -\> CONNECT in JoininBox](#config---connect-in-joininbox-1)
 - [Resources](#resources)
 ## RaspiBlitz
 
