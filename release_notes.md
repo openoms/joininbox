@@ -128,7 +128,7 @@ RaspiBlitz integration:
 - pair the parallel 2nd node to Sphinx, BoS, ThunderHub, BTCPay - see: https://github.com/rootzoll/raspiblitz/issues/2073
 
 Standalone:
-- ElectRS install scritpt to be used with a local disk (requires a non-pruned node) - [FAQ](https://github.com/openoms/joininbox/blob/master/FAQ.md#external-drive)
+- ElectRS install script to be used with a local disk (requires a non-pruned node) - [FAQ](https://github.com/openoms/joininbox/blob/master/FAQ.md#external-drive)
 
 ```
 369c883 payjoin: extend dialog window to content
@@ -263,7 +263,7 @@ b047395 (menu-improvements) getRPC values in the customRPC function
 0e08c25 add XPUBS option to the WALLET menu
 840094f specter: update to 1.2.2
 1f60cfc add bitcoind LOGS to TOOLS
-bf4672d specter insall fixes
+bf4672d specter install fixes
 16236e9 add SPECTER menu with UPDATE option
 fa71818 add PRUNED node  and LOCAL option
 c3336cd implement checkRPC to create and load core wallet

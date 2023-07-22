@@ -48,7 +48,7 @@ This can be skipped if you [connect through Tor](#tor-connection)
       * or use a range like: `192.168.1.0/24` - edit to your local subnet - the first 3 numbes of the LAN IP address, the example used here is: 192.168.1.x  
     * `rpcbind=LAN_IP_OF_THE_NODE` 
       * use the local IP of the bitcoin node in the example: `192.168.1.4`
-    * can keep the other `rpcallowip` and `rpcbind` entires especially for the localhost: `127.0.0.1`
+    * can keep the other `rpcallowip` and `rpcbind` entries especially for the localhost: `127.0.0.1`
 
     Example: 
     ```bash

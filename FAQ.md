@@ -205,7 +205,7 @@ https://www.armbian.com/odroid-xu4/
 * Continue to [install JoininBox](README.md#install-joininbox)
 
 ## Download and verify Raspbian SDcard image for a Raspberry Pi
-To be able to open the JoinMarket-QT GUI on the dekstop from the RPI
+To be able to open the JoinMarket-QT GUI on the desktop from the RPI
 need to use the Raspberry Pi OS (32-bit) with desktop image
 * Download image:  
 https://downloads.raspberrypi.org/raspios_armhf/images/raspios_armhf-2020-05-28/2020-05-27-raspios-buster-armhf.zip

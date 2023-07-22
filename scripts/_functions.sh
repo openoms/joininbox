@@ -66,7 +66,7 @@ function passwordToFile() {
    --title "Enter password" \
    --insecure \
    --passwordbox "Type or paste the wallet decryption password" 8 52 2> "$data"
-  # make decison
+  # make decision
   pressed=$?
   case $pressed in
     0)
