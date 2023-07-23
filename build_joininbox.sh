@@ -5,7 +5,7 @@
 # https://github.com/openoms/joininbox#tested-environments-for-joininbox
 # login with SSH or boot directly
 # run this script as root or with sudo
-# can specify donwloading from a branch or forked repo:
+# can specify downloading from a branch or forked repo:
 # bash build_joininbox.sh [branch] [github user]
 ########################################################################
 
@@ -497,7 +497,7 @@ deb-src [arch=${arch}] https://deb.torproject.org/torproject.org ${distro} main"
     debuild -rfakeroot -uc -us
     cd .. || exit 1
     dpkg -i tor_*.deb
-    # setup Tor in the backgound
+    # setup Tor in the background
     # TODO - test if remains in the background after the Tor service is started
     tor &
   else

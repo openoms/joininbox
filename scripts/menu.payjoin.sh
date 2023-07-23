@@ -47,7 +47,7 @@ $(echo $(cat $wallet) | sed "s#$walletPath##g")
 mixdepth: $(cat $mixdepth)
 " 12 55
 
-# make decison
+# make decision
 pressed=$?
 case $pressed in
   0)
@@ -141,7 +141,7 @@ mixdepth: $(cat "$mixdepth")
 
 Miner fee: $txfeeMessage
 " 16 55
-# make decison
+# make decision
 pressed=$?
 case $pressed in
   0)

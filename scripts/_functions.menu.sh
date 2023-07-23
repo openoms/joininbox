@@ -66,7 +66,7 @@ It is best to reset the joinmarket.cfg after every install.
 
 Do you want to reset the joinmarket.cfg to the defaults now?
 " 12 65
-  # make decison
+  # make decision
   pressed=$?
   case $pressed in
     0)
@@ -87,7 +87,7 @@ dialog --backtitle "Connect to the local Bitcoin Core" \
 --title "Connect to the local Bitcoin Core" \
 --yesno "
 Do you want to connect to the local Bitcoin Core on mainnet now?" 7 55
-  # make decison
+  # make decision
   pressed=$?
   case $pressed in
     0)

@@ -133,7 +133,7 @@ Paste the destination address" 19 69 2> "$address"
 openMenuIfCancelled $?
 
 # changeAddress
-trap 'rm -f "$changeAdress"' EXIT
+trap 'rm -f "$changeAddress"' EXIT
 changeAddress=$(mktemp -p /dev/shm/)
 if [ "$amountsats" != "0 sats" ]; then
   dialog --backtitle "Custom change address" \
@@ -185,7 +185,7 @@ $(cat "$address")
 change address (optional):
 $changeAddressMessage" 17 69
 
-# make decison
+# make decision
 pressed=$?
 case $pressed in
   0)
