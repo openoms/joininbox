@@ -409,7 +409,7 @@ else
 fi
 
 command="sudo -u joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh \
-  ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint} ${tag}"
+  ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint}"
 echo "running: ${command}"
 chmod 777 /dev/shm
 ${command} || exit 1
