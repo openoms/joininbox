@@ -1,9 +1,14 @@
 #!/bin/bash
 
-testedJMversion="v0.9.9"
-PGPsigner="waxwing"
-PGPpkeys="https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc"
-PGPcheck="2B6FC204D9BF332D062B461A141001A1AF77F20B"
+testedJMversion="v0.9.10"
+
+PGPsigner="kristapsk"
+PGPpkeys="https://github.com/kristapsk.gpg"
+PGPcheck="33E472FE870C7E5D"
+
+#PGPsigner="waxwing"
+#PGPpkeys="https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc"
+#PGPcheck="2B6FC204D9BF332D062B461A141001A1AF77F20B"
 
 me="${0##/*}"
 
