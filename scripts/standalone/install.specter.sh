@@ -149,7 +149,7 @@ if [ "$1" = "1" ] || [ "$1" = "on" ]; then
 
     addUserStore
 
-    sudo adduser --disabled-password --gecos "" specter
+    sudo adduser --system --group --home /home/specter specter
 
     # store data with the store user
     sudo mkdir -p /home/store/app-data/.specter 2>/dev/null
