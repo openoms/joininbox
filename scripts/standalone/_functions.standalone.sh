@@ -3,7 +3,7 @@
 function addUserStore() {
   if [ ! -d /home/store/app-data ]; then
     echo "# Adding the user: store"
-    sudo adduser --system --group --home /home/store store
+    sudo adduser --system --group --shell /bin/bash --home /home/store store
     sudo -u store mkdir /home/store/app-data
     echo "# Add the joinmarket user to the store group"
     sudo usermod -aG store joinmarket
@@ -120,7 +120,7 @@ function downloadSnapShot() {
     sudo mkdir -p /home/store/app-data/.bitcoin
   fi
   echo "# Making sure user: bitcoin exists"
-  sudo adduser --system --group --home /home/bitcoin bitcoin
+  sudo adduser --system --group --shell /bin/bash --home /home/bitcoin bitcoin
   sudo chown -R bitcoin:bitcoin /home/store/app-data/.bitcoin
   echo "# Add the joinmarket user to the bitcoin group"
   sudo usermod -aG bitcoin joinmarket
@@ -154,7 +154,7 @@ function installBitcoinCoreStandalone() {
     echo "${installedVersion} is already installed"
   else
     echo "# Adding the user: bitcoin"
-    sudo adduser --system --group --home /home/bitcoin bitcoin
+    sudo adduser --system --group --shell /bin/bash --home /home/bitcoin bitcoin
     echo "# Add the joinmarket user to the bitcoin group"
     sudo usermod -aG bitcoin joinmarket
     echo "# Installing Bitcoin Core v${bitcoinVersion}"

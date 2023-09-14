@@ -368,7 +368,7 @@ echo "# JoininBox"
 echo "#############"
 echo
 echo "# add the 'joinmarket' user"
-adduser --system --group --home /home/joinmarket joinmarket
+adduser --system --group --shell /bin/bash --home /home/joinmarket joinmarket
 
 echo "# clone the joininbox repo and copy the scripts"
 cd /home/joinmarket || exit 1
