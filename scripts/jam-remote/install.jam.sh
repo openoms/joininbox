@@ -46,7 +46,7 @@ if [ "$1" = "on" ]; then
 
     echo "# Creating the ${USERNAME} user"
     echo
-    sudo adduser --system --group --shell /bin/bash --home /home/${USERNAME} ${USERNAME}
+    sudo adduser --system --group --home /home/${USERNAME} ${USERNAME}
 
     # install nodeJS
     bash ${SOURCEDIR}/bonus.nodejs.sh on

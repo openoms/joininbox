@@ -369,6 +369,8 @@ echo "#############"
 echo
 echo "# add the 'joinmarket' user"
 adduser --system --group --shell /bin/bash --home /home/joinmarket joinmarket
+echo "Copy the skeleton files for login"
+sudo -u joinmarket cp -r /etc/skel/. /home/joinmarket/
 
 echo "# clone the joininbox repo and copy the scripts"
 cd /home/joinmarket || exit 1
