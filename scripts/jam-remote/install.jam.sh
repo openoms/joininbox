@@ -3,7 +3,7 @@
 # https://github.com/joinmarket-webui/jam
 
 USERNAME=jam
-WEBUI_VERSION="4d0479e"
+WEBUI_VERSION="v0.1.6"
 REPO=joinmarket-webui/jam
 HOME_DIR=/home/${USERNAME}
 APP_DIR=webui
