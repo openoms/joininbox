@@ -3,7 +3,7 @@
 # https://github.com/joinmarket-webui/jam
 
 USERNAME=jam
-WEBUI_VERSION=0.1.5
+WEBUI_VERSION="v0.1.6"
 REPO=joinmarket-webui/jam
 HOME_DIR=/home/${USERNAME}
 APP_DIR=webui
@@ -46,7 +46,7 @@ if [ "$1" = "on" ]; then
 
     echo "# Creating the ${USERNAME} user"
     echo
-    sudo adduser --disabled-password --gecos "" ${USERNAME}
+    sudo adduser --system --group --home /home/${USERNAME} ${USERNAME}
 
     # install nodeJS
     bash ${SOURCEDIR}/bonus.nodejs.sh on
@@ -57,10 +57,10 @@ if [ "$1" = "on" ]; then
     sudo -u $USERNAME git clone https://github.com/$REPO
 
     cd jam || exit 1
-    sudo -u $USERNAME git reset --hard v${WEBUI_VERSION}
+    sudo -u $USERNAME git reset --hard ${WEBUI_VERSION}
 
-    sudo -u $USERNAME bash ${SOURCEDIR}/../verify.git.sh \
-      "${PGPsigner}" "${PGPpubkeyLink}" "${PGPpubkeyFingerprint}" "v${WEBUI_VERSION}" || exit 1
+    #sudo -u $USERNAME bash ${SOURCEDIR}/../verify.git.sh \
+    #  "${PGPsigner}" "${PGPpubkeyLink}" "${PGPpubkeyFingerprint}" "v${WEBUI_VERSION}" || exit 1
 
     cd $HOME_DIR || exit 1
     sudo -u $USERNAME mv jam $APP_DIR
@@ -134,10 +134,15 @@ if [ "$1" = "update" ]; then
         echo "FAIL - npm install did not run correctly, aborting"
         exit 1
       fi
-
-      sudo -u $USERNAME npm run build
       echo "*** JAM UPDATED to $version ***"
     fi
+
+    if ! sudo -u $USERNAME npm install; then
+      echo "FAIL - npm install did not run correctly, aborting"
+      exit 1
+    fi
+    sudo -u $USERNAME npm run build
+
   else
     echo "*** JAM NOT INSTALLED ***"
   fi

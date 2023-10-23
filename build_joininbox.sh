@@ -368,7 +368,9 @@ echo "# JoininBox"
 echo "#############"
 echo
 echo "# add the 'joinmarket' user"
-adduser --disabled-password --gecos "" joinmarket
+adduser --system --group --shell /bin/bash --home /home/joinmarket joinmarket
+echo "Copy the skeleton files for login"
+sudo -u joinmarket cp -r /etc/skel/. /home/joinmarket/
 
 echo "# clone the joininbox repo and copy the scripts"
 cd /home/joinmarket || exit 1
@@ -607,7 +609,7 @@ echo "#########################"
 echo "# Download Bitcoin Core"
 echo "#########################"
 echo
-sudo -u joinmarket /home/joinmarket/install.bitcoincore.sh downloadCoreOnly || exit 1
+sudo -u joinmarket bash /home/joinmarket/install.bitcoincore.sh downloadCoreOnly || exit 1
 
 echo
 echo "######################"
@@ -623,7 +625,7 @@ if [ "$4" = "without-qt" ]; then
   qtgui="false"
   sed -i "s/^qtgui=.*/qtgui=false/g" /home/joinmarket/joinin.conf
 fi
-sudo -u joinmarket /home/joinmarket/install.joinmarket.sh -i install -q $qtgui || exit 1
+sudo -u joinmarket bash /home/joinmarket/install.joinmarket.sh -i install -q $qtgui || exit 1
 
 echo "###################"
 echo "# bootstrap.service"

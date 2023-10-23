@@ -123,7 +123,9 @@ source /home/joinmarket/joinin.conf
 # create user if not default
 if [ "${user}" != "joinmarket" ]; then
   echo "# add the '${user}' user"
-  sudo adduser --disabled-password --gecos "" ${user}
+  sudo adduser --system --group --shell /bin/bash --home /home/${user} ${user}
+  echo "Copy the skeleton files for login"
+  sudo -u ${user} cp -r /etc/skel/. /home/${user}/
   sudo adduser ${user} sudo
   # add user to Tor group
   sudo usermod -a -G debian-tor ${user}

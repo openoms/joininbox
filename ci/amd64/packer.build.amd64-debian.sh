@@ -1,14 +1,19 @@
 #!/bin/bash -e
 
-# Install packer
-curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-sudo apt-get update
-echo -e "\nInstalling packer..."
-sudo apt-get install -y packer
+# install packer
+if ! packer version 2>/dev/null; then
+  curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+  sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+  sudo apt-get update
+  echo -e "\nInstalling packer..."
+  sudo apt-get install -y packer
+else
+  echo "# Packer is installed"
+fi
 
 # Install qemu
-echo -e "\nInstalling qemu..."
+echo "# Install qemu ..."
+sudo apt-get update
 sudo apt-get install -y qemu-system
 
 if [ $# -gt 0 ]; then
@@ -24,7 +29,7 @@ else
 fi
 
 # Build the image
-echo -e "\nBuilding image..."
+echo "# Building image ..."
 cd debian
 PACKER_LOG=1 packer build \
  -var github_user=${github_user} -var branch=${branch} \
