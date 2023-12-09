@@ -39,7 +39,7 @@ function downloadBitcoinCore() {
     echo
   else
     echo
-    echo "# BUILD FAILED --> the PGP verification failed / signature(${goodSignature}) "
+    echo "# BUILD FAILED --> the PGP verification failed"
     exit 1
   fi
 

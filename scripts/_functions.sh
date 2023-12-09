@@ -7,6 +7,7 @@ currentJBcommit=$(cd /home/joinmarket/joininbox; git describe --tags)
 currentJBtag=$(cd /home/joinmarket/joininbox; git tag | sort -V | tail -1)
 currentJMversion=$(cd /home/joinmarket/joinmarket-clientserver 2>/dev/null; \
 git describe --tags 2>/dev/null)
+currentBTCversion=$(bitcoind --version | grep version)
 
 # paths
 walletPath="/home/joinmarket/.joinmarket/wallets/"

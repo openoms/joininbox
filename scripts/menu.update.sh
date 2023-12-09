@@ -3,20 +3,28 @@
 source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
-HEIGHT=12
+HEIGHT=14
 WIDTH=56
 CHOICE_HEIGHT=3
 TITLE="Update options"
 MENU="
-Current JoininBox version: $currentJBcommit
-Current JoinMarket version: $currentJMversion"
+Installed versions:
+JoininBox: $currentJBcommit
+JoinMarket: $currentJMversion
+$currentBTCversion"
 OPTIONS=()
 BACKTITLE="JoininBox GUI"
 
 # Basic Options
 OPTIONS+=(
   JOININBOX  "Update the JoininBox scripts and menu"
-  JOINMARKET "Update/reinstall JoinMarket to $(grep testedJMversion= < ~/install.joinmarket.sh | cut -d '"' -f 2)"
+  JOINMARKET "Update/reinstall JoinMarket to $(grep testedJMversion= < ~/install.joinmarket.sh | cut -d '"' -f 2)")
+
+if [ "$runningEnv" = "standalone" ]; then
+  OPTIONS+=(\
+  BITCOIN   "Update Bitcoin Core to a chosen version")
+fi
+OPTIONS+=(\
   ADVANCED   "Advanced update options")
 
 CHOICE=$(dialog --clear \
@@ -44,6 +52,12 @@ case $CHOICE in
       if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
         menu_connectLocalCore
       fi
+      echo
+      echo "Press ENTER to return to the menu"
+      read key;;
+  BITCOIN)
+      /home/joinmarket/bitcoin.update.sh custom
+      errorOnInstall $?
       echo
       echo "Press ENTER to return to the menu"
       read key;;
