@@ -220,24 +220,46 @@ function installMainnet() {
   echo "
 [Unit]
 Description=Bitcoin daemon on mainnet
+
 [Service]
+Environment='MALLOC_ARENA_MAX=1'
+PIDFile=/home/bitcoin/bitcoin/bitcoind.pid
+ExecStart=/home/bitcoin/bitcoin/bitcoind -daemon \\
+            -pid=/home/bitcoin/bitcoin/bitcoind.pid
+PermissionsStartOnly=true
+
+# Process management
+####################
+Type=forking
+Restart=on-failure
+TimeoutStartSec=infinity
+TimeoutStopSec=600
+
+# Directory creation and permissions
+####################################
+# Run as bitcoin:bitcoin
 User=bitcoin
 Group=bitcoin
-Type=forking
-PIDFile=/home/bitcoin/bitcoin/bitcoind.pid
-ExecStart=/home/bitcoin/bitcoin/bitcoind -daemon \
--pid=/home/bitcoin/bitcoin/bitcoind.pid
-Restart=always
-TimeoutSec=120
-RestartSec=30
+
 StandardOutput=null
 StandardError=journal
 
 # Hardening measures
+####################
+# Provide a private /tmp and /var/tmp.
 PrivateTmp=true
+# Mount /usr, /boot/ and /etc read-only for the process.
 ProtectSystem=full
+# Deny access to /home, /root and /run/user
+ProtectHome=true
+# Disallow the process and all of its children to gain
+# new privileges through execve().
 NoNewPrivileges=true
+# Use a new /dev namespace only populated with API pseudo devices
+# such as /dev/null, /dev/zero and /dev/random.
 PrivateDevices=true
+# Deny the creation of writable and executable memory mappings.
+MemoryDenyWriteExecute=true
 
 [Install]
 WantedBy=multi-user.target
