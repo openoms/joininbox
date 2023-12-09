@@ -247,9 +247,17 @@ WantedBy=multi-user.target
   echo "# OK - the bitcoind.service is now enabled"
 
   # add aliases
-  if [ $(alias | grep -c "sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli") -eq 0 ]; then
+  if ! grep "alias bitcoin-cli" /home/joinmarket/_aliases.sh; then
     sudo bash -c "echo 'alias bitcoin-cli=\"sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli\"' >> /home/joinmarket/_aliases.sh"
+  fi
+  if ! grep "alias bitcoind" /home/joinmarket/_aliases.sh; then
     sudo bash -c "echo 'alias bitcoind=\"sudo -u bitcoin /home/bitcoin/bitcoin/bitcoind\"' >> /home/joinmarket/_aliases.sh"
+  fi
+  if ! grep "alias bitcoinlog" /home/joinmarket/_aliases.sh; then
+    sudo bash -c "echo 'alias bitcoinlog=\"sudo tail -f /home/bitcoin/.bitcoin/debug.log\"' >> /home/joinmarket/_aliases.sh"
+  fi
+  if ! grep "alias bitcoinconf" /home/joinmarket/_aliases.sh; then
+    sudo bash -c "echo 'alias bitcoinconf=\"sudo nano /home/bitcoin/.bitcoin/bitcoin.conf\"' >> /home/joinmarket/_aliases.sh"
   fi
 
   # set joinin.conf value
