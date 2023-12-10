@@ -3,10 +3,10 @@ variable "branch" {}
 
 source "arm" "joininbox-arm64-rpi" {
   file_checksum_type    = "sha256"
-  file_checksum         = "a68cd2bfe7831c438d8a5d832803ae0db17afec9f3cd370d9e8748c7b5456283"
+  file_checksum         = "ace82f0d5e3586036cb72c5e46eb6222e93365503c51385496e3e2ee9999a5ad"
   file_target_extension = "xz"
   file_unarchive_cmd    = ["xz", "--decompress", "$ARCHIVE_PATH"]
-  file_urls             = ["https://raspi.debian.net/tested/20230612_raspi_4_bookworm.img.xz"]
+  file_urls             = ["https://raspi.debian.net/tested/20231109_raspi_4_bookworm.img.xz"]
   image_build_method    = "resize"
   image_chroot_env      = ["PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin"]
   image_partitions {
