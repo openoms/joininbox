@@ -11,10 +11,13 @@ else
   echo "# Packer is installed"
 fi
 
-# Install qemu
+# install qemu
 echo "# Install qemu ..."
 sudo apt-get update
 sudo apt-get install -y qemu-system
+
+# install qemu plugin
+packer plugins install github.com/hashicorp/qemu
 
 if [ $# -gt 0 ]; then
   github_user=$1
