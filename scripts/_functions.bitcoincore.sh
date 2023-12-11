@@ -9,7 +9,7 @@ joininConfPath="/home/joinmarket/joinin.conf"
 function downloadBitcoinCore() {
   # set version
   # https://bitcoincore.org/en/download/
-  bitcoinVersion="25.0"
+  bitcoinVersion="26.0"
 
   if bitcoin-cli --version | grep $bitcoinVersion >/dev/null; then
     echo "# Bitcoin Core $bitcoinVersion is already installed"
@@ -39,7 +39,7 @@ function downloadBitcoinCore() {
     echo
   else
     echo
-    echo "# BUILD FAILED --> the PGP verification failed / signature(${goodSignature}) "
+    echo "# BUILD FAILED --> the PGP verification failed"
     exit 1
   fi
 
@@ -155,25 +155,46 @@ function installSignet() {
 Description=Bitcoin daemon on signet
 
 [Service]
+Environment='MALLOC_ARENA_MAX=1'
+PIDFile=/home/joinmarket/bitcoin/bitcoind.pid
+ExecStart=/home/joinmarket/bitcoin/bitcoind -signet -daemon \\
+            -datadir=/home/joinmarket/.bitcoin \\
+            -conf=/home/joinmarket/.bitcoin/bitcoin.conf \\
+            -pid=/home/joinmarket/bitcoin/bitcoind.pid
+PermissionsStartOnly=true
+
+# Process management
+####################
+Type=forking
+Restart=on-failure
+TimeoutStartSec=infinity
+TimeoutStopSec=600
+
+# Directory creation and permissions
+####################################
+# Run as joinmarket:joinmarket
 User=joinmarket
 Group=joinmarket
-Type=forking
-PIDFile=/home/joinmarket/bitcoin/bitcoind.pid
-ExecStart=/home/joinmarket/bitcoin/bitcoind -signet -daemon \
- -datadir=/home/joinmarket/.bitcoin \
- -conf=/home/joinmarket/.bitcoin/bitcoin.conf \
- -pid=/home/joinmarket/bitcoin/bitcoind.pid
-Restart=always
-TimeoutSec=120
-RestartSec=30
+
 StandardOutput=null
 StandardError=journal
 
 # Hardening measures
+####################
+# Provide a private /tmp and /var/tmp.
 PrivateTmp=true
+# Mount /usr, /boot/ and /etc read-only for the process.
 ProtectSystem=full
+# Deny access to /home, /root and /run/user
+ProtectHome=true
+# Disallow the process and all of its children to gain
+# new privileges through execve().
 NoNewPrivileges=true
+# Use a new /dev namespace only populated with API pseudo devices
+# such as /dev/null, /dev/zero and /dev/random.
 PrivateDevices=true
+# Deny the creation of writable and executable memory mappings.
+MemoryDenyWriteExecute=true
 
 [Install]
 WantedBy=multi-user.target
@@ -310,6 +331,20 @@ function checkRPCwallet {
   else
     rpc_wallet=$1
   fi
+  echo "# Check 'deprecatedrpc=create_bdb' in bitcoin.conf"
+  source ${joininConfPath}
+  if [ $runningEnv = standalone ]; then
+    bitcoinConfPath="/home/bitcoin/.bitcoin/bitcoin.conf"
+  elif [ $runningEnv = raspiblitz ]; then
+    bitcoinConfPath="/mnt/hdd/bitcoin/bitcoin.conf"
+  fi
+   if ! sudo grep -c "deprecatedrpc=create_bdb" "$bitcoinConfPath"; then
+    echo "# Place 'deprecatedrpc=create_bdb' in bitcoin.conf"
+    echo "deprecatedrpc=create_bdb" | sudo tee -a "$bitcoinConfPath"
+    echo "# Restarting bitcoind"
+    sudo systemctl restart bitcoind
+  fi
+
   echo "# Making sure the set $rpc_wallet wallet is present in bitcoind"
   trap 'rm -f "$connectionOutput"' EXIT
   connectionOutput=$(mktemp -p /dev/shm/)

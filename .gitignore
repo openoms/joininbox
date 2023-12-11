@@ -1,3 +1,4 @@
 scripts/wallets
 ci/arm64-rpi/.packer*
 ci/arm64-rpi/joininbox-arm64-rpi*
+ci/amd64/builds

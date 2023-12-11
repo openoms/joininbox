@@ -3,13 +3,16 @@
 source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
-HEIGHT=16
+HEIGHT=18
 WIDTH=60
 CHOICE_HEIGHT=7
 TITLE="Advanced update options"
 MENU="
-Current JoininBox version: $currentJBcommit
-Current JoinMarket version: $currentJMversion"
+Installed versions:
+JoininBox $currentJBcommit
+JoinMarket $currentJMversion
+$currentBTCversion"
+
 OPTIONS=()
 BACKTITLE="JoininBox GUI"
 
