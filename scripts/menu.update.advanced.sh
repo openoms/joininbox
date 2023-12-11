@@ -9,8 +9,8 @@ CHOICE_HEIGHT=7
 TITLE="Advanced update options"
 MENU="
 Installed versions:
-JoininBox: $currentJBcommit
-JoinMarket: $currentJMversion
+JoininBox $currentJBcommit
+JoinMarket $currentJMversion
 $currentBTCversion"
 
 OPTIONS=()

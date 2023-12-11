@@ -3,14 +3,14 @@
 source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
-HEIGHT=14
+HEIGHT=15
 WIDTH=56
-CHOICE_HEIGHT=3
+CHOICE_HEIGHT=4
 TITLE="Update options"
 MENU="
 Installed versions:
-JoininBox: $currentJBcommit
-JoinMarket: $currentJMversion
+JoininBox $currentJBcommit
+JoinMarket $currentJMversion
 $currentBTCversion"
 OPTIONS=()
 BACKTITLE="JoininBox GUI"
@@ -56,11 +56,13 @@ case $CHOICE in
       echo "Press ENTER to return to the menu"
       read key;;
   BITCOIN)
-      /home/joinmarket/bitcoin.update.sh custom
+      /home/joinmarket/standalone/bitcoin.update.sh custom
       errorOnInstall $?
       echo
-      echo "Press ENTER to return to the menu"
-      read key;;
+      echo "# Start bitcoind .. "
+      sudo systemctl start bitcoind
+      echo "# Monitoring the bitcoind logs .. "
+      showBitcoinLogs;;
   ADVANCED)
       /home/joinmarket/menu.update.advanced.sh;;
 esac
