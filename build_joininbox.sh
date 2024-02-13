@@ -400,11 +400,11 @@ if echo "${lastCommit}" | grep 13C688DB5B9C745DE4D2E4545BFB77609B081B65; then
   PGPsigner="openoms"
   PGPpubkeyLink="https://github.com/openoms.gpg"
   PGPpubkeyFingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
-elif echo "${lastCommit}" | grep 4AEE18F83AFDEB23; then
+elif echo "${lastCommit}" | grep B5690EEEBB952194; then
   echo "# The last commit was made on GitHub and is signed with the GitHub PGP key."
   PGPsigner="web-flow"
   PGPpubkeyLink="https://github.com/${PGPsigner}.gpg"
-  PGPpubkeyFingerprint="4AEE18F83AFDEB23"
+  PGPpubkeyFingerprint="B5690EEEBB952194"
 else
   echo "# No known PGP key found"
   exit 1
