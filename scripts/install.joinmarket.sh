@@ -1,6 +1,7 @@
 #!/bin/bash
 
-testedJMversion="v0.9.10"
+# https://github.com/JoinMarket-Org/joinmarket-clientserver/releases
+testedJMversion="v0.9.11"
 
 PGPsigner="kristapsk"
 PGPpkeys="https://github.com/kristapsk.gpg"
