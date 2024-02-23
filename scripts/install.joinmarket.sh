@@ -233,10 +233,6 @@ function installJoinMarket() {
   fi
   # do not clear screen during installation
   sudo -u ${user} sed -i 's/clear//g' install.sh
-  # do not stop at installing Debian dependencies
-  sudo -u ${user} sed -i \
-    "s#^        if ! sudo apt-get install \${deb_deps\[@\]}; then#\
-        if ! sudo apt-get install -y \${deb_deps\[@\]}; then#g" install.sh
 
   if [ ${cpu} != "x86_64" ]; then
     echo "# Make install.sh set up jmvenv with -- system-site-packages on arm"
@@ -250,12 +246,6 @@ function installJoinMarket() {
     # don't install PyQt5 - using the system package instead
     sudo -u ${user} sed -i "s#^PyQt5.*##g" requirements/gui.txt
     sudo -u ${user} sed -i "s#PyQt5!=5.15.0,!=5.15.1,!=5.15.2,!=6.0##g" jmqtui/setup.py
-  fi
-
-  # pin werkzeug dependency to 2.2.0 as in:
-  # https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/1485/files
-  if ! grep 'werkzeug==' jmclient/setup.py; then
-    sed -i "s/autobahn==20.12.3/&', 'werkzeug==2.2.0/g" jmclient/setup.py
   fi
 
   if [ "${qtgui}" = "false" ]; then
