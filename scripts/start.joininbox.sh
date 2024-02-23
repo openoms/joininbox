@@ -86,11 +86,11 @@ if [ "$setupStep" -lt 100 ];then
     sed -i  "s#setupStep=.*#setupStep=4#g" $joininConfPath
 
     # check if JoinMarket is installed
-    if [ "${runningEnv}" = raspiblitz ] && [ "$(lsb_release -sc)" = bullseye ]; then
-      # no qtgui for raspibliz on bullseye
-      /home/joinmarket/install.joinmarket.sh -i install -q 0
-    else
+    if [ "${cpu}" = x86_64 ]; then
       /home/joinmarket/install.joinmarket.sh -i install
+    else
+      # no qtgui on arm
+      /home/joinmarket/install.joinmarket.sh -i install -q 0
     fi
     sed -i  "s#setupStep=.*#setupStep=5#g" $joininConfPath
   fi
