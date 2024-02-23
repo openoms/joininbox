@@ -141,7 +141,6 @@ if [ "${user}" != "joinmarket" ]; then
     echo "
 if [ -f \"/home/${user}/joinmarket-clientserver/jmvenv/bin/activate\" ]; then
   . /home/${user}/joinmarket-clientserver/jmvenv/bin/activate
-  /home/${user}/joinmarket-clientserver/jmvenv/bin/python -c \"import PySide2\"
   cd /home/${user}/joinmarket-clientserver/scripts/
 fi
 " | sudo -u ${user} tee -a /home/${user}/.bashrc
@@ -233,20 +232,6 @@ function installJoinMarket() {
   fi
   # do not clear screen during installation
   sudo -u ${user} sed -i 's/clear//g' install.sh
-
-  if [ ${cpu} != "x86_64" ]; then
-    echo "# Make install.sh set up jmvenv with -- system-site-packages on arm"
-    # and import the PySide2 armf package from the system
-    sudo -u ${user} sed -i "s#^    virtualenv -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1#\
-      virtualenv --system-site-packages -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1 ;\
-    /home/${user}/joinmarket-clientserver/jmvenv/bin/python -c \'import PySide2\'\
-    #g" install.sh
-    # don't install PySide2 - using the system-site-package instead
-    sudo -u ${user} sed -i "s#^PySide2.*##g" requirements/gui.txt
-    # don't install PyQt5 - using the system package instead
-    sudo -u ${user} sed -i "s#^PyQt5.*##g" requirements/gui.txt
-    sudo -u ${user} sed -i "s#PyQt5!=5.15.0,!=5.15.1,!=5.15.2,!=6.0##g" jmqtui/setup.py
-  fi
 
   if [ "${qtgui}" = "false" ]; then
     GUIchoice="--without-qt"

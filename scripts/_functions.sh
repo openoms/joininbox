@@ -23,7 +23,6 @@ fi
 
 function activateJMvenv() {
   . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate || exit 1
-  /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python -c "import PySide2"
 }
 
 function openMenuIfCancelled() {
