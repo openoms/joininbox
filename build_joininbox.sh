@@ -266,65 +266,25 @@ echo "##########"
 echo
 # apt dependencies for python
 apt-get install -y python3 virtualenv python3-venv python3-dev python3-wheel python3-jinja2 python3-pip
-if [ "${cpu}" = "armv7l" ] || [ "${cpu}" = "armv6l" ]; then
-  if [ ! -f "/usr/bin/python3.7" ]; then
-    # install python37
-    pythonVersion="3.7.9"
-    majorPythonVersion=$(echo "$pythonVersion" | awk -F. '{print $1"."$2}')
-    # dependencies
-    apt-get install software-properties-common build-essential libnss3-dev zlib1g-dev libgdbm-dev libncurses5-dev libssl-dev libffi-dev libreadline-dev libsqlite3-dev libbz2-dev -y
-    # download
-    wget --prefer-family=ipv4 --progress=bar:force https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz
-    # optional signature for verification
-    wget --prefer-family=ipv4 --progress=bar:force https://www.python.org/ftp/python/${pythonVersion}/Python-${pythonVersion}.tgz.asc
-    # get PGP pubkey of Ned Deily (Python release signing key) <nad@python.org>
-    gpg --recv-key 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
-    # check for: Good signature from "Pablo Galindo Salgado <pablogsal@gmail.com>"
-    gpg --verify Python-${pythonVersion}.tgz.asc || exit 1
-    # unzip
-    tar xvf Python-${pythonVersion}.tgz
-    cd Python-${pythonVersion} || exit 1
-    # configure
-    ./configure --enable-optimizations
-    # install
-    make altinstall
-    # move the python binary to the expected directory
-    mv "$(which python${majorPythonVersion})" /usr/bin/
-    # check
-    ls -la /usr/bin/python${majorPythonVersion} || exit 1
-    # clean
-    cd ..
-    rm Python-${pythonVersion}.tgz
-    rm -rf Python-${pythonVersion}
-  fi
-  update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
-  echo "# python calls python3.7"
-
+if [ -f "/usr/bin/python3.8" ]; then
+  # use python 3.8 if available
+  update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
+  echo "# python calls python3.8"
+elif [ -f "/usr/bin/python3.9" ]; then
+  # use python 3.9 if available
+  update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
+  echo "# python calls python3.9"
+elif [ -f "/usr/bin/python3.10" ]; then
+  # use python 3.10 if available
+  update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
+  echo "# python calls python3.10"
+elif [ -f "/usr/bin/python3.11" ]; then
+  # use python 3.11 if available
+  update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1
+  echo "# python calls python3.11"
 else
-  if [ -f "/usr/bin/python3.7" ]; then
-    # make sure /usr/bin/python exists (and calls Python3.7)
-    update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
-    echo "# python calls python3.7"
-  elif [ -f "/usr/bin/python3.8" ]; then
-    # use python 3.8 if available
-    update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
-    echo "# python calls python3.8"
-  elif [ -f "/usr/bin/python3.9" ]; then
-    # use python 3.9 if available
-    update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
-    echo "# python calls python3.9"
-  elif [ -f "/usr/bin/python3.10" ]; then
-    # use python 3.10 if available
-    update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
-    echo "# python calls python3.10"
-  elif [ -f "/usr/bin/python3.11" ]; then
-    # use python 3.11 if available
-    update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1
-    echo "# python calls python3.11"
-  else
-    echo "# FAIL- there is no tested version of python present"
-    exit 1
-  fi
+  echo "# FAIL- there is no tested version of python present"
+  exit 1
 fi
 
 # make sure /usr/bin/pip exists (and calls pip3)
