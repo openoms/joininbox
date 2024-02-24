@@ -158,14 +158,7 @@ fi
 
 # installJoinMarket [update|testPR <PRnumber>|commit]
 function installJoinMarket() {
-  cpu=$(uname -m)
   cd /home/${user} || exit 1
-  if [ "${qtgui}" = "true" ]; then
-    # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
-    echo "# Installing ARM specific dependencies to run the QT GUI"
-    sudo apt-get install -y python3-pyside2.qtcore python3-pyside2.qtgui \
-      python3-pyside2.qtwidgets zlib1g-dev libjpeg-dev python3-pyqt5 libltdl-dev
-  fi
   # https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/668#issuecomment-717815719
   sudo apt-get install -y build-essential automake pkg-config libffi-dev python3-dev
   sudo -u ${user} pip install libtool asn1crypto cffi pycparser
@@ -202,7 +195,7 @@ function installJoinMarket() {
       echo "# WARNING --> the PGP fingerprint is not as expected for ${PGPsigner}"
       echo "# Should contain PGP: ${PGPcheck}"
       echo "# PRESS ENTER to TAKE THE RISK if you think all is OK"
-      read key
+      read -r
     fi
     sudo -u ${user} gpg --import ./pgp_keys.asc
 

@@ -575,10 +575,16 @@ echo "######################"
 echo "# Install JoinMarket"
 echo "######################"
 
-qtgui=true
+
+if [ "${cpu}" = x86_64 ]; then
+  qtgui=true
+else
+  # no qtgui on arm
+  qtgui=false
+fi
 checkEntry=$(runuser joinmarket -c "cat /home/joinmarket/joinin.conf | grep -c qtgui")
 if [ ${checkEntry} -eq 0 ]; then
-  echo "qtgui=true" | tee -a /home/joinmarket/joinin.conf
+  echo "qtgui=$qtgui" | tee -a /home/joinmarket/joinin.conf
 fi
 if [ "$4" = "without-qt" ]; then
   qtgui="false"
