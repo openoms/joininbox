@@ -289,6 +289,15 @@ fi
 
 # make sure /usr/bin/pip exists (and calls pip3)
 update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+
+# don't protect system packages from pip install
+# tracking issue: https://github.com/raspiblitz/raspiblitz/issues/4170
+for PYTHONDIR in /usr/lib/python3.*; do
+  if [ -f "$PYTHONDIR/EXTERNALLY-MANAGED" ]; then
+    rm "$PYTHONDIR/EXTERNALLY-MANAGED"
+  fi
+done
+
 # setuptools needed for Nyx
 pip install setuptools
 
