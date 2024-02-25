@@ -328,6 +328,8 @@ apt-get install -y dialog
 apt-get install -y qrencode
 # unzip for the pruned node snapshot
 apt-get install -y unzip
+# JoinMarket dependency https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/5bfa08c6f558458c9a93e8095ce9dc1b62412838/install.sh#L76C10-L76C21
+apt-get install -y libltdl-dev
 apt-get clean
 apt-get -y autoremove
 
