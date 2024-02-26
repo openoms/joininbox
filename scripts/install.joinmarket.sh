@@ -1,6 +1,7 @@
 #!/bin/bash
 
-testedJMversion="v0.9.10"
+# https://github.com/JoinMarket-Org/joinmarket-clientserver/releases
+testedJMversion="v0.9.11"
 
 PGPsigner="kristapsk"
 PGPpkeys="https://github.com/kristapsk.gpg"
@@ -140,7 +141,6 @@ if [ "${user}" != "joinmarket" ]; then
     echo "
 if [ -f \"/home/${user}/joinmarket-clientserver/jmvenv/bin/activate\" ]; then
   . /home/${user}/joinmarket-clientserver/jmvenv/bin/activate
-  /home/${user}/joinmarket-clientserver/jmvenv/bin/python -c \"import PySide2\"
   cd /home/${user}/joinmarket-clientserver/scripts/
 fi
 " | sudo -u ${user} tee -a /home/${user}/.bashrc
@@ -158,14 +158,7 @@ fi
 
 # installJoinMarket [update|testPR <PRnumber>|commit]
 function installJoinMarket() {
-  cpu=$(uname -m)
   cd /home/${user} || exit 1
-  if [ "${qtgui}" = "true" ]; then
-    # PySide2 for armf: https://packages.debian.org/buster/python3-pyside2.qtcore
-    echo "# Installing ARM specific dependencies to run the QT GUI"
-    sudo apt-get install -y python3-pyside2.qtcore python3-pyside2.qtgui \
-      python3-pyside2.qtwidgets zlib1g-dev libjpeg-dev python3-pyqt5 libltdl-dev
-  fi
   # https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/668#issuecomment-717815719
   sudo apt-get install -y build-essential automake pkg-config libffi-dev python3-dev
   sudo -u ${user} pip install libtool asn1crypto cffi pycparser
@@ -202,7 +195,7 @@ function installJoinMarket() {
       echo "# WARNING --> the PGP fingerprint is not as expected for ${PGPsigner}"
       echo "# Should contain PGP: ${PGPcheck}"
       echo "# PRESS ENTER to TAKE THE RISK if you think all is OK"
-      read key
+      read -r
     fi
     sudo -u ${user} gpg --import ./pgp_keys.asc
 
@@ -232,30 +225,6 @@ function installJoinMarket() {
   fi
   # do not clear screen during installation
   sudo -u ${user} sed -i 's/clear//g' install.sh
-  # do not stop at installing Debian dependencies
-  sudo -u ${user} sed -i \
-    "s#^        if ! sudo apt-get install \${deb_deps\[@\]}; then#\
-        if ! sudo apt-get install -y \${deb_deps\[@\]}; then#g" install.sh
-
-  if [ ${cpu} != "x86_64" ]; then
-    echo "# Make install.sh set up jmvenv with -- system-site-packages on arm"
-    # and import the PySide2 armf package from the system
-    sudo -u ${user} sed -i "s#^    virtualenv -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1#\
-      virtualenv --system-site-packages -p \"\${python}\" \"\${jm_source}/jmvenv\" || return 1 ;\
-    /home/${user}/joinmarket-clientserver/jmvenv/bin/python -c \'import PySide2\'\
-    #g" install.sh
-    # don't install PySide2 - using the system-site-package instead
-    sudo -u ${user} sed -i "s#^PySide2.*##g" requirements/gui.txt
-    # don't install PyQt5 - using the system package instead
-    sudo -u ${user} sed -i "s#^PyQt5.*##g" requirements/gui.txt
-    sudo -u ${user} sed -i "s#PyQt5!=5.15.0,!=5.15.1,!=5.15.2,!=6.0##g" jmqtui/setup.py
-  fi
-
-  # pin werkzeug dependency to 2.2.0 as in:
-  # https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/1485/files
-  if ! grep 'werkzeug==' jmclient/setup.py; then
-    sed -i "s/autobahn==20.12.3/&', 'werkzeug==2.2.0/g" jmclient/setup.py
-  fi
 
   if [ "${qtgui}" = "false" ]; then
     GUIchoice="--without-qt"
