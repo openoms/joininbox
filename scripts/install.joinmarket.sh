@@ -27,7 +27,7 @@ Options:
 -h, --help                                           this help info
 -i, --install [install|config|update|testPR|commit]  install options, use 'commit' for the latest master
 -v, --version [version|number-of-PR]                 the version to install or PR to test (default: ${testedJMversion})
--q, --qtgui [0|1]                                    install the QT GUI and dependencies (default: 1)
+-q, --qtgui [0|1]                                    install the QT GUI and dependencies (default: 0)
 -u, --user [user]                                    the linux user to install with (default: joinmarket)
 
 Notes:
@@ -113,7 +113,7 @@ range_argument install "install" "config" "update" "testPR" "commit"
 : "${version:=${testedJMversion}}"
 curl -s "https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/${version}" | grep -q "\"message\": \"Version not found\"" && error_msg "'There is no: https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/${version}'"
 
-: "${qtgui:=true}"
+: "${qtgui:=false}"
 range_argument qtgui "0" "1" "false" "true"
 
 : "${user:=joinmarket}"
@@ -152,9 +152,7 @@ checkEntry=$(sudo -u ${user} cat /home/${user}/joinin.conf | grep -c "qtgui")
 if [ ${checkEntry} -eq 0 ]; then
   echo "qtgui=true" | sudo -u ${user} tee -a /home/${user}/joinin.conf
 fi
-if [ "${qtgui}" = "false" ]; then
-  sudo -u ${user} sed -i "s/^qtgui=.*/qtgui=false/g" /home/${user}/joinin.conf
-fi
+sudo -u ${user} sed -i "s/^qtgui=.*/qtgui=${qtgui}/g" /home/${user}/joinin.conf
 
 # installJoinMarket [update|testPR <PRnumber>|commit]
 function installJoinMarket() {
