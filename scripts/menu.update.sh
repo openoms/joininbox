@@ -4,7 +4,7 @@ source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
 HEIGHT=15
-WIDTH=56
+WIDTH=57
 CHOICE_HEIGHT=4
 TITLE="Update options"
 MENU="

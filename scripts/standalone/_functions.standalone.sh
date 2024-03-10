@@ -49,13 +49,13 @@ function downloadSnapShot() {
 
   echo "# Check available diskspace"
   FREE=$(df -k --output=avail "$PWD" | tail -n1) # df -k not df -h
-  if [ $FREE -lt 12582912 ]; then                # 12G = 12*1024*1024k
+  if [ $FREE -lt 21000000 ]; then
     echo "# The free space is only $FREE bytes!"
-    echo "# Would need ~12GB free space to download and extract the snapshot."
+    echo "# Would need ~21GB free space to download and extract the snapshot."
     echo "# Press ENTER to continue to download regardless or CTRL+C to exit."
     read key
   else
-    echo "# OK, more than 12GB is free!"
+    echo "# OK, more than 21GB is free!"
   fi
   sudo -u joinmarket mkdir /home/joinmarket/download 2>/dev/null
   cd /home/joinmarket/download || exit 1
@@ -107,13 +107,13 @@ function downloadSnapShot() {
 
   echo "# Extracting to /home/store/app-data/.bitcoin ..."
   FREE=$(df -k --output=avail "$PWD" | tail -n1) # df -k not df -h
-  if [ $FREE -lt 7340032 ]; then                 # 7G = 7*1024*1024k
+  if [ $FREE -lt 11000000 ]; then
     echo "# The free space is only $FREE bytes!"
-    echo "# Would need ~7GB free space to extract the snapshot."
-    echo "# Press ENTER to continue to download regardless or CTRL+C to exit."
+    echo "# Would need ~11GB free space to extract the snapshot."
+    echo "# Press ENTER to continue to extract it regardless or CTRL+C to exit."
     read key
   else
-    echo "# OK, more than 7GB is free!"
+    echo "# OK, more than 11GB is free!"
   fi
   addUserStore
   if [ ! -d /home/store/app-data/.bitcoin ]; then
