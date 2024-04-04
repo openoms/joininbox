@@ -90,7 +90,28 @@ echo "# Preparing the base image"
 echo "############################"
 echo
 
-echo "# Prepare ${baseImage} "
+echo "# Prevent sleep" # on all platforms https://wiki.debian.org/Suspend
+systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+mkdir /etc/systemd/sleep.conf.d
+echo "[Sleep]
+AllowSuspend=no
+AllowHibernation=no
+AllowSuspendThenHibernate=no
+AllowHybridSleep=no" | tee /etc/systemd/sleep.conf.d/nosuspend.conf
+mkdir /etc/systemd/logind.conf.d
+echo "[Login]
+HandleLidSwitch=ignore
+HandleLidSwitchDocked=ignore" | tee /etc/systemd/logind.conf.d/nosuspend.conf
+
+# check if /etc/hosts already has debian entry
+# prevent "unable to resolve host debian" error
+isDebianInHosts=$(grep -c "debian" /etc/hosts)
+if [ ${isDebianInHosts} -eq 0 ]; then
+  echo "# Adding debian to /etc/hosts"
+  echo "127.0.1.1       debian" | tee -a /etc/hosts > /dev/null
+  systemctl restart networking
+fi
+
 # special prepare on RPi
 if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ] ||
   [ "${baseimage}" = "armbian" ]; then
