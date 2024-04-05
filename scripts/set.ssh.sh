@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ ${#1} -eq 0 ]||[ $1 = "-h" ]||[ $1 = "--help" ];then
+if [ ${#1} -eq 0 ] || [ $1 = "-h" ] || [ $1 = "--help" ]; then
   echo "Enable or disable ssh access with the joinmarket user"
   echo "sudo set.ssh.sh [off|on]"
   echo
@@ -18,7 +18,7 @@ if ! grep -Eq "^joinmarketSSH=" /home/joinmarket/joinin.conf; then
 fi
 
 echo
-if [ "$1" = "off" ];then
+if [ "$1" = "off" ]; then
   echo "# Disable ssh access with the joinmarket user"
   if ! grep -Eq "^DenyUsers joinmarket" /etc/ssh/sshd_config; then
     echo "DenyUsers joinmarket" | tee -a /etc/ssh/sshd_config
