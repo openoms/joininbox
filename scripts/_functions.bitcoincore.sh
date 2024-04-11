@@ -9,7 +9,7 @@ joininConfPath="/home/joinmarket/joinin.conf"
 function downloadBitcoinCore() {
   # set version
   # https://bitcoincore.org/en/download/
-  bitcoinVersion="26.0"
+  bitcoinVersion="26.1"
 
   if bitcoin-cli --version | grep $bitcoinVersion >/dev/null; then
     echo "# Bitcoin Core $bitcoinVersion is already installed"
