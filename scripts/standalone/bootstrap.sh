@@ -21,3 +21,7 @@ echo "***********************************************" >> $logFile
 
 # make sure SSH server is configured & running
 sudo /home/joinmarket/standalone/ssh.sh checkrepair >> ${logFile}
+
+# fix ownership of possibly migrated files
+sudo chown -R bitcoin:bitcoin /home/bitcoin/
+sudo chown -R joinmarket:joinmarket /home/joinmarket/
