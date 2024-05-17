@@ -567,26 +567,7 @@ Alternatively to a pruned node there could be a larger >400 GB storage connected
   # drwx------ 34 bitcoin bitcoin     4096 Dec  7 23:39 specter
   # drwx------  2 bitcoin bitcoin     4096 Mar 21 10:38 wallet.dat
   installMainnet
-  # Failed to stop bitcoind.service: Unit bitcoind.service not loaded.
-  # 
-  # [Unit]
-  # Description=Bitcoin daemon on mainnet
-  # [Service]
-  # User=bitcoin
-  # Group=bitcoin
-  # Type=forking
-  # PIDFile=/home/bitcoin/bitcoin/bitcoind.pid
-  # ExecStart=/home/bitcoin/bitcoin/bitcoind -daemon -pid=/home/bitcoin/bitcoin/bitcoind.pid
-  # Restart=always
-  # TimeoutSec=120
-  # RestartSec=30
-  # StandardOutput=null
-  # StandardError=journal
-  # 
-  # [Install]
-  # WantedBy=multi-user.target
-  # 
-  # Created symlink /etc/systemd/system/multi-user.target.wants/bitcoind.service → /etc/systemd/system/bitcoind.service.
+  ...
   # # OK - the bitcoind.service is now enabled
   # 
   # # Installed Bitcoin Core version v0.21.0
@@ -604,48 +585,6 @@ Alternatively to a pruned node there could be a larger >400 GB storage connected
 ## IRC server settings
 * See the most up to date configuration in:  
   https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/jmclient/jmclient/configure.py
-* The latest setting with Tor enabled:
-  ```
-  [MESSAGING:server1]
-  #host = irc.darkscience.net
-  channel = joinmarket-pit
-  port = 6697
-  usessl = true
-  #socks5 = false
-  socks5_host = localhost
-  socks5_port = 9050
-  #for tor
-  host = darkirc6tqgpnwd3blln3yfv5ckl47eg7llfxkmtovrv7c7iwohhb6ad.onion
-  socks5 = true
-
-  [MESSAGING:server2]
-  #host = irc.hackint.org
-  channel = joinmarket-pit
-  #port = 6697
-  #usessl = true
-  #socks5 = false
-  socks5_host = localhost
-  socks5_port = 9050
-  #for tor
-  host = ncwkrwxpq2ikcngxq3dy2xctuheniggtqeibvgofixpzvrwpa77tozqd.onion
-  port = 6667
-  usessl = false
-  socks5 = true
-
-  [MESSAGING:server3]
-  #host = agora.anarplex.net
-  channel = joinmarket-pit
-  #port = 14716
-  #usessl = true
-  #socks5 = false
-  socks5_host = localhost
-  socks5_port = 9050
-  #for tor
-  host = vxecvd6lc4giwtasjhgbrr3eop6pzq6i5rveracktioneunalgqlwfad.onion
-  port = 6667
-  usessl = false
-  socks5 = true
-  ```
 
 ## Install JoinMarket without the QT GUI and dependencies
 * Run the build script with the options `BRANCH` `GITHUBUSER` `without-qt`:
