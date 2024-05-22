@@ -52,7 +52,7 @@ echo "
 # https://github.com/${githubUser}/joininbox/tree/${wantedBranch}
 
 # Press ENTER to confirm or CTRL+C to exit"
-read key
+read
 
 echo
 echo "###################################"
@@ -158,17 +158,6 @@ if [ "${baseimage}" = "raspios" ] || [ "${baseimage}" = "debian_rpi64" ]; then
     echo "$max_usb_current" | tee -a $configFile
   else
     echo "$max_usb_current already in $configFile"
-  fi
-
-  # run fsck on sd root partition on every startup to prevent "maintenance login" screen
-  # see: https://github.com/rootzoll/raspiblitz/issues/782#issuecomment-564981630
-  # see https://github.com/rootzoll/raspiblitz/issues/1053#issuecomment-600878695
-  # use command to check last fsck check: sudo tune2fs -l /dev/mmcblk0p2
-  if [ "${tweak_boot_drive}" == "true" ]; then
-    echo "* running tune2fs"
-    tune2fs -c 1 /dev/mmcblk0p2
-  else
-    echo "* skipping tweak_boot_drive"
   fi
 
   # edit kernel parameters
@@ -485,7 +474,7 @@ deb-src [arch=${arch}] https://deb.torproject.org/torproject.org ${distro} main"
     apt-get install -y build-essential fakeroot devscripts
     apt-get build-dep -y tor deb.torproject.org-keyring
     mkdir ~/debian-packages
-    cd ~/debian-packages
+    cd ~/debian-packages || exit 1
     apt-get source tor
     cd tor-* || exit 1
     debuild -rfakeroot -uc -us
@@ -533,6 +522,7 @@ echo
 apt-get install -y fail2ban ufw
 # autostart fail2ban
 systemctl enable fail2ban
+touch /var/log/auth.log
 
 # set up the firewall
 ufw default deny incoming

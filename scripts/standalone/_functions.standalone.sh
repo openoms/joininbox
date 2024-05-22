@@ -140,7 +140,11 @@ function downloadSnapShot() {
 
   echo "# Unzip ..."
   sudo apt-get install -y unzip
-  sudo -u bitcoin unzip -o $downloadFileName -d /home/store/app-data/.bitcoin
+  sudo -u bitcoin unzip -o $downloadFileName -d /home/store/app-data/.bitcoin || exit 1
+  echo "# OK - Decompressed successfully"
+  echo "# Removing the downloaded files"
+  rm -f $hashFileName
+  rm -f $downloadFileName
   if sudo -u bitcoin ls /home/bitcoin/.bitcoin/bitcoin.conf.backup; then
     echo "# Restore bitcoin.conf"
     sudo -u bitcoin mv -f /home/bitcoin/.bitcoin/bitcoin.conf.backup \
@@ -151,8 +155,8 @@ function downloadSnapShot() {
 function installBitcoinCoreStandalone() {
   downloadBitcoinCore
 
-  if [ -f /home/bitcoin/bitcoin/bitcoind ]; then
-    installedVersion=$(/home/bitcoin/bitcoin/bitcoind --version | grep version)
+  if [ -f /usr/local/bin/bitcoind ]; then
+    installedVersion=$(/usr/local/bin/bitcoind --version | grep version)
     echo "${installedVersion} is already installed"
   else
     echo "# Adding the user: bitcoin"
@@ -162,15 +166,10 @@ function installBitcoinCoreStandalone() {
     echo "# Add the joinmarket user to the bitcoin group"
     sudo usermod -aG bitcoin joinmarket
     echo "# Installing Bitcoin Core v${bitcoinVersion}"
-    sudo -u bitcoin mkdir -p /home/bitcoin/bitcoin
     cd /home/joinmarket/download/bitcoin-${bitcoinVersion}/bin/ || exit 1
-    sudo install -m 0755 -o root -g root -t /home/bitcoin/bitcoin ./*
+    sudo install -m 0755 -o root -g root -t /usr/local/bin/ ./*
   fi
-  if [ "$(grep -c "/home/bitcoin/bitcoin" </etc/profile)" -eq 0 ]; then
-    echo "# Add /home/bitcoin/bitcoin to global PATH"
-    echo "PATH=/home/bitcoin/bitcoin:$PATH" | sudo tee -a /etc/profile
-  fi
-  if ! sudo -u bitcoin /home/bitcoin/bitcoin/bitcoind --version | grep "Bitcoin Core version"; then
+  if ! sudo -u bitcoin /usr/local/bin/bitcoind --version | grep "Bitcoin Core version"; then
     echo
     echo "# BUILD FAILED --> Was not able to install Bitcoin Core)"
     exit 1
@@ -223,9 +222,10 @@ Description=Bitcoin daemon on mainnet
 
 [Service]
 Environment='MALLOC_ARENA_MAX=1'
-PIDFile=/home/bitcoin/bitcoin/bitcoind.pid
-ExecStart=/home/bitcoin/bitcoin/bitcoind -daemon \\
-            -pid=/home/bitcoin/bitcoin/bitcoind.pid
+ExecStart=/usr/local/bin/bitcoind \\
+            -daemonwait \\
+            -conf=/home/bitcoin/.bitcoin/bitcoin.conf \\
+            -datadir=/home/bitcoin/.bitcoin
 PermissionsStartOnly=true
 
 # Process management
@@ -270,10 +270,10 @@ WantedBy=multi-user.target
 
   # add aliases
   if ! grep "alias bitcoin-cli" /home/joinmarket/_aliases.sh; then
-    sudo bash -c "echo 'alias bitcoin-cli=\"sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli\"' >> /home/joinmarket/_aliases.sh"
+    sudo bash -c "echo 'alias bitcoin-cli=\"sudo -u bitcoin /usr/local/bin/bitcoin-cli\"' >> /home/joinmarket/_aliases.sh"
   fi
   if ! grep "alias bitcoind" /home/joinmarket/_aliases.sh; then
-    sudo bash -c "echo 'alias bitcoind=\"sudo -u bitcoin /home/bitcoin/bitcoin/bitcoind\"' >> /home/joinmarket/_aliases.sh"
+    sudo bash -c "echo 'alias bitcoind=\"sudo -u bitcoin /usr/local/bin/bitcoind\"' >> /home/joinmarket/_aliases.sh"
   fi
   if ! grep "alias bitcoinlog" /home/joinmarket/_aliases.sh; then
     sudo bash -c "echo 'alias bitcoinlog=\"sudo tail -f /home/bitcoin/.bitcoin/debug.log\"' >> /home/joinmarket/_aliases.sh"
@@ -287,7 +287,7 @@ WantedBy=multi-user.target
 
   sudo systemctl start bitcoind
   echo
-  echo "# Installed $(sudo -u bitcoin /home/bitcoin/bitcoin/bitcoind --version | grep version)"
+  echo "# Installed $(sudo -u bitcoin /usr/local/bin/bitcoind --version | grep version)"
   echo
   echo "# Monitor the bitcoind with: sudo tail -f /home/bitcoin/.bitcoin/mainnet/debug.log"
   echo
@@ -295,6 +295,6 @@ WantedBy=multi-user.target
   if [ ! -f /home/bitcoin/.bitcoin/mainnet/wallets/wallet.dat/wallet.dat ]; then
     echo "# Create wallet.dat ..."
     sleep 10
-    sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli -named createwallet wallet_name=wallet.dat descriptors=false
+    sudo -u bitcoin /usr/local/bin/bitcoin-cli -named createwallet wallet_name=wallet.dat descriptors=false
   fi
 }

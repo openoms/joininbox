@@ -37,7 +37,7 @@ elif [ "$(uname -m | grep -c 'x86_64')" -gt 0 ]; then
 fi
 
 # installed version
-installedVersion=$(sudo -u bitcoin /home/bitcoin/bitcoin/bitcoind --version | head -n1 | cut -d" " -f4 | cut -c 2-)
+installedVersion=$(sudo -u bitcoin /usr/local/bin/bitcoind --version | head -n1 | cut -d" " -f4 | cut -c 2-)
 
 # test if the installed version already the tested/recommended update version
 bitcoinUpdateInstalled=$(echo "${installedVersion}" | grep -c "${bitcoinVersion}")
@@ -202,9 +202,9 @@ if [ "${mode}" = "tested" ] || [ "${mode}" = "reckless" ] || [ "${mode}" = "cust
   echo
   echo "# Installing Bitcoin Core v${bitcoinVersion}"
   tar -xvf ${binaryName}
-  sudo install -m 0755 -o root -g root -t /home/bitcoin/bitcoin/ bitcoin-${bitcoinVersion}/bin/*
+  sudo install -m 0755 -o root -g root -t /usr/local/bin/ bitcoin-${bitcoinVersion}/bin/*
   sleep 3
-  if ! sudo /home/bitcoin/bitcoin/bitcoind --version | grep "${bitcoinVersion}"; then
+  if ! sudo /usr/local/bin/bitcoind --version | grep "${bitcoinVersion}"; then
     echo
     echo "# BUILD FAILED --> Was not able to install bitcoind version(${bitcoinVersion})"
     exit 1
