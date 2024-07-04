@@ -231,6 +231,8 @@ if [ "$1" = "addseednodes" ]; then
 
   i2pSeedNodeList=$(curl -sS https://raw.githubusercontent.com/bitcoin/bitcoin/master/contrib/seeds/nodes_main.txt | grep .b32.i2p:0)
   for i2pSeedNode in ${i2pSeedNodeList}; do
+    echo "# Add i2p seed node: ${i2pSeedNode} by running:"
+    echo "bitcoin-cli addnode $i2pSeedNode onetry"
     sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli addnode "$i2pSeedNode" "onetry"
   done
 
