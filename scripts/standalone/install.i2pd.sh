@@ -9,7 +9,7 @@ if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
   echo "install.i2pd.sh install      -> Install i2pd"
   echo "install.i2pd.sh on           -> Switch on i2pd"
   echo "install.i2pd.sh off          -> Uninstall i2pd"
-  echo "install.i2pd.sh addseednodes -> Add all I2P seed nodes from: https://github.com/bitcoin/bitcoin/blob/master/contrib/seeds/nodes_main.txt"
+  echo "install.i2pd.sh addseednodes -> Add 21 randonly selected I2P seed nodes from: https://github.com/bitcoin/bitcoin/blob/master/contrib/seeds/nodes_main.txt"
   echo "install.i2pd.sh status       -> I2P related logs from bitcoind, bitcoin-cli -netinfo 4 and webconsole access"
   exit 1
 fi
@@ -113,7 +113,7 @@ bitcoinConfPath="/home/bitcoin/.bitcoin/bitcoin.conf"
 bitcoinLogPath="/home/bitcoin/.bitcoin/debug.log"
 
 # make sure to be present in PATH
-if ! echo "$PATH" | grep "/usr/sbin"; then
+if ! echo "$PATH" | grep "/usr/sbin" >/dev/null; then
   export PATH=$PATH:/usr/sbin
   echo "PATH=\$PATH:/usr/sbin" | sudo tee -a /etc/profile
 fi
@@ -224,13 +224,19 @@ if [ "$1" = "addseednodes" ]; then
     /home/joinmarket/standalone/install.i2pd.sh on
   fi
 
-  echo "Add all I2P seed nodes from: https://github.com/bitcoin/bitcoin/blob/master/contrib/seeds/nodes_main.txt"
+  echo "Add 21 randomly selected I2P seed nodes from: https://github.com/bitcoin/bitcoin/blob/master/contrib/seeds/nodes_main.txt"
   echo "Monitor in a new terminal with:"
   echo "watch sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli -netinfo 4"
   echo "This will take some time ..."
 
+  # Fetch and filter the list of seed nodes
   i2pSeedNodeList=$(curl -sS https://raw.githubusercontent.com/bitcoin/bitcoin/master/contrib/seeds/nodes_main.txt | grep .b32.i2p:0)
-  for i2pSeedNode in ${i2pSeedNodeList}; do
+
+  # Shuffle the list and pick the first 21 nodes
+  selectedNodes=$(echo "$i2pSeedNodeList" | shuf | head -n 21)
+
+  # Add each selected node
+  for i2pSeedNode in ${selectedNodes}; do
     echo "# Add i2p seed node: ${i2pSeedNode} by running:"
     echo "bitcoin-cli addnode $i2pSeedNode onetry"
     sudo -u bitcoin /home/bitcoin/bitcoin/bitcoin-cli addnode "$i2pSeedNode" "onetry"
