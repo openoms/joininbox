@@ -73,7 +73,7 @@ case $CHOICE in
     --msgbox "
 There are no stats because the Yield Generator was never run.
 
-Start with the menu option: RUN_YG" 10 50
+Start with the menu option: MAKER" 10 50
     else
       dialog --prgbox "/home/joinmarket/info.stats.sh showAllEarned" 9 55
     fi;;
