@@ -179,5 +179,5 @@ fi
 localip=$(hostname -I | awk '{print $1}')
 sed -i "s#^localip=.*#localip=$localip#g" $joininConfPath
 
-# change the onion_serving_port if LND is present (avoid collusion with LND REST port)
+# change the onion_serving_port if LND is present (avoid collision with LND REST port)
 sed -i "s#^onion_serving_port = 8080#onion_serving_port = 8090#g" $JMcfgPath
