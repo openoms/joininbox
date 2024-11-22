@@ -1,7 +1,7 @@
 {
   "variables": {
-    "iso_name": "debian-12.7.0-amd64-netinst.iso",
-    "iso_checksum": "8fde79cfc6b20a696200fc5c15219cf6d721e8feb367e9e0e33a79d1cb68fa83",
+    "iso_name": "debian-12.8.0-amd64-netinst.iso",
+    "iso_checksum": "04396d12b0f377958a070c38a923c227832fa3b3e18ddc013936ecf492e9fbb3",
     "box_basename": "debian",
     "build_directory": "../builds",
     "headless": "false",
