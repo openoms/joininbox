@@ -35,3 +35,20 @@ arm64-rpi-image:
 	# Compute checksum of the compressed image
 	cd ci/arm64-rpi && \
 	sha256sum joininbox-arm64-rpi.img.gz > joininbox-arm64-rpi.img.gz.sha256
+
+arm64-rpi5-image:
+	# build image
+	cd ci/arm64-rpi && \
+	bash arm64-rpi5.sh $(GITHUB_USER) $(CURRENT_BRANCH)
+
+	# Compute checksum of the raw image
+	cd ci/arm64-rpi && \
+	sha256sum joininbox-arm64-rpi5.img > joininbox-arm64-rpi5.img.sha256
+
+	# Compress image
+	cd ci/arm64-rpi && \
+	gzip -v9 joininbox-arm64-rpi5.img
+
+	# Compute checksum of the compressed image
+	cd ci/arm64-rpi && \
+	sha256sum joininbox-arm64-rpi5.img.gz > joininbox-arm64-rpi5.img.gz.sha256

@@ -1,7 +1,7 @@
-name: arm64-rpi-image-build
+name: arm64-rpi5-image-build
 
 concurrency:
-  group: arm64-rpi-image-build-${{ github.head_ref }}
+  group: arm64-rpi5-image-build-${{ github.head_ref }}
   cancel-in-progress: true
 
 on:
@@ -26,7 +26,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  arm64-rpi-image-build:
+  arm64-rpi5-image-build:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
@@ -43,7 +43,7 @@ jobs:
           fi
 
       - name: Display the build name
-        run: echo "Building the joininbox-arm64-rpi-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}"
+        run: echo "Building the joininbox-arm64-rpi5-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -54,28 +54,28 @@ jobs:
         run: |
           echo "Running with: ${{steps.set_values.outputs.github_user}} $GITHUB_HEAD_REF"
           cd ci/arm64-rpi
-          bash arm64-rpi.sh ${{steps.set_values.outputs.github_user}} $GITHUB_HEAD_REF
+          bash arm64-rpi5.sh ${{steps.set_values.outputs.github_user}} $GITHUB_HEAD_REF
 
       - name: Compute checksum of the raw image
         run: |
           cd ci/arm64-rpi
-          sha256sum joininbox-arm64-rpi.img > joininbox-arm64-rpi.img.sha256
+          sha256sum joininbox-arm64-rpi5.img > joininbox-arm64-rpi5.img.sha256
 
       - name: Compress image
         run: |
           cd ci/arm64-rpi
-          gzip -v9 joininbox-arm64-rpi.img
+          gzip -v9 joininbox-arm64-rpi5.img
 
       - name: Compute checksum of the compressed image
         run: |
           cd ci/arm64-rpi
-          sha256sum joininbox-arm64-rpi.img.gz > joininbox-arm64-rpi.img.gz.sha256
+          sha256sum joininbox-arm64-rpi5.img.gz > joininbox-arm64-rpi5.img.gz.sha256
 
       - name: Upload the image and checksums
         uses: actions/upload-artifact@v3
         with:
-          name: joininbox-arm64-rpi-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}
+          name: joininbox-arm64-rpi5-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}
           path: |
-            ${{ github.workspace }}/ci/arm64-rpi/joininbox-arm64-rpi.img.sha256
-            ${{ github.workspace }}/ci/arm64-rpi/joininbox-arm64-rpi.img.gz
-            ${{ github.workspace }}/ci/arm64-rpi/joininbox-arm64-rpi.img.gz.sha256
+            ${{ github.workspace }}/ci/arm64-rpi/joininbox-arm64-rpi5.img.sha256
+            ${{ github.workspace }}/ci/arm64-rpi/joininbox-arm64-rpi5.img.gz
+            ${{ github.workspace }}/ci/arm64-rpi/joininbox-arm64-rpi5.img.gz.sha256
