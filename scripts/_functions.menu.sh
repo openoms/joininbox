@@ -37,7 +37,7 @@ function menu_MAKER() {
   sleep 3
   dialog \
   --title "Monitoring the Yield Generator - press CTRL+C to exit"  \
-  --prgbox "sudo journalctl -fn20 -u yg-privacyenhanced" 30 200
+  --prgbox "sudo journalctl -fn100 -u yg-privacyenhanced" -1 -1
   echo "# returning to the menu..."
   sleep 1
   /home/joinmarket/menu.yg.sh

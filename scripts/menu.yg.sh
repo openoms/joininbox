@@ -75,7 +75,7 @@ There are no stats because the Yield Generator was never run.
 
 Start with the menu option: MAKER" 10 50
     else
-      dialog --prgbox "/home/joinmarket/info.stats.sh showAllEarned" 9 55
+      dialog --prgbox "/home/joinmarket/info.stats.sh showAllEarned" 9 67
     fi;;
   NICKNAME)
     name=$(YGnickname)

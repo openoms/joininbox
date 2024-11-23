@@ -64,7 +64,7 @@ function torthistx() {
 # command: stats
 # shows the uptime and the fees earned as a Maker
 function stats() {
-  /home/joinmarket/info.stats.sh
+  /home/joinmarket/info.stats.sh showAllEarned
 }
 
 # command: qtgui
