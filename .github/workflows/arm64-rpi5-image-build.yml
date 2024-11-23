@@ -1,5 +1,9 @@
 name: arm64-rpi5-image-build
 
+concurrency:
+  group: arm64-rpi5-image-build-${{ github.head_ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [ "master" ]
