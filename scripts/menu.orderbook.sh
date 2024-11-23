@@ -90,7 +90,7 @@ function startOrderBook() {
   sleep 3
   dialog \
   --title "Monitoring the ob-watcher - press CTRL+C to exit"  \
-  --prgbox "sudo journalctl -fn20 -u ob-watcher" 30 200
+  --prgbox "sudo journalctl -fn100 -u ob-watcher" -1 -1
 }
 
 if [ "$1" = startOrderBookService ]; then
