@@ -10,7 +10,6 @@
   - [Log in through SSH using a hardware wallet](#log-in-through-ssh-using-a-hardware-wallet)
 - [SSH through Tor from Linux](#ssh-through-tor-from-linux)
 - [Allow Tor to connect to localhost](#allow-tor-to-connect-to-localhost)
-- [Set up Armbian on the Hardkernel Odroid HC1 / XU4](#set-up-armbian-on-the-hardkernel-odroid-hc1--xu4)
 - [Download and verify Raspbian SDcard image for a Raspberry Pi](#download-and-verify-raspbian-sdcard-image-for-a-raspberry-pi)
 - [Error when connecting to a full node remotely through Tor](#error-when-connecting-to-a-full-node-remotely-through-tor)
 - [Erase the joinmarket user and the /home/joinmarket folder](#erase-the-joinmarket-user-and-the-homejoinmarket-folder)
@@ -172,55 +171,10 @@ Use `ssh` with `torsocks`  on the desktop (needs Tor installed):
 * Restart Tor:   
 `sudo systemctl restart tor`
 
-## Set up Armbian on the Hardkernel Odroid HC1 / XU4
-* Download the base image (`.img.gz`), the `.sha` and `.asc` file
-https://www.armbian.com/odroid-xu4/
-* Verify: https://docs.armbian.com/User-Guide_Getting-Started/#how-to-check-download-authenticity
-    ```bash
-    gpg --keyserver ha.pool.sks-keyservers.net --recv-key DF00FAF1C577104B50BF1D0093D6889F9F0E78D5
-    # gpg: key 93D6889F9F0E78D5: public key "Igor Pecovnik # <igor@armbian.  com>" imported
-    # gpg: Total number processed: 1
-    # gpg:               imported: 1
-    gpg --verify Armbian_21.02.3_Odroidxu4_buster_legacy_4.14.222.img.xz.asc
-    # gpg: assuming signed data in 'Armbian_21.02.3_Odroidxu4_buster_legacy_4.14.222.img.xz'
-    # gpg: Signature made Tue 09 Mar 2021 03:00:30 GMT
-    # gpg:                using RSA key DF00FAF1C577104B50BF1D0093D6889F9F0E78D5
-    # gpg: Good signature from "Igor Pecovnik <igor@armbian.com>" [unknown]
-    # gpg:                 aka "Igor Pecovnik (Ljubljana, Slovenia) <igor.pecovnik@gmail.com>" [unknown]
-    # gpg: WARNING: This key is not certified with a trusted signature!
-    # gpg:          There is no indication that the signature belongs to the owner.
-    # Primary key fingerprint: DF00 FAF1 C577 104B 50BF  1D00 93D6 889F 9F0E 78D5
-    shasum -c Armbian_21.02.3_Odroidxu4_buster_legacy_4.14.222.img.xz.sha
-    # Armbian_21.02.3_Odroidxu4_buster_legacy_4.14.222.img.xz: OK
-    ```
-* Preparation  
-    Make sure you have a good & reliable SD card and a proper power supply. Archives can be uncompressed with 7-Zip on Windows, Keka on OS X and 7z on Linux (apt-get install p7zip-full). RAW images can be written with Etcher (all OS).
-* Boot  
-    Insert the SD card into the slot, connect a cable to your network if possible or a display and power your board. (First) boot (with DHCP) takes up to 35 seconds with a class 10 SD Card.
-* Login  
-    Log in as: `root`  Password: `1234`. Then you are prompted to change this password (US-Keyboard setting). When done, you are asked to create a normal user-account for your everyday tasks.
-* Change the password.
-* Create a new user called `joinmarket` and set the password (the password will be changed to `joininbox`).  
- Keep pressing [ENTER] to use the default user information.
-* Continue to [install JoininBox](README.md#install-joininbox)
-
 ## Download and verify Raspbian SDcard image for a Raspberry Pi
-To be able to open the JoinMarket-QT GUI on the desktop from the RPI
-need to use the Raspberry Pi OS (32-bit) with desktop image
-* Download image:  
-https://downloads.raspberrypi.org/raspios_armhf/images/raspios_armhf-2020-05-28/2020-05-27-raspios-buster-armhf.zip
-* Download signature:  
-https://downloads.raspberrypi.org/raspios_armhf/images/raspios_armhf-2020-05-28/2020-05-27-raspios-buster-armhf.zip.sig
-* Import PGP pubkey:  
-`curl https://www.raspberrypi.org/raspberrypi_downloads.gpg.key | gpg --import`
-* Verify the image:  
-`gpg --verify 2020-05-27-raspios-buster-armhf.zip.sig`
-* Flash the image to an SDcard, can use the [Raspberry Pi Imager](https://www.raspberrypi.org/downloads/)
-* put a file called simply: `ssh` to the root of the sdcard.  
-Read more on [how to gain ssh access here](https://www.raspberrypi.org/documentation/remote-access/ssh/).
-* boot up the RPi and log in with ssh to:   
-`pi@LAN_IP_ADDRESS`  
-The default password is: `raspberry`
+* Download [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
+* enable the ssh login in the 
+* Flash the image to a min 32GB Endurance type SDcard
 * Continue to [install JoininBox](README.md#install-joininbox)
 
 ## Error when connecting to a full node remotely through Tor

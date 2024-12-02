@@ -123,7 +123,7 @@ Recommended minimum:
 
 ### Install JoininBox
 * Start as the `root` user or change with:  
-`$ sudo - su`
+`$ sudo su -`
 
 * Run the [build script](https://github.com/openoms/joininbox/blob/master/build_joininbox.sh):
   ```bash
