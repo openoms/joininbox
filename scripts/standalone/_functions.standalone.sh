@@ -250,8 +250,6 @@ StandardError=journal
 PrivateTmp=true
 # Mount /usr, /boot/ and /etc read-only for the process.
 ProtectSystem=full
-# Deny access to /home, /root and /run/user
-ProtectHome=true
 # Disallow the process and all of its children to gain
 # new privileges through execve().
 NoNewPrivileges=true
