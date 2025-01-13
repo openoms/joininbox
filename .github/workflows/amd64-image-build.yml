@@ -1,5 +1,9 @@
 name: amd64-image-build
 
+concurrency:
+  group: amd64-image-build-${{ github.head_ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [ "master" ]
