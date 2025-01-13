@@ -159,6 +159,7 @@ function installJoinMarket() {
   cd /home/${user} || exit 1
   # https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/668#issuecomment-717815719
   sudo apt-get install -y build-essential automake pkg-config libffi-dev python3-dev
+  sudo -u ${user} pip config set global.break-system-packages true
   sudo -u ${user} pip install libtool asn1crypto cffi pycparser
   echo "# Installing JoinMarket"
 
