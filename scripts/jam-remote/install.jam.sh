@@ -3,15 +3,15 @@
 # https://github.com/joinmarket-webui/jam
 
 USERNAME=jam
-WEBUI_VERSION="v0.2.0"
+WEBUI_VERSION="v0.3.0"
 REPO=joinmarket-webui/jam
 HOME_DIR=/home/${USERNAME}
 APP_DIR=webui
 SOURCEDIR=$(pwd)
 
-PGPsigner="dergigi"
+PGPsigner="theborakompanioni"
 PGPpubkeyLink="https://github.com/${PGPsigner}.gpg"
-PGPpubkeyFingerprint="89C4A25E69A5DE7F"
+PGPpubkeyFingerprint="E8070AF0053AAC0D"
 
 # command info
 if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
