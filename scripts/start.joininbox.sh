@@ -23,7 +23,7 @@ if [ "$setupStep" -lt 100 ]; then
     # identify running env
     runningEnvEntry=$(grep -c "runningEnv" <$joininConfPath)
     if [ "$runningEnvEntry" -eq 0 ]; then
-      if [ -f "/mnt/hdd/raspiblitz.conf" ]; then
+      if [ -f "/mnt/hdd/raspiblitz.conf" ] || [ -f "/mnt/hdd/app-data/raspiblitz.conf" ] ; then
         runningEnv="raspiblitz"
       elif [ -f "/usr/share/mynode/mynode_config.sh" ]; then
         runningEnv="mynode"
