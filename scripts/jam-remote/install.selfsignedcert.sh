@@ -3,10 +3,10 @@
 
 USERNAME=jam
 
-sudo apt install nginx
+sudo apt-get install -y nginx
 
 if ! sudo ls /home/jam/nginx/tls.cert || ! sudo ls  /home/jam/nginx/tls.key; then
-  sudo apt-get install openssl
+  sudo apt-get install -y openssl
 
   subj="/C=US/ST=Utah/L=Lehi/O=Your Company, Inc./OU=IT/CN=example.com"
   sudo -u $USERNAME mkdir -p /home/jam/nginx/ \
