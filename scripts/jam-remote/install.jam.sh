@@ -59,8 +59,8 @@ if [ "$1" = "on" ]; then
     cd jam || exit 1
     sudo -u $USERNAME git reset --hard ${WEBUI_VERSION}
 
-    #sudo -u $USERNAME bash ${SOURCEDIR}/../verify.git.sh \
-    #  "${PGPsigner}" "${PGPpubkeyLink}" "${PGPpubkeyFingerprint}" "v${WEBUI_VERSION}" || exit 1
+    sudo -u $USERNAME bash ${SOURCEDIR}/../verify.git.sh \
+      "${PGPsigner}" "${PGPpubkeyLink}" "${PGPpubkeyFingerprint}" "${WEBUI_VERSION}" || exit 1
 
     cd $HOME_DIR || exit 1
     sudo -u $USERNAME mv jam $APP_DIR
