@@ -65,7 +65,7 @@ jobs:
           sha256sum joininbox-amd64-debian.qcow2.gz > joininbox-amd64-debian.qcow2.gz.sha256
 
       - name: Upload the image and checksums
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: joininbox-amd64-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}
           path: |

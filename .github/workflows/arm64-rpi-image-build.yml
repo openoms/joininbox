@@ -72,7 +72,7 @@ jobs:
           sha256sum joininbox-arm64-rpi.img.gz > joininbox-arm64-rpi.img.gz.sha256
 
       - name: Upload the image and checksums
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: joininbox-arm64-rpi-image-${{ env.BUILD_DATE }}-${{ env.BUILD_VERSION }}
           path: |
