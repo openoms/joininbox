@@ -1,3 +1,5 @@
+#!/bin/bash
+
 source /home/joinmarket/_functions.sh
 
 # add default value to config if needed
