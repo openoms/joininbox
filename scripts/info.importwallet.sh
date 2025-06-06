@@ -36,7 +36,7 @@ Instructions to COPY wallets from another computer
 You can use the wallets from another JoinMarket instance
 "
 if [ "${CHOICE}" = "LAN" ]; then
-  if [ -f "/mnt/hdd/raspiblitz.conf" ] ; then
+  if [ -f "/mnt/hdd/raspiblitz.conf" ] || [ -f "/mnt/hdd/app-data/raspiblitz.conf" ] ; then
     echo "Both computers (the RaspiBlitz and the source computer with the wallet(s))"
   else
     echo "Both computers (the JoininBox and the source computer with the wallet(s))"
@@ -62,9 +62,9 @@ elif [ "${CHOICE}" = "TOR" ]; then
   echo "torsocks scp ./*.jmdat joinmarket@${TOR_ADDRESS}:~/.joinmarket/wallets/"
 fi
 echo ""
-if [ -f "/mnt/hdd/raspiblitz.conf" ] ; then
+if [ -f "/mnt/hdd/raspiblitz.conf" ] || [ -f "/mnt/hdd/app-data/raspiblitz.conf" ] ; then
   echo "Use the PASSWORD_B to authorize the file transfer
-(same as the rpcpassword in the /mnt/hdd/bitcoin/bitcoin.conf)."
+(same as the rpcpassword in the bitcoin.conf)."
 else
   echo "This command will ask for the SSH PASSWORD of the JoininBox."
 fi

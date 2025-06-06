@@ -26,7 +26,7 @@ Since the RaspiBlitz v1.6 run this script:
 To set up manually:
 
 * Edit the bitcoin.conf:  
-`$ sudo nano /mnt/hdd/bitcoin/bitcoin.conf`
+`$ sudo nano /mnt/hdd/app-data/bitcoin/bitcoin.conf`
     
 * Change the disablewallet option to 0:
     ```
@@ -40,7 +40,7 @@ In the terminal of the node - allow remote RPC connections to Bitcoin Core
 This can be skipped if you [connect through Tor](#tor-connection)
 
 1) Edit the bitcoin.conf  
-    `$ sudo nano /mnt/hdd/bitcoin/bitcoin.conf`
+    `$ sudo nano /mnt/hdd/app-data/bitcoin/bitcoin.conf`
 
     Add the values:  
     * `rpcallowip=JOININBOX_IP` or `RANGE` 
@@ -109,8 +109,8 @@ Fill in the `Tor_Hidden_Service.onion` to the `rpc_host` in the `joinmarket.cfg`
 
 ### CONFIG -> CONNECT in JoininBox
 * Username: `raspibolt `
-* Password: `passwordB` or `sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-`
-* Host: `LAN_IP_OF_THE_NODE` or `sudo cat /mnt/hdd/tor/bitcoinrpc/hostname`  
+* Password: `passwordB` or `sudo cat /mnt/hdd/bitcoin/app-data/bitcoin.conf | grep rpcpassword | cut -c 13-`
+* Host: `LAN_IP_OF_THE_NODE` or `sudo cat /mnt/hdd/app-data/tor/bitcoinrpc/hostname`  
 * Port: `8332`
   
 ---
