@@ -30,7 +30,7 @@ if [ "$1" = "set" ]; then
   # check that config file exists
   raspiblitzConfExists=$(ls ${configFile} 2>/dev/null | grep -c "${configFile}")
   if [ ${raspiblitzConfExists} -eq 0 ]; then
-    echo "# blitz.conf.sh $@"
+    echo "# blitz.conf.sh $*"
     echo "# FAIL: missing config file: ${configFile}"
     exit 3
   fi
