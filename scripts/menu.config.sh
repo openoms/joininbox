@@ -10,7 +10,11 @@ if [ ${#network} -eq 0 ] || [ "${network}" = "unknown" ] ;then
   elif [ "${runningEnv}" = mynode ];then
     network=mainnet
   elif [ "${runningEnv}" = raspiblitz ];then
-    source /mnt/hdd/raspiblitz.conf
+    if [ -f "/mnt/hdd/raspiblitz.conf" ]; then
+      source /mnt/hdd/raspiblitz.conf
+    else
+      source /mnt/hdd/app-data/raspiblitz.conf
+    fi
     if [ $network = bitcoin ];then
       network=${chain}net
     else

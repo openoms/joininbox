@@ -447,7 +447,7 @@ You need to run rescanblockchain on that wallet in bitcoind after importing the 
 Rescanning from the first SegWit block is sufficient for the default SegWit wallets.
 
 * Monitor progress (on a RaspiBlitz):  
-`sudo tail -fn 100 /mnt/hdd/bitcoin/debug.log`  
+`sudo tail -fn 100 /mnt/hdd/app-storage/bitcoin/debug.log`  
 Once the rescan is finished you balances should appear in the `INFO` menu (`wallet-tool.py`)
 ## USB SSD recommendation
 **JoininBox operates on the minimum viable hardware under the assumption that the seed (and passphrase) of the wallets used is safely backed up and can be recovered fully**

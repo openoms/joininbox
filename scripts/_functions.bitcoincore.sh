@@ -334,7 +334,11 @@ function checkRPCwallet {
   if [ $runningEnv = standalone ]; then
     bitcoinConfPath="/home/bitcoin/.bitcoin/bitcoin.conf"
   elif [ $runningEnv = raspiblitz ]; then
-    bitcoinConfPath="/mnt/hdd/bitcoin/bitcoin.conf"
+    if [ -f "/mnt/hdd/raspiblitz.conf" ]; then
+      bitcoinConfPath="/mnt/hdd/bitcoin/bitcoin.conf"
+    else
+      bitcoinConfPath="/mnt/hdd/app-data/bitcoin/bitcoin.conf"
+    fi
   fi
    if ! sudo grep -c "deprecatedrpc=create_bdb" "$bitcoinConfPath"; then
     echo "# Place 'deprecatedrpc=create_bdb' in bitcoin.conf"
@@ -433,8 +437,14 @@ function connectLocalNode() {
   fi
   rpc_wallet="wallet.dat"
   if [ $runningEnv = raspiblitz ]; then
-    rpc_user=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
-    rpc_pass=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+    if [ -f "/mnt/hdd/raspiblitz.conf" ]; then
+      rpc_user=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
+      rpc_pass=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+    else
+      rpc_user=$(sudo cat /mnt/hdd/app-data/bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
+      rpc_pass=$(sudo cat /mnt/hdd/app-data/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+    fi
+
   elif [ $runningEnv = mynode ]; then
     rpc_user=mynode
     rpc_pass=$(sudo cat /mnt/hdd/mynode/settings/.btcrpcpw)

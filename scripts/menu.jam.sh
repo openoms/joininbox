@@ -1,7 +1,11 @@
 #!/bin/bash
 
 source /home/joinmarket/joinin.conf
-source /mnt/hdd/raspiblitz.conf
+if [ -f "/mnt/hdd/raspiblitz.conf" ]; then
+  source /mnt/hdd/raspiblitz.conf
+else
+  source /mnt/hdd/app-data/raspiblitz.conf
+fi
 
 # BASIC MENU INFO
 HEIGHT=8
