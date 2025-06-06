@@ -26,17 +26,6 @@ function listCJcandidateTXNs {
   done
 }
 
-function installBoltzmann {
-  if [ ! -f "/home/joinmarket/boltzmann/bvenv/bin/activate" ]; then
-    cd /home/joinmarket/ || exit 1
-    git clone https://code.samourai.io/oxt/boltzmann.git
-    cd boltzmann || exit 1
-    python3 -m venv bvenv
-    source bvenv/bin/activate || exit 1
-    python setup.py install
-  fi
-}
-
 function dialog_inputbox {
   local title=$1
   local text=$2
@@ -66,7 +55,7 @@ isLocalBitcoinCLI=$(sudo -u bitcoin bitcoin-cli -version | grep -c "Bitcoin Core
 isTxindex=$(sudo -u bitcoin cat /home/bitcoin/.bitcoin/bitcoin.conf | grep -c "txindex=1")
 
 # BASIC MENU INFO
-HEIGHT=13
+HEIGHT=12
 WIDTH=61
 CHOICE_HEIGHT=7
 TITLE="Tools"
@@ -97,8 +86,6 @@ if [ "$isLocalBitcoinCLI" -gt 0 ] && [ "$isTxindex" -gt 0 ]; then
     CHOICE_HEIGHT=$((CHOICE_HEIGHT + 1))
   fi
 fi
-OPTIONS+=(
-  BOLTZMANN "Analyze the entropy of a transaction")
 if [ "${runningEnv}" != mynode ]; then
   OPTIONS+=(
     PASSWORD "Change the ssh password")
@@ -182,15 +169,6 @@ CHECKTXN)
   echo "sudo -u bitcoin /home/bitcoin/bitcoin-scripts/checktransaction.sh -rpcwallet=$rpc_wallet $dialog_output"
   echo
   sudo -u bitcoin /home/bitcoin/bitcoin-scripts/checktransaction.sh -rpcwallet=$rpc_wallet $dialog_output
-  echo
-  echo "Press ENTER to return to the menu..."
-  read key
-  ;;
-BOLTZMANN)
-  dialog_inputbox "Boltzmann transaction entropy analysis" "\nUsing: https://code.samourai.io/oxt/boltzmann\n\nPaste a TXID to analyze" 11 71
-  clear
-  installBoltzmann
-  python /home/joinmarket/start.boltzmann.py --txid=$dialog_output
   echo
   echo "Press ENTER to return to the menu..."
   read key
