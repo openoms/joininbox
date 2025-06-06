@@ -35,3 +35,12 @@ arm64-rpi-image:
 	# Compute checksum of the compressed image
 	cd ci/arm64-rpi && \
 	sha256sum joininbox-arm64-rpi.img.gz > joininbox-arm64-rpi.img.gz.sha256
+
+release-tag:
+	@if [ -z "$(TAG)" ]; then \
+		echo "Error: TAG parameter is required. Usage: make release-tag TAG=v0.7.4"; \
+		exit 1; \
+	fi
+	@echo "Creating signed tag $(TAG) and pushing to origin..."
+	git tag -s $(TAG) -m "$(TAG)" && git push origin $(TAG)
+	@echo "Successfully created and pushed signed tag $(TAG)"
