@@ -23,7 +23,7 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 - [Features](#features)
 - [Required Hardware](#required-hardware)
   - [A computer running a Debian / Ubuntu Linux flavour.](#a-computer-running-a-debian--ubuntu-linux-flavour)
-  - [RaspberryPi 4 or 3](#raspberrypi-4-or-3)
+  - [RaspberryPi 5 or 4](#raspberrypi-5-or-4)
   - [VPS eg: host4coins.net](#vps-eg-host4coinsnet)
 - [Set up using an SDcard image](#set-up-using-an-sdcard-image)
 - [Set up JoininBox on Linux](#set-up-joininbox-on-linux)
@@ -32,7 +32,6 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 - [More info](#more-info)
 - [About JoinMarket](#about-joinmarket)
 - [Forums](#forums)
-- [Donations](#donations)
 
 ## Features
 
@@ -44,7 +43,7 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
   * RaspiBlitz over [LAN or Tor](prepare_remote_node.md#raspiblitz)
   * RoninDojo over [LAN or Tor](prepare_remote_node.md#ronindojo)
 * Start a pruned node from https://pruned.host4coins.net/blocks
-* JoininBox is part the RaspiBlitz SERVICES
+* JoininBox is part of the RaspiBlitz SERVICES
 
 **The addresses, transactions and balances of JoinMarket can be seen in the watch-only wallet of the connected node.**
   * use your own or a trusted node
@@ -53,10 +52,10 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 ## Required Hardware
 ### A computer running a Debian / Ubuntu Linux flavour. 
 * See the [tested-environments](#tested-environments).
-### RaspberryPi 4 or 3
+### RaspberryPi 5 or 4
 * Power supply (5V 3A and above recommended)
 * Heatsink case
-* 32 GB Endurence type SDcard
+* 32 GB Endurance type SDcard
 * [(USB SSD to run a pruned bitcoin node locally)](FAQ.md#usb-ssd-recommendation)
 ### VPS eg: [host4coins.net](https://host4coins.net/)
 Recommended minimum:
@@ -162,8 +161,3 @@ the default password is: `joininbox` - will be prompted to change it on the firs
 * IRC: #joinmarket on [libera.chat](https://libera.chat/) or [hackint.org](https://hackint.org/)
 * Reddit: <https://www.reddit.com/r/joinmarket/>
 * Keybase: <https://keybase.io/team/raspiblitz#joinmarket>
-
-## Donations
-* For JoinMarket (general): https://bitcoinprivacy.me/joinmarket-donations
-* To waxwing for JoinMarket: <https://joinmarket.me/donations/>
-* To openoms for JoininBox (LN + payjoin enabled - open in the [Tor Browser](https://www.torproject.org/)): <http://7tpv3ynajkv6cdocmzitcd4z3xrstp3ic6xtv5om3dc2ned3fffll5qd.onion/apps/4FePMm7m818oppkTYNZRwbDnL6HP/pos>
