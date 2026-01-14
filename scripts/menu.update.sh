@@ -16,9 +16,15 @@ OPTIONS=()
 BACKTITLE="JoininBox GUI"
 
 # Basic Options
+# Determine if using tag or commit for display
+testedVersion=$(grep 'testedJMversion=' < ~/install.joinmarket.sh | grep -v '^#' | cut -d '"' -f 2)
+if [ -z "$testedVersion" ]; then
+  testedVersion=$(grep 'testedJMcommit=' < ~/install.joinmarket.sh | cut -d '"' -f 2 | cut -c 1-12)
+  testedVersion="${testedVersion} (commit)"
+fi
 OPTIONS+=(
   JOININBOX  "Update the JoininBox scripts and menu"
-  JOINMARKET "Update/reinstall JoinMarket to $(grep testedJMversion= < ~/install.joinmarket.sh | cut -d '"' -f 2)")
+  JOINMARKET "Update/reinstall JoinMarket to ${testedVersion}")
 
 if [ "$runningEnv" = "standalone" ]; then
   OPTIONS+=(\

@@ -1,7 +1,12 @@
 #!/bin/bash
 
 # https://github.com/JoinMarket-Org/joinmarket-clientserver/releases
-testedJMversion="v0.9.11"
+# Use tag for verification when available, otherwise use commit hash
+# testedJMversion="v0.9.11"
+
+# https://github.com/JoinMarket-Org/joinmarket-clientserver/commits/master/
+# Only used if testedJMversion is empty or not set
+testedJMcommit="ce32bafbb5d716bde61830f71266410249d43dbc"
 
 PGPsigner="kristapsk"
 PGPpkeys="https://github.com/kristapsk.gpg"
@@ -21,7 +26,7 @@ usage() {
   printf %s"${me} [--option <argument>]
 
 a script to install, update or configure JoinMarket
-the latest tested version: $testedJMversion is installed by default with the QT GUI
+the latest tested version: ${testedJMversion:-$testedJMcommit} is installed by default with the QT GUI
 
 Options:
 -h, --help                                           this help info
@@ -110,8 +115,12 @@ done
 : "${install:=install}"
 range_argument install "install" "config" "update" "testPR" "commit"
 
-: "${version:=${testedJMversion}}"
-curl -s "https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/${version}" | grep -q "\"message\": \"Version not found\"" && error_msg "'There is no: https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/${version}'"
+# Use tag if set, otherwise use commit hash
+: "${version:=${testedJMversion:-$testedJMcommit}}"
+# Only check GitHub releases if version looks like a tag (starts with 'v')
+if [[ "${version}" == v* ]]; then
+  curl -s "https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/${version}" | grep -q "\"message\": \"Version not found\"" && error_msg "'There is no: https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/${version}'"
+fi
 
 : "${qtgui:=false}"
 range_argument qtgui "0" "1" "false" "true"
@@ -183,37 +192,29 @@ function installJoinMarket() {
   elif [ "$install" = "update" ] && [ ${#2} -gt 0 ]; then
     updateVersion="$2"
     sudo -u ${user} git reset --hard $updateVersion
-  else
-    sudo -u ${user} git reset --hard $testedJMversion
-
-    sudo -u ${user} wget --prefer-family=ipv4 -O "pgp_keys.asc" ${PGPpkeys}
-    sudo -u ${user} gpg --import --import-options show-only ./pgp_keys.asc
-    fingerprint=$(sudo -u ${user} gpg "pgp_keys.asc" 2>/dev/null | grep "${PGPcheck}" -c)
-    if [ ${fingerprint} -lt 1 ]; then
-      echo
-      echo "# WARNING --> the PGP fingerprint is not as expected for ${PGPsigner}"
-      echo "# Should contain PGP: ${PGPcheck}"
-      echo "# PRESS ENTER to TAKE THE RISK if you think all is OK"
-      read -r
-    fi
-    sudo -u ${user} gpg --import ./pgp_keys.asc
-
-    verifyResult=$(sudo -u ${user} git verify-tag $testedJMversion 2>&1)
-
-    goodSignature=$(echo ${verifyResult} | grep 'Good signature' -c)
-    echo "# goodSignature(${goodSignature})"
-    correctKey=$(echo ${verifyResult} | tr -d " \t\n\r" | grep "${PGPcheck}" -c)
-    echo "# correctKey(${correctKey})"
-    if [ ${correctKey} -lt 1 ] || [ ${goodSignature} -lt 1 ]; then
-      echo
-      echo "# BUILD FAILED --> PGP verification not OK / signature(${goodSignature}) verify(${correctKey})"
-      exit 1
+    echo "# Verifying signature for version: $updateVersion"
+    # Determine if it's a tag (starts with 'v') or commit hash
+    if [[ "$updateVersion" == v* ]]; then
+      sudo -u ${user} bash /home/joinmarket/joininbox/scripts/verify.git.sh \
+        "${PGPsigner}" "${PGPpkeys}" "${PGPcheck}" "$updateVersion" || exit 1
     else
-      echo
-      echo "#########################################################"
-      echo "# OK --> the PGP signature of the $testedJMversion tag is correct"
-      echo "#########################################################"
-      echo
+      sudo -u ${user} /home/joinmarket/joininbox/scripts/verify.git.sh \
+        "${PGPsigner}" "${PGPpkeys}" "${PGPcheck}" || exit 1
+    fi
+  else
+    # Decide whether to use tag or commit
+    if [ -n "${testedJMversion}" ]; then
+      echo "# Installing tested version: ${testedJMversion}"
+      sudo -u ${user} git reset --hard $testedJMversion
+      echo "# Verifying tag signature: ${testedJMversion}"
+      sudo -u ${user} bash /home/joinmarket/joininbox/scripts/verify.git.sh \
+        "${PGPsigner}" "${PGPpkeys}" "${PGPcheck}" "${testedJMversion}" || exit 1
+    else
+      echo "# Installing tested commit: ${testedJMcommit}"
+      sudo -u ${user} git reset --hard $testedJMcommit
+      echo "# Verifying commit signature: ${testedJMcommit}"
+      sudo -u ${user} /home/joinmarket/joininbox/scripts/verify.git.sh \
+        "${PGPsigner}" "${PGPpkeys}" "${PGPcheck}" || exit 1
     fi
   fi
 
