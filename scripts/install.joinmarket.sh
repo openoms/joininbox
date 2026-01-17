@@ -198,7 +198,7 @@ function installJoinMarket() {
       sudo -u ${user} bash /home/joinmarket/joininbox/scripts/verify.git.sh \
         "${PGPsigner}" "${PGPpkeys}" "${PGPcheck}" "$updateVersion" || exit 1
     else
-      sudo -u ${user} /home/joinmarket/joininbox/scripts/verify.git.sh \
+      sudo -u ${user} bash /home/joinmarket/joininbox/scripts/verify.git.sh \
         "${PGPsigner}" "${PGPpkeys}" "${PGPcheck}" || exit 1
     fi
   else
@@ -213,7 +213,7 @@ function installJoinMarket() {
       echo "# Installing tested commit: ${testedJMcommit}"
       sudo -u ${user} git reset --hard $testedJMcommit
       echo "# Verifying commit signature: ${testedJMcommit}"
-      sudo -u ${user} /home/joinmarket/joininbox/scripts/verify.git.sh \
+      sudo -u ${user} bash /home/joinmarket/joininbox/scripts/verify.git.sh \
         "${PGPsigner}" "${PGPpkeys}" "${PGPcheck}" || exit 1
     fi
   fi

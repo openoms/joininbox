@@ -399,11 +399,11 @@ else
   exit 1
 fi
 
-command="sudo -u joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh \
+command="bash /home/joinmarket/joininbox/scripts/verify.git.sh \
   ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint}"
 echo "running: ${command}"
 chmod 777 /dev/shm
-${command} || exit 1
+sudo -u joinmarket ${command} || exit 1
 
 runuser joinmarket -c "cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/"
 runuser joinmarket -c "cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null"
