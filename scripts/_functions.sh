@@ -14,6 +14,14 @@ walletPath="/home/joinmarket/.joinmarket/wallets/"
 JMcfgPath="/home/joinmarket/.joinmarket/joinmarket.cfg"
 joininConfPath="/home/joinmarket/joinin.conf"
 
+## dialog fixes
+# fallback for unknown terminal types (e.g., xterm-ghostty)
+if ! infocmp "$TERM" &>/dev/null 2>&1; then
+  export TERM=xterm-256color
+fi
+# fix dialog box drawing characters
+export NCURSES_NO_UTF8_ACS=1
+
 # functions
 source /home/joinmarket/_functions.menu.sh
 source /home/joinmarket/_functions.bitcoincore.sh
