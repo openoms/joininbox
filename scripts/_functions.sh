@@ -16,7 +16,7 @@ joininConfPath="/home/joinmarket/joinin.conf"
 
 ## dialog fixes
 # fallback for unknown terminal types (e.g., xterm-ghostty)
-if ! infocmp "$TERM" &>/dev/null 2>&1; then
+if ! infocmp "$TERM" &>/dev/null; then
   export TERM=xterm-256color
 fi
 # fix dialog box drawing characters
