@@ -282,8 +282,8 @@ function generateJMconfig() {
     fi
     sed -i "s/^rpc_port =.*/rpc_port = $RPCPORT/g" $JMcfgPath
     echo  "# rpc_port = $RPCPORT"
-    sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/g" $JMcfgPath
-    echo "# using the bitcoind wallet: wallet.dat"
+    sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = watch-only-descriptor-wallet/g" $JMcfgPath
+    echo "# using the bitcoind watch-only-descriptor-wallet"
     # set joinin.conf value
     /home/joinmarket/set.value.sh set network mainnet ${joininConfPath}
   fi

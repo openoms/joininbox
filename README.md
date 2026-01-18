@@ -45,7 +45,7 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 * Start a pruned node from https://pruned.host4coins.net/blocks
 * JoininBox is part of the RaspiBlitz SERVICES
 
-**The addresses, transactions and balances of JoinMarket can be seen in the watch-only wallet of the connected node.**
+**The addresses, transactions and balances of JoinMarket can be seen in the watch-only-descriptor-wallet of the connected node.**
   * use your own or a trusted node
   * to protect privacy in case of physical access use disk encryption
 
