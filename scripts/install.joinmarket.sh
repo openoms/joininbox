@@ -119,7 +119,7 @@ range_argument install "install" "config" "update" "testPR" "commit"
 : "${version:=${testedJMversion:-$testedJMcommit}}"
 # Only check GitHub releases if version looks like a tag (starts with 'v')
 if [[ "${version}" == v* ]]; then
-  curl -s "https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/${version}" | grep -q "\"message\": \"Version not found\"" && error_msg "'There is no: https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/${version}'"
+  curl -s "https://github.com/JoinMarket-Org/joinmarket-clientserver/releases/tag/${version}" | grep -q "\"message\": \"Version not found\"" && error_msg "'There is no: https://github.com/JoinMarket-Org/joinmarket-clientserver/releases/tag/${version}'"
 fi
 : "${qtgui:=false}"
 range_argument qtgui "0" "1" "false" "true"

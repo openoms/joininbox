@@ -379,7 +379,7 @@ function checkWalletMigration {
     return 0
   fi
 
-  getRPC
+  # RPC settings are already available from parent checkRPCwallet function
   tor=""
   if [ "$(echo "$rpc_host" | grep -c .onion)" -gt 0 ]; then
     tor="torsocks"
