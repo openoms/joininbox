@@ -247,8 +247,8 @@ setJMconfigToSignet() {
   sed -i "s/^rpc_password =.*/rpc_password = $RPCPWSIGNET/g" $JMcfgPath
   echo "# rpc_password = $RPCPWSIGNET"
   # rpc_wallet_file
-  sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/g" $JMcfgPath
-  echo "# using the bitcoind wallet: wallet.dat"
+  sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = watch-only-descriptor-wallet/g" $JMcfgPath
+  echo "# using the bitcoind watch-only-descriptor-wallet"
   # rpc_host
   sed -i "s/^rpc_host =.*/rpc_host = 127.0.0.1/g" $JMcfgPath
   echo "# rpc_host = 127.0.0.1"
@@ -329,30 +329,13 @@ function checkRPCwallet {
   else
     rpc_wallet=$1
   fi
-  echo "# Check 'deprecatedrpc=create_bdb' in bitcoin.conf"
-  source ${joininConfPath}
-  if [ $runningEnv = standalone ]; then
-    bitcoinConfPath="/home/bitcoin/.bitcoin/bitcoin.conf"
-  elif [ $runningEnv = raspiblitz ]; then
-    if [ -f "/mnt/hdd/raspiblitz.conf" ]; then
-      bitcoinConfPath="/mnt/hdd/bitcoin/bitcoin.conf"
-    else
-      bitcoinConfPath="/mnt/hdd/app-data/bitcoin/bitcoin.conf"
-    fi
-  fi
-   if ! sudo grep -c "deprecatedrpc=create_bdb" "$bitcoinConfPath"; then
-    echo "# Place 'deprecatedrpc=create_bdb' in bitcoin.conf"
-    echo "deprecatedrpc=create_bdb" | sudo tee -a "$bitcoinConfPath"
-    echo "# Restarting bitcoind"
-    sudo systemctl restart bitcoind
-  fi
 
   echo "# Making sure the set $rpc_wallet wallet is present in bitcoind"
   trap 'rm -f "$connectionOutput"' EXIT
   connectionOutput=$(mktemp -p /dev/shm/)
   walletFound=$(customRPC "# Check wallet" "listwallets" 2>$connectionOutput | grep -c "$rpc_wallet")
   if [ $walletFound -eq 0 ]; then
-    echo "# Setting a watch only wallet in Bitcoin Core named $rpc_wallet"
+    echo "# Setting a watch-only-descriptor-wallet in Bitcoin Core named $rpc_wallet"
     tor=""
     if [ $(echo $rpc_host | grep -c .onion) -gt 0 ]; then
       tor="torsocks"
@@ -361,7 +344,7 @@ function checkRPCwallet {
     fi
     #TODO rewrite customRPC to support multiple params
     $tor curl -sS --data-binary \
-      '{"jsonrpc": "1.0", "id":"# Create the bitcoind wallet", "method": "createwallet", "params": {"wallet_name":"'"$rpc_wallet"'","descriptors":false}}' \
+      '{"jsonrpc": "1.0", "id":"# Create the bitcoind wallet", "method": "createwallet", "params": {"wallet_name":"'"$rpc_wallet"'","descriptors":true,"disable_private_keys":true}}' \
       http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/wallet/$rpc_wallet | jq .
     echo
     walletFound=$(customRPC "# Check wallet" "listwallets" 2>$connectionOutput | grep -c "$rpc_wallet")
@@ -374,6 +357,75 @@ function checkRPCwallet {
     echo
   fi
   echo "# The wallet: $rpc_wallet is present and loaded in the connected bitcoind"
+
+  # Check for wallet migration from legacy wallet.dat
+  checkWalletMigration
+}
+
+# checkWalletMigration - detects legacy wallet.dat and guides user through migration
+# This function checks if:
+# 1. The old wallet.dat exists in Bitcoin Core
+# 2. The new watch-only-descriptor-wallet is being used
+# 3. Migration has not been completed yet
+# If migration is needed, it prompts the user to rescan after opening their JM wallets
+function checkWalletMigration {
+  # Skip if migration was already completed
+  if grep -q "walletMigrationDone=true" "${joininConfPath}" 2>/dev/null; then
+    return 0
+  fi
+
+  # Skip if we're not using the new descriptor wallet
+  if [ "$rpc_wallet" != "watch-only-descriptor-wallet" ]; then
+    return 0
+  fi
+
+  getRPC
+  tor=""
+  if [ "$(echo "$rpc_host" | grep -c .onion)" -gt 0 ]; then
+    tor="torsocks"
+  fi
+
+  # Check if old wallet.dat exists in bitcoind (try to load it to see if it exists)
+  # First check listwalletdir for wallet.dat
+  oldWalletExists=$($tor curl -sS --data-binary \
+    '{"jsonrpc": "1.0", "id":"check_old_wallet", "method": "listwalletdir", "params": []}' \
+    "http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/" 2>/dev/null | jq -r '.result.wallets[].name' 2>/dev/null | grep -c "^wallet.dat$")
+
+  if [ "$oldWalletExists" -gt 0 ]; then
+    echo
+    echo "########################################################################"
+    echo "# WALLET MIGRATION NOTICE"
+    echo "########################################################################"
+    echo
+    echo "# A legacy wallet.dat was detected in Bitcoin Core."
+    echo "# JoininBox now uses descriptor wallets (watch-only-descriptor-wallet)"
+    echo "# for better compatibility with modern Bitcoin Core versions."
+    echo
+    echo "# To complete the migration and see your transaction history:"
+    echo
+    echo "#   1. Open each of your JoinMarket wallets once using:"
+    echo "#      WALLET -> DISPLAY"
+    echo "#      This imports the addresses into the new descriptor wallet."
+    echo
+    echo "#   2. After opening all wallets, run a blockchain rescan:"
+    echo "#      WALLET -> RESCAN"
+    echo "#      Use blockheight 481824 (first SegWit block) or later if you know when your wallet had its first deposit."
+    echo
+    echo "# The rescan may take several hours depending on wallet age."
+    echo "# You can monitor progress in the Bitcoin Core debug.log"
+    echo
+    echo "########################################################################"
+    echo
+    echo "# Press ENTER to continue..."
+    read -r
+
+    # Mark migration notice as shown (user can still run rescan manually)
+    if ! grep -q "walletMigrationDone=" "${joininConfPath}" 2>/dev/null; then
+      echo "walletMigrationDone=true" >>"${joininConfPath}"
+    else
+      sed -i "s/^walletMigrationDone=.*/walletMigrationDone=true/g" "${joininConfPath}"
+    fi
+  fi
 }
 
 # customRPC - sends a custom RPC command
@@ -435,7 +487,7 @@ function connectLocalNode() {
   elif [ "${network}" = testnet ]; then
     rpc_port="18332"
   fi
-  rpc_wallet="wallet.dat"
+  rpc_wallet="watch-only-descriptor-wallet"
   if [ $runningEnv = raspiblitz ]; then
     if [ -f "/mnt/hdd/raspiblitz.conf" ]; then
       rpc_user=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
