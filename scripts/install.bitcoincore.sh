@@ -5,13 +5,13 @@ source /home/joinmarket/_functions.sh
 
 # check connectedRemoteNode var in joinin.conf
 if ! grep -Eq "^connectedRemoteNode=" $joininConfPath; then
-  echo "connectedRemoteNode=off" >> $joininConfPath
+  echo "connectedRemoteNode=off" >>$joininConfPath
 fi
 
 if [ "$1" = "signetOn" ]; then
   installBitcoinCore
   installSignet
-  if [ "$connectedRemoteNode" = "on" ];then
+  if [ "$connectedRemoteNode" = "on" ]; then
     backupJMconf
   fi
   generateJMconfig
@@ -24,16 +24,16 @@ if [ "$1" = "signetOn" ]; then
     bitcoinUser="joinmarket"
     cliPath="/home/joinmarket/bitcoin/"
   fi
-  if [ ! -f /home/${bitcoinUser}/.bitcoin/signet/wallets/wallet.dat/wallet.dat ];then
-    echo "# Create wallet.dat for signet ..."
+  if [ ! -d /home/${bitcoinUser}/.bitcoin/signet/wallets/watch-only-descriptor-wallet ]; then
+    echo "# Create watch-only-descriptor-wallet for signet ..."
     sleep 10
-    sudo -u ${bitcoinUser} ${cliPath}/bitcoin-cli -signet -named createwallet wallet_name=wallet.dat descriptors=false
+    sudo -u ${bitcoinUser} ${cliPath}/bitcoin-cli -signet -named createwallet wallet_name=watch-only-descriptor-wallet descriptors=true disable_private_keys=true
   fi
 
 elif [ "$1" = "signetOff" ]; then
   removeSignetdService
-  isSignet=$(grep -c "network = signet" < $JMcfgPath)
-  if [ $isSignet -gt 0 ];then
+  isSignet=$(grep -c "network = signet" <$JMcfgPath)
+  if [ $isSignet -gt 0 ]; then
     echo "# Removing the joinmarket.cfg with signet settings"
     rm -f $JMcfgPath
   else
