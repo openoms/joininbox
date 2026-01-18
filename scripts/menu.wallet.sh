@@ -194,7 +194,7 @@ Enter the new gap limit to be used" 16 60 2> "$gaplimit"
     echo
     /home/joinmarket/start.script.sh wallet-tool "$(cat $wallet)"|grep mixdepth|sed -n '1~2p'|awk '{print $3}'
     echo
-    echo "Import the master public keys to Specter Desktop or Electrum to create watch only wallets."
+    echo "Import the master public keys to Specter Desktop or Electrum to create watch-only wallets."
     echo
     echo "Press ENTER to return to the menu..."
     read key
