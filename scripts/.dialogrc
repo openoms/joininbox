@@ -42,7 +42,7 @@ dialog_color = (CYAN,BLACK,OFF)
 title_color = (CYAN,BLACK,ON)
 
 # Dialog box border color
-border_color = (BLACK,BLACK,ON)
+border_color = (CYAN,BLACK,ON)
 
 # Active button color
 button_active_color = (BLACK,CYAN,ON)

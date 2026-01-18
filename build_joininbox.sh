@@ -276,22 +276,30 @@ echo "##########"
 echo
 # apt dependencies for python
 apt-get install -y python3 virtualenv python3-venv python3-dev python3-wheel python3-jinja2 python3-pip
-if [ -f "/usr/bin/python3.8" ]; then
-  # use python 3.8 if available
-  update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
-  echo "# python calls python3.8"
-elif [ -f "/usr/bin/python3.9" ]; then
-  # use python 3.9 if available
-  update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
-  echo "# python calls python3.9"
-elif [ -f "/usr/bin/python3.10" ]; then
-  # use python 3.10 if available
-  update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
-  echo "# python calls python3.10"
+if [ -f "/usr/bin/python3.13" ]; then
+  # use python 3.13 if available
+  update-alternatives --install /usr/bin/python python /usr/bin/python3.13 1
+  echo "# python calls python3.13"
+elif [ -f "/usr/bin/python3.12" ]; then
+  # use python 3.12 if available
+  update-alternatives --install /usr/bin/python python /usr/bin/python3.12 1
+  echo "# python calls python3.12"
 elif [ -f "/usr/bin/python3.11" ]; then
   # use python 3.11 if available
   update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1
   echo "# python calls python3.11"
+elif [ -f "/usr/bin/python3.10" ]; then
+  # use python 3.10 if available
+  update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
+  echo "# python calls python3.10"
+elif [ -f "/usr/bin/python3.9" ]; then
+  # use python 3.9 if available
+  update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
+  echo "# python calls python3.9"
+elif [ -f "/usr/bin/python3.8" ]; then
+  # use python 3.8 if available
+  update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
+  echo "# python calls python3.8"
 else
   echo "# FAIL- there is no tested version of python present"
   exit 1
@@ -391,11 +399,11 @@ else
   exit 1
 fi
 
-command="sudo -u joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh \
+command="bash /home/joinmarket/joininbox/scripts/verify.git.sh \
   ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint}"
 echo "running: ${command}"
 chmod 777 /dev/shm
-${command} || exit 1
+sudo -u joinmarket ${command} || exit 1
 
 runuser joinmarket -c "cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/"
 runuser joinmarket -c "cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null"

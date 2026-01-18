@@ -1,39 +1,40 @@
 #!/bin/bash -e
 
+sudo apt-get update
+
 # install packer
 if ! packer version 2>/dev/null; then
-  curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-  sudo apt-add-repository -y "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-  sudo apt-get update
-  echo -e "\nInstalling packer..."
-  sudo apt-get install -y packer
+	curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+	sudo apt-add-repository -y "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+	sudo apt-get update
+	echo -e "\nInstalling packer..."
+	sudo apt-get install -y packer
 else
-  echo "# Packer is installed"
+	echo "# Packer is installed"
 fi
 
-# install qemu
+# install qemu and UEFI firmware
 echo "# Install qemu ..."
 sudo apt-get update
-sudo apt-get install -y qemu-system
+sudo apt-get install -y qemu-system ovmf
 
-# install qemu plugin
-packer plugins install github.com/hashicorp/qemu
-
+# set vars from positional arguments (for backward compatibility with CI)
 if [ $# -gt 0 ]; then
-  github_user=$1
+	github_user=$1
 else
-  github_user=openoms
+	github_user=openoms
 fi
 
 if [ $# -gt 1 ]; then
-  branch=$2
+	branch=$2
 else
-  branch=master
+	branch=master
 fi
 
+vars="-var github_user=${github_user} -var branch=${branch}"
+
 # Build the image
-echo "# Building image ..."
+echo "# Build the image with: github_user=${github_user} branch=${branch}"
 cd debian
-PACKER_LOG=1 packer build \
- -var github_user=${github_user} -var branch=${branch} \
- -only=qemu joininbox-amd64-debian.json
+packer init -upgrade .
+PACKER_LOG=1 packer build ${vars} -only=qemu.debian build.amd64-debian.pkr.hcl || exit 1
