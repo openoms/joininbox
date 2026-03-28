@@ -1,6 +1,8 @@
 # images, checksums and signatures are at:
 # https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/
-# Keep this on the moving "debian-13" symlink so point-release updates do not break builds.
+# Defaults below are safe fallbacks.
+# ci/amd64/packer.build.amd64-debian.sh resolves and injects the latest point-release
+# ISO name and matching checksum at runtime to avoid point-release breakage.
 variable "iso_name" { default = "debian-13-amd64-netinst.iso" }
 variable "iso_checksum" { default = "file:https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/SHA256SUMS" }
 
