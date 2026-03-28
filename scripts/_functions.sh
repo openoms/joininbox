@@ -170,16 +170,16 @@ function stopYG() {
 
 function YGnickname() {
   # Retrieves nickname from the latest NickServ message in the newest logfile
-  if ls -td /home/joinmarket/.joinmarket/logs/* 1>&2>/dev/null ; then
-    newest_log=$(ls -td /home/joinmarket/.joinmarket/logs/* | grep J5 | head -n 1)
-    name=$(grep NickServ $newest_log | tail -1 | awk '{print $9}')
-    if [ ${#name} -eq 0 ];then
+  newest_log=$(ls -td /home/joinmarket/.joinmarket/logs/*J5* 2>/dev/null | head -n 1)
+  if [ -n "$newest_log" ] && [ -f "$newest_log" ]; then
+    name=$(grep NickServ "$newest_log" 2>/dev/null | tail -1 | awk '{print $9}')
+    if [ ${#name} -eq 0 ]; then
       name="no_Nick_see_LOGS"
     fi
   else
     name="waiting__to__run"
   fi
-  echo $name
+  echo "$name"
 }
 
 # copyJoininboxScripts
