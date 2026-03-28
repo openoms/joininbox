@@ -37,15 +37,22 @@ debian_major=${DEBIAN_MAJOR:-13}
 debian_iso_dir="https://cdimage.debian.org/debian-cd/current/amd64/iso-cd"
 debian_sums_url="${debian_iso_dir}/SHA256SUMS"
 debian_sums_sig_url="${debian_iso_dir}/SHA256SUMS.sign"
-debian_keyring="/usr/share/keyrings/debian-archive-keyring.gpg"
+debian_cd_key_urls=(
+	"https://www.debian.org/CD/key-DA87E80D6294BE9B.txt"
+	"https://www.debian.org/CD/key-988021A964E6EA7D.txt"
+)
+debian_cd_expected_fprs=(
+	"DF9B9C49EAA9298432589D76DA87E80D6294BE9B"
+	"10460DAD76165AD81FBC0CE9988021A964E6EA7D"
+)
 
-if [ ! -f "${debian_keyring}" ]; then
-	echo "# Installing Debian archive keyring and gpgv"
-	sudo apt-get install -y debian-archive-keyring gpgv
+if ! command -v gpgv >/dev/null 2>&1; then
+	echo "# Installing gpgv"
+	sudo apt-get install -y gpgv
 fi
 
-if [ ! -f "${debian_keyring}" ]; then
-	echo "ERROR: Debian archive keyring not found at ${debian_keyring}"
+if ! command -v gpgv >/dev/null 2>&1; then
+	echo "ERROR: gpgv is required for signature verification"
 	exit 1
 fi
 
@@ -57,7 +64,26 @@ curl -fsSL "${debian_sums_url}" -o "${tmp_checksums_dir}/SHA256SUMS"
 curl -fsSL "${debian_sums_sig_url}" -o "${tmp_checksums_dir}/SHA256SUMS.sign"
 
 echo "# Verifying SHA256SUMS signature (PGP)"
-if gpgv --keyring "${debian_keyring}" "${tmp_checksums_dir}/SHA256SUMS.sign" "${tmp_checksums_dir}/SHA256SUMS" >/dev/null 2>&1; then
+cd_keyring="${tmp_checksums_dir}/debian-cd-signing-keys.gpg"
+tmp_gnupg_home="${tmp_checksums_dir}/gnupg-home"
+mkdir -p "${tmp_gnupg_home}"
+chmod 700 "${tmp_gnupg_home}"
+
+for i in "${!debian_cd_key_urls[@]}"; do
+	key_url="${debian_cd_key_urls[$i]}"
+	expected_fpr="${debian_cd_expected_fprs[$i]}"
+	key_file="${tmp_checksums_dir}/cd-key-${i}.asc"
+	curl -fsSL "${key_url}" -o "${key_file}"
+	actual_fpr=$(gpg --homedir "${tmp_gnupg_home}" --show-keys --with-colons "${key_file}" 2>/dev/null | awk -F: '/^fpr:/ {print $10; exit}')
+	if [ -z "${actual_fpr}" ] || [ "${actual_fpr}" != "${expected_fpr}" ]; then
+		echo "# SHA256SUMS signature: FAIL"
+		echo "ERROR: Unexpected fingerprint for ${key_url}"
+		exit 1
+	fi
+	gpg --homedir "${tmp_gnupg_home}" --no-default-keyring --keyring "${cd_keyring}" --import "${key_file}" >/dev/null 2>&1
+done
+
+if gpgv --keyring "${cd_keyring}" "${tmp_checksums_dir}/SHA256SUMS.sign" "${tmp_checksums_dir}/SHA256SUMS" >/dev/null 2>&1; then
 	echo "# SHA256SUMS signature: PASS"
 else
 	echo "# SHA256SUMS signature: FAIL"
