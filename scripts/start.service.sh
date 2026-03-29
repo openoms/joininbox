@@ -43,6 +43,18 @@ Type=simple
 TimeoutSec=infinity
 Restart=no
 
+# Memory limits (DoS / OOM protection)
+MemoryHigh=300M
+MemoryMax=512M
+MemorySwapMax=0
+
+# Reduce OOM kill priority (lower = less likely to be killed)
+OOMScoreAdjust=-500
+OOMPolicy=stop
+
+# CPU limit
+CPUQuota=80%
+
 # Hardening measures
 PrivateTmp=true
 ProtectSystem=full
