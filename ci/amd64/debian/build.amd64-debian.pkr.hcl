@@ -1,7 +1,12 @@
 # images, checksums and signatures are at:
 # https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/
-variable "iso_name" { default = "debian-13.3.0-amd64-netinst.iso" }
-variable "iso_checksum" { default = "c9f09d24b7e834e6834f2ffa565b33d6f1f540d04bd25c79ad9953bc79a8ac02" }
+# NOTE: This template is intended to be invoked via the wrapper script:
+#   ci/amd64/packer.build.amd64-debian.sh
+# The wrapper resolves and injects the latest point-release ISO name and matching checksum
+# at runtime. Defaults below are placeholders and are not guaranteed to work if you run
+# `packer build` directly.
+variable "iso_name" { default = "debian-13-amd64-netinst.iso" }
+variable "iso_checksum" { default = "file:https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/SHA256SUMS" }
 
 variable "github_user" { default = "openoms" }
 variable "branch" { default = "master" }
@@ -57,7 +62,7 @@ source "qemu" "debian" {
   disk_size        = var.image_size
   http_directory   = "./http"
   iso_checksum     = var.iso_checksum
-  iso_url          = "https://cdimage.debian.org/cdimage/release/current/amd64/iso-cd/${var.iso_name}"
+  iso_url          = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/${var.iso_name}"
   memory           = var.memory
   output_directory = "../builds/${local.name_template}-qemu"
   shutdown_command = "echo 'joininbox' | sudo /sbin/shutdown -hP now"

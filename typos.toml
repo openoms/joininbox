@@ -8,3 +8,4 @@
 # don't correct these false positives
 ba = "ba"
 ned = "ned"
+fpr = "fpr"
