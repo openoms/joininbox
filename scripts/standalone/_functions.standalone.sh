@@ -290,9 +290,9 @@ WantedBy=multi-user.target
   echo "# Monitor the bitcoind with: sudo tail -f /home/bitcoin/.bitcoin/mainnet/debug.log"
   echo
 
-  if [ ! -f /home/bitcoin/.bitcoin/mainnet/wallets/wallet.dat/wallet.dat ]; then
-    echo "# Create wallet.dat ..."
+  if [ ! -d /home/bitcoin/.bitcoin/wallets/watch-only-descriptor-wallet ]; then
+    echo "# Create watch-only-descriptor-wallet ..."
     sleep 10
-    sudo -u bitcoin /usr/local/bin/bitcoin-cli -named createwallet wallet_name=wallet.dat descriptors=false
+    sudo -u bitcoin /usr/local/bin/bitcoin-cli -named createwallet wallet_name=watch-only-descriptor-wallet descriptors=true disable_private_keys=true
   fi
 }
