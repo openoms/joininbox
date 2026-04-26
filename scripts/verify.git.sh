@@ -30,9 +30,18 @@ PGPsigner="$1"
 PGPpubkeyLink="$2"
 PGPpubkeyFingerprint="$3"
 
-wget --prefer-family=ipv4 -O /dev/shm/pgp_keys_${PGPsigner}.asc "${PGPpubkeyLink}"
-gpg --import --import-options show-only /dev/shm/pgp_keys_${PGPsigner}.asc
-fingerprint=$(gpg --show-keys /dev/shm/pgp_keys_${PGPsigner}.asc 2>/dev/null | grep "${PGPpubkeyFingerprint}" -c)
+_temp_dir="$(mktemp -d -p /dev/shm/ 2>/dev/null || mktemp -d)"
+trap 'rm -rf "$_temp_dir"' EXIT
+
+keyFile="${_temp_dir}/pgp_keys_${PGPsigner}.asc"
+rawKeyFile="${keyFile}.raw"
+
+wget --prefer-family=ipv4 -O "${rawKeyFile}" "${PGPpubkeyLink}"
+# GitHub can add a Note: armor header when an account key cannot be exported.
+# GPG imports the key anyway, but prints a misleading "unknown armor header".
+grep -v '^Note: ' "${rawKeyFile}" >"${keyFile}"
+gpg --quiet --import --import-options show-only "${keyFile}"
+fingerprint=$(gpg --show-keys --with-subkey-fingerprint "${keyFile}" 2>/dev/null | tr -d " \t\n\r" | grep "${PGPpubkeyFingerprint}" -c)
 if [ "${fingerprint}" -lt 1 ]; then
   echo
   echo "# WARNING --> the PGP fingerprint is not as expected for ${PGPsigner}" >&2
@@ -40,11 +49,9 @@ if [ "${fingerprint}" -lt 1 ]; then
   echo "# Exiting" >&2
   exit 7
 fi
-gpg --import /dev/shm/pgp_keys_${PGPsigner}.asc
-rm /dev/shm/pgp_keys_${PGPsigner}.asc
+gpg --quiet --import "${keyFile}"
 
-trap 'rm -f "$_temp"' EXIT
-_temp="$(mktemp -p /dev/shm/)"
+_temp="${_temp_dir}/git-verify.out"
 
 if [ $# -eq 3 ] || [ -z "$4" ]; then
   commitHash="$(git log --oneline | head -1 | awk '{print $1}')"

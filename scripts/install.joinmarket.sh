@@ -2,19 +2,20 @@
 
 # https://github.com/JoinMarket-Org/joinmarket-clientserver/releases
 # Use tag for verification when available, otherwise use commit hash
-# testedJMversion="v0.9.11"
+testedJMversion="v0.9.12"
 
 # https://github.com/JoinMarket-Org/joinmarket-clientserver/commits/master/
 # Only used if testedJMversion is empty or not set
-testedJMcommit="ce32bafbb5d716bde61830f71266410249d43dbc"
+#testedJMcommit="ce32bafbb5d716bde61830f71266410249d43dbc"
 
-PGPsigner="kristapsk"
-PGPpkeys="https://github.com/kristapsk.gpg"
-PGPcheck="33E472FE870C7E5D"
+PGPsigner="AdamISZ"
+PGPpkeys="https://github.com/AdamISZ.gpg"
+# AdamISZ current primary code-signing key used for v0.9.12
+PGPcheck="0F1C7345D9193D1C8E3F21810C44134F93234873"
 
-#PGPsigner="waxwing"
-#PGPpkeys="https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc"
-#PGPcheck="2B6FC204D9BF332D062B461A141001A1AF77F20B"
+#PGPsigner="kristapsk"
+#PGPpkeys="https://github.com/kristapsk.gpg"
+#PGPcheck="33E472FE870C7E5D"
 
 me="${0##/*}"
 
