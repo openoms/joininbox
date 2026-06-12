@@ -345,7 +345,7 @@ function checkRPCwallet {
     #TODO rewrite customRPC to support multiple params
     $tor curl -sS --data-binary \
       '{"jsonrpc": "1.0", "id":"# Create the bitcoind wallet", "method": "createwallet", "params": {"wallet_name":"'"$rpc_wallet"'","descriptors":true,"disable_private_keys":true}}' \
-      http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/wallet/$rpc_wallet | jq .
+      http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/ | jq .
     echo
     walletFound=$(customRPC "# Check wallet" "listwallets" 2>$connectionOutput | grep -c "$rpc_wallet")
     if [ $walletFound -eq 0 ]; then

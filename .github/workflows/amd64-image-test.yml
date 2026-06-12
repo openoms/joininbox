@@ -1,0 +1,136 @@
+name: amd64-image-test
+
+concurrency:
+  group: amd64-image-test-${{ github.event.workflow_run.id || inputs.run_id || github.run_id }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    branches: ["master"]
+    paths-ignore:
+      - '*.md'
+      - '.gitignore'
+      - 'images'
+      - 'ci/arm64-rpi/**'
+      - 'scripts/jam-remote'
+  workflow_run:
+    workflows: ["amd64-image-build"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "amd64-image-build workflow run ID to test"
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  bats-image-test:
+    name: Run Bats against amd64 image artifact
+    runs-on: ubuntu-22.04
+    timeout-minutes: 240
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.workflow_run.head_repository.full_name || github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.workflow_run.head_sha || github.event.pull_request.head.sha || github.ref }}
+
+      - name: Resolve amd64 image build run ID
+        id: build_run
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PROVIDED_RUN_ID: ${{ github.event.workflow_run.id || inputs.run_id }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha || github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "${PROVIDED_RUN_ID}" ]; then
+            echo "run_id=${PROVIDED_RUN_ID}" >>"${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          echo "Waiting for successful amd64-image-build run for ${HEAD_SHA}"
+          for attempt in {1..180}; do
+            active_run="$(
+              gh run list \
+                --repo "${GITHUB_REPOSITORY}" \
+                --workflow amd64-image-build.yml \
+                --commit "${HEAD_SHA}" \
+                --event pull_request \
+                --limit 20 \
+                --json databaseId,status,conclusion,createdAt \
+                --jq 'map(select(.status != "completed")) | first | .databaseId // ""'
+            )"
+
+            run_id="$(
+              gh run list \
+                --repo "${GITHUB_REPOSITORY}" \
+                --workflow amd64-image-build.yml \
+                --commit "${HEAD_SHA}" \
+                --event pull_request \
+                --limit 20 \
+                --json databaseId,status,conclusion,createdAt \
+                --jq 'map(select(.status == "completed" and .conclusion == "success")) | first | .databaseId // ""'
+            )"
+
+            if [ -n "${run_id}" ]; then
+              echo "run_id=${run_id}" >>"${GITHUB_OUTPUT}"
+              exit 0
+            fi
+
+            failed_run="$(
+              gh run list \
+                --repo "${GITHUB_REPOSITORY}" \
+                --workflow amd64-image-build.yml \
+                --commit "${HEAD_SHA}" \
+                --event pull_request \
+                --limit 20 \
+                --json databaseId,status,conclusion,createdAt \
+                --jq 'map(select(.status == "completed" and (.conclusion != "success" and .conclusion != "skipped"))) | first | .databaseId // ""'
+            )"
+
+            if [ -n "${failed_run}" ]; then
+              echo "amd64-image-build failed for ${HEAD_SHA}: ${failed_run}" >&2
+              exit 1
+            fi
+
+            if [ -z "${active_run}" ] && [ "${attempt}" -gt 5 ]; then
+              echo "No active or successful amd64-image-build run found for ${HEAD_SHA}" >&2
+              exit 1
+            fi
+
+            echo "No completed image build yet, attempt ${attempt}/180"
+            sleep 60
+          done
+
+          echo "Timed out waiting for amd64-image-build for ${HEAD_SHA}" >&2
+          exit 1
+
+      - name: Download amd64 image artifact
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.build_run.outputs.run_id }}
+          pattern: joininbox-amd64-image-*
+          path: artifacts
+          merge-multiple: true
+
+      - name: Verify and decompress image
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cd artifacts
+          sha256sum -c joininbox-amd64-debian.qcow2.gz.sha256
+          gzip -dk joininbox-amd64-debian.qcow2.gz
+          sha256sum -c joininbox-amd64-debian.qcow2.sha256
+
+      - name: Run image Bats tests
+        timeout-minutes: 30
+        run: ci/amd64/test.amd64-image-bats.sh "${GITHUB_WORKSPACE}/artifacts/joininbox-amd64-debian.qcow2"
