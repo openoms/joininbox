@@ -321,9 +321,67 @@ function getRPC {
   fi
 }
 
+# getConnectedBitcoinCoreVersion - read the numeric version over node RPC
+function getConnectedBitcoinCoreVersion {
+  local tor=""
+  if [ "$(echo "$rpc_host" | grep -c .onion)" -gt 0 ]; then
+    tor="torsocks"
+  fi
+  $tor curl -sS --data-binary \
+    '{"jsonrpc": "1.0", "id":"get_bitcoin_core_version", "method": "getnetworkinfo", "params": []}' \
+    "http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/" 2>/dev/null |
+    jq -r '.result.version // empty' 2>/dev/null
+}
+
+# migrateLegacyRPCWalletConfig - switch the persisted JoinMarket RPC wallet
+# from the legacy wallet.dat name to the descriptor wallet used by JoininBox
+# when the connected Bitcoin Core version is v30.0 or newer
+function migrateLegacyRPCWalletConfig {
+  if [ "$rpc_wallet" != "wallet.dat" ]; then
+    return 0
+  fi
+
+  local bitcoinCoreVersion
+  bitcoinCoreVersion=$(getConnectedBitcoinCoreVersion)
+  if ! [[ "$bitcoinCoreVersion" =~ ^[0-9]+$ ]]; then
+    echo "# Could not determine the connected Bitcoin Core version; keeping wallet.dat"
+    return 0
+  fi
+  # Bitcoin Core's numeric version is 290200 for v29.2 and 300000 for v30.0.
+  if [ "$bitcoinCoreVersion" -lt 300000 ]; then
+    echo "# Connected Bitcoin Core is v29.x or earlier; keeping wallet.dat"
+    return 0
+  fi
+
+  echo "# Migrating the configured Bitcoin Core wallet from wallet.dat to watch-only-descriptor-wallet"
+  local migrationConfigOutput
+  if ! migrationConfigOutput=$(mktemp "${JMcfgPath}.XXXXXX"); then
+    echo "# Failed to create a temporary descriptor wallet configuration" >&2
+    return 1
+  fi
+  if ! sed \
+    "s/^rpc_wallet_file =.*/rpc_wallet_file = watch-only-descriptor-wallet/g" \
+    "$JMcfgPath" >"$migrationConfigOutput"; then
+    rm -f "$migrationConfigOutput"
+    echo "# Failed to prepare the descriptor wallet configuration" >&2
+    return 1
+  fi
+  if ! mv "$migrationConfigOutput" "$JMcfgPath"; then
+    rm -f "$migrationConfigOutput"
+    echo "# Failed to update the descriptor wallet configuration" >&2
+    return 1
+  fi
+  getRPC
+  if [ "$rpc_wallet" != "watch-only-descriptor-wallet" ]; then
+    echo "# Failed to select the descriptor wallet configuration" >&2
+    return 1
+  fi
+}
+
 # checkRPCwallet <wallet>
 function checkRPCwallet {
   getRPC
+  migrateLegacyRPCWalletConfig || return 1
   if [ $# -eq 0 ]; then
     rpc_wallet=$rpc_wallet
   else

@@ -467,8 +467,8 @@ Bitcoin Core has deprecated BDB (Berkeley DB) wallets in favor of descriptor wal
 
 If you're upgrading from a previous version of JoininBox that used `wallet.dat`, follow these steps:
 
-1. **The migration notice will appear automatically**  
-   When you first use any wallet-related function after updating, JoininBox will detect the old `wallet.dat` and display a migration notice.
+1. **The migration notice will appear automatically on Bitcoin Core v30.0 and newer**
+   When you first use any wallet-related function after updating, JoininBox checks the connected Bitcoin Core version. On v30.0 and newer it switches the configured RPC wallet to `watch-only-descriptor-wallet`, detects the old `wallet.dat`, and displays a migration notice. Bitcoin Core v29.x and earlier continue using `wallet.dat` without starting the automatic migration.
 
 2. **Open each JoinMarket wallet**  
    Go to `WALLET` -> `DISPLAY` and open each of your JoinMarket wallets (`.jmdat` files) at least once. This imports the addresses into the new `watch-only-descriptor-wallet` in Bitcoin Core.
@@ -494,6 +494,7 @@ If you're upgrading from a previous version of JoininBox that used `wallet.dat`,
 ### Notes
 
 - The old `wallet.dat` is not deleted and remains in Bitcoin Core
+- Automatic migration only runs when the connected Bitcoin Core version is v30.0 or newer
 - You only need to perform this migration once
 - The migration notice will not appear again after you acknowledge it
 - If you have issues, you can reset the migration flag by removing `walletMigrationDone=true` from `/home/joinmarket/joinin.conf`

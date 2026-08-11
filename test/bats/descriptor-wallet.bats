@@ -91,6 +91,10 @@ check_wallet_migration_with_enter() {
   printf "\n" | checkWalletMigration
 }
 
+check_rpc_wallet_with_enter() {
+  printf "\n" | checkRPCwallet
+}
+
 @test "checkRPCwallet creates the configured descriptor watch-only wallet" {
   load_joininbox_bitcoin_functions
 
@@ -127,6 +131,57 @@ check_wallet_migration_with_enter() {
   [[ "$output" == *'"walletname": "watch-only-descriptor-wallet"'* ]]
   [[ "$output" == *'"descriptors": true'* ]]
   [[ "$output" == *'"private_keys_enabled": false'* ]]
+}
+
+@test "checkRPCwallet migrates a persisted wallet.dat configuration on Bitcoin Core v30 or later" {
+  bitcoin-cli \
+    -regtest \
+    -datadir="$bitcoin_datadir" \
+    -rpcuser="$rpc_user" \
+    -rpcpassword="$rpc_pass" \
+    -rpcport="$rpc_port" \
+    -named createwallet \
+    wallet_name=wallet.dat \
+    descriptors=true \
+    disable_private_keys=true >/dev/null
+  sed \
+    "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/" \
+    "$joinmarket_cfg" >"${joinmarket_cfg}.legacy"
+  mv "${joinmarket_cfg}.legacy" "$joinmarket_cfg"
+
+  load_joininbox_bitcoin_functions
+
+  run check_rpc_wallet_with_enter
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Migrating the configured Bitcoin Core wallet"* ]]
+  [[ "$output" == *"WALLET MIGRATION NOTICE"* ]]
+  grep -q "^rpc_wallet_file = watch-only-descriptor-wallet$" "$joinmarket_cfg"
+  grep -q "^walletMigrationDone=true$" "$joinin_conf"
+
+  run wallet_info
+  [ "$status" -eq 0 ]
+  [ "$(jq -r '.descriptors' <<<"$output")" = "true" ]
+  [ "$(jq -r '.private_keys_enabled' <<<"$output")" = "false" ]
+}
+
+@test "migrateLegacyRPCWalletConfig keeps wallet.dat on Bitcoin Core v29.2" {
+  sed \
+    "s/^rpc_wallet_file =.*/rpc_wallet_file = wallet.dat/" \
+    "$joinmarket_cfg" >"${joinmarket_cfg}.legacy"
+  mv "${joinmarket_cfg}.legacy" "$joinmarket_cfg"
+
+  load_joininbox_bitcoin_functions
+  getConnectedBitcoinCoreVersion() {
+    echo 290200
+  }
+  getRPC >/dev/null
+
+  run migrateLegacyRPCWalletConfig
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"v29.x or earlier; keeping wallet.dat"* ]]
+  grep -q "^rpc_wallet_file = wallet.dat$" "$joinmarket_cfg"
 }
 
 @test "checkWalletMigration shows the notice once when wallet.dat exists" {

@@ -5,9 +5,15 @@ image="${1:-${GITHUB_WORKSPACE:-$(pwd)}/ci/amd64/builds/joininbox-amd64-debian-q
 ssh_port="${SSH_PORT:-2222}"
 ssh_password="${SSH_PASSWORD:-joininbox}"
 qemu_pid_file="${RUNNER_TEMP:-/tmp}/joininbox-qemu.pid"
+bats_core_dir="${BATS_CORE_DIR:-${GITHUB_WORKSPACE:-$(pwd)}/.bats-core}"
 
 if [ ! -f "${image}" ]; then
   echo "Missing image: ${image}" >&2
+  exit 1
+fi
+
+if [ ! -x "${bats_core_dir}/bin/bats" ]; then
+  echo "Missing bats-core checkout: ${bats_core_dir}" >&2
   exit 1
 fi
 
@@ -124,5 +130,9 @@ for attempt in {1..120}; do
   sleep 5
 done
 
+tar -C "${bats_core_dir}" -cf - . |
+  sshpass -p "${ssh_password}" ssh "${ssh_opts[@]}" joinmarket@127.0.0.1 \
+    "mkdir -p /tmp/bats-core && tar -C /tmp/bats-core -xf -"
+
 sshpass -p "${ssh_password}" ssh "${ssh_opts[@]}" joinmarket@127.0.0.1 \
-  "sudo apt-get update && sudo apt-get install -y bats && /home/joinmarket/joininbox/test/run-bats-local.sh"
+  "PATH=/tmp/bats-core/bin:\$PATH /home/joinmarket/joininbox/test/run-bats-local.sh"
