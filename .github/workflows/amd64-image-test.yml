@@ -24,7 +24,7 @@ jobs:
     name: Run Bats against amd64 image artifact
     runs-on: ubuntu-22.04
     timeout-minutes: 240
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository) }}
 
     steps:
       - uses: actions/checkout@v4
