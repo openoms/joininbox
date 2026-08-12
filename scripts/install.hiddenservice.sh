@@ -15,38 +15,65 @@ fi
 source /home/joinmarket/_functions.sh
 sourceConf /home/joinmarket/joinin.conf
 
+validateService() {
+  case "$1" in
+    ''|*[!A-Za-z0-9_-]*)
+      echo "ERROR: invalid service name: $1" >&2
+      exit 1
+      ;;
+  esac
+}
+
+validatePort() {
+  case "$1" in
+    ''|*[!0-9]*)
+      echo "ERROR: invalid port: $1" >&2
+      exit 1
+      ;;
+  esac
+  if [ "$1" -lt 1 ] || [ "$1" -gt 65535 ]; then
+    echo "ERROR: port outside the range 1-65535: $1" >&2
+    exit 1
+  fi
+}
+
+# Install a candidate torrc only after Tor accepts it. The temporary file lives
+# next to torrc so the final rename is atomic and remains root-owned.
+installTorrc() {
+  candidate="$1"
+  sudo chmod 644 "$candidate"
+  sudo chown root:root "$candidate"
+  if ! sudo tor --verify-config -f "$candidate"; then
+    echo "ERROR: Tor rejected the generated configuration" >&2
+    sudo rm -f -- "$candidate"
+    exit 1
+  fi
+  sudo mv -f -- "$candidate" /etc/tor/torrc
+}
+
 # delete a hidden service
 if [ "$1" == "off" ]; then
 
   service="$2"
-  if [ ${#service} -eq 0 ]; then
-    echo "ERROR: service name is missing"
-    exit 1
-  fi
+  validateService "$service"
 
-  # remove service paragraph
-  sudo sed -i "/# Hidden Service for ${service}/,/^\s*$/{d}" /etc/tor/torrc
-
-  # remove double empty lines
-  sudo cp /etc/tor/torrc /home/joinmarket/tmp
-  sudo chmod 777 /home/joinmarket/tmp
-  sudo awk 'NF > 0 {blank=0} NF == 0 {blank++} blank < 2' /etc/tor/torrc > /home/joinmarket/tmp
-  sudo mv /home/joinmarket/tmp /etc/tor/torrc
-  sudo chmod 644 /etc/tor/torrc
-  sudo chown bitcoin:bitcoin /etc/tor/torrc
+  candidate=$(sudo mktemp /etc/tor/torrc.joininbox.XXXXXX) || exit 1
+  trap 'sudo rm -f -- "$candidate"' EXIT
+  sudo sed "/# Hidden Service for ${service}/,/^\s*$/{d}" /etc/tor/torrc | \
+    awk 'NF > 0 {blank=0} NF == 0 {blank++} blank < 2' | \
+    sudo tee "$candidate" >/dev/null || exit 1
+  installTorrc "$candidate"
+  trap - EXIT
 
   echo "# OK service is removed - reloading Tor ..."
-  sudo pkill -sighup tor
+  sudo systemctl reload tor
   sleep 5
   echo "# Done"
   exit 0
 fi
 
 service="$1"
-if [ ${#service} -eq 0 ]; then
-  echo "ERROR: service name is missing"
-  exit 1
-fi
+validateService "$service"
 
 toPort="$2"
 if [ ${#toPort} -eq 0 ]; then
@@ -55,10 +82,8 @@ if [ ${#toPort} -eq 0 ]; then
 fi
 
 fromPort="$3"
-if [ ${#fromPort} -eq 0 ]; then
-  echo "ERROR: the port to forward from is missing"
-  exit 1
-fi
+validatePort "$toPort"
+validatePort "$fromPort"
 
 # not mandatory
 toPort2="$4"
@@ -70,6 +95,8 @@ if [ ${#toPort2} -gt 0 ]; then
     echo "ERROR: the second port to forward from is missing"
     exit 1
   fi
+  validatePort "$toPort2"
+  validatePort "$fromPort2"
 fi
 
 checkDirEntry=$(grep -c "HiddenServiceDir" < /home/joinmarket/joinin.conf)
@@ -84,33 +111,34 @@ fi
 
 if [ "${runBehindTor}" = "on" ]; then
 
-  # delete any old entry for that service
-  sudo sed -i "/# Hidden Service for ${service}/,/^\s*$/{d}" /etc/tor/torrc
+  candidate=$(sudo mktemp /etc/tor/torrc.joininbox.XXXXXX) || exit 1
+  trap 'sudo rm -f -- "$candidate"' EXIT
+  sudo sed "/# Hidden Service for ${service}/,/^\s*$/{d}" /etc/tor/torrc | \
+    awk 'NF > 0 {blank=0} NF == 0 {blank++} blank < 2' | \
+    sudo tee "$candidate" >/dev/null || exit 1
 
-  # make new entry for that service
   echo "
 # Hidden Service for $service
 HiddenServiceDir $HiddenServiceDir/$service
 HiddenServiceVersion 3
-HiddenServicePort $toPort 127.0.0.1:$fromPort" | sudo tee -a /etc/tor/torrc
-
-  # remove double empty lines
-  awk 'NF > 0 {blank=0} NF == 0 {blank++} blank < 2' /etc/tor/torrc | sudo tee /home/joinmarket/tmp >/dev/null && sudo mv /home/joinmarket/tmp /etc/tor/torrc
+HiddenServicePort $toPort 127.0.0.1:$fromPort" | sudo tee -a "$candidate" >/dev/null
 
   # check and insert second port pair
   if [ ${#toPort2} -gt 0 ]; then
-    alreadyThere=$(sudo cat /etc/tor/torrc 2>/dev/null | grep -c "\b127.0.0.1:$fromPort2\b")
+    alreadyThere=$(sudo grep -c "\b127.0.0.1:$fromPort2\b" "$candidate" 2>/dev/null)
     if [ ${alreadyThere} -gt 0 ]; then
       echo "The port $fromPort2 is already forwarded. Check the /etc/tor/torrc for the details."
     else
-      echo "HiddenServicePort $toPort2 127.0.0.1:$fromPort2" | sudo tee -a /etc/tor/torrc
+      echo "HiddenServicePort $toPort2 127.0.0.1:$fromPort2" | sudo tee -a "$candidate" >/dev/null
     fi
   fi
+
+  installTorrc "$candidate"
+  trap - EXIT
 
   # reload tor
   echo
   echo "Reloading Tor to activate the Hidden Service..."
-  sudo chmod 644 /etc/tor/torrc
   sudo systemctl reload tor
   sleep 10
 
