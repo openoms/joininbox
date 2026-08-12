@@ -62,7 +62,9 @@ elif [ $# -eq 4 ] && [ -n "$4" ]; then
   commitOrTag="$4 tag"
 fi
 echo "# running: ${gitCommand}"
-if ${gitCommand} 2>&1 >&"$_temp"; then
+# --raw includes GnuPG's machine-readable VALIDSIG record with the complete
+# signing-key fingerprint. Do not authenticate signatures using a short key ID.
+if ${gitCommand} --raw >"$_temp" 2>&1; then
   goodSignature=1
 else
   goodSignature=0
@@ -71,7 +73,7 @@ echo
 cat "$_temp"
 echo "# goodSignature(${goodSignature})"
 
-correctKey=$(tr -d " \t\n\r" <"$_temp" | grep "${PGPpubkeyFingerprint}" -c)
+correctKey=$(grep -F "[GNUPG:] VALIDSIG ${PGPpubkeyFingerprint} " "$_temp" -c)
 echo "# correctKey(${correctKey})"
 
 if [ "${correctKey}" -lt 1 ] || [ "${goodSignature}" -lt 1 ]; then

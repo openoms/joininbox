@@ -281,6 +281,35 @@ function copyJoininboxScripts() {
 }
 
 # updateJoininBox <reset|commit|pr[PRnumber]>
+function verifyJoininBoxRef() {
+  local ref="$1"
+  local kind="$2"
+  local signer keyUrl fingerprint signature
+
+  if [ "$kind" = "tag" ]; then
+    signer="openoms"
+    keyUrl="https://github.com/openoms.gpg"
+    fingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
+    /home/joinmarket/verify.git.sh "$signer" "$keyUrl" "$fingerprint" "$ref"
+    return
+  fi
+
+  signature=$(git log -1 --show-signature --format=oneline "$ref" 2>&1)
+  if echo "$signature" | grep -q '13C688DB5B9C745DE4D2E4545BFB77609B081B65'; then
+    signer="openoms"
+    keyUrl="https://github.com/openoms.gpg"
+    fingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
+  elif echo "$signature" | grep -q 'B5690EEEBB952194'; then
+    signer="web-flow"
+    keyUrl="https://github.com/web-flow.gpg"
+    fingerprint="968479A1AFF927E37D1A566BB5690EEEBB952194"
+  else
+    echo "# Refusing an update without a recognized signing key" >&2
+    return 1
+  fi
+  /home/joinmarket/verify.git.sh "$signer" "$keyUrl" "$fingerprint"
+}
+
 function updateJoininBox() {
   cd /home/joinmarket || exit 1
   if [ "$1" = "reset" ] ||  [ "$1" = "pr" ];then
@@ -302,12 +331,9 @@ function updateJoininBox() {
     TAG=$(git describe --tags)
     echo "# Updating to the latest commit in the default branch"
   elif [ "$1" = "pr" ]; then
-    PRnumber=$2
-    echo "# Using the PR:"
-    echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/$PRnumber"
-    sudo -u joinmarket git fetch origin pull/$PRnumber/head:pr$PRnumber
-    sudo -u joinmarket git checkout pr$PRnumber
-    TAG=$(git describe --tags)
+    echo "# Refusing to install pull-request code into privileged script paths." >&2
+    echo "# Test pull requests in an isolated development image instead." >&2
+    return 1
   else
     TAG=$(git tag | sort -V | tail -1)
     # unset $1
@@ -319,6 +345,11 @@ function updateJoininBox() {
       echo "# You are up-to-date on version" $TAG
     fi
     sudo -u joinmarket git reset --hard $TAG
+  fi
+  if [ "$1" = "commit" ]; then
+    verifyJoininBoxRef HEAD commit || return 1
+  else
+    verifyJoininBoxRef "$TAG" tag || return 1
   fi
   echo "# Current version: $TAG"
   copyJoininboxScripts
