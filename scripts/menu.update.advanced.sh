@@ -48,9 +48,24 @@ case $CHOICE in
   JBPR)
       echo
       read -p "Enter the number of the pull request to be tested: " PRnumber
-      read -p "Continue to install the PR:
-https://github.com/openoms/joininbox/pull/$PRnumber
-(Y/N)? " confirm && [[ $confirm == [yY]||$confirm == [yY][eE][sS] ]]||exit 1
+      echo
+      echo "#################### SECURITY WARNING ####################"
+      echo "# You are about to install UNVERIFIED pull-request code:"
+      echo "# https://github.com/openoms/joininbox/pull/$PRnumber"
+      echo "#"
+      echo "# - Anyone on GitHub can open a pull request."
+      echo "# - The code is NOT signed by a maintainer."
+      echo "# - It will run with elevated privileges on this system."
+      echo "#"
+      echo "# Only proceed if you have read the PR diff and trust"
+      echo "# the author. Otherwise test PRs in an isolated image."
+      echo "##########################################################"
+      echo
+      read -p "Type 'test PR $PRnumber' to confirm: " confirm
+      if [ "$confirm" != "test PR $PRnumber" ]; then
+        echo "# Not confirmed - cancelling"
+        exit 1
+      fi
       updateJoininBox pr $PRnumber
       errorOnInstall $?
       echo

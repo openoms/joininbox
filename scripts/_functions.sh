@@ -331,9 +331,18 @@ function updateJoininBox() {
     TAG=$(git describe --tags)
     echo "# Updating to the latest commit in the default branch"
   elif [ "$1" = "pr" ]; then
-    echo "# Refusing to install pull-request code into privileged script paths." >&2
-    echo "# Test pull requests in an isolated development image instead." >&2
-    return 1
+    PRnumber=$2
+    echo ""
+    echo "##########################################################" >&2
+    echo "# WARNING: installing UNVERIFIED pull-request code" >&2
+    echo "# https://github.com/openoms/joininbox/pull/$PRnumber" >&2
+    echo "# This code is NOT signed by a maintainer and will run" >&2
+    echo "# with elevated privileges on this system." >&2
+    echo "##########################################################" >&2
+    echo ""
+    sudo -u joinmarket git fetch origin pull/$PRnumber/head:pr$PRnumber || return 1
+    sudo -u joinmarket git checkout pr$PRnumber || return 1
+    TAG=$(git describe --tags)
   else
     TAG=$(git tag | sort -V | tail -1)
     # unset $1
@@ -346,7 +355,9 @@ function updateJoininBox() {
     fi
     sudo -u joinmarket git reset --hard $TAG
   fi
-  if [ "$1" = "commit" ]; then
+  if [ "$1" = "pr" ]; then
+    echo "# Skipping signature verification for unverified PR code"
+  elif [ "$1" = "commit" ]; then
     verifyJoininBoxRef HEAD commit || return 1
   else
     verifyJoininBoxRef "$TAG" tag || return 1
