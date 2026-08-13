@@ -119,7 +119,9 @@ function passwordToFile() {
     return 1
   }
   chmod 600 -- "$data" "$walletPasswordFile"
-  trap 'rm -f -- "$data" "$walletPasswordFile"' EXIT
+  # keep parity with the chooseWallet EXIT trap so the $wallet temp file is
+  # still cleaned up on shell exit after passwordToFile replaces the trap
+  trap 'rm -f -- "$data" "$walletPasswordFile" "$wallet"' EXIT
   dialog --clear \
    --backtitle "Enter password" \
    --title "Enter password" \

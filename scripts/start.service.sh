@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Usage: start.service.sh <script> <wallet> <passwordFile>
+# (the passwordFile argument was added when the wallet password moved from
+# /dev/shm/.pw to a per-run file; the old two-argument form is no longer valid)
 source /home/joinmarket/_functions.sh
 sourceConf /home/joinmarket/joinin.conf
 
@@ -15,6 +18,15 @@ case "$passwordFile" in
   /dev/shm/joininbox-wallet-password.*) ;;
   *)
     echo "# Wallet password file is outside the allowed runtime path"
+    exit 1
+    ;;
+esac
+# the suffix after the allowed prefix must be a plain filename
+# (no '/', no '..', so path traversal cannot pass the glob)
+passwordFileName="${passwordFile#/dev/shm/joininbox-wallet-password.}"
+case "$passwordFileName" in
+  ""|*..*|*/*)
+    echo "# Wallet password file name is invalid"
     exit 1
     ;;
 esac
@@ -88,7 +100,7 @@ sudo systemctl enable $script
 sudo systemctl start $script
 
 echo
-echo "# Shredding the password once used..."
+echo "# Deleting the password file once used..."
 echo
 
 sleep 5
