@@ -4,32 +4,12 @@ source /home/joinmarket/_functions.sh
 sourceConf /home/joinmarket/joinin.conf
 
 script="$1"
-wallet="$2"
+walletInput="$2"
 
-if [ "$script" != "yg-privacyenhanced" ]; then
-  echo "# Refusing unsupported service: $script" >&2
-  exit 1
-fi
-
-walletInput="$wallet"
-if [ -L "$walletInput" ]; then
-  echo "# Refusing a symlink as wallet input" >&2
-  exit 1
-fi
-wallet=$(readlink -f -- "$walletInput") || exit 1
-walletDirectory=$(readlink -f -- "$walletPath") || exit 1
-walletFileName=$(basename -- "$wallet")
-case "$walletFileName" in
-  ''|*[!A-Za-z0-9._-]*)
-    echo "# Refusing unsafe wallet filename" >&2
-    exit 1
-    ;;
-esac
-if [ ! -f "$wallet" ] || \
-  [ "$(dirname -- "$wallet")" != "$walletDirectory" ]; then
-  echo "# Wallet must be a regular file directly inside $walletDirectory" >&2
-  exit 1
-fi
+# Validate and canonicalize ALL inputs at the very top,
+# before anything touches credential files (e.g. /dev/shm/.pw)
+# or makes any system changes.
+wallet=$(validateServiceArgs "$script" "$walletInput") || exit 1
 
 stopYG "$wallet"
 

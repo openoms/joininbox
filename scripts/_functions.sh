@@ -186,6 +186,45 @@ function chooseWallet() {
   fi
 }
 
+# validateServiceArgs <script> <walletInput>
+# Validates a systemd service name and wallet input for start.service.sh.
+# Prints the canonical wallet path on stdout when valid.
+# Returns 1 (message on stderr) when the input is rejected.
+# Used to reject bad input BEFORE any credential file (/dev/shm/.pw) is created.
+function validateServiceArgs() {
+  local script="$1"
+  local walletInput="$2"
+
+  if [ "$script" != "yg-privacyenhanced" ]; then
+    echo "# Refusing unsupported service: $script" >&2
+    return 1
+  fi
+
+  if [ -L "$walletInput" ]; then
+    echo "# Refusing a symlink as wallet input" >&2
+    return 1
+  fi
+  local wallet
+  wallet=$(readlink -f -- "$walletInput") || return 1
+  local walletDirectory
+  walletDirectory=$(readlink -f -- "$walletPath") || return 1
+  local walletFileName
+  walletFileName=$(basename -- "$wallet")
+  case "$walletFileName" in
+    ''|*[!A-Za-z0-9._-]*)
+      echo "# Refusing unsafe wallet filename" >&2
+      return 1
+      ;;
+  esac
+  if [ ! -f "$wallet" ] || \
+    [ "$(dirname -- "$wallet")" != "$walletDirectory" ]; then
+    echo "# Wallet must be a regular file directly inside $walletDirectory" >&2
+    return 1
+  fi
+
+  echo "$wallet"
+}
+
 # stopYG <wallet>
 function stopYG() {
   if [ $# -eq 1 ]; then
