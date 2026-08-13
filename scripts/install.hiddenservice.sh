@@ -70,8 +70,11 @@ installTorrc() {
 generateTorrcCandidate() {
   service="$1"
   candidate="$2"
+  # the stage file is root-owned (sudo mktemp), so the write must stay
+  # inside the privileged pipeline - a plain shell redirect would be opened
+  # by the unprivileged caller and fail with EACCES
   stage=$(sudo mktemp) || exit 1
-  if ! sudo sed "/# Hidden Service for ${service}/,/^\s*$/{d}" /etc/tor/torrc > "$stage"; then
+  if ! sudo sed "/# Hidden Service for ${service}/,/^\s*$/{d}" /etc/tor/torrc | sudo tee "$stage" >/dev/null; then
     echo "ERROR: failed to read/process /etc/tor/torrc" >&2
     sudo rm -f -- "$stage"
     exit 1
