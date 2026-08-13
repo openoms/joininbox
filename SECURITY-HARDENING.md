@@ -19,9 +19,16 @@ Work on the plan has started as small, independently reviewable PRs:
 | #188 | #9 | Validate and atomically install Tor hidden-service configuration |
 | #189 | #6 | Constrain generated wallet service inputs (script/wallet allowlists) |
 | #190 | #3, #4 | Verify JoininBox updates against pinned signing keys before install |
+| #191 | #11 | Remove root wildcard deletion in `/dev/shm` |
+| #192 | #8 | Stop accepting passwords via command-line arguments |
+| #193 | #5 | Unique per-install first-boot credentials, lock unused accounts |
+| #194 | #10 | Replace `eval`-based argument parsing in the installer |
+| #195 | #2 | Parse `joinin.conf` as data instead of sourcing it as code |
 
-The critical privilege-escalation findings (#1, #2) and the first-boot
-credential finding (#5) are not yet addressed by an implementation PR.
+The critical unrestricted-sudo finding (#1) is not yet addressed by an
+implementation PR: it requires replacing `NOPASSWD: ALL` with small root-owned
+helper programs, which touches every privileged call in the repository and must
+be designed and tested on real hardware first.
 
 ## Executive summary
 
@@ -101,7 +108,7 @@ Recommendation:
 Acceptance criteria: values such as command substitutions, redirections, shell
 functions, and additional statements are rejected and never executed.
 
-Status: open, no implementation PR yet.
+Status: implementation in progress — PR #195.
 
 ### 3. Update authenticity is not enforced (critical)
 
@@ -159,7 +166,7 @@ Recommendation:
 Acceptance criteria: a newly flashed node is not remotely accessible with a
 credential shared by every image.
 
-Status: open, no implementation PR yet.
+Status: implementation in progress — PR #193.
 
 ### 6. Shell and systemd-unit injection (medium)
 
@@ -202,7 +209,7 @@ Recommendation: accept secrets through a terminal prompt or protected file
 descriptor, never argv. Set independent account credentials and use PAM's normal
 password-quality policy.
 
-Status: open, no implementation PR yet.
+Status: implementation in progress — PR #192.
 
 ### 9. Unsafe Tor configuration editing (medium)
 
@@ -242,7 +249,7 @@ Recommendation:
 Acceptance criteria: option names containing shell syntax, spaces, or
 substitutions are rejected; no `eval` remains on user-controlled input.
 
-Status: open, no implementation PR yet.
+Status: implementation in progress — PR #194.
 
 ### 11. Root wildcard deletion in a world-writable directory (medium) — new in 2026-08-13 scan
 
@@ -263,7 +270,7 @@ Recommendation:
 Acceptance criteria: the script unlinks exactly the files it created and no
 longer runs `rm` with a wildcard as root.
 
-Status: open, no implementation PR yet.
+Status: implementation in progress — PR #191.
 
 ## Minor observations (2026-08-13 scan)
 
