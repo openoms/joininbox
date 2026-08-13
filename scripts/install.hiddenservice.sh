@@ -15,6 +15,19 @@ fi
 source /home/joinmarket/_functions.sh
 sourceConf /home/joinmarket/joinin.conf
 
+# hidden-service base directory: strict absolute path, no whitespace or control
+# characters, must live under an expected Tor data root
+validateHiddenServiceDir() {
+  case "$1" in
+    /var/lib/tor|/mnt/hdd/tor) ;;
+    *)
+      echo "ERROR: unexpected HiddenServiceDir: $1" >&2
+      echo "Expected /var/lib/tor or /mnt/hdd/tor - refusing to continue" >&2
+      exit 1
+      ;;
+  esac
+}
+
 validateService() {
   case "$1" in
     ''|*[!A-Za-z0-9_-]*)
@@ -51,6 +64,38 @@ installTorrc() {
   sudo mv -f -- "$candidate" /etc/tor/torrc
 }
 
+# Generate a candidate torrc without the block of the given service.
+# Every stage is checked explicitly so a failed read or write never produces
+# an empty or truncated candidate that would replace the live torrc.
+generateTorrcCandidate() {
+  service="$1"
+  candidate="$2"
+  stage=$(sudo mktemp) || exit 1
+  if ! sudo sed "/# Hidden Service for ${service}/,/^\s*$/{d}" /etc/tor/torrc > "$stage"; then
+    echo "ERROR: failed to read/process /etc/tor/torrc" >&2
+    sudo rm -f -- "$stage"
+    exit 1
+  fi
+  # a failed read must not yield an empty candidate
+  if [ ! -s "$stage" ]; then
+    echo "ERROR: processed torrc is empty - refusing to install" >&2
+    sudo rm -f -- "$stage"
+    exit 1
+  fi
+  if ! sudo awk 'NF > 0 {blank=0} NF == 0 {blank++} blank < 2' "$stage" | \
+    sudo tee "$candidate" >/dev/null; then
+    echo "ERROR: failed to write the candidate torrc" >&2
+    sudo rm -f -- "$stage"
+    exit 1
+  fi
+  if [ ! -s "$candidate" ]; then
+    echo "ERROR: generated candidate is empty - refusing to install" >&2
+    sudo rm -f -- "$stage"
+    exit 1
+  fi
+  sudo rm -f -- "$stage"
+}
+
 # delete a hidden service
 if [ "$1" == "off" ]; then
 
@@ -59,9 +104,7 @@ if [ "$1" == "off" ]; then
 
   candidate=$(sudo mktemp /etc/tor/torrc.joininbox.XXXXXX) || exit 1
   trap 'sudo rm -f -- "$candidate"' EXIT
-  sudo sed "/# Hidden Service for ${service}/,/^\s*$/{d}" /etc/tor/torrc | \
-    awk 'NF > 0 {blank=0} NF == 0 {blank++} blank < 2' | \
-    sudo tee "$candidate" >/dev/null || exit 1
+  generateTorrcCandidate "$service" "$candidate"
   installTorrc "$candidate"
   trap - EXIT
 
@@ -99,8 +142,7 @@ if [ ${#toPort2} -gt 0 ]; then
   validatePort "$fromPort2"
 fi
 
-checkDirEntry=$(grep -c "HiddenServiceDir" < /home/joinmarket/joinin.conf)
-if [ "$checkDirEntry" -eq 0 ]; then
+if [ -z "$HiddenServiceDir" ]; then
   if [ -d "/mnt/hdd/tor" ] ; then
     HiddenServiceDir="/mnt/hdd/tor"
   else
@@ -108,14 +150,13 @@ if [ "$checkDirEntry" -eq 0 ]; then
   fi
   echo "HiddenServiceDir=$HiddenServiceDir" >> /home/joinmarket/joinin.conf
 fi
+validateHiddenServiceDir "$HiddenServiceDir"
 
 if [ "${runBehindTor}" = "on" ]; then
 
   candidate=$(sudo mktemp /etc/tor/torrc.joininbox.XXXXXX) || exit 1
   trap 'sudo rm -f -- "$candidate"' EXIT
-  sudo sed "/# Hidden Service for ${service}/,/^\s*$/{d}" /etc/tor/torrc | \
-    awk 'NF > 0 {blank=0} NF == 0 {blank++} blank < 2' | \
-    sudo tee "$candidate" >/dev/null || exit 1
+  generateTorrcCandidate "$service" "$candidate"
 
   echo "
 # Hidden Service for $service
@@ -143,11 +184,11 @@ HiddenServicePort $toPort 127.0.0.1:$fromPort" | sudo tee -a "$candidate" >/dev/
   sleep 10
 
   # show the Hidden Service address
-  TOR_ADDRESS=$(sudo cat $HiddenServiceDir/$service/hostname)
+  TOR_ADDRESS=$(sudo cat "$HiddenServiceDir/$service/hostname")
   if [ -z "$TOR_ADDRESS" ]; then
     echo "Waiting for the Hidden Service"
     sleep 10
-    TOR_ADDRESS=$(sudo cat $HiddenServiceDir/$service/hostname)
+    TOR_ADDRESS=$(sudo cat "$HiddenServiceDir/$service/hostname")
     if [ -z "$TOR_ADDRESS" ]; then
       echo " FAIL - The Hidden Service address could not be found - Tor error?"
       exit 1
@@ -158,7 +199,7 @@ HiddenServicePort $toPort 127.0.0.1:$fromPort" | sudo tee -a "$candidate" >/dev/
   echo "$TOR_ADDRESS"
   echo "use with the port: $toPort"
   if [ ${#toPort2} -gt 0 ]; then
-    wasAdded=$(sudo cat /etc/tor/torrc 2>/dev/null | grep -c "\b127.0.0.1:$fromPort2\b")
+    wasAdded=$(sudo grep -c "\b127.0.0.1:$fromPort2\b" /etc/tor/torrc 2>/dev/null)
     if [ ${wasAdded} -gt 0 ]; then
       echo "or the port: $toPort2"
     fi
