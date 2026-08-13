@@ -51,6 +51,16 @@ error_msg() {
   printf %s"${red}${me}: ${1}${nocolor}\n"
   exit 1
 }
+valid_var_name() {
+  [[ "${1}" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]
+}
+reject_shell_syntax() {
+  # fail closed on characters that enable command injection
+  local forbidden='[;&|`$<>]'
+  if [[ "${1}" =~ ${forbidden} ]]; then
+    error_msg "Invalid characters in: '${1}'"
+  fi
+}
 assign_value() {
   case "${2}" in
   --*) value="${2#--}" ;;
@@ -61,7 +71,9 @@ assign_value() {
   0) value="false" ;;
   1) value="true" ;;
   esac
-  eval "${1}"="\"${value}\""
+  valid_var_name "${1}" || error_msg "Invalid variable name: '${1}'"
+  reject_shell_syntax "${value}"
+  printf -v "${1}" '%s' "${value}"
 }
 
 get_arg() {
@@ -73,7 +85,8 @@ get_arg() {
 
 range_argument() {
   name="${1}"
-  eval var='$'"${1}"
+  valid_var_name "${name}" || error_msg "Invalid variable name: '${name}'"
+  var="${!name}"
   shift
   if [ -n "${var:-}" ]; then
     success=0
