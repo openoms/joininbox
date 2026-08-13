@@ -10,6 +10,10 @@ variable "iso_checksum" { default = "file:https://cdimage.debian.org/debian-cd/c
 
 variable "github_user" { default = "openoms" }
 variable "branch" { default = "master" }
+# set to the pull-request number for PR CI builds: skips the code
+# signature verification and labels the image as an unverified test build.
+# Empty for master (production) builds where verification is mandatory.
+variable "pr_number" { default = "" }
 
 variable "boot" { default = "uefi" }
 variable "preseed_file" { default = "preseed.cfg" }
@@ -91,7 +95,8 @@ build {
     environment_vars = [
       "HOME_DIR=/home/joinmarket",
       "github_user=${var.github_user}",
-      "branch=${var.branch}"
+      "branch=${var.branch}",
+      "pr_number=${var.pr_number}"
     ]
 
     execute_command   = "echo 'joininbox' | {{.Vars}} sudo -S -E sh -eux '{{.Path}}'"
