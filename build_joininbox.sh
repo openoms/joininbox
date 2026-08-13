@@ -677,3 +677,7 @@ echo "the ssh login credentials are until the first login:"
 echo "user:joinmarket"
 echo "password:joininbox"
 echo
+
+# remove the build-time noninteractive apt policy so deployed systems
+# keep the default interactive conffile handling
+rm -f /etc/apt/apt.conf.d/90joininbox-noninteractive
