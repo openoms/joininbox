@@ -266,6 +266,13 @@ echo "########################"
 echo "# apt-get update & upgrade"
 echo "########################"
 echo
+# noninteractive package management:
+# - debconf never prompts (no tty in CI/packer builds)
+# - dpkg conffile prompts (eg initramfs.conf during kernel upgrades)
+#   resolve to the default action and keep the existing config
+export DEBIAN_FRONTEND=noninteractive
+echo 'Dpkg::Options { "--force-confdef"; "--force-confold"; }' \
+  > /etc/apt/apt.conf.d/90joininbox-noninteractive
 apt-get update -y
 apt-get upgrade -f -y
 
@@ -337,7 +344,12 @@ apt-get install -y net-tools
 # to display hex codes
 apt-get install -y xxd
 # netcat
-apt-get install -y netcat
+# the netcat metapackage was removed in Debian trixie - use the openbsd variant
+if apt-cache show netcat >/dev/null 2>&1; then
+  apt-get install -y netcat
+else
+  apt-get install -y netcat-openbsd
+fi
 # install killall, fuser
 apt-get install -y psmisc
 # dialog
