@@ -57,7 +57,7 @@ else
   nickname="-T $8"
 fi
 
-source /home/joinmarket/joinin.conf
+sourceConf /home/joinmarket/joinin.conf
 if [ ${RPCoverTor} = "on" ]; then
   tor="torsocks"
 else

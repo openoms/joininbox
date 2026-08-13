@@ -286,7 +286,7 @@ function showBitcoinLogs() {
     lines="-n $1"
     echo "# Show $lines number of lines"
   fi
-  source ${joininConfPath}
+  sourceConf ${joininConfPath}
   if [ ${#network} -eq 0 ] || [ "${network}" = "mainnet" ] || [ "${runningEnv}" = "raspiblitz" ]; then
     bitcoinUser="bitcoin"
   elif [ "${network}" = "signet" ]; then
@@ -534,7 +534,7 @@ function connectLocalNode() {
   if [ ${#1} -gt 0 ]; then
     network=$1
   else
-    source ${joininConfPath}
+    sourceConf ${joininConfPath}
   fi
   echo "# Setting connection to the local Bitcoin node on ${network}"
   rpc_host="127.0.0.1"

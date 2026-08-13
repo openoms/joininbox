@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
+sourceConf /home/joinmarket/joinin.conf
 
 if [ ${#network} -eq 0 ] || [ "${network}" = "unknown" ] ;then
   if [ "${runningEnv}" = standalone ]; then
@@ -11,9 +11,9 @@ if [ ${#network} -eq 0 ] || [ "${network}" = "unknown" ] ;then
     network=mainnet
   elif [ "${runningEnv}" = raspiblitz ];then
     if [ -f "/mnt/hdd/raspiblitz.conf" ]; then
-      source /mnt/hdd/raspiblitz.conf
+      sourceConf /mnt/hdd/raspiblitz.conf
     else
-      source /mnt/hdd/app-data/raspiblitz.conf
+      sourceConf /mnt/hdd/app-data/raspiblitz.conf
     fi
     if [ $network = bitcoin ];then
       network=${chain}net

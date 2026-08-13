@@ -3,8 +3,8 @@
 # menu.orderbook.sh -> starts the menu
 # menu.orderbook.sh startOrderBookService starts the orderBookService
 
-source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
+sourceConf /home/joinmarket/joinin.conf
 
 # the bitcoind wallet needs to be loaded for the ob-watcher.py also
 checkRPCwallet

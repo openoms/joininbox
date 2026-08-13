@@ -2,8 +2,8 @@
 
 # WALLET menu options
 
-source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
+sourceConf /home/joinmarket/joinin.conf
 
 if [ ${RPCoverTor} = "on" ]; then
   tor="torsocks"

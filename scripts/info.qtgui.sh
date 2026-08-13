@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source /home/joinmarket/_functions.sh
-source /home/joinmarket/joinin.conf
+sourceConf /home/joinmarket/joinin.conf
 
 checkRPCwallet
 

@@ -2,8 +2,8 @@
 
 # QUICKSTART menu options
 
-source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
+sourceConf /home/joinmarket/joinin.conf
 
 checkRPCwallet
 
