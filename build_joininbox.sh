@@ -444,18 +444,41 @@ chmod +x /home/joinmarket/*.sh
 runuser joinmarket -c "cp -r /home/joinmarket/joininbox/scripts/standalone /home/joinmarket/"
 chmod +x /home/joinmarket/standalone/*.sh
 
-echo "# set the default password 'joininbox' for the users 'pi', \
-'joinmarket' and 'root'"
+echo "# set unique first-boot credentials and lock unused accounts"
 adduser joinmarket sudo
 # chsh joinmarket -s /bin/bash
 # configure for usage without password entry for the joinmarket user
 # https://www.tecmint.com/run-sudo-command-without-password-linux/
 echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
-echo "root:joininbox" | chpasswd
-echo "joinmarket:joininbox" | chpasswd
+
+# Security hardening: no shared, known password on the image.
+# Lock the root password - root is reached via sudo from joinmarket and
+# 'PermitRootLogin no' is set in the Hardening section below.
+passwd -l root
+# Lock the password of the 'pi' user if present (unused by JoininBox).
 if [ $(grep -c pi </etc/passwd) -gt 0 ]; then
-  echo "pi:joininbox" | chpasswd
+  passwd -l pi
 fi
+# Generate a unique random initial password for the joinmarket user
+# (24 hex chars = 96 bits of entropy, unique per install).
+initialPassword=$(openssl rand -hex 12)
+echo "joinmarket:${initialPassword}" | chpasswd
+# Force the initial password to be changed on the first login.
+# Debian's default sshd (UsePAM yes) handles expired passwords over SSH
+# by prompting for a new password after authentication.
+chage -d 0 joinmarket
+# Make the initial password available on the local console only.
+# It is NOT put in the SSH banner (visible pre-auth to the network)
+# and NOT written to world-readable files.
+echo "${initialPassword}" >/root/joininbox-initial-password
+chmod 600 /root/joininbox-initial-password
+{
+  echo ""
+  echo "JoininBox: the unique initial password of the 'joinmarket' user is:"
+  echo "${initialPassword}"
+  echo "It must be changed on the first login. A root-only copy is kept in"
+  echo "/root/joininbox-initial-password (mode 600)."
+} >>/etc/issue
 
 echo "# create the joinin.conf"
 runuser joinmarket -c "touch /home/joinmarket/joinin.conf"
@@ -674,9 +697,23 @@ echo
 echo "To make an SDcard image safe to share use:"
 echo "'/home/joinmarket/standalone/prepare.release.sh'"
 echo
-echo "the ssh login credentials are until the first login:"
-echo "user:joinmarket"
-echo "password:joininbox"
+echo "######################################"
+echo "# First-boot credentials (no defaults)"
+echo "######################################"
+echo
+echo "SSH stays enabled (ufw allows port 22), but there is no shared"
+echo "default password on this install."
+echo
+echo "user: joinmarket"
+echo "initial password: ${initialPassword}"
+echo
+echo "The initial password is unique to this install, was also written to"
+echo "the local console message (/etc/issue) and to"
+echo "/root/joininbox-initial-password (mode 600), and must be changed on"
+echo "the first login (chage -d 0)."
+echo
+echo "The root and (if present) pi passwords are locked -"
+echo "use sudo from the joinmarket user instead."
 echo
 
 # remove the build-time noninteractive apt policy so deployed systems
