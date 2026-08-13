@@ -459,26 +459,18 @@ passwd -l root
 if [ $(grep -c pi </etc/passwd) -gt 0 ]; then
   passwd -l pi
 fi
-# Generate a unique random initial password for the joinmarket user
-# (24 hex chars = 96 bits of entropy, unique per install).
-initialPassword=$(openssl rand -hex 12)
-echo "joinmarket:${initialPassword}" | chpasswd
-# Force the initial password to be changed on the first login.
-# Debian's default sshd (UsePAM yes) handles expired passwords over SSH
-# by prompting for a new password after authentication.
-chage -d 0 joinmarket
-# Make the initial password available on the local console only.
-# It is NOT put in the SSH banner (visible pre-auth to the network)
-# and NOT written to world-readable files.
-echo "${initialPassword}" >/root/joininbox-initial-password
-chmod 600 /root/joininbox-initial-password
-{
-  echo ""
-  echo "JoininBox: the unique initial password of the 'joinmarket' user is:"
-  echo "${initialPassword}"
-  echo "It must be changed on the first login. A root-only copy is kept in"
-  echo "/root/joininbox-initial-password (mode 600)."
-} >>/etc/issue
+# Do NOT set any joinmarket password at build time and do NOT write any
+# credential to /etc/issue, /root or the build output: this script also
+# runs in PUBLIC CI image builds, so anything generated here would leak
+# into world-readable CI logs and be baked into every published image.
+# Instead install a one-shot systemd unit which generates the unique
+# initial password ON THE DEVICE at the first boot (before ssh.service).
+install -m 700 -o root -g root \
+  /home/joinmarket/joininbox/scripts/standalone/first.boot.credentials.sh \
+  /usr/local/sbin/joininbox-firstboot.sh
+cp /home/joinmarket/joininbox/scripts/standalone/joininbox-firstboot.service \
+  /etc/systemd/system/joininbox-firstboot.service
+systemctl enable joininbox-firstboot
 
 echo "# create the joinin.conf"
 runuser joinmarket -c "touch /home/joinmarket/joinin.conf"
@@ -702,15 +694,15 @@ echo "# First-boot credentials (no defaults)"
 echo "######################################"
 echo
 echo "SSH stays enabled (ufw allows port 22), but there is no shared"
-echo "default password on this install."
+echo "default password on this install - and NO password was set at build"
+echo "time (nothing sensitive in this build log or in the image)."
 echo
-echo "user: joinmarket"
-echo "initial password: ${initialPassword}"
-echo
-echo "The initial password is unique to this install, was also written to"
-echo "the local console message (/etc/issue) and to"
-echo "/root/joininbox-initial-password (mode 600), and must be changed on"
-echo "the first login (chage -d 0)."
+echo "On the FIRST BOOT of the device the one-shot"
+echo "joininbox-firstboot.service (ordered before ssh.service) generates a"
+echo "unique random password for the 'joinmarket' user and shows it on the"
+echo "local console (/etc/issue). A root-only copy is kept in"
+echo "/root/joininbox-initial-password (mode 600) and the password must be"
+echo "changed on the first login (chage -d 0)."
 echo
 echo "The root and (if present) pi passwords are locked -"
 echo "use sudo from the joinmarket user instead."
