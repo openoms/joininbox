@@ -1,0 +1,65 @@
+name: amd64-image-test
+
+concurrency:
+  group: amd64-image-test-${{ github.event.workflow_run.id || inputs.run_id || github.run_id }}
+  cancel-in-progress: true
+
+on:
+  workflow_run:
+    workflows: ["amd64-image-build"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "amd64-image-build workflow run ID to test"
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  bats-image-test:
+    name: Run Bats against amd64 image artifact
+    runs-on: ubuntu-22.04
+    timeout-minutes: 240
+    if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository) }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.workflow_run.head_repository.full_name || github.repository }}
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+
+      - name: Check out bats-core
+        uses: actions/checkout@v4
+        with:
+          repository: bats-core/bats-core
+          # bats-core v1.12.0
+          ref: 713504bc0224a19b3d7c7958c18dc07f64f54b44
+          path: .bats-core
+          persist-credentials: false
+
+      - name: Download amd64 image artifact
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.workflow_run.id || inputs.run_id }}
+          pattern: joininbox-amd64-image-*
+          path: artifacts
+          merge-multiple: true
+
+      - name: Verify and decompress image
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cd artifacts
+          sha256sum -c joininbox-amd64-debian.qcow2.gz.sha256
+          gzip -dk joininbox-amd64-debian.qcow2.gz
+          sha256sum -c joininbox-amd64-debian.qcow2.sha256
+
+      - name: Run image Bats tests
+        timeout-minutes: 30
+        run: ci/amd64/test.amd64-image-bats.sh "${GITHUB_WORKSPACE}/artifacts/joininbox-amd64-debian.qcow2"

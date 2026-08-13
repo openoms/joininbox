@@ -30,6 +30,7 @@
 - [Wallet recovery](#wallet-recovery)
   - [on JoininBox](#on-joininbox)
   - [on the remote node](#on-the-remote-node)
+- [Migrating from legacy wallet.dat to descriptor wallet](#migrating-from-legacy-walletdat-to-descriptor-wallet)
 - [USB SSD recommendation](#usb-ssd-recommendation)
 - [Pruned node notes](#pruned-node-notes)
 - [External drive](#external-drive)
@@ -195,7 +196,7 @@ Use `ssh` with `torsocks`  on the desktop (needs Tor installed):
 server=1
 daemon=1
 disablewallet=0
-main.wallet=wallet.dat
+main.wallet=watch-only-descriptor-wallet
 
 # Connection settings
 rpcuser=REDACTED
@@ -428,7 +429,7 @@ JoinMarket docs:
 * https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/docs/USAGE.md#recover
 
 ### on JoininBox
-* Connect the remote bitcoind with `CONFIG` -> `CONNECT` menu so it checks if the connection is successful. It will also set the remote watch-only wallet in bitcoind to "joininbox" so will need to rescan that after recovering an old wallet with previously used addresses.
+* Connect the remote bitcoind with `CONFIG` -> `CONNECT` menu so it checks if the connection is successful. It will also set the remote watch-only-descriptor-wallet in bitcoind to "joininbox" so will need to rescan that after recovering an old wallet with previously used addresses.
 
 * When using the CLI and connecting to the remote node over Tor, you will need to use the script with the torsocks prefix like:  
 `torsocks python3 wallet-tool.py --recoversync -g 20 ~/.joinmarket/wallets/wallet.jmdat`
@@ -437,7 +438,7 @@ JoinMarket docs:
 * Use the menu option `WALLET` -> `RESCAN` or follow manually
 * the wallet defined as
 `rpc_wallet =`
-in the joinmarket.cfg is the wallet which is used as watch only in the remote bitcoind.
+in the joinmarket.cfg is the wallet which is used as a watch-only-descriptor-wallet in the remote bitcoind.
 You need to run rescanblockchain on that wallet in bitcoind after importing the joinmarket wallet.
 * The wallet is set in the joinmarket.cfg (by default called `joininbox` should show up when you run:  
 `bitcoin-cli listwallets`
@@ -449,6 +450,65 @@ Rescanning from the first SegWit block is sufficient for the default SegWit wall
 * Monitor progress (on a RaspiBlitz):  
 `sudo tail -fn 100 /mnt/hdd/app-storage/bitcoin/debug.log`  
 Once the rescan is finished you balances should appear in the `INFO` menu (`wallet-tool.py`)
+
+## Migrating from legacy wallet.dat to descriptor wallet
+
+Starting with the 0.9.0 version, JoininBox uses Bitcoin Core's descriptor wallets (`watch-only-descriptor-wallet`) instead of the legacy `wallet.dat`. This change provides better compatibility with modern Bitcoin Core versions (v26+) and aligns with Bitcoin Core's default wallet format.
+
+### Why this change?
+
+Bitcoin Core has deprecated BDB (Berkeley DB) wallets in favor of descriptor wallets. The new descriptor wallets:
+- Are the default in Bitcoin Core v26+
+- Don't require the `deprecatedrpc=create_bdb` configuration
+- Have better performance and features
+- Are actively maintained and improved
+
+### How automatic migration works
+
+When `rpc_wallet_file` is still set to `wallet.dat`, JoininBox queries the connected Bitcoin Core node using RPC before changing the configuration:
+
+- Bitcoin Core v30.0 and newer: JoininBox atomically changes `rpc_wallet_file` to `watch-only-descriptor-wallet`, creates or loads that descriptor wallet, and displays the migration notice when the old `wallet.dat` is present.
+- Bitcoin Core v29.x and earlier: JoininBox keeps using `wallet.dat` and does not start automatic migration.
+- Version unavailable: JoininBox leaves `wallet.dat` configured rather than migrating without confirming compatibility.
+
+The migration does not rename, modify, or delete the old `wallet.dat`. It changes which Bitcoin Core wallet JoinMarket uses for watch-only address imports and transaction history.
+
+### Migration steps for existing users
+
+If you're upgrading from a previous version of JoininBox that used `wallet.dat`, follow these steps:
+
+1. **The migration notice will appear automatically on Bitcoin Core v30.0 and newer**
+   When you first use any wallet-related function after updating, JoininBox checks the connected Bitcoin Core version. On v30.0 and newer it switches the configured RPC wallet to `watch-only-descriptor-wallet`, detects the old `wallet.dat`, and displays a migration notice. Bitcoin Core v29.x and earlier continue using `wallet.dat` without starting the automatic migration.
+
+2. **Open each JoinMarket wallet**  
+   Go to `WALLET` -> `DISPLAY` and open each of your JoinMarket wallets (`.jmdat` files) at least once. This imports the addresses into the new `watch-only-descriptor-wallet` in Bitcoin Core.
+
+3. **Run a blockchain rescan**  
+   After opening all your wallets, go to `WALLET` -> `RESCAN` and enter a blockheight:
+   - Use `481824` (first SegWit block) for wallets created after August 2017
+   - Can use a later blockheight if you know when your wallet had its first deposit
+   
+4. **Wait for the rescan to complete**  
+   The rescan can take several hours depending on the blockheight and your hardware. Monitor progress with:
+   ```bash
+   # On standalone JoininBox:
+   sudo tail -f /home/bitcoin/.bitcoin/debug.log
+   
+   # On RaspiBlitz:
+   sudo tail -f /mnt/hdd/bitcoin/debug.log
+   ```
+
+5. **Verify your balances**  
+   Once the rescan completes, check your wallet balances with `WALLET` -> `DISPLAY`.
+
+### Notes
+
+- The old `wallet.dat` is not deleted and remains in Bitcoin Core
+- Automatic migration only runs when the connected Bitcoin Core version is v30.0 or newer
+- You only need to perform this migration once
+- The migration notice will not appear again after you acknowledge it
+- If you have issues, you can reset the migration flag by removing `walletMigrationDone=true` from `/home/joinmarket/joinin.conf`
+
 ## USB SSD recommendation
 **JoininBox operates on the minimum viable hardware under the assumption that the seed (and passphrase) of the wallets used is safely backed up and can be recovered fully**
 * The above warning is especially true for SDcard as they fail often, use a good quality one.
@@ -519,7 +579,7 @@ Alternatively to a pruned node there could be a larger >400 GB storage connected
   # -rw-------  1 bitcoin bitcoin  1521305 Mar 21 10:38 peers.dat
   # -rw-r--r--  1 bitcoin bitcoin        7 Mar 21 10:08 settings.json
   # drwx------ 34 bitcoin bitcoin     4096 Dec  7 23:39 specter
-  # drwx------  2 bitcoin bitcoin     4096 Mar 21 10:38 wallet.dat
+  # drwx------  2 bitcoin bitcoin     4096 Mar 21 10:38 watch-only-descriptor-wallet
   installMainnet
   ...
   # # OK - the bitcoind.service is now enabled
@@ -528,7 +588,7 @@ Alternatively to a pruned node there could be a larger >400 GB storage connected
   # 
   # # Monitor the bitcoind with: sudo tail -f /home/bitcoin/.bitcoin/mainnet/debug.log
   # 
-  # # Create wallet.dat ...
+  # # Create watch-only-descriptor-wallet ...
   # error code: -28
   # error message:
   # Loading block index...
