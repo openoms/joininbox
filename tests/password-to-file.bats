@@ -2,6 +2,9 @@
 # Tests for passwordToFile (scripts/_functions.sh): the wallet password goes
 # to an unpredictable, caller-owned, mode-600 file under /dev/shm - never to
 # the old fixed /dev/shm/.pw path - and is cleaned up on exit or cancel.
+#
+# Note: the suite must also pass from a tagless shallow checkout (CI), where
+# the git describe in _functions.sh fails - the source guard above covers it.
 
 load helpers/joininbox-env
 
@@ -28,7 +31,10 @@ EOF
   export PATH="$MOCK_BIN:$PATH"
   export DIALOG_PASSWORD="bats-secret-123"
   export DIALOG_EXIT=0
-  source /home/joinmarket/_functions.sh
+  # '|| true': the version-detection block at the top of _functions.sh runs
+  # git describe which fails (128) on a tagless/shallow checkout; without the
+  # guard bats' errexit would abort the source before the function definitions
+  source /home/joinmarket/_functions.sh || true
 }
 
 teardown() {

@@ -5,7 +5,7 @@
 # by passwordToFile must remove the file.
 # stdout must stay clean except for the final path - keep git noise on stderr.
 cd / || exit 1
-source /home/joinmarket/_functions.sh
+source /home/joinmarket/_functions.sh || true
 wallet="$1"
 : >"$wallet"
 passwordToFile
