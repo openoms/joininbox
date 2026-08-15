@@ -1,5 +1,9 @@
 variable "github_user" {}
 variable "branch" {}
+# set to the pull-request number for PR CI builds: skips the code
+# signature verification and labels the image as an unverified test build.
+# Empty for master (production) builds where verification is mandatory.
+variable "pr_number" { default = "" }
 
 source "arm" "joininbox-arm64-rpi" {
   file_checksum_type    = "sha256"
@@ -52,7 +56,8 @@ build {
   provisioner "shell" {
     environment_vars = [
       "github_user=${var.github_user}",
-      "branch=${var.branch}"
+      "branch=${var.branch}",
+      "pr_number=${var.pr_number}"
     ]
     script = "./joininbox.sh"
   }

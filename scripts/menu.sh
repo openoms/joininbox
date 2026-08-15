@@ -12,6 +12,16 @@ BACKTITLE="JoininBox GUI $currentJBtag network:$network IP:$localip"
 TITLE="JoininBox $currentJBtag $network"
 MENU="
 Choose from the options:"
+
+# warn prominently on top of the menu if this is an unverified
+# pull-request test image (labeled by build_joininbox.sh)
+if [ -f /etc/joininbox-build-info ]; then
+  pr_build=$(grep -E "^pr_build=" /etc/joininbox-build-info | cut -d= -f2)
+  MENU="
+!!! UNVERIFIED PR BUILD #${pr_build} - TESTING ONLY !!!
+Choose from the options:"
+  HEIGHT=$((HEIGHT + 1))
+fi
 OPTIONS=()
 
 # Basic Options

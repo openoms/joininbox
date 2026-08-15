@@ -15,5 +15,12 @@ systemctl daemon-reload
 
 apt-get update
 
+# no tty in the packer build: debconf must not prompt and dpkg conffile
+# questions (eg initramfs.conf during kernel upgrades) resolve to the
+# default action while keeping the existing config
+export DEBIAN_FRONTEND=noninteractive
+echo 'Dpkg::Options { "--force-confdef"; "--force-confold"; }' \
+  > /etc/apt/apt.conf.d/90joininbox-noninteractive
+
 apt-get -y upgrade linux-image-$arch
 apt-get -y install linux-headers-$(uname -r)

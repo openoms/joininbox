@@ -266,6 +266,13 @@ echo "########################"
 echo "# apt-get update & upgrade"
 echo "########################"
 echo
+# noninteractive package management:
+# - debconf never prompts (no tty in CI/packer builds)
+# - dpkg conffile prompts (eg initramfs.conf during kernel upgrades)
+#   resolve to the default action and keep the existing config
+export DEBIAN_FRONTEND=noninteractive
+echo 'Dpkg::Options { "--force-confdef"; "--force-confold"; }' \
+  > /etc/apt/apt.conf.d/90joininbox-noninteractive
 apt-get update -y
 apt-get upgrade -f -y
 
@@ -337,7 +344,12 @@ apt-get install -y net-tools
 # to display hex codes
 apt-get install -y xxd
 # netcat
-apt-get install -y netcat
+# the netcat metapackage was removed in Debian trixie - use the openbsd variant
+if apt-cache show netcat >/dev/null 2>&1; then
+  apt-get install -y netcat
+else
+  apt-get install -y netcat-openbsd
+fi
 # install killall, fuser
 apt-get install -y psmisc
 # dialog
@@ -382,28 +394,48 @@ else
   fi
 fi
 
-echo "# Checking which key signed the last commit"
-lastCommit=$(sudo -u joinmarket git log --show-signature --oneline | head -n6)
-echo ${lastCommit}
-if echo "${lastCommit}" | grep 13C688DB5B9C745DE4D2E4545BFB77609B081B65; then
-  PGPsigner="openoms"
-  PGPpubkeyLink="https://github.com/openoms.gpg"
-  PGPpubkeyFingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
-elif echo "${lastCommit}" | grep B5690EEEBB952194; then
-  echo "# The last commit was made on GitHub and is signed with the GitHub PGP key."
-  PGPsigner="web-flow"
-  PGPpubkeyLink="https://github.com/${PGPsigner}.gpg"
-  PGPpubkeyFingerprint="B5690EEEBB952194"
+if [ -n "$JOININBOX_PR_NUMBER" ]; then
+  # Pull-request CI build: the head commit comes from a fork and is not
+  # expected to be signed by a maintainer key. Skip code verification,
+  # but label the image clearly as an unverified test build.
+  # Production images are only built on push to master where this
+  # variable is empty and verification below is mandatory.
+  echo "########################################################"
+  echo "# PULL REQUEST BUILD #${JOININBOX_PR_NUMBER}"
+  echo "# SKIPPING the PGP verification of the source code"
+  echo "# This image is for TESTING ONLY - not for production use"
+  echo "########################################################"
+  echo "# Labeling the image as an unverified PR build"
+  echo "pr_build=${JOININBOX_PR_NUMBER}
+github_user=${githubUser}
+branch=${wantedBranch}
+built=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+warning=UNVERIFIED pull request build - for testing only" \
+    > /etc/joininbox-build-info
 else
-  echo "# No known PGP key found"
-  exit 1
-fi
+  echo "# Checking which key signed the last commit"
+  lastCommit=$(sudo -u joinmarket git log --show-signature --oneline | head -n6)
+  echo ${lastCommit}
+  if echo "${lastCommit}" | grep 13C688DB5B9C745DE4D2E4545BFB77609B081B65; then
+    PGPsigner="openoms"
+    PGPpubkeyLink="https://github.com/openoms.gpg"
+    PGPpubkeyFingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
+  elif echo "${lastCommit}" | grep B5690EEEBB952194; then
+    echo "# The last commit was made on GitHub and is signed with the GitHub PGP key."
+    PGPsigner="web-flow"
+    PGPpubkeyLink="https://github.com/${PGPsigner}.gpg"
+    PGPpubkeyFingerprint="B5690EEEBB952194"
+  else
+    echo "# No known PGP key found"
+    exit 1
+  fi
 
-command="bash /home/joinmarket/joininbox/scripts/verify.git.sh \
-  ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint}"
-echo "running: ${command}"
-chmod 777 /dev/shm
-sudo -u joinmarket ${command} || exit 1
+  command="bash /home/joinmarket/joininbox/scripts/verify.git.sh \
+    ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint}"
+  echo "running: ${command}"
+  chmod 777 /dev/shm
+  sudo -u joinmarket ${command} || exit 1
+fi
 
 runuser joinmarket -c "cp /home/joinmarket/joininbox/scripts/* /home/joinmarket/"
 runuser joinmarket -c "cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null"
@@ -645,3 +677,7 @@ echo "the ssh login credentials are until the first login:"
 echo "user:joinmarket"
 echo "password:joininbox"
 echo
+
+# remove the build-time noninteractive apt policy so deployed systems
+# keep the default interactive conffile handling
+rm -f /etc/apt/apt.conf.d/90joininbox-noninteractive

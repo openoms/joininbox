@@ -31,6 +31,13 @@ else
 	branch=master
 fi
 
+# optional pull-request number: marks an unverified PR test build
+if [ $# -gt 2 ]; then
+	pr_number=$3
+else
+	pr_number=""
+fi
+
 # Resolve latest Debian 13 amd64 netinst ISO from SHA256SUMS.
 # This avoids 404s and checksum mismatches when Debian point releases rotate.
 debian_major=${DEBIAN_MAJOR:-13}
@@ -126,7 +133,7 @@ else
 	exit 1
 fi
 
-vars="-var github_user=${github_user} -var branch=${branch} -var iso_name=${latest_iso_name} -var iso_checksum=${latest_iso_checksum}"
+vars="-var github_user=${github_user} -var branch=${branch} -var pr_number=${pr_number} -var iso_name=${latest_iso_name} -var iso_checksum=${latest_iso_checksum}"
 
 # Build the image
 echo "# Build the image with: github_user=${github_user} branch=${branch}"
