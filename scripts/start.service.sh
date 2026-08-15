@@ -4,16 +4,14 @@ source /home/joinmarket/_functions.sh
 sourceConf /home/joinmarket/joinin.conf
 
 script="$1"
-wallet="$2"
+walletInput="$2"
 
-if [ $script == "yg-privacyenhanced" ]; then
-  stopYG $wallet
-else
-echo
-  echo "# Making sure $script is not running"
-  sudo systemctl stop $script
-  sudo systemctl disable $script
-fi
+# Validate and canonicalize ALL inputs at the very top,
+# before anything touches credential files (e.g. /dev/shm/.pw)
+# or makes any system changes.
+wallet=$(validateServiceArgs "$script" "$walletInput") || exit 1
+
+stopYG "$wallet"
 
 if [ "${RPCoverTor}" = "on" ];then
   tor="torsocks"
@@ -24,7 +22,6 @@ fi
 startScript="cat /dev/shm/.pw | $tor python $script.py $wallet \
 --wallet-password-stdin"
 # display
-walletFileName="${wallet//$walletPath/ }"
 echo
 echo "# Running the command with systemd:"
 echo " $tor python $script.py $walletFileName"
@@ -69,6 +66,7 @@ echo
 echo "# Starting the systemd service: $script"
 echo
 
+sudo systemctl daemon-reload
 sudo systemctl enable $script
 sudo systemctl start $script
 

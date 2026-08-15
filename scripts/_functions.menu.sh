@@ -26,18 +26,40 @@ function menu_MAKER() {
   chooseWallet noLockFileCheck
   # save wallet in conf
   sudo sed -i "s#^YGwallet=.*#YGwallet=$(cat $wallet)#g" $joininConfPath
-  # get password
+  # validate the service inputs BEFORE creating the password file
+  walletInput=$(cat $wallet)
+  if ! walletCanonical=$(validateServiceArgs yg-privacyenhanced "$walletInput"); then
+    echo
+    echo "# ERROR: the wallet input was rejected - the Yield Generator was not started"
+    echo "# Press ENTER to return to the menu."
+    read key
+    /home/joinmarket/menu.yg.sh
+    return 1
+  fi
+  # get password (creates /dev/shm/.pw)
   passwordToFile
-  echo "# Using the wallet: $(cat $wallet)"
-  /home/joinmarket/start.service.sh yg-privacyenhanced $(cat $wallet)
-  echo
-  echo "# started the Yield Generator in the background"
-  echo
-  echo "# showing the systemd status ..."
-  sleep 3
-  dialog \
-  --title "Monitoring the Yield Generator - press CTRL+C to exit"  \
-  --prgbox "sudo journalctl -fn100 -u yg-privacyenhanced" -1 -1
+  echo "# Using the wallet: $walletCanonical"
+  if /home/joinmarket/start.service.sh yg-privacyenhanced "$walletCanonical"; then
+    echo
+    echo "# started the Yield Generator in the background"
+    echo
+    echo "# showing the systemd status ..."
+    sleep 3
+    dialog \
+    --title "Monitoring the Yield Generator - press CTRL+C to exit"  \
+    --prgbox "sudo journalctl -fn100 -u yg-privacyenhanced" -1 -1
+  else
+    startStatus=$?
+    echo
+    echo "# ERROR: the Yield Generator failed to start (exit code $startStatus)"
+    # remove the password temp file left behind by the failed start
+    if [ -f /dev/shm/.pw ]; then
+      shred -uvz /dev/shm/.pw
+      echo "# Removed the password temp file /dev/shm/.pw"
+    fi
+    echo "# Press ENTER to return to the menu."
+    read key
+  fi
   echo "# returning to the menu..."
   sleep 1
   /home/joinmarket/menu.yg.sh
