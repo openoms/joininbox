@@ -50,9 +50,9 @@ jobs:
 
       - name: Run the build script
         run: |
-          echo "Running with: ${{steps.set_values.outputs.github_user}} $GITHUB_HEAD_REF"
+          echo "Running with: ${{steps.set_values.outputs.github_user}} ${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
           cd ci/amd64
-          bash packer.build.amd64-debian.sh ${{steps.set_values.outputs.github_user}} $GITHUB_HEAD_REF "$JOININBOX_PR_NUMBER"
+          bash packer.build.amd64-debian.sh ${{steps.set_values.outputs.github_user}} ${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}} "$JOININBOX_PR_NUMBER"
 
       - name: Compute checksum of the raw image
         run: |
