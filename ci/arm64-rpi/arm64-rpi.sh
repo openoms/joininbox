@@ -6,9 +6,11 @@ else
   github_user=openoms
 fi
 
-if [ $# -gt 1 ]; then
+if [ $# -gt 1 ] && [ -n "$2" ]; then
   branch=$2
 else
+  # an explicitly passed empty branch would break the raw.githubusercontent
+  # fetch URL (404) - fall back to master
   branch=master
 fi
 
