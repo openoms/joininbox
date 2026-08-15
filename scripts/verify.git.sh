@@ -73,7 +73,12 @@ echo
 cat "$_temp"
 echo "# goodSignature(${goodSignature})"
 
-correctKey=$(grep -F "[GNUPG:] VALIDSIG ${PGPpubkeyFingerprint} " "$_temp" -c)
+# VALIDSIG starts with the signing-key fingerprint, which is a subkey when the
+# signer uses one (e.g. AdamISZ signs tags with a signing subkey). The primary
+# key fingerprint is the last field of the record. Accept the pinned fingerprint
+# in either position - GnuPG only reports it after validating the signature and
+# the subkey binding, so both bind the signature to the pinned key.
+correctKey=$(grep -E "^\[GNUPG:\] VALIDSIG (${PGPpubkeyFingerprint} |.* ${PGPpubkeyFingerprint}\$)" "$_temp" -c)
 echo "# correctKey(${correctKey})"
 
 if [ "${correctKey}" -lt 1 ] || [ "${goodSignature}" -lt 1 ]; then
