@@ -4,6 +4,11 @@
 # $2 is the port the Hidden Service forwards to (to be used in the Tor browser)
 # $3 is the port to be forwarded with the Hidden Service
 
+# Detect failures anywhere in a pipeline (eg sed | tee): without pipefail only
+# the last command's status is observed, so a failed producer writing partial
+# output would go unnoticed and could yield a truncated candidate torrc.
+set -o pipefail
+
 # command info
 if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
  echo "config script to configure a Tor Hidden Service"
