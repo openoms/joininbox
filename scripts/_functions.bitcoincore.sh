@@ -5,6 +5,12 @@ walletPath="/home/joinmarket/.joinmarket/wallets/"
 JMcfgPath="/home/joinmarket/.joinmarket/joinmarket.cfg"
 joininConfPath="/home/joinmarket/joinin.conf"
 
+# sourceConf is defined in _functions.sh - source it if this file is used
+# standalone (no-op when sourced via _functions.sh, which defines it first)
+if ! declare -F sourceConf >/dev/null 2>&1; then
+  source /home/joinmarket/_functions.sh
+fi
+
 # downloadBitcoinCore
 function downloadBitcoinCore() {
   # set version
@@ -286,7 +292,7 @@ function showBitcoinLogs() {
     lines="-n $1"
     echo "# Show $lines number of lines"
   fi
-  source ${joininConfPath}
+  sourceConf ${joininConfPath}
   if [ ${#network} -eq 0 ] || [ "${network}" = "mainnet" ] || [ "${runningEnv}" = "raspiblitz" ]; then
     bitcoinUser="bitcoin"
   elif [ "${network}" = "signet" ]; then
@@ -534,7 +540,7 @@ function connectLocalNode() {
   if [ ${#1} -gt 0 ]; then
     network=$1
   else
-    source ${joininConfPath}
+    sourceConf ${joininConfPath}
   fi
   echo "# Setting connection to the local Bitcoin node on ${network}"
   rpc_host="127.0.0.1"

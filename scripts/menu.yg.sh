@@ -2,7 +2,7 @@
 # YG menu options
 
 source /home/joinmarket/_functions.sh
-source /home/joinmarket/joinin.conf
+sourceConf /home/joinmarket/joinin.conf
 
 if [ ${RPCoverTor} = "on" ]; then
   tor="torsocks"

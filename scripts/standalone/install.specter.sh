@@ -15,7 +15,7 @@ fi
 echo "# install.specter.sh $1"
 
 source /home/joinmarket/_functions.sh
-source /home/joinmarket/joinin.conf
+sourceConf /home/joinmarket/joinin.conf
 
 function createSpecterConfig() {
     echo "# Creating /home/specter/.specter/config.json"
@@ -304,7 +304,7 @@ EOF
   sudo sed -i "s/^specter=.*/specter=on/g" /home/joinmarket/joinin.conf
 
   # Hidden Service for SERVICE if Tor is active
-  source /home/joinmarket/joinin.conf
+  sourceConf /home/joinmarket/joinin.conf
   if [ "${runBehindTor}" = "on" ]; then
     # make sure to keep in sync with internet.tor.sh script
     # port 25441 is HTTPS with self-signed cert - specter only makes sense to be served over HTTPS

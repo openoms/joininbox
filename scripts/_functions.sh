@@ -1,6 +1,51 @@
 #!/bin/bash
 
-source /home/joinmarket/joinin.conf
+# sourceConf <config-file>
+# Parse a KEY=value config file as DATA - never execute it as shell code.
+# Fails closed: aborts with a non-zero exit and an error on stderr naming the
+# file and line number if any line is malformed or contains characters that
+# have no legitimate use in this config (and could be used for code execution
+# if the file was sourced as shell code).
+function sourceConf() {
+  local confFile="$1"
+  local line key value lineNr=0
+  if [ ! -f "$confFile" ]; then
+    echo "# sourceConf ERROR: config file not found: $confFile" >&2
+    exit 1
+  fi
+  # read from the file directly (not a pipe) so variables stay in this shell
+  while IFS= read -r line || [ -n "$line" ]; do
+    lineNr=$((lineNr + 1))
+    # allow blank lines and comments
+    if [ -z "$line" ] || [[ "$line" =~ ^[[:space:]]*# ]]; then
+      continue
+    fi
+    # valid lines must be KEY=value
+    if ! [[ "$line" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; then
+      echo "# sourceConf ERROR: malformed line $lineNr in $confFile" >&2
+      exit 1
+    fi
+    key="${line%%=*}"
+    value="${line#*=}"
+    # reject characters with no legitimate use in this config that would be
+    # dangerous if the file was ever executed as shell code
+    # shellcheck disable=SC2016 # the '$(' etc. below are intentional literals
+    if [[ "$value" == *'`'* || "$value" == *'$('* || "$value" == *';'* || \
+          "$value" == *'|'* || "$value" == *'&'* || \
+          "$value" == *'<'* || "$value" == *'>'* ]]; then
+      echo "# sourceConf ERROR: forbidden character in the value on line $lineNr in $confFile" >&2
+      exit 1
+    fi
+    # strip one pair of matching surrounding quotes (as the shell would when sourcing)
+    if [[ "$value" =~ ^\'(.*)\'$ ]] || [[ "$value" =~ ^\"(.*)\"$ ]]; then
+      value="${BASH_REMATCH[1]}"
+    fi
+    # assign as data (global scope) - never eval
+    declare -g "$key=$value"
+  done < "$confFile"
+}
+
+sourceConf /home/joinmarket/joinin.conf
 
 # versions
 currentJBcommit=$(cd /home/joinmarket/joininbox; git describe --tags)

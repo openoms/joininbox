@@ -12,7 +12,8 @@ if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "-help" ]; then
  exit 1
 fi
 
-source /home/joinmarket/joinin.conf
+source /home/joinmarket/_functions.sh
+sourceConf /home/joinmarket/joinin.conf
 
 # delete a hidden service
 if [ "$1" == "off" ]; then

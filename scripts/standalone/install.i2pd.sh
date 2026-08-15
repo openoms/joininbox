@@ -107,7 +107,8 @@ function bitcoinI2Pstatus {
 }
 
 echo "# Running: 'install.i2pd.sh $*'"
-source /home/joinmarket/joinin.conf
+source /home/joinmarket/_functions.sh
+sourceConf /home/joinmarket/joinin.conf
 
 bitcoinConfPath="/home/bitcoin/.bitcoin/bitcoin.conf"
 bitcoinLogPath="/home/bitcoin/.bitcoin/debug.log"

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
+sourceConf /home/joinmarket/joinin.conf
 
 # check connectedRemoteNode var in joinin.conf
 if ! grep -Eq "^connectedRemoteNode=" $joininConfPath; then

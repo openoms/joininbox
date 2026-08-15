@@ -11,7 +11,8 @@ if [ ${#1} -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
   echo "start.joinmarket-api.sh connect"
 fi
 
-source $HOME_DIR/joinin.conf
+source $HOME_DIR/_functions.sh
+sourceConf $HOME_DIR/joinin.conf
 
 function joinmarketApiServiceOn() {
 

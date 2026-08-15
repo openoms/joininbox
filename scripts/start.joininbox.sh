@@ -17,7 +17,7 @@ if [ "$setupStepEntry" -eq 0 ]; then
   echo "setupStep=0" >>$joininConfPath
 fi
 
-source /home/joinmarket/joinin.conf
+sourceConf /home/joinmarket/joinin.conf
 if [ "$setupStep" -lt 100 ]; then
   if [ "$setupStep" -lt 5 ]; then
     # identify running env
@@ -95,13 +95,13 @@ if [ "$setupStep" -lt 100 ]; then
   fi
   # change the ssh password if standalone
   if [ "$runningEnv" = "standalone" ]; then
-    source /home/joinmarket/joinin.conf
+    sourceConf /home/joinmarket/joinin.conf
     if [ "$setupStep" -lt 6 ]; then
       # set ssh passwords on the first run
       sudo /home/joinmarket/set.password.sh
       sed -i "s#setupStep=.*#setupStep=6#g" $joininConfPath
     fi
-    source /home/joinmarket/joinin.conf
+    sourceConf /home/joinmarket/joinin.conf
     if [ "$setupStep" -lt 7 ] && [ ${cpu} != "x86_64" ]; then
       # expand SDcard partition on ARM
       sudo /home/joinmarket/standalone/expand.rootfs.sh
@@ -109,7 +109,7 @@ if [ "$setupStep" -lt 100 ]; then
   fi
   generateJMconfig
   sudo sed -i "s#setupStep=.*#setupStep=10#g" $joininConfPath
-  source /home/joinmarket/joinin.conf
+  sourceConf /home/joinmarket/joinin.conf
   if [ "$setupStep" -lt 11 ]; then
     if [ "$runningEnv" = "standalone" ]; then
       # open the config menu if standalone

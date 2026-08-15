@@ -128,7 +128,7 @@ range_argument qtgui "0" "1" "false" "true"
 : "${user:=joinmarket}"
 
 source /home/joinmarket/_functions.sh
-source /home/joinmarket/joinin.conf
+sourceConf /home/joinmarket/joinin.conf
 
 # create user if not default
 if [ "${user}" != "joinmarket" ]; then

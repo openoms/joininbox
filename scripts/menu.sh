@@ -1,8 +1,8 @@
 #!/bin/bash
 
 /home/joinmarket/start.joininbox.sh
-source /home/joinmarket/joinin.conf
 source /home/joinmarket/_functions.sh
+sourceConf /home/joinmarket/joinin.conf
 
 # BASIC MENU INFO
 HEIGHT=21
