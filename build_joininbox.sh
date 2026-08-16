@@ -424,7 +424,7 @@ else
     echo "# The last commit was made on GitHub and is signed with the GitHub PGP key."
     PGPsigner="web-flow"
     PGPpubkeyLink="https://github.com/${PGPsigner}.gpg"
-    PGPpubkeyFingerprint="B5690EEEBB952194"
+    PGPpubkeyFingerprint="968479A1AFF927E37D1A566BB5690EEEBB952194"
   else
     echo "# No known PGP key found"
     exit 1

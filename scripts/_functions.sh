@@ -280,8 +280,51 @@ function copyJoininboxScripts() {
   fi
 }
 
+# Accept only a decimal GitHub pull-request number. This is checked before any
+# repository removal and before constructing the fetch refspec.
+function validatePRNumber() {
+  case "$1" in
+    ''|*[!0-9]*)
+      echo "# Invalid pull-request number: $1" >&2
+      return 1
+      ;;
+  esac
+}
+
 # updateJoininBox <reset|commit|pr[PRnumber]>
+function verifyJoininBoxRef() {
+  local ref="$1"
+  local kind="$2"
+  local signer keyUrl fingerprint signature
+
+  if [ "$kind" = "tag" ]; then
+    signer="openoms"
+    keyUrl="https://github.com/openoms.gpg"
+    fingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
+    /home/joinmarket/verify.git.sh "$signer" "$keyUrl" "$fingerprint" "$ref"
+    return
+  fi
+
+  signature=$(git log -1 --show-signature --format=oneline "$ref" 2>&1)
+  if echo "$signature" | grep -q '13C688DB5B9C745DE4D2E4545BFB77609B081B65'; then
+    signer="openoms"
+    keyUrl="https://github.com/openoms.gpg"
+    fingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
+  elif echo "$signature" | grep -q 'B5690EEEBB952194'; then
+    signer="web-flow"
+    keyUrl="https://github.com/web-flow.gpg"
+    fingerprint="968479A1AFF927E37D1A566BB5690EEEBB952194"
+  else
+    echo "# Refusing an update without a recognized signing key" >&2
+    return 1
+  fi
+  /home/joinmarket/verify.git.sh "$signer" "$keyUrl" "$fingerprint"
+}
+
 function updateJoininBox() {
+  if [ "$1" = "pr" ]; then
+    validatePRNumber "$2" || return 1
+  fi
   cd /home/joinmarket || exit 1
   if [ "$1" = "reset" ] ||  [ "$1" = "pr" ];then
     echo "# Removing the joininbox source code"
@@ -303,10 +346,16 @@ function updateJoininBox() {
     echo "# Updating to the latest commit in the default branch"
   elif [ "$1" = "pr" ]; then
     PRnumber=$2
-    echo "# Using the PR:"
-    echo "# https://github.com/JoinMarket-Org/joinmarket-clientserver/release/tag/$PRnumber"
-    sudo -u joinmarket git fetch origin pull/$PRnumber/head:pr$PRnumber
-    sudo -u joinmarket git checkout pr$PRnumber
+    echo ""
+    echo "##########################################################" >&2
+    echo "# WARNING: installing UNVERIFIED pull-request code" >&2
+    echo "# https://github.com/openoms/joininbox/pull/$PRnumber" >&2
+    echo "# This code is NOT signed by a maintainer and will run" >&2
+    echo "# with elevated privileges on this system." >&2
+    echo "##########################################################" >&2
+    echo ""
+    sudo -u joinmarket git fetch origin pull/$PRnumber/head:pr$PRnumber || return 1
+    sudo -u joinmarket git checkout pr$PRnumber || return 1
     TAG=$(git describe --tags)
   else
     TAG=$(git tag | sort -V | tail -1)
@@ -319,6 +368,13 @@ function updateJoininBox() {
       echo "# You are up-to-date on version" $TAG
     fi
     sudo -u joinmarket git reset --hard $TAG
+  fi
+  if [ "$1" = "pr" ]; then
+    echo "# Skipping signature verification for unverified PR code"
+  elif [ "$1" = "commit" ]; then
+    verifyJoininBoxRef HEAD commit || return 1
+  else
+    verifyJoininBoxRef "$TAG" tag || return 1
   fi
   echo "# Current version: $TAG"
   copyJoininboxScripts
