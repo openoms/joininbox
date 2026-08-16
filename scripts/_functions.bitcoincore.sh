@@ -15,7 +15,7 @@ fi
 function downloadBitcoinCore() {
   # set version
   # https://bitcoincore.org/en/download/
-  bitcoinVersion="29.2"
+  bitcoinVersion="31.1"
 
   if bitcoin-cli --version | grep $bitcoinVersion >/dev/null; then
     echo "# Bitcoin Core $bitcoinVersion is already installed"
