@@ -25,7 +25,7 @@ EOF
 
 run_as_root_with_input() {
   local input="$1"
-  run bash -c 'printf "%b" "$1" | env PATH="$2:$PATH" PASSWORD_LOG="$3" bash "$4"' \
+  run timeout 3 bash -c 'printf "%b" "$1" | env PATH="$2:$PATH" PASSWORD_LOG="$3" bash "$4"' \
     _ "$input" "$MOCK_BIN" "$PASSWORD_LOG" "$BATS_TEST_TMPDIR/set.password-under-test.sh"
 }
 
@@ -69,4 +69,11 @@ run_as_root_with_input() {
   if compgen -u | grep -qx pi; then
     grep -q '^pi:pi-password$' "$PASSWORD_LOG"
   fi
+}
+
+@test "EOF during a non-dialog prompt cancels without busy-looping" {
+  run_as_root_with_input 'y\n'
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"Input closed - cancelling password change"* ]]
+  [ ! -s "$PASSWORD_LOG" ]
 }

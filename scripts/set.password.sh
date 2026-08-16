@@ -51,7 +51,10 @@ clearTemp() {
 # $1 = prompt text
 readSecret() {
   local input
-  read -r -s -p "$1" input
+  if ! read -r -s -p "$1" input; then
+    echo >&2
+    return 1
+  fi
   # prompt/newline are UI output, not part of the secret captured by callers
   echo >&2
   printf '%s' "$input"
@@ -122,8 +125,14 @@ This will be required to login via SSH.
       password2=$(cat "$_temp")
       clearTemp
     else
-      password1=$(readSecret "New password for $label: ")
-      password2=$(readSecret "Confirm the new password: ")
+      if ! password1=$(readSecret "New password for $label: "); then
+        echo "Input closed - cancelling password change." >&2
+        return 1
+      fi
+      if ! password2=$(readSecret "Confirm the new password: "); then
+        echo "Input closed - cancelling password change." >&2
+        return 1
+      fi
     fi
 
     # check if passwords match
@@ -167,7 +176,7 @@ fi
 
 if askYesNo "Use the same password for all accounts?
 ('joinmarket', 'root' $piUser)"; then
-  promptPassword "the users: 'joinmarket', 'root' $piUser"
+  promptPassword "the users: 'joinmarket', 'root' $piUser" || exit 1
   for account in $accounts; do
     setUserPassword "$account" "$newPassword"
   done
@@ -177,7 +186,7 @@ if askYesNo "Use the same password for all accounts?
   'joinmarket', 'root' $piUser"
 else
   for account in $accounts; do
-    promptPassword "the user: '$account'"
+    promptPassword "the user: '$account'" || exit 1
     setUserPassword "$account" "$newPassword"
     unset newPassword
   done
