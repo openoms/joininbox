@@ -61,82 +61,104 @@ unprivileged `joinmarket` account can be compromised. We protect against:
 The `joinmarket` account and files writable by it must not be treated as
 trusted input by root.
 
-## Design principles
+## Implemented controls
 
-The codebase follows these principles; contributions are expected to uphold
-them:
+The following controls are present on the default branch today:
 
-- **Least privilege.** Privileged operations live in small, root-owned helper
-  programs exposed through `/etc/sudoers.d/joininbox` with absolute paths and
-  fixed arguments. No account gets unrestricted passwordless sudo. Helper
-  inputs are validated against allowlists — never arbitrary service names,
-  file paths, commands, or environment variables.
-- **Configuration is data, not code.** Configuration files are parsed, never
-  sourced, in privileged processes. Parsers accept only known keys and reject
-  shell metacharacters, duplicate keys, invalid types, and unexpected lines.
-  Privileged state lives in root-owned files under `/etc/joininbox/`; user
-  preferences stay in the home directory. Configuration is written atomically
-  with a restrictive umask and explicit owner and mode.
-- **Fail closed on authenticity.** Updates select immutable release tags or
-  full commit IDs and are verified against a bundled allowlist of full
-  signing-key fingerprints in a fresh temporary keyring — never the user's
-  GnuPG home. An unsigned commit, an unexpected signing key, a short or
-  ambiguous object ID, or a moved tag must fail before any installed file
-  changes. Development-branch and pull-request installs are an explicit,
-  consent-gated test mode that cannot install privileged helpers.
-- **No secrets in argv or predictable files.** Secrets arrive through terminal
-  prompts or protected file descriptors, never command-line arguments.
-  Credential material prefers systemd credentials (`LoadCredential=`) or
-  anonymous pipes; unavoidable files use a private `0700` runtime directory,
-  `mktemp`, `umask 077`, and exclusive creation. `/dev/shm` keeps its normal
-  sticky `1777` mode; privileged contexts never glob-delete in shared
-  directories and only unlink the exact files they created.
-- **Validate at trust boundaries.** Service identifiers, ports, wallet paths,
-  version strings, and similar inputs are validated against conservative
-  allowlists before use. Tor configuration is written to a dedicated
-  root-owned file below `/etc/tor/torrc.d/`, validated with
-  `tor --verify-config`, then atomically renamed. Systemd units use fixed or
-  escaped instance names; no `/bin/sh -c` with interpolated values, no `eval`
-  on caller-controlled input.
-- **Unique credentials from first boot.** Images generate unique random
-  bootstrap credentials or require console entry. SSH stays blocked until
-  first-boot setup completes, uses keys by default, and keeps root login
-  disabled. Accounts get independent credentials; unused accounts are removed.
-- **Defense in depth.** Systemd sandboxing with service-specific write paths,
-  syscall/address-family restrictions, and capability bounding. Signed
-  reproducible release images with a published provenance manifest.
-- **Safe failure.** A failed update or configuration validation preserves the
-  previous working state.
+- **Configuration is parsed as data.** `sourceConf()` parses `joinin.conf`
+  line-by-line and assigns values with `declare` — never `eval`, never
+  sourcing. Malformed lines and values containing shell metacharacters
+  (`` ` ``, `$(`, `;`, `|`, `&`, `<`, `>`) abort with an error naming the file
+  and line.
+- **JoininBox updates are verified before install.** `updateJoininBox()`
+  verifies the selected tag or commit with `verify.git.sh` against pinned
+  signing-key fingerprints before any file is copied or executed. Unknown
+  keys, unsigned refs, and ambiguous object IDs fail closed. Installing a
+  pull request or development branch requires explicit operator consent.
+- **No passwords via command-line arguments.** Secrets are entered through
+  terminal prompts.
+- **No `eval` on caller-controlled input** in the installer argument parsing.
+- **Safer credential temp files.** Wallet credential material uses `mktemp`
+  files with restrictive modes; scripts delete only the exact files they
+  created — no wildcard deletion as root in `/dev/shm`, which keeps its
+  normal sticky `1777` mode.
+- **Constrained generated services.** Generated wallet systemd services
+  restrict script identifiers and wallet arguments to explicit allowlists.
+- **Validated Tor configuration.** Hidden-service configuration is written to
+  a candidate file, validated with `tor --verify-config`, and installed
+  atomically.
+- **CI checks.** ShellCheck runs on all shell scripts; Bats tests cover the
+  hardening contracts above (config parser rejection, update verification
+  fail-closed behavior, argument validation, temp-file hygiene).
 
-## Review methods
+## Target design principles
 
-Security work on this repository uses, and future reviews should repeat:
+The following principles are the normative direction for the codebase. They
+guide review of new contributions and the remaining hardening work; not all
+are fully implemented yet (see Known limitations).
 
-- manual source analysis of privileged install/update paths, credential
-  handling, Tor/RPC exposure, signature verification, and shell-injection
-  surfaces;
-- `bash -n` over all shell scripts;
-- committed-secret pattern searches;
-- regression tests asserting that: a compromised `joinmarket` account cannot
-  obtain root through sudo; shell syntax in configuration files is rejected,
-  not executed; unsigned or wrongly-signed updates fail without changing
-  files; SSH is unreachable until setup finishes and no image-wide password
-  works; identifiers containing separators, whitespace, paths, or shell syntax
-  fail; symlinks cannot redirect credential or Tor configuration writes;
-  option names or values containing shell syntax never reach `eval`; cleanup
-  removes only the exact temporary files the script created.
-
-ShellCheck, Semgrep-style static analysis, and dependency/secret scanning run
-in CI and should be extended as the toolchain grows.
+- **Least privilege.** Privileged operations should live in small, root-owned
+  helper programs exposed through `/etc/sudoers.d/joininbox` with absolute
+  paths and fixed arguments — no unrestricted passwordless sudo. Helper
+  inputs must be validated against allowlists.
+- **Stricter configuration handling.** Parsers should accept only known keys,
+  reject duplicates, and validate types. Privileged state should move to
+  root-owned files under `/etc/joininbox/`, with atomic writes, restrictive
+  umask, and explicit owner and mode.
+- **Isolated verification.** Signature verification should run in a fresh
+  temporary keyring, never importing keys into the user's default GnuPG home.
+  Releases should ship signed, reproducible manifests of installed files.
+- **Stronger secret handling.** Credential material should prefer systemd
+  credentials (`LoadCredential=`) or anonymous pipes; unavoidable files
+  belong in a private `0700` runtime directory, not shared `/dev/shm`.
+- **Stricter boundary validation.** Tor configuration should be installed as
+  a dedicated root-owned file below `/etc/tor/torrc.d/`; systemd units should
+  avoid interpolated `/bin/sh -c` entirely.
+- **Unique credentials from first boot.** Images should generate unique
+  bootstrap credentials or require console entry, keep SSH blocked until
+  first-boot setup completes, and keep root login disabled.
+- **Defense in depth.** Service-specific systemd write paths, syscall and
+  address-family restrictions, capability bounding, and signed reproducible
+  release images with a published provenance manifest.
+- **Safe failure.** A failed update or configuration validation must preserve
+  the previous working state.
 
 ## Known limitations
 
-- the `joinmarket` account currently retains broad passwordless sudo —
-  treat any service running as that user as equivalent to root until the
-  scoped-helper migration completes;
-- until the first-boot credential work is universally deployed, change the
-  default password on first boot before exposing the machine to any network
-  you do not control.
+- **Unrestricted passwordless sudo.** The `joinmarket` account still has
+  `NOPASSWD:ALL` in the build script and images. Treat any service running as
+  that user as equivalent to root until the scoped-helper migration lands.
+- **Shared default password.** Images still set the password `joininbox` for
+  `root`, `joinmarket`, and `pi`. Change it on first boot before exposing the
+  machine to any network you do not control. Unique first-boot credentials
+  are in progress ([#193](../../pull/193)).
+- **Bootstrap from a moving branch.** The documented install path downloads
+  `build_joininbox.sh` from the default branch and executes it as root;
+  verification performed later cannot authenticate code already executing. A
+  versioned, signed bootstrap is planned.
+- **Verification keyring.** `verify.git.sh` imports signing keys into the
+  user's default GnuPG home rather than a temporary keyring.
+- **Sandboxing and provenance.** Systemd sandboxing is partial; signed
+  reproducible images and a release provenance manifest are not yet produced.
+- **Scanning coverage.** CI runs ShellCheck and Bats, but no Semgrep-style
+  static analysis, dependency review, or secret scanning yet.
+
+## Review methods
+
+The 2026-08 source review used, and future reviews should repeat:
+
+- manual analysis of privileged install/update paths, credential handling,
+  Tor/RPC exposure, signature verification, and shell-injection surfaces;
+- `bash -n` and ShellCheck over all shell scripts;
+- committed-secret pattern searches;
+- Bats regression tests for the hardening contracts: shell syntax in
+  configuration is rejected, unverified updates fail without changing files,
+  invalid identifiers are refused, and cleanup removes only the exact
+  temporary files the script created.
+
+Regression tests for the remaining target-state controls (no root via sudo
+from `joinmarket`, SSH unreachable until first-boot setup completes) should
+be added as those controls land.
 
 ## Disclosure policy
 
