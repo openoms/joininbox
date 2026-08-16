@@ -31,7 +31,15 @@ function cacheAndShowQR() {
   qrencode -t ANSIUTF8 "${firstNewAddress}"
   echo
   shred $wallet $mixdepth $walletData
-  sudo rm -f /dev/shm/*
+  # shred does not delete files by default, so remove the exact temp files
+  # created by this script. /dev/shm is a shared, world-writable directory:
+  # never glob-delete there (especially not as root) - only remove files
+  # owned by the calling user that this script itself created.
+  rm -f "$walletData"
+  rm -f "$wallet"
+  if [ -n "$mixdepth" ]; then
+    rm -f "$mixdepth"
+  fi
 }
 
 # BASIC MENU INFO
