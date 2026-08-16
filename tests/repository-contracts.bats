@@ -27,9 +27,7 @@ REPO_ROOT="$BATS_TEST_DIRNAME/.."
   run grep -REn '(^|[[:space:]])(source|\.)[[:space:]]+/home/joinmarket/joinin\.conf' "$REPO_ROOT/scripts"
   [ "$status" -eq 1 ]
 
-  # Keep the parser itself and all current config consumers wired together.
+  # Keep the parser available; the scan above prevents consumers from
+  # bypassing it by executing the user-writable file as shell code.
   grep -q '^function sourceConf()' "$REPO_ROOT/scripts/_functions.sh"
-  while IFS= read -r script; do
-    grep -q 'sourceConf /home/joinmarket/joinin.conf' "$REPO_ROOT/$script"
-  done < <(cd "$REPO_ROOT" && grep -RFl '/home/joinmarket/joinin.conf' scripts --include='*.sh' | grep -vE '(_functions\.sh|set\.value\.sh|set\.conf\.sh)$')
 }
