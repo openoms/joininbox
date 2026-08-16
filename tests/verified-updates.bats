@@ -18,9 +18,23 @@ EOF
   chmod +x "$BIN"/*
   export PATH="$BIN:$PATH" VERIFY_LOG
 
-  sed -n '/^function verifyJoininBoxRef()/,/^}/p' "$FUNCTIONS" |
+  sed -n -e '/^function validatePRNumber()/,/^}/p' \
+    -e '/^function verifyJoininBoxRef()/,/^}/p' "$FUNCTIONS" |
     sed "s#/home/joinmarket/verify.git.sh#$BIN/verify#" >"$BATS_TEST_TMPDIR/function.sh"
   source "$BATS_TEST_TMPDIR/function.sh"
+}
+
+@test "PR numbers are decimal before any fetch refspec is constructed" {
+  for number in 1 190 999999; do
+    run validatePRNumber "$number"
+    [ "$status" -eq 0 ]
+  done
+  for number in '' -1 1.5 '190/head' '190;id' '--upload-pack=evil'; do
+    run validatePRNumber "$number"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"Invalid pull-request number"* ]]
+  done
+  grep -Fq 'validatePRNumber "$2" || return 1' "$FUNCTIONS"
 }
 
 @test "tag updates pin the openoms key and pass the tag to verification" {

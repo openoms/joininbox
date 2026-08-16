@@ -280,6 +280,17 @@ function copyJoininboxScripts() {
   fi
 }
 
+# Accept only a decimal GitHub pull-request number. This is checked before any
+# repository removal and before constructing the fetch refspec.
+function validatePRNumber() {
+  case "$1" in
+    ''|*[!0-9]*)
+      echo "# Invalid pull-request number: $1" >&2
+      return 1
+      ;;
+  esac
+}
+
 # updateJoininBox <reset|commit|pr[PRnumber]>
 function verifyJoininBoxRef() {
   local ref="$1"
@@ -311,6 +322,9 @@ function verifyJoininBoxRef() {
 }
 
 function updateJoininBox() {
+  if [ "$1" = "pr" ]; then
+    validatePRNumber "$2" || return 1
+  fi
   cd /home/joinmarket || exit 1
   if [ "$1" = "reset" ] ||  [ "$1" = "pr" ];then
     echo "# Removing the joininbox source code"

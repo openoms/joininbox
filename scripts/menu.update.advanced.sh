@@ -48,6 +48,7 @@ case $CHOICE in
   JBPR)
       echo
       read -p "Enter the number of the pull request to be tested: " PRnumber
+      validatePRNumber "$PRnumber" || exit 1
       echo
       echo "#################### SECURITY WARNING ####################"
       echo "# You are about to install UNVERIFIED pull-request code:"
