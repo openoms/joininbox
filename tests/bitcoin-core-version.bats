@@ -14,10 +14,19 @@ SCRIPT="$BATS_TEST_DIRNAME/../scripts/_functions.bitcoincore.sh"
   grep -Fq 'binaryName="bitcoin-${bitcoinVersion}-${bitcoinOSversion}.tar.gz"' "$SCRIPT"
 }
 
-@test "all v31.1 Linux architectures published upstream remain mapped" {
+@test "all JoininBox-supported v31.1 Linux architectures remain mapped" {
   grep -Fq 'bitcoinOSversion="arm-linux-gnueabihf"' "$SCRIPT"
   grep -Fq 'bitcoinOSversion="aarch64-linux-gnu"' "$SCRIPT"
   grep -Fq 'bitcoinOSversion="x86_64-linux-gnu"' "$SCRIPT"
+}
+
+@test "signed manifest lookup requires an exact artifact filename" {
+  grep -Fq 'awk -v name="${binaryName}" '\''$2 == name {print $1; exit}'\'' SHA256SUMS' "$SCRIPT"
+  ! grep -Fq 'grep -i "${binaryName}" SHA256SUMS' "$SCRIPT"
+}
+
+@test "post-install smoke check requires the pinned Bitcoin Core version" {
+  grep -Fq 'grep -Fc "Bitcoin Core version v${bitcoinVersion}"' "$SCRIPT"
 }
 
 @test "signature verification precedes binary checksum acceptance" {
