@@ -24,7 +24,7 @@ if [ "$EUID" -ne 0 ]
   exit 1
 fi
 
-piUserPresent=$(compgen -u | grep -c pi)
+piUserPresent=$(compgen -u | grep -cx pi)
 if [ "$piUserPresent" -gt 0 ]; then
   piUser="and 'pi'"
 fi
@@ -52,7 +52,8 @@ clearTemp() {
 readSecret() {
   local input
   read -r -s -p "$1" input
-  echo
+  # prompt/newline are UI output, not part of the secret captured by callers
+  echo >&2
   printf '%s' "$input"
 }
 
