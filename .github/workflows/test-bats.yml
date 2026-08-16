@@ -1,0 +1,30 @@
+name: Test bats
+
+concurrency:
+  group: test-bats-${{ github.head_ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  bats:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install bats
+        run: |
+          git clone --depth 1 --branch v1.11.0 \
+            https://github.com/bats-core/bats-core.git /tmp/bats-core
+          sudo ln -sf /tmp/bats-core/bin/bats /usr/local/bin/bats
+          bats --version
+
+      # bats -r picks up every *.bats file under tests/ - new test files are
+      # discovered automatically, no workflow change needed.
+      - name: Run the bats test suite
+        run: bats -r tests

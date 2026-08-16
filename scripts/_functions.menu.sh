@@ -36,10 +36,10 @@ function menu_MAKER() {
     /home/joinmarket/menu.yg.sh
     return 1
   fi
-  # get password (creates /dev/shm/.pw)
+  # get password (creates the mktemp'd wallet password file)
   passwordToFile
   echo "# Using the wallet: $walletCanonical"
-  if /home/joinmarket/start.service.sh yg-privacyenhanced "$walletCanonical"; then
+  if /home/joinmarket/start.service.sh yg-privacyenhanced "$walletCanonical" "$walletPasswordFile"; then
     echo
     echo "# started the Yield Generator in the background"
     echo
@@ -53,9 +53,9 @@ function menu_MAKER() {
     echo
     echo "# ERROR: the Yield Generator failed to start (exit code $startStatus)"
     # remove the password temp file left behind by the failed start
-    if [ -f /dev/shm/.pw ]; then
-      shred -uvz /dev/shm/.pw
-      echo "# Removed the password temp file /dev/shm/.pw"
+    if [ -f "$walletPasswordFile" ]; then
+      shred -uvz "$walletPasswordFile"
+      echo "# Removed the password temp file $walletPasswordFile"
     fi
     echo "# Press ENTER to return to the menu."
     read key

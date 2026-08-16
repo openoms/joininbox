@@ -433,7 +433,8 @@ else
   command="bash /home/joinmarket/joininbox/scripts/verify.git.sh \
     ${PGPsigner} ${PGPpubkeyLink} ${PGPpubkeyFingerprint}"
   echo "running: ${command}"
-  chmod 777 /dev/shm
+  # /dev/shm must retain the sticky bit so users cannot remove each other's files.
+  chmod 1777 /dev/shm
   sudo -u joinmarket ${command} || exit 1
 fi
 

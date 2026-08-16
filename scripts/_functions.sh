@@ -110,10 +110,18 @@ function waitKeyOnExit1() {
 }
 
 function passwordToFile() {
-  # write password into a file (to be shredded)
+  # Create an unpredictable, user-only credential file in RAM.
   # get password
-  trap 'rm -f "$data"' EXIT
-  data=$(mktemp -p /dev/shm/)
+  local data
+  data=$(mktemp /dev/shm/joininbox-dialog.XXXXXX) || return 1
+  walletPasswordFile=$(mktemp /dev/shm/joininbox-wallet-password.XXXXXX) || {
+    rm -f -- "$data"
+    return 1
+  }
+  chmod 600 -- "$data" "$walletPasswordFile"
+  # keep parity with the chooseWallet EXIT trap so the $wallet temp file is
+  # still cleaned up on shell exit after passwordToFile replaces the trap
+  trap 'rm -f -- "$data" "$walletPasswordFile" "$wallet"' EXIT
   dialog --clear \
    --backtitle "Enter password" \
    --title "Enter password" \
@@ -123,23 +131,17 @@ function passwordToFile() {
   pressed=$?
   case $pressed in
     0)
-      touch /dev/shm/.pw
-      chmod 600 /dev/shm/.pw
-      tee /dev/shm/.pw 1>/dev/null < "$data"
-      shred "$data"
+      tee "$walletPasswordFile" 1>/dev/null < "$data"
+      rm -f -- "$data"
       ;;
     1)
-      shred "$data"
-      shred "$wallet"
-      shred -uvz /dev/shm/.pw
+      rm -f -- "$data" "$wallet" "$walletPasswordFile"
       echo "# Cancelled"
       exit 1
       ;;
     255)
-      shred "$data"
-      shred "$wallet"
-      shred -uvz /dev/shm/.pw
       [ -s "$data" ] &&  cat "$data" || echo "# ESC pressed."
+      rm -f -- "$data" "$wallet" "$walletPasswordFile"
       exit 1
       ;;
   esac
@@ -190,7 +192,7 @@ function chooseWallet() {
 # Validates a systemd service name and wallet input for start.service.sh.
 # Prints the canonical wallet path on stdout when valid.
 # Returns 1 (message on stderr) when the input is rejected.
-# Used to reject bad input BEFORE any credential file (/dev/shm/.pw) is created.
+# Used to reject bad input BEFORE any credential file (the wallet password temp file) is created.
 function validateServiceArgs() {
   local script="$1"
   local walletInput="$2"
