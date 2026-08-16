@@ -45,21 +45,98 @@ Security fixes are applied to the default branch and included in the next
 release tag. Only the **latest release** is supported; older releases and
 development branches do not receive backports.
 
-## Known limitations and ongoing hardening
+## Threat model
 
-See [SECURITY-HARDENING.md](SECURITY-HARDENING.md) for the full threat model,
-the findings of the most recent source review, and the staged remediation plan
-with links to the implementation pull requests.
+JoininBox handles wallet credentials and installs system services, so its
+security boundary assumes that network-facing applications and the
+unprivileged `joinmarket` account can be compromised. We protect against:
 
-Until the hardening plan lands, operators should be aware that:
+- compromise of JoinMarket, Jam, a Python dependency, or another service
+  running as `joinmarket`;
+- a malicious or compromised upstream repository or GitHub account;
+- a local unprivileged user racing predictable temporary files;
+- network access during initial setup, before the operator changes credentials;
+- malformed values supplied through menus, configuration, or command arguments.
 
-- the `joinmarket` account has passwordless sudo by design — treat any service
-  running as that user as equivalent to root;
-- the initial images ship with a shared default password (`joininbox`) — change
-  it on first boot before exposing the machine to any network you do not
-  control;
-- JoininBox self-updates follow the default branch — prefer verifying release
-  tags before updating.
+The `joinmarket` account and files writable by it must not be treated as
+trusted input by root.
+
+## Design principles
+
+The codebase follows these principles; contributions are expected to uphold
+them:
+
+- **Least privilege.** Privileged operations live in small, root-owned helper
+  programs exposed through `/etc/sudoers.d/joininbox` with absolute paths and
+  fixed arguments. No account gets unrestricted passwordless sudo. Helper
+  inputs are validated against allowlists — never arbitrary service names,
+  file paths, commands, or environment variables.
+- **Configuration is data, not code.** Configuration files are parsed, never
+  sourced, in privileged processes. Parsers accept only known keys and reject
+  shell metacharacters, duplicate keys, invalid types, and unexpected lines.
+  Privileged state lives in root-owned files under `/etc/joininbox/`; user
+  preferences stay in the home directory. Configuration is written atomically
+  with a restrictive umask and explicit owner and mode.
+- **Fail closed on authenticity.** Updates select immutable release tags or
+  full commit IDs and are verified against a bundled allowlist of full
+  signing-key fingerprints in a fresh temporary keyring — never the user's
+  GnuPG home. An unsigned commit, an unexpected signing key, a short or
+  ambiguous object ID, or a moved tag must fail before any installed file
+  changes. Development-branch and pull-request installs are an explicit,
+  consent-gated test mode that cannot install privileged helpers.
+- **No secrets in argv or predictable files.** Secrets arrive through terminal
+  prompts or protected file descriptors, never command-line arguments.
+  Credential material prefers systemd credentials (`LoadCredential=`) or
+  anonymous pipes; unavoidable files use a private `0700` runtime directory,
+  `mktemp`, `umask 077`, and exclusive creation. `/dev/shm` keeps its normal
+  sticky `1777` mode; privileged contexts never glob-delete in shared
+  directories and only unlink the exact files they created.
+- **Validate at trust boundaries.** Service identifiers, ports, wallet paths,
+  version strings, and similar inputs are validated against conservative
+  allowlists before use. Tor configuration is written to a dedicated
+  root-owned file below `/etc/tor/torrc.d/`, validated with
+  `tor --verify-config`, then atomically renamed. Systemd units use fixed or
+  escaped instance names; no `/bin/sh -c` with interpolated values, no `eval`
+  on caller-controlled input.
+- **Unique credentials from first boot.** Images generate unique random
+  bootstrap credentials or require console entry. SSH stays blocked until
+  first-boot setup completes, uses keys by default, and keeps root login
+  disabled. Accounts get independent credentials; unused accounts are removed.
+- **Defense in depth.** Systemd sandboxing with service-specific write paths,
+  syscall/address-family restrictions, and capability bounding. Signed
+  reproducible release images with a published provenance manifest.
+- **Safe failure.** A failed update or configuration validation preserves the
+  previous working state.
+
+## Review methods
+
+Security work on this repository uses, and future reviews should repeat:
+
+- manual source analysis of privileged install/update paths, credential
+  handling, Tor/RPC exposure, signature verification, and shell-injection
+  surfaces;
+- `bash -n` over all shell scripts;
+- committed-secret pattern searches;
+- regression tests asserting that: a compromised `joinmarket` account cannot
+  obtain root through sudo; shell syntax in configuration files is rejected,
+  not executed; unsigned or wrongly-signed updates fail without changing
+  files; SSH is unreachable until setup finishes and no image-wide password
+  works; identifiers containing separators, whitespace, paths, or shell syntax
+  fail; symlinks cannot redirect credential or Tor configuration writes;
+  option names or values containing shell syntax never reach `eval`; cleanup
+  removes only the exact temporary files the script created.
+
+ShellCheck, Semgrep-style static analysis, and dependency/secret scanning run
+in CI and should be extended as the toolchain grows.
+
+## Known limitations
+
+- the `joinmarket` account currently retains broad passwordless sudo —
+  treat any service running as that user as equivalent to root until the
+  scoped-helper migration completes;
+- until the first-boot credential work is universally deployed, change the
+  default password on first boot before exposing the machine to any network
+  you do not control.
 
 ## Disclosure policy
 
