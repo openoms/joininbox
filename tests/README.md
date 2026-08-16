@@ -9,6 +9,13 @@ file recursively - **to add tests, just drop a new `.bats` file here**, no CI
 change needed.
 
 Current coverage:
+- `repository-contracts.bats` - syntax checks for every maintained shell and
+  Python script, systemd unit structure, and safe config-parser adoption
+- `source-conf.bats` - safe parsing of config data, quoting, malformed lines,
+  forbidden shell syntax, and command-substitution regression coverage
+- `service-args.bats` - generated service and wallet path validation
+- `hiddenservice-validation.bats` - Tor directory/service/port validation and
+  verified atomic torrc replacement invariants
 - `start.service.bats` - the wallet password file validation in
   `start.service.sh` (missing/symlink/outside-path/traversal/bad-mode
   rejection, validation order, password over stdin, deletion after use)
