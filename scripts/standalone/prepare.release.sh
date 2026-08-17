@@ -40,6 +40,25 @@ sudo rm /home/joinmarket/joinin.conf 2>/dev/null
 echo "# OK"
 
 echo
+echo "# Resetting the first-boot credential state ..."
+echo "# A new unique password will be generated on the next boot."
+# Lock the account BEFORE imaging: without this the operator's active
+# password hash would ship inside the shareable image (offline-crackable)
+# and SSH would accept it if the first-boot unit failed. With the account
+# locked the image fails closed; a successful first-boot run replaces and
+# unlocks the password via chpasswd.
+sudo passwd -l joinmarket
+sudo rm -f /var/lib/joininbox/firstboot-done
+sudo rm -f /root/joininbox-initial-password
+# restore the pristine console message (remove any shown password)
+if [ -f /etc/issue.joininbox-orig ]; then
+  sudo cp /etc/issue.joininbox-orig /etc/issue
+fi
+# re-enable the one-shot first-boot unit for the next boot
+sudo systemctl enable joininbox-firstboot.service 2>/dev/null
+echo "# OK"
+
+echo
 echo "# Will shutdown now."
 echo "# Wait until the SBC LEDs show no activity anymore."
 echo "# Then remove SD card and make a release image from it."

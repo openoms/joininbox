@@ -1,0 +1,29 @@
+# JoininBox first-boot credential generation (one-shot)
+# /etc/systemd/system/joininbox-firstboot.service
+#
+# Runs ONCE on the device at first boot - before ssh.service and before
+# the login consoles - to generate the unique initial password of the
+# 'joinmarket' user. Nothing sensitive is generated or logged at image
+# build time. The unit disables itself after the first successful run
+# (and is guarded by the /var/lib/joininbox/firstboot-done marker).
+
+[Unit]
+Description=JoininBox first-boot credential generation (one-shot)
+Documentation=https://github.com/openoms/joininbox
+DefaultDependencies=no
+After=local-fs.target systemd-sysusers.service
+Before=ssh.service ssh.socket getty.target
+ConditionPathExists=!/var/lib/joininbox/firstboot-done
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+ExecStart=/usr/local/sbin/joininbox-firstboot.sh
+# Never leak script output (and definitely never the password) to the
+# journal beyond explicit error messages on stderr.
+StandardOutput=null
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

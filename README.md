@@ -83,7 +83,7 @@ Recommended minimum:
   ```
   ssh joinmarket@rpi4-20220121
   ```
-   → the password on the first boot is: `joininbox`
+   → the initial password is unique to each device: it is generated at the first boot (not at image build time) and shown on the local console (see `/etc/issue`); a root-only copy is kept in `/root/joininbox-initial-password`. You will be prompted to change it on the first login.
 * Use the hostname of the latest SDcard image (`rpi4-20220121`) or to find the IP address to connect to:  
   * scan with the [AngryIP Scanner](https://angryip.org/)
   * use `sudo arp -a` or
@@ -139,7 +139,7 @@ Recommended minimum:
 or  
 log in with ssh to:  
 `joinmarket@LAN_IP_ADDRESS`  
-the default password is: `joininbox` - will be prompted to change it on the first start
+the initial password is unique to each device - it is generated at the first boot (not at image build time), shown on the local console (see `/etc/issue`), stored in `/root/joininbox-initial-password` (readable only by root) and must be changed on the first login
 
 ---
 

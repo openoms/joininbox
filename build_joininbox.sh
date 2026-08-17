@@ -444,18 +444,33 @@ chmod +x /home/joinmarket/*.sh
 runuser joinmarket -c "cp -r /home/joinmarket/joininbox/scripts/standalone /home/joinmarket/"
 chmod +x /home/joinmarket/standalone/*.sh
 
-echo "# set the default password 'joininbox' for the users 'pi', \
-'joinmarket' and 'root'"
+echo "# set unique first-boot credentials and lock unused accounts"
 adduser joinmarket sudo
 # chsh joinmarket -s /bin/bash
 # configure for usage without password entry for the joinmarket user
 # https://www.tecmint.com/run-sudo-command-without-password-linux/
 echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
-echo "root:joininbox" | chpasswd
-echo "joinmarket:joininbox" | chpasswd
+
+# Security hardening: no shared, known password on the image.
+# Lock the root password - root is reached via sudo from joinmarket and
+# 'PermitRootLogin no' is set in the Hardening section below.
+passwd -l root
+# Lock the password of the 'pi' user if present (unused by JoininBox).
 if [ $(grep -c pi </etc/passwd) -gt 0 ]; then
-  echo "pi:joininbox" | chpasswd
+  passwd -l pi
 fi
+# Do NOT set any joinmarket password at build time and do NOT write any
+# credential to /etc/issue, /root or the build output: this script also
+# runs in PUBLIC CI image builds, so anything generated here would leak
+# into world-readable CI logs and be baked into every published image.
+# Instead install a one-shot systemd unit which generates the unique
+# initial password ON THE DEVICE at the first boot (before ssh.service).
+install -m 700 -o root -g root \
+  /home/joinmarket/joininbox/scripts/standalone/first.boot.credentials.sh \
+  /usr/local/sbin/joininbox-firstboot.sh
+cp /home/joinmarket/joininbox/scripts/standalone/joininbox-firstboot.service \
+  /etc/systemd/system/joininbox-firstboot.service
+systemctl enable joininbox-firstboot
 
 echo "# create the joinin.conf"
 runuser joinmarket -c "touch /home/joinmarket/joinin.conf"
@@ -674,9 +689,23 @@ echo
 echo "To make an SDcard image safe to share use:"
 echo "'/home/joinmarket/standalone/prepare.release.sh'"
 echo
-echo "the ssh login credentials are until the first login:"
-echo "user:joinmarket"
-echo "password:joininbox"
+echo "######################################"
+echo "# First-boot credentials (no defaults)"
+echo "######################################"
+echo
+echo "SSH stays enabled (ufw allows port 22), but there is no shared"
+echo "default password on this install - and NO password was set at build"
+echo "time (nothing sensitive in this build log or in the image)."
+echo
+echo "On the FIRST BOOT of the device the one-shot"
+echo "joininbox-firstboot.service (ordered before ssh.service) generates a"
+echo "unique random password for the 'joinmarket' user and shows it on the"
+echo "local console (/etc/issue). A root-only copy is kept in"
+echo "/root/joininbox-initial-password (mode 600) and the password must be"
+echo "changed on the first login (chage -d 0)."
+echo
+echo "The root and (if present) pi passwords are locked -"
+echo "use sudo from the joinmarket user instead."
 echo
 
 # remove the build-time noninteractive apt policy so deployed systems
