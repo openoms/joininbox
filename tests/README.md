@@ -9,6 +9,8 @@ file recursively - **to add tests, just drop a new `.bats` file here**, no CI
 change needed.
 
 Current coverage:
+- `bitcoin-core-version.bats` - pinned Bitcoin Core release, signed manifest
+  URLs, supported Linux artifact matrix, and verification ordering
 - `repository-contracts.bats` - syntax checks for every maintained shell and
   Python script, systemd unit structure, and safe config-parser adoption
 - `source-conf.bats` - safe parsing of config data, quoting, malformed lines,

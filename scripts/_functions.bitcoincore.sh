@@ -15,7 +15,7 @@ fi
 function downloadBitcoinCore() {
   # set version
   # https://bitcoincore.org/en/download/
-  bitcoinVersion="29.2"
+  bitcoinVersion="31.1"
 
   if bitcoin-cli --version | grep $bitcoinVersion >/dev/null; then
     echo "# Bitcoin Core $bitcoinVersion is already installed"
@@ -75,8 +75,8 @@ function downloadBitcoinCore() {
     # check binary checksum test
     echo "- checksum test"
     # get the sha256 value for the corresponding platform from signed hash sum file
-    bitcoinSHA256=$(grep -i "${binaryName}" SHA256SUMS | cut -d " " -f1)
-    binaryChecksum=$(sha256sum ${binaryName} | cut -d " " -f1)
+    bitcoinSHA256=$(awk -v name="${binaryName}" '$2 == name {print $1; exit}' SHA256SUMS)
+    binaryChecksum=$(sha256sum "${binaryName}" | cut -d " " -f1)
     echo "Valid SHA256 checksum should be: ${bitcoinSHA256}"
     echo "Downloaded binary SHA256 checksum: ${binaryChecksum}"
     if [ "${binaryChecksum}" != "${bitcoinSHA256}" ]; then
@@ -110,7 +110,8 @@ function installBitcoinCore() {
       echo "# Add /home/joinmarket/bitcoin to the local PATH"
       echo "PATH=/home/joinmarket/bitcoin:$PATH" | sudo tee -a /home/joinmarket/.profile
     fi
-    installed=$(/home/joinmarket/bitcoin/bitcoind --version | grep -c "Bitcoin Core version")
+    installed=$(/home/joinmarket/bitcoin/bitcoind --version | \
+      grep -Fc "Bitcoin Core version v${bitcoinVersion}")
     if [ ${installed} -lt 1 ]; then
       echo
       echo "# BUILD FAILED --> Was not able to install Bitcoin Core"
