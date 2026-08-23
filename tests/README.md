@@ -21,6 +21,8 @@ Current coverage:
 - `start.service.bats` - the wallet password file validation in
   `start.service.sh` (missing/symlink/outside-path/traversal/bad-mode
   rejection, validation order, password over stdin, deletion after use)
+- `info.stats.bats` - end-to-end STATS output, maker uptime, rolling-period
+  counts/earnings, and lifetime totals without double-counting overlapping periods
 - `password-to-file.bats` - `passwordToFile` in `scripts/_functions.sh`
   (unpredictable per-run file, mode 600, EXIT-trap cleanup, cancel/ESC paths)
 
