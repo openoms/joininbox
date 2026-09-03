@@ -50,6 +50,13 @@ EOF
   grep -q '^openoms https://github.com/openoms.gpg 13C688DB5B9C745DE4D2E4545BFB77609B081B65$' "$VERIFY_LOG"
 }
 
+@test "commit updates expand the NG release key ID to the full pinned fingerprint" {
+  export SIGNATURE_OUTPUT='Good signature 44912E1E03005B31'
+  run verifyJoininBoxRef HEAD commit
+  [ "$status" -eq 0 ]
+  grep -q '^joinmarket-ng https://raw.githubusercontent.com/joinmarket-ng/joinmarket-ng/0c3716b53c132bd46fc92d240beebe7158a06e16/signatures/pubkeys/1C53A412D11EF3051704419C44912E1E03005B31.asc 1C53A412D11EF3051704419C44912E1E03005B31$' "$VERIFY_LOG"
+}
+
 @test "GitHub commit updates expand the recognized key ID to the full pinned fingerprint" {
   export SIGNATURE_OUTPUT='Good signature B5690EEEBB952194'
   run verifyJoininBoxRef HEAD commit

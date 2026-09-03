@@ -8,6 +8,16 @@ fi
 
 source /home/joinmarket/_functions.sh
 
+function ensureJoinMarketNG() {
+  if [ ! -x /usr/local/libexec/joininbox/install.joinmarket-ng.sh ]; then
+    sudo /home/joinmarket/install.joinmarket-ng.sh bootstrap
+  fi
+  if ! sudo /usr/local/libexec/joininbox/install.joinmarket-ng.sh status | grep -qx "isInstalled=1"; then
+    sudo /usr/local/libexec/joininbox/install.joinmarket-ng.sh on
+  fi
+  sudo /usr/local/libexec/joininbox/install.joinmarket-ng.sh integrate
+}
+
 #############
 # FIRST RUN #
 #############
@@ -84,13 +94,8 @@ if [ "$setupStep" -lt 100 ]; then
     fi
     sed -i "s#setupStep=.*#setupStep=4#g" $joininConfPath
 
-    # check if JoinMarket is installed
-    if [ "${cpu}" = x86_64 ]; then
-      /home/joinmarket/install.joinmarket.sh -i install
-    else
-      # no qtgui on arm
-      /home/joinmarket/install.joinmarket.sh -i install -q 0
-    fi
+    # Install JoinMarket NG after Tor and first-run dependencies are prepared.
+    ensureJoinMarketNG
     sed -i "s#setupStep=.*#setupStep=5#g" $joininConfPath
   fi
   # change the ssh password if standalone
@@ -107,7 +112,6 @@ if [ "$setupStep" -lt 100 ]; then
       sudo /home/joinmarket/standalone/expand.rootfs.sh
     fi
   fi
-  generateJMconfig
   sudo sed -i "s#setupStep=.*#setupStep=10#g" $joininConfPath
   sourceConf /home/joinmarket/joinin.conf
   if [ "$setupStep" -lt 11 ]; then
@@ -121,55 +125,55 @@ if [ "$setupStep" -lt 100 ]; then
   fi
 fi
 
+# Ensure upgrades from a completed legacy setup also install JoinMarket NG.
+ensureJoinMarketNG
+
 #############
 # EVERY RUN #
 #############
 
-# check bitcoind RPC setting
-# add default value to joinin config if needed
+# Add default values to joinin.conf if needed.
 if ! grep -Eq "^RPCoverTor=" $joininConfPath; then
   echo "RPCoverTor=off" >>$joininConfPath
 fi
-# check if bitcoin RPC connection is over Tor
-if grep -Eq "^rpc_host = .*.onion" $JMcfgPath; then
-  echo "# RPC over Tor is on"
-  sed -i "s/^RPCoverTor=.*/RPCoverTor=on/g" $joininConfPath
-else
-  echo "# RPC over Tor is off"
-  sed -i "s/^RPCoverTor=.*/RPCoverTor=off/g" $joininConfPath
-fi
-
-# check if there is only one joinmarket wallet and make default
-# add default value to joinin config if needed
-if ! grep -Eq "^defaultWallet=" $joininConfPath; then
-  echo "defaultWallet=off" >>$joininConfPath
-fi
-if [ "$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -cv /)" -gt 1 ]; then
-  echo "# Found more than one wallet file"
-  echo "# Setting defaultWallet to off"
-  sed -i "s#^defaultWallet=.*#defaultWallet=off#g" $joininConfPath
-elif [ "$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -cv /)" -eq 1 ]; then
-  onlyWallet=$(ls -p /home/joinmarket/.joinmarket/wallets/ | grep -v /)
-  echo "# Found only one wallet file: $onlyWallet"
-  echo "# Using it as default"
-  sed -i "s#^defaultWallet=.*#defaultWallet=/home/joinmarket/.joinmarket/wallets/$onlyWallet#g" $joininConfPath
-fi
-
-# add default value to joinin config if needed
 if ! grep -Eq "^network=" $joininConfPath; then
   echo "network=unknown" >>$joininConfPath
 fi
-isMainnet=$(grep -c "network = mainnet" <$JMcfgPath)
-isSignet=$(grep -c "network = signet" <$JMcfgPath)
-isTestnet=$(grep -c "network = testnet" <$JMcfgPath)
-if [ $isMainnet -gt 0 ]; then
-  sed -i "s#^network=.*#network=mainnet#g" $joininConfPath
-elif [ $isSignet -gt 0 ]; then
-  sed -i "s#^network=.*#network=signet#g" $joininConfPath
-elif [ $isTestnet -gt 0 ]; then
-  sed -i "s#^network=.*#network=testnet#g" $joininConfPath
-else
-  sed -i "s#^network=.*#network=unknown#g" $joininConfPath
+if ! grep -Eq "^connectedRemoteNode=" $joininConfPath; then
+  echo "connectedRemoteNode=off" >>$joininConfPath
+fi
+
+ngConfigPath="/home/joinmarketng/.joinmarket-ng/config.toml"
+if [ -f "$ngConfigPath" ]; then
+  IFS=$'\t' read -r ngNetwork ngRPCoverTor ngRemoteNode < <(python3 - "$ngConfigPath" <<'PYTHON'
+import sys
+import tomllib
+from pathlib import Path
+from urllib.parse import urlsplit
+
+try:
+    config = tomllib.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+    network = config["network_config"]["network"]
+    rpc_url = config["bitcoin"]["rpc_url"]
+    host = urlsplit(rpc_url).hostname
+    if network not in {"mainnet", "signet", "testnet"}:
+        raise ValueError
+    if host is None:
+        raise ValueError
+except (KeyError, OSError, TypeError, ValueError, tomllib.TOMLDecodeError):
+    raise SystemExit(1)
+
+host = host.lower()
+rpc_over_tor = "on" if host.endswith(".onion") else "off"
+remote_node = "off" if host in {"127.0.0.1", "::1", "localhost"} else "on"
+print(f"{network}\t{rpc_over_tor}\t{remote_node}")
+PYTHON
+)
+  if [ -n "$ngNetwork" ]; then
+    sed -i "s#^network=.*#network=$ngNetwork#g" $joininConfPath
+    sed -i "s#^RPCoverTor=.*#RPCoverTor=$ngRPCoverTor#g" $joininConfPath
+    sed -i "s#^connectedRemoteNode=.*#connectedRemoteNode=$ngRemoteNode#g" $joininConfPath
+  fi
 fi
 
 # add default value to joinin config if needed
@@ -178,6 +182,3 @@ if ! grep -Eq "^localip=" $joininConfPath; then
 fi
 localip=$(hostname -I | awk '{print $1}')
 sed -i "s#^localip=.*#localip=$localip#g" $joininConfPath
-
-# change the onion_serving_port if LND is present (avoid collision with LND REST port)
-sed -i "s#^onion_serving_port = 8080#onion_serving_port = 8090#g" $JMcfgPath

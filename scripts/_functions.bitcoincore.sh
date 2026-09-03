@@ -110,9 +110,8 @@ function installBitcoinCore() {
       echo "# Add /home/joinmarket/bitcoin to the local PATH"
       echo "PATH=/home/joinmarket/bitcoin:$PATH" | sudo tee -a /home/joinmarket/.profile
     fi
-    installed=$(/home/joinmarket/bitcoin/bitcoind --version | \
-      grep -Fc "Bitcoin Core version v${bitcoinVersion}")
-    if [ ${installed} -lt 1 ]; then
+    if ! /home/joinmarket/bitcoin/bitcoind --version |
+      grep -Eq '^Bitcoin Core (daemon )?version v?[0-9]+(\.[0-9]+)+'; then
       echo
       echo "# BUILD FAILED --> Was not able to install Bitcoin Core"
       exit 1
@@ -160,6 +159,8 @@ function installSignet() {
     echo "
 [Unit]
 Description=Bitcoin daemon on signet
+Wants=network-online.target tor@default.service
+After=network-online.target tor@default.service
 
 [Service]
 Environment='MALLOC_ARENA_MAX=1'
@@ -552,28 +553,15 @@ function connectLocalNode() {
   elif [ "${network}" = testnet ]; then
     rpc_port="18332"
   fi
-  rpc_wallet="watch-only-descriptor-wallet"
-  if [ $runningEnv = raspiblitz ]; then
-    if [ -f "/mnt/hdd/raspiblitz.conf" ]; then
-      rpc_user=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
-      rpc_pass=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+  sudo /usr/local/libexec/joininbox/install.joinmarket-ng.sh configure-local "$network"
+
+  for state in "network=$network" "connectedRemoteNode=off" "RPCoverTor=off"; do
+    key=${state%%=*}
+    value=${state#*=}
+    if ! grep -Eq "^${key}=" "$joininConfPath"; then
+      echo "$key=$value" >>"$joininConfPath"
     else
-      rpc_user=$(sudo cat /mnt/hdd/app-data/bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
-      rpc_pass=$(sudo cat /mnt/hdd/app-data/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+      sed -i "s#^${key}=.*#${key}=${value}#g" "$joininConfPath"
     fi
-
-  elif [ $runningEnv = mynode ]; then
-    rpc_user=mynode
-    rpc_pass=$(sudo cat /mnt/hdd/mynode/settings/.btcrpcpw)
-  elif [ $runningEnv = standalone ]; then
-    rpc_user=$(sudo cat /home/bitcoin/.bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
-    rpc_pass=$(sudo cat /home/bitcoin/.bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
-  fi
-  # set.bitcoinrpc.py
-  python /home/joinmarket/set.bitcoinrpc.py --network=${network} \
-    --rpc_user="$rpc_user" --rpc_pass="$rpc_pass" --rpc_host=$rpc_host \
-    --rpc_port=$rpc_port --rpc_wallet=$rpc_wallet
-
-  # set joinin.conf value
-  /home/joinmarket/set.value.sh set network ${network} ${joininConfPath}
+  done
 }

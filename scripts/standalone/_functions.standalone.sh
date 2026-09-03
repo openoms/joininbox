@@ -169,7 +169,8 @@ function installBitcoinCoreStandalone() {
     cd /home/joinmarket/download/bitcoin-${bitcoinVersion}/bin/ || exit 1
     sudo install -m 0755 -o root -g root -t /usr/local/bin/ ./*
   fi
-  if ! sudo -u bitcoin /usr/local/bin/bitcoind --version | grep "Bitcoin Core version"; then
+  if ! sudo -u bitcoin /usr/local/bin/bitcoind --version |
+    grep -Eq '^Bitcoin Core (daemon )?version v?[0-9]+(\.[0-9]+)+'; then
     echo
     echo "# BUILD FAILED --> Was not able to install Bitcoin Core)"
     exit 1
@@ -280,19 +281,12 @@ WantedBy=multi-user.target
     sudo bash -c "echo 'alias bitcoinconf=\"sudo nano /home/bitcoin/.bitcoin/bitcoin.conf\"' >> /home/joinmarket/_aliases.sh"
   fi
 
-  # set joinin.conf value
-  /home/joinmarket/set.value.sh set network mainnet ${joininConfPath}
-
   sudo systemctl start bitcoind
+  connectLocalNode mainnet
   echo
   echo "# Installed $(sudo -u bitcoin /usr/local/bin/bitcoind --version | grep version)"
   echo
   echo "# Monitor the bitcoind with: sudo tail -f /home/bitcoin/.bitcoin/mainnet/debug.log"
   echo
 
-  if [ ! -d /home/bitcoin/.bitcoin/wallets/watch-only-descriptor-wallet ]; then
-    echo "# Create watch-only-descriptor-wallet ..."
-    sleep 10
-    sudo -u bitcoin /usr/local/bin/bitcoin-cli -named createwallet wallet_name=watch-only-descriptor-wallet descriptors=true disable_private_keys=true
-  fi
 }

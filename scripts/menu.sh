@@ -5,9 +5,9 @@ source /home/joinmarket/_functions.sh
 sourceConf /home/joinmarket/joinin.conf
 
 # BASIC MENU INFO
-HEIGHT=21
+HEIGHT=14
 WIDTH=57
-CHOICE_HEIGHT=13
+CHOICE_HEIGHT=6
 BACKTITLE="JoininBox GUI $currentJBtag network:$network IP:$localip"
 TITLE="JoininBox $currentJBtag $network"
 MENU="
@@ -24,31 +24,11 @@ Choose from the options:"
 fi
 OPTIONS=()
 
-# Basic Options
-OPTIONS+=(START "Quickstart with JoinMarket")
-if [ "${runningEnv}" = raspiblitz ] && [ $(lsb_release -sc) = bullseye ]; then
-  OPTIONS+=(JAM "JoinMarket Web UI options")
-  HEIGHT=$((HEIGHT + 1))
-  CHOICE_HEIGHT=$((CHOICE_HEIGHT + 1))
-elif [ "${qtgui}" = "true" ]; then
-  OPTIONS+=(QTGUI "Show how to open the JoinMarketQT GUI")
-  HEIGHT=$((HEIGHT + 1))
-  CHOICE_HEIGHT=$((CHOICE_HEIGHT + 1))
-fi
-OPTIONS+=("" ""
-  WALLET "Wallet management options"
-  MAKER "Yield Generator options"
-  "" ""
-  SEND "Pay to an address with/without a coinjoin"
-  FREEZE "Exercise coin control within a mixdepth"
-  PAYJOIN "Send/Receive between JoinMarket wallets"
-  "" ""
-  OFFERS "Watch the Order Book locally"
-  "" ""
-  CONFIG "Connection and joinmarket.cfg settings"
-  TOOLS "Extra helper functions and services")
+OPTIONS=(
+  JOINMARKETNG "Open JoinMarket NG"
+  CONFIG "Bitcoin and JoininBox settings"
+  UPDATE "Update JoininBox or JoinMarket NG")
 if [ "${runningEnv}" != mynode ]; then
-  OPTIONS+=(UPDATE "Update JoininBox or JoinMarket")
   OPTIONS+=("" "")
   if [ "${runningEnv}" = raspiblitz ]; then
     OPTIONS+=(BLITZ "Switch to the RaspiBlitz menu")
@@ -73,60 +53,14 @@ CHOICE=$(dialog \
   2>&1 >/dev/tty)
 
 case $CHOICE in
-START)
-  /home/joinmarket/menu.quickstart.sh
-  waitKeyOnExit1 $?
-  /home/joinmarket/menu.sh
-  ;;
-WALLET)
-  /home/joinmarket/menu.wallet.sh
-  waitKeyOnExit1 $?
-  /home/joinmarket/menu.sh
-  ;;
-QTGUI)
-  /home/joinmarket/info.qtgui.sh
-  /home/joinmarket/menu.sh
-  ;;
-JAM)
-  /home/joinmarket/menu.jam.sh
-  /home/joinmarket/menu.sh
-  ;;
-MAKER)
-  /home/joinmarket/menu.yg.sh
-  waitKeyOnExit1 $?
-  /home/joinmarket/menu.sh
-  ;;
-SEND)
-  /home/joinmarket/menu.send.sh
-  echo ""
-  echo "Press ENTER to return to the menu..."
-  read key
-  /home/joinmarket/menu.sh
-  ;;
-FREEZE)
-  /home/joinmarket/menu.freeze.sh
-  echo ""
-  echo "Press ENTER to return to the menu..."
-  read key
-  /home/joinmarket/menu.sh
-  ;;
-PAYJOIN)
-  /home/joinmarket/menu.payjoin.sh
-  waitKeyOnExit1 $?
-  /home/joinmarket/menu.sh
-  ;;
-OFFERS)
-  /home/joinmarket/menu.orderbook.sh
+JOINMARKETNG)
+  sudo /usr/local/libexec/joininbox/install.joinmarket-ng.sh menu
   /home/joinmarket/menu.sh
   ;;
 CONFIG)
   /home/joinmarket/menu.config.sh
   echo "Returning to the menu..."
   sleep 1
-  /home/joinmarket/menu.sh
-  ;;
-TOOLS)
-  /home/joinmarket/menu.tools.sh
   /home/joinmarket/menu.sh
   ;;
 UPDATE)
@@ -139,7 +73,6 @@ REBOOT)
   confirmationReboot=$?
   if [ $confirmationReboot -eq 0 ]; then
     clear
-    stopYG
     echo
     if [ "${runningEnv}" = raspiblitz ]; then
       sudo /home/admin/config.scripts/blitz.shutdown.sh reboot
@@ -157,7 +90,6 @@ SHUTDOWN)
   confirmationShutdown=$?
   if [ $confirmationShutdown -eq 0 ]; then
     clear
-    stopYG
     echo
     if [ "${runningEnv}" = raspiblitz ]; then
       sudo /home/admin/config.scripts/blitz.shutdown.sh
@@ -176,12 +108,10 @@ BLITZ)
   clear
   echo "
 ***************************
-* JoinMarket command line *
+ * JoinMarket NG command line *
 ***************************
-Notes on usage:
-https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/README.md
-
 To open the JoininBox menu use: menu
+To open JoinMarket NG use: jm-ng
 To exit from the terminal type: exit
 "
   ;;

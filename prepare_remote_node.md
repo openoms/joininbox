@@ -3,7 +3,7 @@
 
 If you have arrived here from running JoininBox locally on the RaspiBlitz can skip these steps (CTRL+C to exit the connection settings). The connection to the local bitcoin node is set up automatically.
 
-JoinMarket (running in JoininBox) needs to connect to Bitcoin Core via RPC.  
+JoinMarket NG (running in JoininBox) needs to connect to Bitcoin Core via RPC.
 A pruned node with the **bitcoind wallet enabled** will do and txindex is not required.  
 - [RaspiBlitz](#raspiblitz)
   - [Enable the bitcoind wallet](#enable-the-bitcoind-wallet)
@@ -64,7 +64,7 @@ This can be skipped if you [connect through Tor](#tor-connection)
     edit to your local subnet - in the example here 192.168.1.X):  
     `$ sudo ufw allow from 192.168.1.0/24 to any port 8332`
 
-4) Take note of the `LAN_ADDRESS` of the remote node and fill it in to the `rpc_host` in `joinmarket.cfg`
+4) Take note of the `LAN_ADDRESS` of the remote node and enter it under `CONFIG -> CONNECT` in JoininBox.
 
 ### Tor connection
 
@@ -83,7 +83,7 @@ Create a Hidden Service to forward the bitcoin RPC port:
   ```
   ~/config.scripts/internet.hiddenservice.sh bitcoinrpc 8332 8332
   ```
-2) Take note of the `Tor_Hidden_Service.onion` and fill in to the `rpc_host` in the `joinmarket.cfg`
+2) Take note of the `Tor_Hidden_Service.onion` and enter it under `CONFIG -> CONNECT` in JoininBox.
 
 Alternatively proceed manually: 
 
@@ -105,7 +105,7 @@ Alternatively proceed manually:
    
     `$ sudo cat /mnt/hdd/tor/bitcoinrpc/hostname`
 
-Fill in the `Tor_Hidden_Service.onion` to the `rpc_host` in the `joinmarket.cfg`
+Enter the `Tor_Hidden_Service.onion` under `CONFIG -> CONNECT` in JoininBox.
 
 ### CONFIG -> CONNECT in JoininBox
 * Username: `raspibolt `
@@ -187,8 +187,4 @@ Fill the connection settings from the `5 Credentials` -> `6 Bitcoind` menu of Ro
 
 * [Connect JoinMarket running on a Linux desktop to a remote node](https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/joinmarket_desktop_to_blitz.md)
 
-* Note about the Tor connection (applied automatically in the JoininBox):
-Remember to use `torsocks` with the python scripts when connecting remotely through Tor  
-Example:  
-`torsocks wallet-tool.py wallet.jmdat`  
-also need to [allow Tor to connect to localhost](FAQ.md#allow-tor-to-connect-to-localhost)
+JoininBox detects an onion RPC URL and launches the JoinMarket NG TUI and maker through `torsocks` automatically.

@@ -3,22 +3,7 @@
 <!-- omit in toc -->
 # JoininBox
 
-A minimalistic, security focused linux environment for JoinMarket with a terminal based graphical menu.
-
-<p align="left">
-  <img width="400" src="/images/menu.png">
-  <img width="400" src="/images/menu.wallet.png">
-</p>
-
-<p align="left">
-  <img width="400" src="/images/menu.yg.png">
-  <img width="400" src="/images/menu.tools.png">
-</p>
-
-<p align="left">
-  <img width="800" src="/images/menu.m0.png">
-</p>
-
+A minimal, security-focused Linux environment for JoinMarket NG with terminal menus.
 
 - [Features](#features)
 - [Required Hardware](#required-hardware)
@@ -29,23 +14,24 @@ A minimalistic, security focused linux environment for JoinMarket with a termina
 - [Set up JoininBox on Linux](#set-up-joininbox-on-linux)
   - [Tested environments](#tested-environments)
   - [Install JoininBox](#install-joininbox)
+  - [Migrating an existing wallet](#migrating-an-existing-wallet)
 - [More info](#more-info)
 - [About JoinMarket](#about-joinmarket)
 - [Forums](#forums)
 
 ## Features
 
-* Send transactions with improved privacy using CoinJoin and PayJoin
-* Run the Yield Generator as a service and earn fees for providing liquidity
-* Use the JoinMarket-QT GUI remotely over SSH
+* Use the JoinMarket NG wallet, taker, tumbler, maker, and orderbook tools from the bundled `jm-ng` terminal UI
+* Run the maker as a supervised service and earn fees for providing liquidity
 * Signet support to test for free
-* Connect remotely to a Bitcoin Core node
+* Connect to Bitcoin Core locally or remotely over LAN or Tor
   * RaspiBlitz over [LAN or Tor](prepare_remote_node.md#raspiblitz)
   * RoninDojo over [LAN or Tor](prepare_remote_node.md#ronindojo)
 * Start a pruned node from https://pruned.host4coins.net/blocks
-* JoininBox is part of the RaspiBlitz SERVICES
+* Verify signed JoinMarket NG releases and install the pinned `0.38.0` release from its immutable commit
+* Preserve existing legacy JoinMarket data during migration
 
-**The addresses, transactions and balances of JoinMarket can be seen in the watch-only-descriptor-wallet of the connected node.**
+**JoinMarket NG creates deterministic watch-only descriptor wallets in the connected Bitcoin Core node. Their names use the form `jm_<fingerprint>_<network>`.**
   * use your own or a trusted node
   * to protect privacy in case of physical access use disk encryption
 
@@ -66,7 +52,7 @@ Recommended minimum:
 **JoininBox operates on the minimum viable hardware under the assumption that the seed (and passphrase) of the wallets used is safely backed up and can be used to recover the funds!**
 
 ## Set up using an SDcard image
-* Download the zip of the latest successful SDcard image build for the Raspberry Pi 4 or 3 from  
+* Download the zip of the latest successful SDcard image build for the Raspberry Pi 4 or 5 from
   <https://github.com/openoms/joininbox/actions?query=workflow%3Aarm64-rpi-image-build++branch%3Amaster+is%3Asuccess++>  
   (note that need to be logged in to github to download the artifact image file)
 * unzip and check the sha256sum verifying the .gz file integrity
@@ -81,10 +67,10 @@ Recommended minimum:
 * Boot by connecting the power cable
 * Open a terminal ([OSX](https://www.youtube.com/watch?v=5XgBd6rjuDQ)/[Win10](https://www.howtogeek.com/336775/how-to-enable-and-use-windows-10s-built-in-ssh-commands/)) and connect with ssh:
   ```
-  ssh joinmarket@rpi4-20220121
+  ssh joinmarket@LAN_IP_ADDRESS
   ```
-   → the password on the first boot is: `joininbox`
-* Use the hostname of the latest SDcard image (`rpi4-20220121`) or to find the IP address to connect to:  
+   The password on the first boot is: `joininbox`
+* To find the IP address to connect to:
   * scan with the [AngryIP Scanner](https://angryip.org/)
   * use `sudo arp -a` or
   * check the router interface
@@ -92,33 +78,21 @@ Recommended minimum:
 * after the first login will be prompted to change the password to access the menu.
   ![password change](/images/password.change.png)
 
-* next will be presented with the CONFIG menu to
+* Next, use the CONFIG menu to
   * Connect to a remote bitcoin node on mainnet
   * Try JoinMarket on signet
   * Start a pruned node from [pruned.host4coins.net/blocks](https://pruned.host4coins.net/blocks)
-  * Edit the joinmarket.cfg manually
-  * Update JoininBox or JoinMarket
+  * Edit the JoinMarket NG `config.toml`
+  * Update JoininBox or reinstall the pinned JoinMarket NG release
 
-  ![config menu](/images/menu.startup.png)
-
-* Update to the latest version of JoininBox and update JoinMarket if the latest version is newer than the one installed on the SDcard
-
-  After any of the options or Exit is selected the main JoininBox menu will open where you can start using JoinMarket
-
-   ![menu](/images/menu.png)
+* Open `JoinMarket NG` from the main JoininBox menu, then create or import a wallet in the `jm-ng` UI.
 
 * Find [more info on the usage](#more-info) and [community help](#forums) at the end of this readme
 ## Set up JoininBox on Linux
 ### Tested environments
-* Latest
-  * Debian Bullseye X86_64 desktop ([images and logs available in GitHub actions](https://github.com/openoms/joininbox/actions?query=workflow%3Aamd64-image-build++branch%3Amaster+is%3Asuccess))
-  * Raspberry Pi 4 running 64bit Debian Bullseye ([images and logs available in GitHub actions](https://github.com/openoms/joininbox/actions?query=workflow%3Aarm64-rpi-image-build++branch%3Amaster+is%3Asuccess++))
-  * Ubuntu 22.04 Jammy X86_64 desktop (virtual machine)
-* Previous versions tested
-  * [Raspberry Pi 4 running 64bit Debian Buster](FAQ.md#build-the-sdcard-image)
-  * [Hardkernel Odroid XU4/HC1 running 32bit Armbian Buster](FAQ.md#set-up-armbian-on-the-hardkernel-odroid-xu4)
-  * Hardkernel Odroid C4 running 64bit Armbian Focal and Buster
-  * Raspberry Pi Zero, [3 and 4 running RaspberryOS](FAQ.md#download-and-verify-raspbian-sdcard-image-for-a-raspberry-pi) (32bit Buster)
+* Debian 13 X86_64 ([images and logs available in GitHub actions](https://github.com/openoms/joininbox/actions?query=workflow%3Aamd64-image-build++branch%3Amaster+is%3Asuccess))
+* Raspberry Pi 4 and 5 running 64-bit Raspberry Pi OS Bookworm ([images and logs available in GitHub actions](https://github.com/openoms/joininbox/actions?query=workflow%3Aarm64-rpi-image-build++branch%3Amaster+is%3Asuccess++))
+* Python 3.11 or newer is required by JoinMarket NG.
 
 ### Install JoininBox
 * Start as the `root` user or change with:  
@@ -141,6 +115,12 @@ log in with ssh to:
 `joinmarket@LAN_IP_ADDRESS`  
 the default password is: `joininbox` - will be prompted to change it on the first start
 
+JoinMarket NG runs under the isolated `joinmarketng` system account. Its data is stored in `/home/joinmarketng/.joinmarket-ng` on standalone systems and `/mnt/hdd/app-data/joinmarket-ng` on RaspiBlitz. Use the JoininBox menu or the `jm-ng` command rather than logging in as that account directly.
+
+### Migrating an existing wallet
+
+Legacy `.jmdat` files and JoinMarket NG `.mnemonic` files are not interchangeable. Updating JoininBox does not delete `/home/joinmarket/.joinmarket` or the old clientserver checkout. Before moving funds, recover and verify the legacy wallet mnemonic with the old tooling, then use `WALLET -> Import` in `jm-ng`. Use `jm-wallet rescan --scan-depth N` when old address use exceeds the imported descriptor range. After the rescan completes, open CoinJoin History in `jm-ng`; the TUI refreshes the wallet and reconstructs imported history automatically. Run `jm-wallet recover-bonds` for existing fidelity bonds, and verify balances and history before starting the maker.
+
 ---
 
 ## More info
@@ -149,7 +129,7 @@ the default password is: `joininbox` - will be prompted to change it on the firs
 * [Frequently Asked Questions and notes](FAQ.md)
 
 ## About JoinMarket
-* [JoinMarket documentation](https://github.com/JoinMarket-Org/joinmarket-clientserver/tree/master/docs)
+* [JoinMarket NG documentation](https://joinmarket-ng.github.io/joinmarket-ng/)
 * [Recommendations for users](https://joinmarket.me/blog/blog/the-445-btc-gridchain-case/index.html#recommendations) on [waxwing's blog](https://joinmarket.me/category/waxwings-blog.html)
 * [JoinMarket on the RaspiBlitz guide](https://github.com/openoms/bitcoin-tutorials/blob/master/joinmarket/README.md)
 * [JoinMarket on Ubuntu](https://www.youtube.com/watch?v=zTCC86IUzWo) video by [K3tan](https://twitter.com/_k3tan)

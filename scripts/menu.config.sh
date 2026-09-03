@@ -49,11 +49,10 @@ if [ "$runningEnv" = "standalone" ] && [ "$setupStep" -lt 100 ]; then
     HEIGHT=$((HEIGHT+1))
     CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
   fi
-  OPTIONS+=(
-      "" ""
-      JMCONF  "Edit the joinmarket.cfg manually"
-      "" ""
-      UPDATE  "Update JoininBox or JoinMarket")
+  if [ -f /home/joinmarketng/.joinmarket-ng/config.toml ]; then
+    OPTIONS+=("" "" NGCONF "Edit the JoinMarket NG configuration")
+  fi
+  OPTIONS+=("" "" UPDATE "Update JoininBox or JoinMarket NG")
 
 else
   # BASIC MENU INFO
@@ -67,10 +66,11 @@ else
   CANCELLABEL="Back"
 
   # Basic Options
+  if [ -f /home/joinmarketng/.joinmarket-ng/config.toml ]; then
+    OPTIONS+=(NGCONF "Edit the JoinMarket NG configuration" "" "")
+  fi
   OPTIONS+=(
-      JMCONF   "Edit the joinmarket.cfg manually"
-      "" ""
-      CONNECT  "Connect to a remote bitcoin node on mainnet"
+       CONNECT  "Connect to a remote bitcoin node on mainnet"
       SIGNET   "Switch to signet with a local Bitcoin Core")
   if [ "${runningEnv}" = standalone ]; then
     OPTIONS+=(
@@ -87,9 +87,6 @@ else
     CHOICE_HEIGHT=$((CHOICE_HEIGHT+3))
   fi
 
-  OPTIONS+=(
-      "" ""
-      RESET    "Reset the joinmarket.cfg to the defaults")
 fi
 
 CHOICE=$(dialog --clear \
@@ -103,23 +100,16 @@ CHOICE=$(dialog --clear \
                 2>&1 >/dev/tty)
 
 case $CHOICE in
-  JMCONF)
-    /home/joinmarket/install.joinmarket.sh -i config
+  NGCONF)
+    if sudo /home/joinmarket/set.conf.sh "/home/joinmarketng/.joinmarket-ng/config.toml" "joinmarketng"; then
+      sudo /usr/local/libexec/joininbox/install.joinmarket-ng.sh sync-config
+    fi
     echo "Returning to the menu..."
     sleep 1
     /home/joinmarket/menu.sh;;
-  RESET)
-    echo "# Removing the joinmarket.cfg"
-    rm -f $JMcfgPath
-    generateJMconfig
-    echo
-    echo "Press ENTER to return to the menu..."
-    read key;;
   CONNECT)
     /home/joinmarket/install.bitcoincore.sh signetOff
     /home/joinmarket/menu.bitcoinrpc.sh
-    # set joinin.conf value
-    /home/joinmarket/set.value.sh set network mainnet ${joininConfPath}
     echo
     echo "Press ENTER to return to the menu..."
     read key;;
@@ -133,7 +123,6 @@ case $CHOICE in
     echo
     downloadSnapShot
     installMainnet
-    connectLocalNode
     showBitcoinLogs
     echo
     echo "Press ENTER to return to the menu..."
@@ -155,6 +144,7 @@ case $CHOICE in
     then
       echo "# Restarting bitcoind"
       sudo systemctl restart bitcoind
+      sudo /usr/local/libexec/joininbox/install.joinmarket-ng.sh configure-local "$network"
       showBitcoinLogs
     else
       echo "# No change made"

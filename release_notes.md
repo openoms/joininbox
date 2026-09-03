@@ -1,3 +1,12 @@
+# Unreleased - JoinMarket NG
+
+- replace active joinmarket-clientserver workflows with JoinMarket NG `0.38.0`
+- verify signed releases and install from immutable commits with hash-checked dependencies
+- isolate NG wallets and services under the `joinmarketng` system account
+- protect privileged lifecycle operations from service-controlled paths and restore an active maker after failed updates
+- migrate existing local, remote LAN, and remote Tor RPC settings to `config.toml`
+- preserve legacy wallet and configuration data for manual mnemonic migration
+
 # v0.6.0 - Fidelity Bonds with JoinMarket v0.9.1
 
 - update to JoinMarket v0.9.1

@@ -8,4 +8,5 @@ if ! command -v bats >/dev/null 2>&1; then
   exit 127
 fi
 
+bats -r tests
 bats test/bats

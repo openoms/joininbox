@@ -61,23 +61,10 @@ function torthistx() {
   fi
 }
 
-# command: stats
-# shows the uptime and the fees earned as a Maker
-function stats() {
-  /home/joinmarket/info.stats.sh showAllEarned
-}
-
-# command: qtgui
-# starts the JoinMarket-QT GUI
-function qtgui() {
-  if grep -Eq "RPCoverTor=on" /home/joinmarket/joinin.conf; then
-    tor="torsocks"
-  else
-    tor=""
-  fi
-
-  echo "# Opening the JoinMarket-QT GUI with the command: '(jmvenv) $tor python joinmarket-qt.py'"
-  $tor /home/joinmarket/joinmarket-clientserver/jmvenv/bin/python /home/joinmarket/joinmarket-clientserver/scripts/joinmarket-qt.py
+# command: jm-ng
+# opens the JoinMarket NG menu
+function jm-ng() {
+  sudo /usr/local/libexec/joininbox/install.joinmarket-ng.sh menu
 }
 
 # command: qr [string]

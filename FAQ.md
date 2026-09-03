@@ -9,10 +9,9 @@
   - [2FA with Yubikey](#2fa-with-yubikey)
   - [Log in through SSH using a hardware wallet](#log-in-through-ssh-using-a-hardware-wallet)
 - [SSH through Tor from Linux](#ssh-through-tor-from-linux)
-- [Allow Tor to connect to localhost](#allow-tor-to-connect-to-localhost)
 - [Download and verify Raspbian SDcard image for a Raspberry Pi](#download-and-verify-raspbian-sdcard-image-for-a-raspberry-pi)
 - [Error when connecting to a full node remotely through Tor](#error-when-connecting-to-a-full-node-remotely-through-tor)
-- [Erase the joinmarket user and the /home/joinmarket folder](#erase-the-joinmarket-user-and-the-homejoinmarket-folder)
+- [Removing JoininBox](#removing-joininbox)
 - [Sample bitcoin.conf for a remote node accepting RPC connections through LAN](#sample-bitcoinconf-for-a-remote-node-accepting-rpc-connections-through-lan)
 - [Using the 2.13" WaveShare e-ink display](#using-the-213-waveshare-e-ink-display)
 - [Compile Tor for the RPi Zero (armv6l)](#compile-tor-for-the-rpi-zero-armv6l)
@@ -27,17 +26,11 @@
 - [Verify the downloaded the image](#verify-the-downloaded-the-image)
   - [Linux instructions](#linux-instructions)
   - [Windows instructions](#windows-instructions)
-- [Wallet recovery](#wallet-recovery)
-  - [on JoininBox](#on-joininbox)
-  - [on the remote node](#on-the-remote-node)
-- [Migrating from legacy wallet.dat to descriptor wallet](#migrating-from-legacy-walletdat-to-descriptor-wallet)
+- [Wallet recovery and legacy migration](#wallet-recovery-and-legacy-migration)
 - [USB SSD recommendation](#usb-ssd-recommendation)
 - [Pruned node notes](#pruned-node-notes)
 - [External drive](#external-drive)
-- [IRC server settings](#irc-server-settings)
-- [Install JoinMarket without the QT GUI and dependencies](#install-joinmarket-without-the-qt-gui-and-dependencies)
-- [Run the JoinMarket-QT GUI from a different user on the same Linux desktop where JoininBox is installed](#run-the-joinmarket-qt-gui-from-a-different-user-on-the-same-linux-desktop-where-joininbox-is-installed)
-- [Install Jam on a linux desktop and connect to a remote Joininbox](#install-jam-on-a-linux-desktop-and-connect-to-a-remote-joininbox)
+- [Legacy clientserver reference](#legacy-clientserver-reference)
 - [Signing strategy for releases](#signing-strategy-for-releases)
 
 
@@ -148,30 +141,6 @@ On a Debian based Linux Desktop (Ubuntu, Debian, MX Linux etc.)
 Use `ssh` with `torsocks`  on the desktop (needs Tor installed):  
 `torsocks ssh admin@HiddenServiceAddress.onion`
 
-## Allow Tor to connect to localhost
-* To solve the error when running `$ torsocks python yg-privacyenhanced.py wallet.jmdat`
-    ```
-    [INFO]  starting yield generator
-    [INFO]  Listening on port 27183
-    [INFO]  Starting transaction monitor in walletservice
-    1580214062 WARNING torsocks[28563]: [connect] Connection to a local address are     denied since it might be a TCP DNS query to a local DNS server. Rejecting it for    safety reasons. (in tsocks_connect() at connect.c:192)
-    ```
-
-* Edit the `torsocks.conf` and activate the option `AllowOutboundLocalhost 1`:  
-`$ sudo nano /etc/tor/torsocks.conf`
-
-    ```
-    # Set Torsocks to allow outbound connections to the loopback interface.
-    # If set to 1, connect() will be allowed to be used to the loopback interface
-    # bypassing Tor. If set to 2, in addition to TCP connect(), UDP operations to
-    # the loopback interface will also be allowed, bypassing Tor. This option
-    # should not be used by most users. (Default: 0)
-    AllowOutboundLocalhost 1
-    ```
-
-* Restart Tor:   
-`sudo systemctl restart tor`
-
 ## Download and verify Raspbian SDcard image for a Raspberry Pi
 * Download [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
 * enable the ssh login in the 
@@ -183,12 +152,11 @@ Use `ssh` with `torsocks`  on the desktop (needs Tor installed):
     ```
     socket.gaierror: [Errno -2] Name or service not known
     ```
-* Remember to use `torsocks` with the python scripts when connecting remotely through Tor. Example:  
-    `torsocks wallet-tool.py wallet.jmdat`
+* Re-enter the onion hostname under `CONFIG -> CONNECT`. JoininBox validates the URL and automatically starts the JoinMarket NG TUI and maker through `torsocks` when `bitcoin.rpc_url` uses an onion host.
 
-## Erase the joinmarket user and the /home/joinmarket folder
-`sudo srm -rf /home/joinmarket/`  
-`sudo userdel -rf joinmarket`
+## Removing JoininBox
+
+The maintenance command `sudo /usr/local/libexec/joininbox/install.joinmarket-ng.sh off` disables the maker, removes the NG venv and service account, and preserves wallet data. Before running it, back up both `/home/joinmarket/.joinmarket` and `/home/joinmarketng/.joinmarket-ng`. On RaspiBlitz the NG data target is `/mnt/hdd/app-data/joinmarket-ng`. Removing only the `joinmarket` account does not remove the isolated `joinmarketng` service account or its wallet data.
 
 ## Sample bitcoin.conf for a remote node accepting RPC connections through LAN
 ```
@@ -196,8 +164,6 @@ Use `ssh` with `torsocks`  on the desktop (needs Tor installed):
 server=1
 daemon=1
 disablewallet=0
-main.wallet=watch-only-descriptor-wallet
-
 # Connection settings
 rpcuser=REDACTED
 rpcpassword=REDACTED
@@ -423,7 +389,32 @@ https://2019.www.torproject.org/docs/debian#source
 `C:\> certUtil -hashfile C:\joininbox-vX.X.X-YEAR-MONTH-DAY.img.gz SHA256`
 * Compare the two hashes to ensure the authenticity and integrity of the downloaded image.
 
-## Wallet recovery
+## Wallet recovery and legacy migration
+
+JoinMarket NG stores encrypted BIP39 mnemonics as `*.mnemonic`. Legacy JoinMarket clientserver wallets are `*.jmdat`; copying or renaming a `.jmdat` file does not convert it. JoininBox preserves the legacy checkout, configuration, and wallet directory during an upgrade, but does not start the old clientserver workflows.
+
+1. Stop the maker before migration.
+2. Back up `/home/joinmarket/.joinmarket/wallets`, `/home/joinmarketng/.joinmarket-ng/wallets`, and the wallet mnemonics offline.
+3. Use the preserved clientserver environment to display and verify the recovery mnemonic for each `.jmdat` wallet. Do not put a mnemonic in a shell command, file name, or chat message.
+4. Open `JoinMarket NG` from the main menu and choose `WALLET -> Import`. NG saves the imported wallet under its own data directory.
+5. Open the wallet and verify its fingerprint, receive addresses, history, and balance before making a transaction or starting the maker.
+
+JoinMarket NG creates a deterministic Bitcoin Core descriptor wallet named `jm_<fingerprint>_<network>`. A migrated wallet with older activity can require both kinds of recovery scan:
+
+```bash
+jm-wallet rescan --start-height 481824 --scan-depth 50
+```
+
+Choose a start height at or before the first deposit. Increase `--scan-depth` if the legacy wallet used address indexes beyond the default descriptor range. A pruned node cannot rescan blocks older than its retained history, so connect to an archival node when required. Rescans can take hours and continue in Bitcoin Core if progress polling is interrupted.
+
+Automatic history reconstruction is deferred while Bitcoin Core is rescanning. After the rescan completes, open CoinJoin History in `jm-ng`. The TUI refreshes the wallet, reconstructs its best-effort on-chain history automatically, and displays the result. `jm-wallet reconstruct-history` remains available as a troubleshooting command, but it is not required in the normal migration flow.
+
+For a wallet that used fidelity bonds, also run `jm-wallet recover-bonds`. Do not delete the old `.jmdat`, legacy Bitcoin Core wallet, or mnemonic backup until the NG wallet and any bonds have been fully verified.
+
+### Archived clientserver recovery notes
+
+The following recovery and descriptor-wallet notes apply only when deliberately running the preserved clientserver installation. They are not part of the active JoinMarket NG menus.
+
 JoinMarket docs:
 * https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/docs/USAGE.md#portability
 * https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/docs/USAGE.md#recover
@@ -451,7 +442,7 @@ Rescanning from the first SegWit block is sufficient for the default SegWit wall
 `sudo tail -fn 100 /mnt/hdd/app-storage/bitcoin/debug.log`  
 Once the rescan is finished you balances should appear in the `INFO` menu (`wallet-tool.py`)
 
-## Migrating from legacy wallet.dat to descriptor wallet
+### Archived clientserver Bitcoin Core wallet migration
 
 Starting with the 0.9.0 version, JoininBox uses Bitcoin Core's descriptor wallets (`watch-only-descriptor-wallet`) instead of the legacy `wallet.dat`. This change provides better compatibility with modern Bitcoin Core versions (v26+) and aligns with Bitcoin Core's default wallet format.
 
@@ -596,21 +587,15 @@ Alternatively to a pruned node there could be a larger >400 GB storage connected
   sudo tail -f /home/bitcoin/.bitcoin/debug.log | grep progress
   # 2021-03-23T12:12:34Z UpdateTip: new best=0000000000000000000c503fbc0e2724b4713dbbb8b0f0048177fc3aaebe0b9b height=675602 version=0x20400000 log2_work=92.750996 tx=626795389 date='2021-03-21T11:05:10Z' progress=0.999011 cache=5.4MiB(48880txo)
   ```
-## IRC server settings
+## Legacy clientserver reference
+
+The old IRC, Qt, JAM remote, and clientserver workflow instructions below are retained only as a recovery reference. They are not installed or launched by the active JoininBox menus. New operational behavior belongs in `install.joinmarket-ng.sh` and the upstream `jm-ng` TUI.
+
+### IRC server settings
 * See the most up to date configuration in:  
   https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/jmclient/jmclient/configure.py
 
-## Install JoinMarket without the QT GUI and dependencies
-* Run the build script with the options `BRANCH` `GITHUBUSER` `without-qt`:
-  ```
-  sudo bash build_joininbox.sh openoms master without-qt
-  ```
-* or in the JoininBox terminal install JoinMarket with the option `--qtgui false`:
-  ```
-  /home/joinmarket/install.joinmarket.sh --qtgui false
-  ```
-
-## Run the JoinMarket-QT GUI from a different user on the same Linux desktop where JoininBox is installed
+### Run the JoinMarket-QT GUI from a different user on the same Linux desktop where JoininBox is installed
 
 * To disable the display access control of the xserver open a new terminal on the desktop and type:
   ```
@@ -624,7 +609,7 @@ Alternatively to a pruned node there could be a larger >400 GB storage connected
   ```
   xhost -
   ```
-## Install Jam on a linux desktop and connect to a remote Joininbox
+### Install Jam on a linux desktop and connect to a remote Joininbox
 * described in [scripts/jam-remote/README.txt](scripts/jam-remote/README.txt)
 
 ## Signing strategy for releases

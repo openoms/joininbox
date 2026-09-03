@@ -50,8 +50,8 @@ sourceConf /home/joinmarket/joinin.conf
 # versions
 currentJBcommit=$(cd /home/joinmarket/joininbox; git describe --tags)
 currentJBtag=$(cd /home/joinmarket/joininbox; git tag | sort -V | tail -1)
-currentJMversion=$(cd /home/joinmarket/joinmarket-clientserver 2>/dev/null; \
-git describe --tags 2>/dev/null)
+currentJMNGversion=$(/home/joinmarketng/venv/bin/python -c \
+  'from importlib.metadata import version; print(version("jmcore"))' 2>/dev/null || printf "not installed")
 currentBTCversion=$(bitcoind --version | grep version)
 
 # paths
@@ -274,6 +274,13 @@ function copyJoininboxScripts() {
   sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/*.* /home/joinmarket/
   sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
   sudo -u joinmarket chmod +x /home/joinmarket/*.sh
+  sudo install -d -m 755 -o root -g root /usr/local/libexec/joininbox
+  sudo install -m 755 -o root -g root \
+    /home/joinmarket/joininbox/scripts/install.joinmarket-ng.sh \
+    /usr/local/libexec/joininbox/install.joinmarket-ng.sh
+  sudo install -m 755 -o root -g root \
+    /home/joinmarket/joininbox/scripts/set.joinmarket-ng-config.py \
+    /usr/local/libexec/joininbox/set.joinmarket-ng-config.py
   if [ $runningEnv = "standalone" ];then
     sudo -u joinmarket cp -r /home/joinmarket/joininbox/scripts/standalone /home/joinmarket/
     sudo -u joinmarket chmod +x /home/joinmarket/standalone/*.sh
@@ -310,6 +317,10 @@ function verifyJoininBoxRef() {
     signer="openoms"
     keyUrl="https://github.com/openoms.gpg"
     fingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
+  elif echo "$signature" | grep -q '44912E1E03005B31'; then
+    signer="joinmarket-ng"
+    keyUrl="https://raw.githubusercontent.com/joinmarket-ng/joinmarket-ng/0c3716b53c132bd46fc92d240beebe7158a06e16/signatures/pubkeys/1C53A412D11EF3051704419C44912E1E03005B31.asc"
+    fingerprint="1C53A412D11EF3051704419C44912E1E03005B31"
   elif echo "$signature" | grep -q 'B5690EEEBB952194'; then
     signer="web-flow"
     keyUrl="https://github.com/web-flow.gpg"
@@ -449,12 +460,31 @@ function backupJMconf() {
 function updateTor() {
   # as in https://2019.www.torproject.org/docs/debian#source
   # https://github.com/rootzoll/raspiblitz/blob/82e0d6c3714ce1b2878780c4bdef72a6417f71c7/home.admin/config.scripts/internet.tor.sh#L493
+  local torKeyFingerprint="A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89"
+  local torSigningFingerprint="2265EB4CB2BF88D900AE8D1B74A941BA219EC810"
+  local torKeyFile
+  local torKeyFingerprints
+  torKeyFile=$(mktemp)
+  wget --prefer-family=ipv4 -qO "${torKeyFile}" \
+    "https://deb.torproject.org/torproject.org/${torKeyFingerprint}.asc"
+  torKeyFingerprints=$(gpg --show-keys --with-colons "${torKeyFile}" | awk -F: '/^fpr:/ {print $10}')
+  if ! grep -qx "${torKeyFingerprint}" <<<"${torKeyFingerprints}" ||
+    ! grep -qx "${torSigningFingerprint}" <<<"${torKeyFingerprints}"; then
+    rm -f "${torKeyFile}"
+    echo "# Unexpected deb.torproject.org signing key"
+    return 1
+  fi
+  sudo gpg --batch --yes --dearmor \
+    --output /usr/share/keyrings/deb.torproject.org-keyring.gpg "${torKeyFile}"
+  rm -f "${torKeyFile}"
+  sudo chmod 644 /usr/share/keyrings/deb.torproject.org-keyring.gpg
+
   echo "# Adding tor-nightly-main to /etc/apt/sources.list.d/tor.list"
   arch=$(dpkg --print-architecture)
   distro=$(lsb_release -sc)
   echo "\
-deb [arch=${arch}] https://deb.torproject.org/torproject.org tor-nightly-main-$distro main
-deb-src [arch=${arch}] https://deb.torproject.org/torproject.org tor-nightly-main-$distro main" \
+deb [arch=${arch} signed-by=/usr/share/keyrings/deb.torproject.org-keyring.gpg] https://deb.torproject.org/torproject.org tor-nightly-main-$distro main
+deb-src [arch=${arch} signed-by=/usr/share/keyrings/deb.torproject.org-keyring.gpg] https://deb.torproject.org/torproject.org tor-nightly-main-$distro main" \
   | sudo tee /etc/apt/sources.list.d/tor.list
   echo "# Running apt-get update"
   sudo apt-get update

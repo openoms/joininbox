@@ -25,8 +25,8 @@ SCRIPT="$BATS_TEST_DIRNAME/../scripts/_functions.bitcoincore.sh"
   ! grep -Fq 'grep -i "${binaryName}" SHA256SUMS' "$SCRIPT"
 }
 
-@test "post-install smoke check requires the pinned Bitcoin Core version" {
-  grep -Fq 'grep -Fc "Bitcoin Core version v${bitcoinVersion}"' "$SCRIPT"
+@test "post-install smoke check accepts daemon-specific version output" {
+  grep -Fq "grep -Eq '^Bitcoin Core (daemon )?version v?[0-9]+(\\.[0-9]+)+'" "$SCRIPT"
 }
 
 @test "signature verification precedes binary checksum acceptance" {

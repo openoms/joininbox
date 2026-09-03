@@ -3,10 +3,10 @@
 ## bats suite
 
 Shell tests using [bats-core](https://github.com/bats-core/bats-core).
-They run in GitHub Actions (`.github/workflows/test-bats.yml`) on every push
-to master and every pull request. `bats -r tests` discovers every `*.bats`
-file recursively - **to add tests, just drop a new `.bats` file here**, no CI
-change needed.
+They run alongside the JoinMarket NG suite in GitHub Actions
+(`.github/workflows/test-bats.yml`) on every push to master and every pull
+request. `test/run-bats-local.sh` is the canonical runner for both suites.
+`bats -r tests` discovers every `*.bats` file here recursively.
 
 Current coverage:
 - `bitcoin-core-version.bats` - pinned Bitcoin Core release, signed manifest

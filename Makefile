@@ -9,15 +9,15 @@ amd64-image:
 
 	# Compute checksum of the raw image
 	cd ci/amd64/builds/joininbox-amd64-debian-qemu && \
-	sha256sum joininbox-amd64-debian-11.5.qcow2 > joininbox-amd64-debian-11.5.qcow2.sha256
+	sha256sum joininbox-amd64-debian.qcow2 > joininbox-amd64-debian.qcow2.sha256
 
 	# Compress image
 	cd ci/amd64/builds/joininbox-amd64-debian-qemu && \
-	gzip -v9 joininbox-amd64-debian-11.5.qcow2
+	gzip -v9 joininbox-amd64-debian.qcow2
 
 	# Compute checksum of the compressed image
 	cd ci/amd64/builds/joininbox-amd64-debian-qemu && \
-	sha256sum joininbox-amd64-debian-11.5.qcow2.gz > joininbox-amd64-debian-11.5.qcow2.gz.sha256
+	sha256sum joininbox-amd64-debian.qcow2.gz > joininbox-amd64-debian.qcow2.gz.sha256
 
 arm64-rpi-image:
 	# build image

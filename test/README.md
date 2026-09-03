@@ -6,7 +6,14 @@ Run the local Bats suite with:
 test/run-bats-local.sh
 ```
 
-The descriptor wallet tests require:
+The runner executes both the retained hardening tests under `tests/` and the
+JoinMarket NG tests under `test/bats/`. The NG configuration, lifecycle, and
+wiring tests require only `bats` and Python 3.11 or newer. They do not need root
+or network access. Some retained hardening tests require passwordless `sudo` to
+prepare `/home/joinmarket`; see `tests/README.md` for a local user-namespace
+alternative.
+
+The retained legacy descriptor-wallet migration tests additionally require:
 
 - `bats`
 - `bitcoind`
@@ -14,8 +21,15 @@ The descriptor wallet tests require:
 - `curl`
 - `jq`
 
-The suite starts its own temporary `bitcoind -regtest` datadir and does not use
+Those tests start their own temporary `bitcoind -regtest` datadir and do not use
 mainnet, signet, or any existing Bitcoin Core state.
+
+Run a focused file or test with:
+
+```bash
+bats test/bats/joinmarket-ng-lifecycle.bats
+bats -f 'onion RPC detection' test/bats/joinmarket-ng-lifecycle.bats
+```
 
 The `amd64-image-test` workflow downloads a previously built
 `joininbox-amd64-image-*` artifact, verifies the compressed and raw checksums,

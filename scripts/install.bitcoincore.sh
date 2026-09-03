@@ -11,39 +11,28 @@ fi
 if [ "$1" = "signetOn" ]; then
   installBitcoinCore
   installSignet
-  if [ "$connectedRemoteNode" = "on" ]; then
-    backupJMconf
-  fi
-  generateJMconfig
-  setJMconfigToSignet
-
-  if [ ${#network} -eq 0 ] || [ "${network}" = "mainnet" ] || [ "${runningEnv}" = "raspiblitz" ]; then
-    bitcoinUser="bitcoin"
-    cliPath="/usr/local/bin/"
-  elif [ "${network}" = "signet" ]; then
-    bitcoinUser="joinmarket"
-    cliPath="/home/joinmarket/bitcoin/"
-  fi
-  if [ ! -d /home/${bitcoinUser}/.bitcoin/signet/wallets/watch-only-descriptor-wallet ]; then
-    echo "# Create watch-only-descriptor-wallet for signet ..."
-    sleep 10
-    sudo -u ${bitcoinUser} ${cliPath}/bitcoin-cli -signet -named createwallet wallet_name=watch-only-descriptor-wallet descriptors=true disable_private_keys=true
-  fi
+  sudo /usr/local/libexec/joininbox/install.joinmarket-ng.sh configure-local signet
+  for state in "network=signet" "connectedRemoteNode=off" "RPCoverTor=off"; do
+    key=${state%%=*}
+    value=${state#*=}
+    if ! grep -Eq "^${key}=" "$joininConfPath"; then
+      echo "$key=$value" >>"$joininConfPath"
+    else
+      sed -i "s#^${key}=.*#${key}=${value}#g" "$joininConfPath"
+    fi
+  done
 
 elif [ "$1" = "signetOff" ]; then
   removeSignetdService
-  isSignet=$(grep -c "network = signet" <$JMcfgPath)
-  if [ $isSignet -gt 0 ]; then
-    echo "# Removing the joinmarket.cfg with signet settings"
-    rm -f $JMcfgPath
-  else
-    echo "# Signet is not set in joinmarket.cfg, leaving settings in place"
-  fi
-
-  # set joinin.conf value
-  /home/joinmarket/set.value.sh set network mainnet ${joininConfPath}
-
-  generateJMconfig
+  for state in "network=mainnet" "connectedRemoteNode=off" "RPCoverTor=off"; do
+    key=${state%%=*}
+    value=${state#*=}
+    if ! grep -Eq "^${key}=" "$joininConfPath"; then
+      echo "$key=$value" >>"$joininConfPath"
+    else
+      sed -i "s#^${key}=.*#${key}=${value}#g" "$joininConfPath"
+    fi
+  done
 elif [ "$1" = "downloadCoreOnly" ]; then
   downloadBitcoinCore
 fi

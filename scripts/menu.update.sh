@@ -10,21 +10,16 @@ TITLE="Update options"
 MENU="
 Installed versions:
 JoininBox $currentJBcommit
-JoinMarket $currentJMversion
+JoinMarket NG $currentJMNGversion
 $currentBTCversion"
 OPTIONS=()
 BACKTITLE="JoininBox GUI"
 
 # Basic Options
-# Determine if using tag or commit for display
-testedVersion=$(grep 'testedJMversion=' < ~/install.joinmarket.sh | grep -v '^#' | cut -d '"' -f 2)
-if [ -z "$testedVersion" ]; then
-  testedVersion=$(grep 'testedJMcommit=' < ~/install.joinmarket.sh | cut -d '"' -f 2 | cut -c 1-12)
-  testedVersion="${testedVersion} (commit)"
-fi
+testedVersion="0.38.0"
 OPTIONS+=(
   JOININBOX  "Update the JoininBox scripts and menu"
-  JOINMARKET "Update/reinstall JoinMarket to ${testedVersion}")
+  JOINMARKET "Update/reinstall JoinMarket NG to ${testedVersion}")
 
 if [ "$runningEnv" = "standalone" ]; then
   OPTIONS+=(\
@@ -51,13 +46,8 @@ case $CHOICE in
       echo "Press ENTER to return to the menu"
       read key;;
   JOINMARKET)
-      /home/joinmarket/install.joinmarket.sh -i update
+      sudo /usr/local/libexec/joininbox/install.joinmarket-ng.sh update 0.38.0
       errorOnInstall $?
-      echo
-      menu_resetJMconfig
-      if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
-        menu_connectLocalCore
-      fi
       echo
       echo "Press ENTER to return to the menu"
       read key;;

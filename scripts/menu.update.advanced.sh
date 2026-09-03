@@ -3,14 +3,14 @@
 source /home/joinmarket/_functions.sh
 
 # BASIC MENU INFO
-HEIGHT=18
+HEIGHT=16
 WIDTH=60
-CHOICE_HEIGHT=7
+CHOICE_HEIGHT=5
 TITLE="Advanced update options"
 MENU="
 Installed versions:
 JoininBox $currentJBcommit
-JoinMarket $currentJMversion
+JoinMarket NG $currentJMNGversion
 $currentBTCversion"
 
 OPTIONS=()
@@ -21,9 +21,7 @@ OPTIONS+=(\
   JBCOMMIT "Update JoininBox to the latest commit"
   JBPR "Test a JoininBox pull request"
   JBRESET "Reinstall the JoininBox scripts and menu"
-  JMCUSTOM "Update JoinMarket to a custom version"
-  JMPR "Test a JoinMarket pull request"
-  JMCOMMIT "Update JoinMarket to the latest commit"
+  JMNGCUSTOM "Update JoinMarket NG to a signed release"
   TOR "Update Tor to the latest alpha"
 )
 
@@ -80,52 +78,19 @@ case $CHOICE in
       echo "Press ENTER to return to the menu"
       read key
       ;;
-  JMCUSTOM)
+  JMNGCUSTOM)
       clear
       echo
-      read -p "Enter the version to be installed, eg 'v0.9.3': " updateVersion
+      read -r -p "Enter the signed release version, eg '0.38.0': " updateVersion
+      if ! [[ "$updateVersion" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][A-Za-z0-9][A-Za-z0-9._-]*)?$ ]]; then
+        echo "# Invalid signed release version"
+        exit 1
+      fi
       read -p "Continue to install the version:
-https://github.com/JoinMarket-Org/joinmarket-clientserver/releases/tag/${updateVersion}
+https://github.com/joinmarket-ng/joinmarket-ng/releases/tag/${updateVersion}
 (Y/N)? " confirm && [[ $confirm == [yY]||$confirm == [yY][eE][sS] ]]||exit 1
-      stopYG
-      /home/joinmarket/install.joinmarket.sh -i update -v $updateVersion
+      sudo /usr/local/libexec/joininbox/install.joinmarket-ng.sh update "$updateVersion"
       errorOnInstall $?
-      echo
-      menu_resetJMconfig
-      if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
-        menu_connectLocalCore
-      fi
-      echo
-      echo "Press ENTER to return to the menu"
-      read key
-      ;;
-  JMPR)
-      clear
-      echo
-      read -p "Enter the number of the pull request to be tested: " PRnumber
-      read -p "Continue to install the PR:
-https://github.com/JoinMarket-Org/joinmarket-clientserver/pull/$PRnumber
-(Y/N)? " confirm && [[ $confirm == [yY]||$confirm == [yY][eE][sS] ]]||exit 1
-      stopYG
-      /home/joinmarket/install.joinmarket.sh -i testPR -v $PRnumber
-      errorOnInstall $?
-      echo
-      menu_resetJMconfig
-      if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
-        menu_connectLocalCore
-      fi
-      echo
-      echo "Press ENTER to return to the menu"
-      read key
-      ;;
-  JMCOMMIT)
-      /home/joinmarket/install.joinmarket.sh -i commit
-      errorOnInstall $?
-      echo
-      menu_resetJMconfig
-      if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
-        menu_connectLocalCore
-      fi
       echo
       echo "Press ENTER to return to the menu"
       read key

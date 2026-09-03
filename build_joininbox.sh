@@ -6,7 +6,7 @@
 # login with SSH or boot directly
 # run this script as root or with sudo
 # can specify downloading from a branch or forked repo:
-# bash build_joininbox.sh [branch] [github user]
+# bash build_joininbox.sh [github user] [branch] [tag|commit]
 ########################################################################
 
 # The JoininBox Build Script is partially based on:
@@ -15,11 +15,11 @@
 # command info
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
   echo "JoininBox Build Script"
-  echo "Usage: sudo bash build_joininbox.sh <github user> <branch> <tag|commit> <without-qt>"
+  echo "Usage: sudo bash build_joininbox.sh <github user> <branch> <tag|commit>"
   echo "Example:"
-  echo "'sudo bash build_joininbox.sh openoms master commit without-qt'"
-  echo "to install from the master branch latest commit without the QT GUI"
-  echo "By default uses https://github.com/openoms/joininbox/tree/master and installs the QT GUI"
+  echo "'sudo bash build_joininbox.sh openoms master commit'"
+  echo "to install from the master branch latest commit"
+  echo "By default uses https://github.com/openoms/joininbox/tree/master"
   exit 1
 fi
 
@@ -295,20 +295,8 @@ elif [ -f "/usr/bin/python3.11" ]; then
   # use python 3.11 if available
   update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1
   echo "# python calls python3.11"
-elif [ -f "/usr/bin/python3.10" ]; then
-  # use python 3.10 if available
-  update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
-  echo "# python calls python3.10"
-elif [ -f "/usr/bin/python3.9" ]; then
-  # use python 3.9 if available
-  update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
-  echo "# python calls python3.9"
-elif [ -f "/usr/bin/python3.8" ]; then
-  # use python 3.8 if available
-  update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
-  echo "# python calls python3.8"
 else
-  echo "# FAIL- there is no tested version of python present"
+  echo "# FAIL- Python 3.11 or later is required"
   exit 1
 fi
 
@@ -358,8 +346,6 @@ apt-get install -y dialog
 apt-get install -y qrencode
 # unzip for the pruned node snapshot
 apt-get install -y unzip
-# JoinMarket dependency https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/5bfa08c6f558458c9a93e8095ce9dc1b62412838/install.sh#L76C10-L76C21
-apt-get install -y libltdl-dev
 apt-get clean
 apt-get -y autoremove
 
@@ -420,6 +406,10 @@ else
     PGPsigner="openoms"
     PGPpubkeyLink="https://github.com/openoms.gpg"
     PGPpubkeyFingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
+  elif echo "${lastCommit}" | grep 1C53A412D11EF3051704419C44912E1E03005B31; then
+    PGPsigner="joinmarket-ng"
+    PGPpubkeyLink="https://raw.githubusercontent.com/joinmarket-ng/joinmarket-ng/0c3716b53c132bd46fc92d240beebe7158a06e16/signatures/pubkeys/1C53A412D11EF3051704419C44912E1E03005B31.asc"
+    PGPpubkeyFingerprint="1C53A412D11EF3051704419C44912E1E03005B31"
   elif echo "${lastCommit}" | grep B5690EEEBB952194; then
     echo "# The last commit was made on GitHub and is signed with the GitHub PGP key."
     PGPsigner="web-flow"
@@ -443,6 +433,13 @@ runuser joinmarket -c "cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket
 chmod +x /home/joinmarket/*.sh
 runuser joinmarket -c "cp -r /home/joinmarket/joininbox/scripts/standalone /home/joinmarket/"
 chmod +x /home/joinmarket/standalone/*.sh
+install -d -m 755 -o root -g root /usr/local/libexec/joininbox
+install -m 755 -o root -g root \
+  /home/joinmarket/joininbox/scripts/install.joinmarket-ng.sh \
+  /usr/local/libexec/joininbox/install.joinmarket-ng.sh
+install -m 755 -o root -g root \
+  /home/joinmarket/joininbox/scripts/set.joinmarket-ng-config.py \
+  /usr/local/libexec/joininbox/set.joinmarket-ng-config.py
 
 echo "# set the default password 'joininbox' for the users 'pi', \
 'joinmarket' and 'root'"
@@ -480,18 +477,24 @@ if [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]; 
   echo "# Install dirmngr"
   apt-get install -y dirmngr apt-transport-https
   echo
-  echo "# Adding KEYS deb.torproject.org "
-  torKeyAvailable=$(gpg --list-keys | grep -c \
-    "A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89")
-  echo "torKeyAvailable=${torKeyAvailable}"
-  if [ ${torKeyAvailable} -eq 0 ]; then
-    # https://support.torproject.org/apt/tor-deb-repo/
-    wget --prefer-family=ipv4 -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import
-    gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -
-    echo "OK"
-  else
-    echo "# Tor key is available"
+  echo "# Adding the scoped deb.torproject.org keyring"
+  torKeyFingerprint="A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89"
+  torSigningFingerprint="2265EB4CB2BF88D900AE8D1B74A941BA219EC810"
+  torKeyUrl="https://deb.torproject.org/torproject.org/${torKeyFingerprint}.asc"
+  torKeyFile=$(mktemp)
+  wget --prefer-family=ipv4 -qO "${torKeyFile}" "${torKeyUrl}"
+  torKeyFingerprints=$(gpg --show-keys --with-colons "${torKeyFile}" | awk -F: '/^fpr:/ {print $10}')
+  if ! grep -qx "${torKeyFingerprint}" <<<"${torKeyFingerprints}" ||
+    ! grep -qx "${torSigningFingerprint}" <<<"${torKeyFingerprints}"; then
+    rm -f "${torKeyFile}"
+    echo "# Unexpected deb.torproject.org signing key"
+    exit 1
   fi
+  gpg --batch --yes --dearmor \
+    --output /usr/share/keyrings/deb.torproject.org-keyring.gpg "${torKeyFile}"
+  rm -f "${torKeyFile}"
+  chmod 644 /usr/share/keyrings/deb.torproject.org-keyring.gpg
+  echo "OK"
   echo "# Adding Tor Sources to sources.list"
   torSourceListAvailable=$(cat /etc/apt/sources.list | grep -c \
     'https://deb.torproject.org/torproject.org')
@@ -501,8 +504,8 @@ if [ "$torTest" != "Congratulations. This browser is configured to use Tor." ]; 
     arch=$(dpkg --print-architecture)
     distro=$(lsb_release -sc)
     echo "\
-deb [arch=${arch}] https://deb.torproject.org/torproject.org ${distro} main
-deb-src [arch=${arch}] https://deb.torproject.org/torproject.org ${distro} main" |
+deb [arch=${arch} signed-by=/usr/share/keyrings/deb.torproject.org-keyring.gpg] https://deb.torproject.org/torproject.org ${distro} main
+deb-src [arch=${arch} signed-by=/usr/share/keyrings/deb.torproject.org-keyring.gpg] https://deb.torproject.org/torproject.org ${distro} main" |
       tee /etc/apt/sources.list.d/tor.list
     echo "OK"
   else
@@ -614,10 +617,6 @@ echo "#############"
 echo "# Autostart"
 echo "#############"
 echo "
-if [ -f \"/home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate\" ]; then
-  . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate
-  cd /home/joinmarket/joinmarket-clientserver/scripts/
-fi
 # shortcut commands
 source /home/joinmarket/_commands.sh
 # automatically start main menu for joinmarket unless
@@ -635,25 +634,9 @@ sudo -u joinmarket bash /home/joinmarket/install.bitcoincore.sh downloadCoreOnly
 
 echo
 echo "######################"
-echo "# Install JoinMarket"
+echo "# Install JoinMarket NG"
 echo "######################"
-
-
-if [ "${cpu}" = x86_64 ]; then
-  qtgui=true
-else
-  # no qtgui on arm
-  qtgui=false
-fi
-checkEntry=$(runuser joinmarket -c "cat /home/joinmarket/joinin.conf | grep -c qtgui")
-if [ ${checkEntry} -eq 0 ]; then
-  echo "qtgui=$qtgui" | tee -a /home/joinmarket/joinin.conf
-fi
-if [ "$4" = "without-qt" ]; then
-  qtgui="false"
-  sed -i "s/^qtgui=.*/qtgui=false/g" /home/joinmarket/joinin.conf
-fi
-sudo -u joinmarket bash /home/joinmarket/install.joinmarket.sh -i install -q $qtgui || exit 1
+/usr/local/libexec/joininbox/install.joinmarket-ng.sh on || exit 1
 
 echo "###################"
 echo "# bootstrap.service"
