@@ -147,6 +147,7 @@ the default password is: `joininbox` - will be prompted to change it on the firs
 * [Video demonstration](https://www.youtube.com/watch?v=uGHRjilMhwY) / [slides](https://keybase.pub/oms/slides/RaspiBlitz_Tech_DeepDive/Running_JoinMarket_on_the_RaspiBlitz.pdf) of running JoinMarket with JoininBox on the RaspiBlitz
 * How to [prepare a remote node to accept the JoinMarket connection](prepare_remote_node.md)
 * [Frequently Asked Questions and notes](FAQ.md)
+* [Optional restart modes for yg-privacyenhanced](yg-restart-options.md)
 
 ## About JoinMarket
 * [JoinMarket documentation](https://github.com/JoinMarket-Org/joinmarket-clientserver/tree/master/docs)
