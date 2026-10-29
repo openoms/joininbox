@@ -1,0 +1,2 @@
+# Unified-diff context lines intentionally contain a single space.
+scripts/joinmarket-python-trust.patch -whitespace

@@ -47,6 +47,14 @@ unshare -rm bash -c '
   cd '"$(pwd)"' && bats -r tests'
 ```
 
+## Python certificate bootstrap
+
+See [python-trust.md](python-trust.md) for the public JoinMarket `v0.9.12`
+clone/pin commands and self-contained 20-check bootstrap, 13-check owner, and
+17-check selected Bats reproduction. No modified companion checkout is needed.
+The Python bootstrap harness uses real wheels and local HTTPS; native build,
+mocked owner paths, and compatibility/release gates are documented separately.
+
 ## Other tests
 
 - `test-prepare-release.sh` (on the first-boot-credentials branch) - mock-based

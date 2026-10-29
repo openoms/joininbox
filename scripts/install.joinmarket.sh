@@ -140,6 +140,11 @@ range_argument qtgui "0" "1" "false" "true"
 
 : "${user:=joinmarket}"
 
+# Preserve only download policy, not the caller's general execution environment.
+trust_env=("${!PIP_@}" REQUESTS_CA_BUNDLE CURL_CA_BUNDLE SSL_CERT_FILE SSL_CERT_DIR)
+trust_sudo=(sudo "--preserve-env=$(IFS=,; printf '%s' "${trust_env[*]}")" -u "${user}")
+trust_scripts=/home/joinmarket/joininbox/scripts
+
 source /home/joinmarket/_functions.sh
 sourceConf /home/joinmarket/joinin.conf
 
@@ -182,7 +187,9 @@ function installJoinMarket() {
   # https://github.com/JoinMarket-Org/joinmarket-clientserver/issues/668#issuecomment-717815719
   sudo apt-get install -y build-essential automake pkg-config libffi-dev python3-dev
   sudo -u ${user} pip config set global.break-system-packages true
-  sudo -u ${user} pip install libtool asn1crypto cffi pycparser
+  # System pip may also carry old roots. Secure this first download without
+  # replacing Debian's pip or changing the prerequisites being installed.
+  "${trust_sudo[@]}" python3 "${trust_scripts}/joinmarket-python-trust.py" prerequisites || exit 1
   echo "# Installing JoinMarket"
 
   if [ "$install" = "update" ] || [ "$install" = "testPR" ] || [ "$install" = "commit" ]; then
@@ -237,6 +244,10 @@ function installJoinMarket() {
     python_args="--python=${JM_PYTHON}"
   fi
   # do not clear screen during installation
+  # JoinMarket is archived. Backport the pre-download fix after ref selection
+  # and existing verification; fail closed if the installer no longer matches.
+  "${trust_sudo[@]}" patch --batch --forward --fuzz=0 -p1 < "${trust_scripts}/joinmarket-python-trust.patch" || exit 1
+  sudo -u "${user}" cp "${trust_scripts}/joinmarket-python-trust.py" install-python-trust.py || exit 1
   sudo -u ${user} sed -i 's/clear//g' install.sh
 
   if [ "${qtgui}" = "false" ]; then
@@ -247,10 +258,11 @@ function installJoinMarket() {
 
   if [ "$install" = "update" ] || [ "$install" = "testPR" ] || [ "$install" = "commit" ]; then
     # do not run libsecp256k1 test
-    sudo -u ${user} ./install.sh "${GUIchoice}" --disable-secp-check "$python_args" || exit 1
+    "${trust_sudo[@]}" ./install.sh "${GUIchoice}" --disable-secp-check "$python_args" || exit 1
   else
-    sudo -u ${user} ./install.sh "${GUIchoice}" "$python_args" || exit 1
+    "${trust_sudo[@]}" ./install.sh "${GUIchoice}" "$python_args" || exit 1
   fi
+  "${trust_sudo[@]}" ./jmvenv/bin/python "${trust_scripts}/joinmarket-python-trust.py" app || exit 1
   currentJMversion=$(
     cd /home/${user}/joinmarket-clientserver 2>/dev/null
     git describe --tags 2>/dev/null
@@ -298,6 +310,8 @@ if [ "$install" = "install" ]; then
       export TMPDIR='/tmp'
     fi
   else
+    # An already-installed early return must not declare stale trust healthy.
+    "${trust_sudo[@]}" "/home/${user}/joinmarket-clientserver/jmvenv/bin/python" "${trust_scripts}/joinmarket-python-trust.py" app || exit 1
     echo
     echo "# JoinMarket $currentJMversion is installed"
     echo

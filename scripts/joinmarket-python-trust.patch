@@ -1,0 +1,57 @@
+diff --git a/install.sh b/install.sh
+index 2e53081..5a8459e 100755
+--- a/install.sh
++++ b/install.sh
+@@ -181,22 +181,28 @@ check_skip_build ()
+ 
+ upgrade_setuptools ()
+ {
+-    pip install --upgrade pip
+-    pip install --upgrade setuptools
++    # Bootstrap before the first network pip operation, not after installation.
++    "${python}" "${jm_source}/install-python-trust.py" bootstrap || return 1
++    "${python}" -m pip install --upgrade setuptools || return 1
+ }
+ 
+ venv_setup ()
+ {
+     if check_skip_build 'jmvenv'; then
+-        return 0
++        "${jm_source}/jmvenv/bin/python" "${jm_source}/install-python-trust.py" bootstrap
++        return "$?"
+     else
+         reinstall='true'
+     fi
+     "${python}" -m venv "${jm_source}/jmvenv" || return 1
+     # shellcheck source=/dev/null
+     source "${jm_source}/jmvenv/bin/activate" || return 1
+-    upgrade_setuptools
++    # Use the venv interpreter even when --python was an absolute path.
++    local setup_status=0
++    "${jm_source}/jmvenv/bin/python" "${jm_source}/install-python-trust.py" bootstrap &&
++        "${jm_source}/jmvenv/bin/python" -m pip install --upgrade setuptools || setup_status=$?
+     deactivate
++    return "$setup_status"
+ }
+ 
+ dep_get ()
+@@ -605,7 +611,7 @@ main ()
+         # shellcheck source=/dev/null
+         source "${jm_root}/bin/activate"
+     else
+-        upgrade_setuptools
++        upgrade_setuptools || return 1
+     fi
+     if [[ ${build_local_tor} == "1" ]]; then
+         if ! tor_deps_install; then
+@@ -641,6 +647,10 @@ main ()
+         if [ "$with_jmvenv" == 1 ]; then deactivate; fi
+         return 1
+     fi
++    # Repair application CA roots only when standalone certifi is installed.
++    local trust_python="${python}"
++    if [ "$with_jmvenv" == 1 ]; then trust_python="${jm_source}/jmvenv/bin/python"; fi
++    "${trust_python}" "${jm_source}/install-python-trust.py" upgrade-app || return 1
+     if [ "$with_jmvenv" == 1 ]; then
+         deactivate
+         echo "Joinmarket successfully installed
