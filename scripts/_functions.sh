@@ -254,9 +254,24 @@ function stopYG() {
   fi
 }
 
+# Latest nickname logfile by modification time, not necessarily a maker log.
+# Keep filenames intact and ignore directories, backups and unrelated files.
+function latestJMlog() {
+  local logfile newest_log=""
+  for logfile in /home/joinmarket/.joinmarket/logs/J5*.log; do
+    [ -f "$logfile" ] || continue
+    if [ -z "$newest_log" ] || [ "$logfile" -nt "$newest_log" ]; then
+      newest_log="$logfile"
+    fi
+  done
+  [ -n "$newest_log" ] || return 1
+  printf '%s\n' "$newest_log"
+}
+
 function YGnickname() {
-  # Retrieves nickname from the latest NickServ message in the newest logfile
-  newest_log=$(ls -td /home/joinmarket/.joinmarket/logs/*J5* 2>/dev/null | head -n 1)
+  # Historical NickServ observation; neither role nor current activity is known.
+  local newest_log name
+  newest_log=$(latestJMlog) || newest_log=""
   if [ -n "$newest_log" ] && [ -f "$newest_log" ]; then
     name=$(grep NickServ "$newest_log" 2>/dev/null | tail -1 | awk '{print $9}')
     if [ ${#name} -eq 0 ]; then

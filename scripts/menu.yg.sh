@@ -32,9 +32,9 @@ OPTIONS+=(
   JMCONF "YG settings in the joinmarket.cfg"
   YGLIST "List the past YG activity"
   STATS "Show the sats earned as a Maker"
-  NICKNAME "Show the last used counterparty name"
+  NICKNAME "Show the last logged counterparty name"
   SERVICE "Monitor the YG service (INFO)"
-  LOGS "View the last YG logfile (DEBUG)"
+  LOGS "View the latest JoinMarket logfile (DEBUG)"
   STOP "Stop the YG service"
   TIMELOCK "Create a Fidelity Bond address"
 )
@@ -81,10 +81,11 @@ Start with the menu option: MAKER" 10 50
     name=$(YGnickname)
     whiptail \
       --title "Counterparty name"  \
-      --msgbox "The last used counterparty name for the Order Book:\n
+      --msgbox "Last NickServ name in the latest JoinMarket log:\n
 $name\n
-Check if active in: https://nixbitcoin.org/obwatcher/
-or use the local Order Book" 12 55
+This may be the order book or an old session,
+not proof of a current YG offer.
+Check activity in the local Order Book." 12 55
     echo "Returning to the menu..."
     sleep 1
     /home/joinmarket/menu.yg.sh;;
@@ -101,15 +102,19 @@ Use: 'menu' for the JoininBox options." 11 50
     sudo systemctl status yg-privacyenhanced;;
   LOGS)
     dialog \
-    --title "Monitoring the Yield Generator"  \
+    --title "Monitoring the latest JoinMarket log"  \
     --msgbox "
-Will tail the latest YG logfile from:
+Will tail the latest JoinMarket nickname logfile from:
 
 /home/joinmarket/.joinmarket/logs/
 
-Press CTRL+C to exit and return to the menu." 10 50
-    cd /home/joinmarket/.joinmarket/logs || exit 1
-    ls -t | grep J5 | head -n 1 | xargs tail -fn1000
+It may belong to the order book or an old session.
+Press CTRL+C to exit and return to the menu." 12 60
+    if logfile=$(latestJMlog); then
+      tail -fn1000 -- "$logfile"
+    else
+      echo "No JoinMarket logfile found."
+    fi
     echo
     echo "Press ENTER to return to menu"
     read key

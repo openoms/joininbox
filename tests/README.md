@@ -21,6 +21,10 @@ Current coverage:
 - `start.service.bats` - the wallet password file validation in
   `start.service.sh` (missing/symlink/outside-path/traversal/bad-mode
   rejection, validation order, password over stdin, deletion after use)
+- `menu.yg-logs.bats` - real YG menu and nickname helper with synthetic logs:
+  latest-log labels (not current maker identity), maker/orderbook modification
+  ordering, spaces, missing/empty logs, stale sessions and unrelated files.
+  Uses util-linux `script` for the menu TTY and `timeout` for real-tail coverage.
 - `password-to-file.bats` - `passwordToFile` in `scripts/_functions.sh`
   (unpredictable per-run file, mode 600, EXIT-trap cleanup, cancel/ESC paths)
 

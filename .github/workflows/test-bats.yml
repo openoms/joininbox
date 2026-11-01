@@ -1,12 +1,12 @@
 name: Test bats
 
 concurrency:
-  group: test-bats-${{ github.head_ref }}
+  group: test-bats-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "fix/154-log-menu-accuracy" ]
   pull_request:
     branches: [ "master" ]
   workflow_dispatch:
